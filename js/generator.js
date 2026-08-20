@@ -2,12 +2,13 @@
 "use strict";
 
 /*
-  ARCHIVES DU COURANT — GÉNÉRATEUR V4
+  ARCHIVES DU COURANT — GÉNÉRATEUR V5
   ------------------------------------------------------------
   Données :
     data/supplements.json
     data/armees/*.json
     data/supplements/*.json
+    data/objets-magiques/*.json
 
   Le générateur ne modifie jamais les fichiers data/.
 
@@ -19,7 +20,14 @@
       dans les JSON ;
     - les restrictions min/max, maxPer1000 et maxPerCharacter sont prises en compte ;
     - les pourcentages de composition sont calculés sur le format choisi ;
-    - les contraintes affichent toujours leur équivalent en points.
+    - les contraintes affichent toujours leur équivalent en points ;
+    - la colonne "Ma liste" affiche, pour chaque entrée, dans cet ordre :
+        1. caractéristiques (figurine + monture le cas échéant), sous forme
+           de tableau ;
+        2. équipement natif ;
+        3. règles spéciales natives ;
+        4. options : monture / options de personnage / objets magiques ;
+        5. options de règles spéciales (règles optionnelles / honneurs).
 */
 
 const PATHS = {
@@ -65,7 +73,7 @@ function armyLabel(id) {
   })[id] || String(id || "").replace(/[-_]/g," ").replace(/\b\w/g,m=>m.toUpperCase());
 }
 
-function normalizeOption(raw) {
+function normalizeOption(raw, kindOverride) {
   if (raw == null) return null;
 
   if (typeof raw === "string") {
@@ -81,7 +89,7 @@ function normalizeOption(raw) {
       name,
       points: Number.isFinite(points) ? points : 0,
       pointsPerModel: perModel ? points : 0,
-      kind: inferOptionKind(name),
+      kind: kindOverride || inferOptionKind(name),
       maxPoints: limitMatch ? Number(limitMatch[1]) : null,
       raw: text
     };
@@ -100,7 +108,7 @@ function normalizeOption(raw) {
     name,
     points: Number.isFinite(points) ? points : 0,
     pointsPerModel: Number.isFinite(pointsPerModel) ? pointsPerModel : 0,
-    kind: raw.kind || inferOptionKind(name),
+    kind: kindOverride || raw.kind || inferOptionKind(name),
     maxPoints: raw.maxPoints != null ? Number(raw.maxPoints) : null
   };
 }
@@ -114,10 +122,29 @@ function inferOptionKind(name) {
   return "other";
 }
 
+// Liste brute (texte ou objet) -> tableau de chaînes affichables.
+function normalizeTextList(raw) {
+  if (raw == null) return [];
+  const arr = Array.isArray(raw) ? raw : [raw];
+  return arr.map(x => {
+    if (typeof x === "string") return x.trim();
+    if (x && typeof x === "object") return String(x.name || x.nom || x.label || x.text || "").trim();
+    return "";
+  }).filter(Boolean);
+}
+
 function normalizeUnit(u, fallbackId = "") {
   if (!u || typeof u !== "object") return null;
   const points = u.points ?? u.cost ?? u.cout;
-  const options = Array.isArray(u.options) ? u.options.map(normalizeOption).filter(Boolean) : [];
+  const options = Array.isArray(u.options) ? u.options.map(o => normalizeOption(o)).filter(Boolean) : [];
+
+  // Règles spéciales optionnelles / honneurs (choisissables), distinctes des
+  // règles spéciales natives (fixes, toujours actives).
+  const ruleOptionsRaw = u.ruleOptions ?? u.optionsRegles ?? u.optionalRules
+    ?? u.honours ?? u.honor ?? u.honneurs ?? [];
+  const ruleOptions = Array.isArray(ruleOptionsRaw)
+    ? ruleOptionsRaw.map(o => normalizeOption(o, "rule")).filter(Boolean)
+    : [];
 
   let minSize = u.minSize != null ? Number(u.minSize) : null;
   let maxSize = u.maxSize != null ? Number(u.maxSize) : null;
@@ -138,7 +165,9 @@ function normalizeUnit(u, fallbackId = "") {
     category: u.category || u.categorie || "Autres",
     points: points == null || points === "" ? null : Number(points),
     options,
-    rules: u.rules ?? u.regles ?? u.specialRules ?? [],
+    ruleOptions,
+    rules: normalizeTextList(u.rules ?? u.regles ?? u.specialRules),
+    equipment: normalizeTextList(u.equipment ?? u.equipement ?? u.equipementNatif ?? u.equipementDeBase),
     profile: u.profile || u.profil || null,
     source: u.source || "armée",
     unitSize: u.unitSize || "",
@@ -175,7 +204,10 @@ function normalizeMagicItems(raw) {
         ...item,
         id: String(item.id || ("magic-" + slug(name) + "-" + index)),
         name,
-        points: item.points == null ? 0 : Number(item.points)
+        points: item.points == null ? 0 : Number(item.points),
+        // certains objets (ex. talismans communs) peuvent être pris par
+        // plusieurs unités simultanément : repeatable / unique==false / multiple
+        repeatable: item.repeatable === true || item.unique === false || item.multiple === true
       };
     });
   });
@@ -195,15 +227,6 @@ async function loadMagicItems(armyId) {
   } finally {
     state.magicItemsLoading = false;
   }
-}
-
-function magicItemsForEntry(entry, unit) {
-  if (!state.magicItems || !unit || unit.category !== "Personnages") return [];
-  const categories = [];
-  Object.entries(state.magicItems).forEach(([category, items]) => {
-    categories.push(...items.map(item => ({...item, category})));
-  });
-  return categories;
 }
 
 function normalizeArmy(raw, fallbackId) {
@@ -278,10 +301,12 @@ function allSelectedOptionNames(){
   const names=[];
   state.list.forEach(entry=>{
     const u=getUnit(entry.id); if(!u) return;
-    (entry.options||[]).forEach(id=>{ const o=(u.options||[]).find(x=>x.id===id); if(o) names.push(String(o.name).toLocaleLowerCase("fr")); });
-    [u.notes,u.specialRules,u.honours,u.honor,u.honneurs].forEach(v=>{
-      if(Array.isArray(v)) v.forEach(x=>names.push(String(typeof x==='object'?(x.name||x.label||x.id||''):x).toLocaleLowerCase("fr")));
-      else if(v) names.push(String(typeof v==='object'?(v.name||v.label||v.id||''):v).toLocaleLowerCase("fr"));
+    (entry.options||[]).forEach(id=>{
+      const o=(u.options||[]).find(x=>x.id===id) || (u.ruleOptions||[]).find(x=>x.id===id);
+      if(o) names.push(String(o.name).toLocaleLowerCase("fr"));
+    });
+    [u.rules, u.equipment].forEach(v=>{
+      normalizeTextList(v).forEach(x=>names.push(String(x).toLocaleLowerCase("fr")));
     });
   });
   return names;
@@ -293,7 +318,7 @@ function hasCondition(text, unit=null){
   const generalIds=state.list.filter(x=>getUnit(x.id)?.category==='Personnages').map(x=>x.id);
   if(t.includes('eryndor') || t.includes('éryndor')) return generalIds.includes('eryndor-vareth');
   if(t.includes('garde maritime')) return generalIds.includes('eryndor-vareth') || names.some(n=>n.includes('garde maritime')) || state.list.some(x=>{
-    const u=getUnit(x.id); return String(u?.notes||'').toLocaleLowerCase('fr').includes('honneur elfique garde maritime') || String(u?.notes||'').toLocaleLowerCase('fr').includes('honneur garde maritime');
+    const u=getUnit(x.id); return normalizeTextList(u?.rules).some(r=>r.toLocaleLowerCase('fr').includes('honneur elfique garde maritime') || r.toLocaleLowerCase('fr').includes('honneur garde maritime'));
   });
   if(t.includes('gardien de saphery')) return names.some(n=>n.includes('gardien de saphery'));
   if(t.includes('maître du savoir') || t.includes('maitre du savoir')) return names.some(n=>n.includes('maître du savoir')||n.includes('maitre du savoir'));
@@ -369,10 +394,15 @@ function selectedOptions(entry) {
   return Array.isArray(entry.options) ? entry.options : [];
 }
 
+function selectedMagicItemIds(entry) {
+  return Array.isArray(entry.magicItems) ? entry.magicItems : [];
+}
+
 function optionCost(u, entry) {
   const selected = selectedOptions(entry);
+  const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
   return selected.reduce((sum, id) => {
-    const opt = u.options.find(o => o.id === id);
+    const opt = pool.find(o => o.id === id);
     if (!opt) return sum;
     return sum + Number(opt.points || 0) + Number(opt.pointsPerModel || 0) * Number(entry.qty || 0);
   }, 0);
@@ -428,7 +458,8 @@ function addUnit(id) {
     uid: uid(),
     id,
     qty: entryModelMin(u),
-    options: []
+    options: [],
+    magicItems: []
   });
   render();
   requestAnimationFrame(() => {
@@ -484,12 +515,6 @@ function setOption(uidValue, optionId, checked) {
   render();
 }
 
-function setMagicBanner(uidValue,itemId){
-  const entry=findEntry(uidValue); if(!entry) return;
-  entry.magicBannerId=itemId||null;
-  render();
-}
-
 function setSelectOption(uidValue, kind, optionId) {
   const entry = findEntry(uidValue);
   const u = entry && getUnit(entry.id);
@@ -498,6 +523,21 @@ function setSelectOption(uidValue, kind, optionId) {
   const sameKind = u.options.filter(o => o.kind === kind).map(o => o.id);
   entry.options = entry.options.filter(id => !sameKind.includes(id));
   if (optionId) entry.options.push(optionId);
+  render();
+}
+
+function addMagicItem(uidValue, itemId) {
+  const entry = findEntry(uidValue);
+  if (!entry || !itemId) return;
+  entry.magicItems ||= [];
+  if (!entry.magicItems.includes(itemId)) entry.magicItems.push(itemId);
+  render();
+}
+
+function removeMagicItem(uidValue, itemId) {
+  const entry = findEntry(uidValue);
+  if (!entry) return;
+  entry.magicItems = (entry.magicItems || []).filter(x => x !== itemId);
   render();
 }
 
@@ -537,12 +577,19 @@ function applyModifier(base, modifier) {
 }
 
 function selectedMagicObjects(entry) {
-  const result = [];
-  if (entry?.magicBannerId) {
-    const item = magicItemList().find(x => String(x.id) === String(entry.magicBannerId));
-    if (item) result.push(item);
-  }
-  return result;
+  return selectedMagicItemIds(entry)
+    .map(id => magicItemList().find(x => String(x.id) === String(id)))
+    .filter(Boolean);
+}
+
+// Monture actuellement sélectionnée pour une entrée (ou null).
+function selectedMount(entry, unit) {
+  const mountId = selectedOptions(entry).find(id => {
+    const o = (unit.options || []).find(x => x.id === id);
+    return o?.kind === "mount";
+  });
+  if (!mountId) return null;
+  return (unit.options || []).find(o => o.id === mountId) || null;
 }
 
 function effectiveProfile(entry, unit) {
@@ -561,7 +608,9 @@ function effectiveProfile(entry, unit) {
 
   selectedOptions(entry).forEach(id => {
     const option = (unit?.options || []).find(o => o.id === id);
-    if (option) addMods(option);
+    // les modificateurs de la monture s'appliquent au profil de la
+    // monture elle-même, pas à celui du porteur : on les ignore ici.
+    if (option && option.kind !== "mount") addMods(option);
   });
   selectedMagicObjects(entry).forEach(addMods);
 
@@ -575,33 +624,54 @@ function effectiveProfile(entry, unit) {
 
 function statDisplay(value, modifier) {
   const mod = numericStat(modifier);
-  const suffix = mod ? ` <span class="stat-mod">(${mod > 0 ? "+" : ""}${mod})</span>` : ' <span class="stat-mod empty">(—)</span>';
-  return `${esc(value)}${suffix}`;
+  if (!mod) return esc(value ?? "—");
+  return `${esc(value)} <span class="stat-mod">(${mod > 0 ? "+" : ""}${mod})</span>`;
 }
 
-function renderProfileTable(entry, unit, label="CARACTÉRISTIQUES") {
+// Tableau de caractéristiques façon "fiche" : une ligne par figurine
+// (porteur, puis monture si sélectionnée), comme sur l'exemple fourni.
+function renderStatsTable(entry, unit) {
   const data = effectiveProfile(entry, unit);
   const profile = data.profile || {};
   const hasProfile = STAT_KEYS.some(k => profile[k] !== undefined);
   if (!hasProfile) return "";
+
+  const mount = selectedMount(entry, unit);
+  const mountProfile = mount ? profileForOption(mount) : null;
+
+  const rows = [`<tr><td class="stat-row-name">${esc(unit.name)}</td>${STAT_KEYS.map(k => `<td>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</td>`).join("")}</tr>`];
+
+  // La ligne de la monture n'apparaît que si une monture est sélectionnée.
+  if (mount) {
+    rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
+  }
+
   return `<div class="profile-block">
-    <div class="profile-title">${esc(label)}</div>
-    <div class="profile-grid">
-      ${STAT_KEYS.map(k => `<div class="profile-cell"><span class="profile-key">${k}</span><strong>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</strong></div>`).join("")}
-    </div>
+    <div class="profile-title">Caractéristiques</div>
+    <table class="stat-table">
+      <thead><tr><th>Figurine</th>${STAT_KEYS.map(k => `<th>${k}</th>`).join("")}</tr></thead>
+      <tbody>${rows.join("")}</tbody>
+    </table>
+    ${mount && !mountProfile ? `<div class="profile-missing">Profil de monture non renseigné dans les données.</div>` : ""}
   </div>`;
 }
 
-function renderMountProfile(entry, unit) {
-  const selectedMountId = selectedOptions(entry).find(id => {
-    const o = (unit.options || []).find(x => x.id === id);
-    return o?.kind === "mount";
-  });
-  if (!selectedMountId) return "";
-  const mount = (unit.options || []).find(o => o.id === selectedMountId);
-  const profile = profileForOption(mount);
-  if (!profile) return `<div class="mount-profile-block"><div class="profile-title">PROFIL DE LA MONTURE</div><div class="profile-missing">Profil de monture non renseigné dans les données.</div></div>`;
-  return `<div class="mount-profile-block"><div class="profile-title">PROFIL DE LA MONTURE — ${esc(mount.name)}</div><div class="profile-grid">${STAT_KEYS.map(k => `<div class="profile-cell"><span class="profile-key">${k}</span><strong>${esc(profile[k] ?? "—")}</strong></div>`).join("")}</div></div>`;
+// Équipement natif (fixe, non modifiable) de l'unité.
+function renderEquipment(unit) {
+  if (!unit.equipment?.length) return "";
+  return `<div class="unit-block">
+    <div class="profile-title">Équipement</div>
+    <ul class="unit-block-list">${unit.equipment.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+  </div>`;
+}
+
+// Règles spéciales natives (fixes, toujours actives) de l'unité.
+function renderNativeRules(unit) {
+  if (!unit.rules?.length) return "";
+  return `<div class="unit-block">
+    <div class="profile-title">Règles spéciales</div>
+    <ul class="unit-block-list">${unit.rules.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+  </div>`;
 }
 
 function optionGroups(u) {
@@ -618,43 +688,66 @@ function magicItemList(){
   });
   return result;
 }
-function magicBannersForOption(opt){
-  const max=opt?.maxPoints!=null?Number(opt.maxPoints):Infinity;
-  return magicItemList().filter(item=>{
-    const c=String(item.category||'').toLocaleLowerCase('fr');
-    const n=String(item.name||'').toLocaleLowerCase('fr');
-    const isBanner=c.includes('banner')||c.includes('banni')||c.includes('standard')||n.includes('bannière')||n.includes('banniere');
-    return isBanner && Number(item.points||0)<=max;
+
+// Identifiants d'objets magiques déjà pris par d'autres entrées de la liste.
+// Un objet marqué "repeatable" (unique === false / multiple === true dans les
+// données) reste disponible pour toutes les unités.
+function usedMagicItemIds(excludeUid) {
+  const used = new Set();
+  state.list.forEach(e => {
+    if (e.uid === excludeUid) return;
+    selectedMagicItemIds(e).forEach(id => {
+      const item = magicItemList().find(x => String(x.id) === String(id));
+      if (item?.repeatable) return;
+      used.add(String(id));
+    });
   });
+  return used;
 }
+
+function availableMagicItems(entry) {
+  const used = usedMagicItemIds(entry.uid);
+  return magicItemList().filter(item => !used.has(String(item.id)));
+}
+
 function magicCost(entry){
-  if(!entry?.magicBannerId) return 0;
-  const item=magicItemList().find(x=>String(x.id)===String(entry.magicBannerId));
-  return Number(item?.points||0);
+  return selectedMagicObjects(entry).reduce((sum,item) => sum + Number(item.points || 0), 0);
 }
-function magicName(entry){
-  if(!entry?.magicBannerId) return '';
-  return magicItemList().find(x=>String(x.id)===String(entry.magicBannerId))?.name || '';
+function magicItemsLabel(entry){
+  return selectedMagicObjects(entry).map(x => x.name);
 }
 
-function renderOptionControls(entry, u) {
-  if (!u.options?.length) return `<div class="no-options">Aucune option renseignée pour cette unité.</div>`;
+// Bloc "Monture" : sélecteur dédié, uniquement si l'unité propose des montures.
+function renderMountSelector(entry, u) {
+  const mounts = (u.options || []).filter(o => o.kind === "mount");
+  if (!mounts.length) return "";
+  const current = entry.options.find(id => mounts.some(o => o.id === id)) || "";
+  return `<div class="options-box">
+    <div class="options-title">Monture</div>
+    <label class="option-select-label">Monture
+      <select data-select-option="${esc(entry.uid)}" data-option-kind="mount">
+        <option value="">Aucune</option>
+        ${mounts.map(o => `<option value="${esc(o.id)}" ${o.id===current?"selected":""}>${esc(o.name)}${optionPrice(o)}</option>`).join("")}
+      </select>
+    </label>
+  </div>`;
+}
+
+// Bloc "Options de personnage" (ou "Options de l'unité") : bannières, armes,
+// armures et autres options hors monture / objets magiques.
+function renderCharacterOptions(entry, u) {
   const groups = optionGroups(u);
-  let html = "<div class=\"options-box\"><div class=\"options-title\">Options de l'unité</div>";
+  const label = u.category === "Personnages" ? "Options de personnage" : "Options de l'unité";
+  const hasAny = groups.banner.length || groups.weapon.length || groups.armour.length || groups.other.length;
+  if (!hasAny) return "";
 
-  const labels = { banner:"Bannière / étendard", mount:"Monture", weapon:"Arme", armour:"Armure / protection" };
-  ["banner","mount","weapon","armour"].forEach(kind => {
+  let html = `<div class="options-box"><div class="options-title">${esc(label)}</div>`;
+  const labels = { banner:"Bannière / étendard", weapon:"Arme", armour:"Armure / protection" };
+  ["banner","weapon","armour"].forEach(kind => {
     const arr = groups[kind];
     if (!arr.length) return;
     const current = entry.options.find(id => arr.some(o => o.id === id)) || "";
     html += `<label class="option-select-label">${labels[kind]}<select data-select-option="${esc(entry.uid)}" data-option-kind="${kind}"><option value="">Aucune</option>${arr.map(o => `<option value="${esc(o.id)}" ${o.id===current?"selected":""}>${esc(o.name)}${optionPrice(o)}</option>`).join("")}</select></label>`;
-    if(kind === 'banner') {
-      arr.forEach(o => {
-        if(o.maxPoints == null) return;
-        const choices=magicBannersForOption(o);
-        html += `<label class="option-select-label magic-banner-choice"><span>Bannière magique ≤ ${o.maxPoints} pts</span><select data-magic-banner="${esc(entry.uid)}"><option value="">Aucune</option>${choices.map(item=>`<option value="${esc(item.id)}" ${String(item.id)===String(entry.magicBannerId||'')?'selected':''}>${esc(item.name)} — ${formatPoints(item.points||0)}</option>`).join('')}</select>${!choices.length?'<small class="muted">Aucun objet magique chargé pour cette armée.</small>':''}</label>`;
-      });
-    }
   });
 
   if (groups.other.length) {
@@ -668,6 +761,62 @@ function renderOptionControls(entry, u) {
 
   html += "</div>";
   return html;
+}
+
+// Bloc "Objets magiques" : sélection par menu déroulant. Un objet déjà pris
+// par une autre unité n'apparaît plus dans la liste (sauf s'il est marqué
+// répétable dans les données), et disparaît du menu dès qu'il est ajouté ici.
+function renderMagicItemsSelector(entry, u) {
+  if (u.category !== "Personnages") return "";
+  if (!state.magicItems) {
+    return state.magicItemsLoading
+      ? `<div class="no-options">Chargement des objets magiques…</div>`
+      : "";
+  }
+  const chosen = selectedMagicObjects(entry);
+  const available = availableMagicItems(entry);
+  const limit = u.magicItemsLimit != null ? Number(u.magicItemsLimit)
+    : (restrictionForUnit(u.id).magicItemsLimit != null ? Number(restrictionForUnit(u.id).magicItemsLimit) : null);
+  const used = chosen.reduce((s,x)=>s+Number(x.points||0),0);
+
+  let html = `<div class="options-box"><div class="options-title">Objets magiques${limit!=null?` (max ${formatPoints(limit)})`:""}</div>`;
+
+  if (chosen.length) {
+    html += `<div class="check-options">` + chosen.map(item => `
+      <label class="check-option magic-item-chosen">
+        <span>${esc(item.name)} — ${formatPoints(item.points||0)}</span>
+        <button type="button" class="remove" data-remove-magic="${esc(entry.uid)}" data-magic-id="${esc(item.id)}">×</button>
+      </label>`).join("") + `</div>`;
+  }
+
+  html += `<label class="option-select-label">Ajouter un objet
+    <select data-add-magic="${esc(entry.uid)}">
+      <option value="">Choisir…</option>
+      ${available.map(item => {
+        const disabledByLimit = limit != null && (used + Number(item.points||0)) > limit;
+        return `<option value="${esc(item.id)}" ${disabledByLimit?"disabled":""}>${esc(item.category)} — ${esc(item.name)} (${formatPoints(item.points||0)})</option>`;
+      }).join("")}
+    </select>
+  </label>`;
+
+  if (!available.length && !chosen.length) html += `<small class="muted">Aucun objet magique disponible (tous déjà attribués).</small>`;
+  html += `</div>`;
+  return html;
+}
+
+// Options de règles spéciales (règles optionnelles / honneurs proposés par
+// l'unité), distinctes des règles spéciales natives affichées plus haut.
+function renderRuleOptions(entry, u) {
+  if (!u.ruleOptions?.length) return "";
+  return `<div class="options-box">
+    <div class="options-title">Options de règles spéciales</div>
+    <div class="check-options">
+      ${u.ruleOptions.map(o => {
+        const checked = entry.options.includes(o.id);
+        return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""}><span>${esc(o.name)}${optionPrice(o)}</span></label>`;
+      }).join("")}
+    </div>
+  </div>`;
 }
 
 function optionPrice(o) {
@@ -700,13 +849,16 @@ function validate() {
 
   for (const item of state.list) {
     const u = getUnit(item.id);
-    const r = restrictionForUnit(item.id);
     if (!u) { errors.push(`Unité inconnue : ${item.id}.`); continue; }
 
     const minSize = entryModelMin(u);
     const maxSize = entryModelMax(u);
     if (item.qty < minSize) errors.push(`${u.name} : minimum ${minSize} figurine${minSize > 1 ? "s" : ""}.`);
     if (item.qty > maxSize) errors.push(`${u.name} : maximum ${maxSize} figurine${maxSize > 1 ? "s" : ""}.`);
+
+    const limit = u.magicItemsLimit != null ? Number(u.magicItemsLimit)
+      : (restrictionForUnit(u.id).magicItemsLimit != null ? Number(restrictionForUnit(u.id).magicItemsLimit) : null);
+    if (limit != null && magicCost(item) > limit) errors.push(`${u.name} : objets magiques au-dessus de la limite de ${formatPoints(limit)}.`);
   }
 
   for (const u of allUnits()) {
@@ -737,7 +889,7 @@ function filteredUnits() {
   const q = state.filter.trim().toLocaleLowerCase("fr");
   return allUnits().filter(u =>
     (state.category === "Toutes" || effectiveCategory(u) === state.category) &&
-    (!q || `${u.name} ${u.category} ${Array.isArray(u.rules) ? u.rules.join(" ") : u.rules || ""}`.toLocaleLowerCase("fr").includes(q))
+    (!q || `${u.name} ${u.category} ${u.rules.join(" ")}`.toLocaleLowerCase("fr").includes(q))
   );
 }
 
@@ -771,7 +923,7 @@ function renderAvailable() {
       ].map((u, pos, ordered) => {
         const can = canAdd(u, true);
         const disabled = u.points == null || !isAllowed(u) || !can;
-        const rules = Array.isArray(u.rules) ? u.rules.slice(0,3).join(" · ") : (u.rules || "");
+        const rules = u.rules.slice(0,3).join(" · ");
         const entries = getEntriesForUnit(u.id).length;
         const max = maxEntriesForUnit(u);
         const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
@@ -809,8 +961,9 @@ function renderList() {
         const min = entryModelMin(unit), max = entryModelMax(unit);
         const maxText = max === Infinity ? "" : ` / ${max}`;
         const selected = selectedOptions(item);
-        const optionNames = selected.map(id => unit.options.find(o=>o.id===id)?.name).filter(Boolean);
-        if(item.magicBannerId) optionNames.push(magicName(item));
+        const pool = [...(unit.options||[]), ...(unit.ruleOptions||[])];
+        const optionNames = selected.map(id => pool.find(o=>o.id===id)?.name).filter(Boolean);
+        optionNames.push(...magicItemsLabel(item));
         return `<article class="roster-entry" data-entry="${esc(item.uid)}">
           <div class="roster-entry-head">
             <div><span class="entry-number">${index+1}</span><strong>${esc(unit.name)}</strong><small>${formatPoints(unit.points)} / figurine · Taille ${min}${maxText}</small></div>
@@ -821,9 +974,13 @@ function renderList() {
             <div class="qty-control"><button data-minus="${esc(item.uid)}">−</button><input class="qty-input" type="number" min="${min}" ${max===Infinity?"":`max="${max}"`} value="${item.qty}" data-qty-input="${esc(item.uid)}" aria-label="Effectif de ${esc(unit.name)}"><button data-plus="${esc(item.uid)}">+</button><span>figurine${item.qty > 1 ? "s" : ""}</span></div>
             <div class="selected-options">${optionNames.length ? optionNames.map(esc).join(" · ") : "Aucune option"}</div>
           </div>
-          ${renderProfileTable(item, unit)}
-          ${renderMountProfile(item, unit)}
-          ${renderOptionControls(item, unit)}
+          ${renderStatsTable(item, unit)}
+          ${renderEquipment(unit)}
+          ${renderNativeRules(unit)}
+          ${renderMountSelector(item, unit)}
+          ${renderCharacterOptions(item, unit)}
+          ${renderMagicItemsSelector(item, unit)}
+          ${renderRuleOptions(item, unit)}
         </article>`;
       }).join("")}
     </section>`).join("");
@@ -834,7 +991,8 @@ function renderList() {
   container.querySelectorAll("[data-remove]").forEach(b => b.onclick = () => removeEntry(b.dataset.remove));
   container.querySelectorAll("[data-check-option]").forEach(b => b.onchange = () => setOption(b.dataset.checkOption,b.dataset.optionId,b.checked));
   container.querySelectorAll("[data-select-option]").forEach(s => s.onchange = () => setSelectOption(s.dataset.selectOption,s.dataset.optionKind,s.value));
-  container.querySelectorAll("[data-magic-banner]").forEach(s => s.onchange = () => setMagicBanner(s.dataset.magicBanner,s.value));
+  container.querySelectorAll("[data-add-magic]").forEach(s => s.onchange = () => { addMagicItem(s.dataset.addMagic, s.value); });
+  container.querySelectorAll("[data-remove-magic]").forEach(b => b.onclick = () => removeMagicItem(b.dataset.removeMagic, b.dataset.magicId));
 }
 
 function renderCompositionChart(){
@@ -975,7 +1133,7 @@ function saveList() {
   const name = $("nameInput").value.trim() || "Ma liste";
   const payload = {
     id: uid(),
-    version: 5,
+    version: 6,
     supplementId: state.supplement?.id || "",
     armyId: state.army?.id || "",
     name,
@@ -1012,7 +1170,10 @@ function loadList() {
         id: item.id,
         qty: Number(item.qty) || 1,
         options: Array.isArray(item.options) ? item.options : [],
-        magicBannerId: item.magicBannerId || null
+        // compatibilité ascendante avec l'ancien format (une seule bannière magique)
+        magicItems: Array.isArray(item.magicItems)
+          ? item.magicItems
+          : (item.magicBannerId ? [item.magicBannerId] : [])
       })).filter(x => getUnit(x.id))
     : [];
   render();
@@ -1021,7 +1182,7 @@ function loadList() {
 
 function exportJSON() {
   const payload = {
-    version: 4,
+    version: 5,
     supplement: { id: state.supplement?.id, name: state.supplement?.name },
     army: { id: state.army?.id, name: state.army?.name },
     name: $("nameInput").value.trim() || "Ma liste",
@@ -1048,8 +1209,9 @@ function exportTXT() {
     lines.push(cat.toUpperCase());
     lines.push("-".repeat(cat.length));
     arr.forEach(({u,item},i) => {
-      const opts = selectedOptions(item).map(id=>u.options.find(o=>o.id===id)?.name).filter(Boolean);
-      if(item.magicBannerId) opts.push(magicName(item));
+      const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
+      const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
+      opts.push(...magicItemsLabel(item));
       lines.push(`${i+1}. ${item.qty} figurine${item.qty>1?"s":""} — ${u.name}${opts.length?" — "+opts.join(", "):""} — ${entryPoints(item)} pts`);
     });
     lines.push("");
@@ -1068,7 +1230,10 @@ function download(name, content, type) {
 function printList() {
   const rows = state.list.map((item,index) => {
     const u=getUnit(item.id); if(!u) return "";
-    const opts=selectedOptions(item).map(id=>u.options.find(o=>o.id===id)?.name).filter(Boolean); if(item.magicBannerId) opts.push(magicName(item)); const optText=opts.join(", ");
+    const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
+    const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
+    opts.push(...magicItemsLabel(item));
+    const optText=opts.join(", ");
     return `<tr><td>${index+1}</td><td>${esc(u.category)}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
   }).join("");
   const w=window.open("","_blank");
