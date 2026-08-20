@@ -1131,11 +1131,8 @@
             display:
                 grid;
 
-            grid-template-columns:
-                repeat(auto-fit,minmax(280px,1fr));
-
-            gap:
-                22px;
+            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+            gap:24px;
 
             align-items:
                 stretch;
@@ -1147,62 +1144,31 @@
            CARTES
            ========================================================= */
 
-        .card {
-
-            position:
-                relative;
-
-            display:
-                flex;
-
-            flex-direction:
-                column;
-
-            overflow:
-                hidden;
-
-            min-width:
-                0;
-
-            padding:
-                0 32px 32px;
-
-            background:
-
-                linear-gradient(
-                    rgba(205,197,169,0.96),
-                    rgba(178,173,150,0.96)
-                );
-
-            border:
-                1px solid rgba(63,73,73,0.75);
-
-            box-shadow:
-                0 6px 18px rgba(0,0,0,0.40);
-
+       .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+    
+    /* MODIFICATION : On ajoute un padding de 32px en haut pour décoller le titre du bord */
+            padding: 32px; 
+    
+            background: linear-gradient(
+                rgba(205,197,169,0.96),
+                rgba(178,173,150,0.96)
+            );
+            border: 1px solid rgba(63,73,73,0.75);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.40);
         }
 
-
         .card::before {
-
-            content:
-                "";
-
-            position:
-                absolute;
-
-            inset:
-                9px;
-
-            border:
-                1px solid rgba(75,55,31,0.25);
-
-            pointer-events:
-                none;
-
-            z-index:
-                3;
-
+            content: "";
+            position: absolute;
+            inset: 9px;
+            border: 1px solid rgba(75,55,31,0.25);
+            pointer-events: none;
+            z-index: 3;
         }
 
 
@@ -1211,16 +1177,28 @@
             width: 100%;
             object-fit: cover;
             object-position: center;
-            margin: 24px;
+    
+    /* CORRECTION : 24px en haut/bas pour espacer, 0 à gauche/droite pour aligner */
+            margin: 24px 0; 
+    
             background: rgba(22,26,27,0.35);
             border-bottom: 1px solid rgba(63,73,73,0.75);
         }
+        
         .card-carte-image {
             display: block;
             height: 250px;   
             object-fit: cover;
             object-position: center;
-            margin: 24px;
+    
+    /* MODIFICATION : On supprime les marges latérales (0) pour aligner l'image avec le texte */
+    /* On garde 24px en haut et en bas pour espacer l'image du titre et du texte */
+            margin: 24px 0; 
+    
+    /* MODIFICATION optionnelle : pour que l'image passe sous la bordure décorative ::before */
+            position: relative;
+            z-index: 1;
+
             background: rgba(22,26,27,0.35);
             border-bottom: 1px solid rgba(63,73,73,0.75);
         }
