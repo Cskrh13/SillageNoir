@@ -8,65 +8,231 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--dark:#15191a;--dark2:#283335;--paper:#d7ceb0;--paper2:#ded4b7;--ink:#252a29;--line:rgba(125,139,140,.5);--ok:#718e73;--bad:#9a5a52;--gold:#b7a476;--muted:#6b675b}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(rgba(170,145,105,.72),rgba(170,145,105,.72)),url("images/fond-carte.jpg") center/cover fixed;color:var(--ink);font-family:Vollkorn,Georgia,serif;line-height:1.5}body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 35%,rgba(55,38,19,.2));z-index:-1}.page{width:min(1600px,calc(100% - 28px));margin:18px auto 45px}
-header{padding:34px 24px;text-align:center;background:linear-gradient(rgba(25,32,34,.94),rgba(30,38,40,.94)),url("images/fond-carte.jpg") center/cover;border:1px solid var(--line);box-shadow:0 8px 25px #0007}h1{margin:0;color:#d8d1b8;font:normal clamp(32px,5vw,58px)/1.1 "IM Fell English SC",Georgia,serif;letter-spacing:4px;text-transform:uppercase}header p{margin:9px 0 0;color:#aaa89b;letter-spacing:2px;text-transform:uppercase;font-size:12px}
-.toolbar{display:grid;grid-template-columns:minmax(230px,1.4fr) minmax(180px,.9fr) 130px minmax(180px,1fr) auto;gap:10px;align-items:end;margin-top:14px;padding:14px;background:rgba(27,35,37,.97);border:1px solid var(--line);box-shadow:0 5px 15px #0006}.field label{display:block;color:#c8c1aa;font:12px "IM Fell English SC";letter-spacing:1px;text-transform:uppercase;margin-bottom:5px}.field input,.field select{width:100%;min-height:42px;border:1px solid #687477;background:#202829;color:#ddd5bc;padding:8px 10px;font:15px Vollkorn,Georgia,serif}button{border:1px solid #657275;background:#b7b39d;color:#202728;padding:9px 13px;cursor:pointer;font:13px "IM Fell English SC";letter-spacing:1px;text-transform:uppercase}button:hover:not(:disabled){filter:brightness(1.1)}button:disabled{opacity:.45;cursor:not-allowed}.toolbar button{min-height:42px}.status{margin-top:10px;padding:9px 13px;background:rgba(27,35,37,.94);color:#d8d1b8;border:1px solid var(--line);font-size:13px}.status.error{color:#f0c4bc;border-color:#8d514b}.status.ok{color:#cbd9c4;border-color:#718e73}
-.workspace{display:grid;grid-template-columns:minmax(300px,1fr) minmax(480px,1.45fr) 350px;gap:14px;margin-top:14px;align-items:start}.panel{background:linear-gradient(rgba(210,202,174,.98),rgba(181,176,151,.98));border:1px solid #5d625d;box-shadow:0 6px 18px #0006;overflow:hidden}.panel.dark{background:rgba(27,35,37,.97);color:#ddd5bc;border-color:var(--line)}.panel-title{padding:14px 16px;background:rgba(27,35,37,.94);color:#ded4b7;font:17px "IM Fell English SC";letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--line)}.panel-body{padding:14px}
-.filters{display:grid;grid-template-columns:1.5fr 1fr;gap:8px;margin-bottom:12px}.filters input,.filters select{width:100%;padding:8px;border:1px solid #88806b;background:#eee8d2;color:#252a29}.group-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;margin-top:8px;color:#51402b;background:rgba(190,170,125,.15);border-bottom:1px solid rgba(90,75,50,.22);font:14px "IM Fell English SC";letter-spacing:.8px;text-transform:uppercase}.unit-card{display:grid;grid-template-columns:1fr auto;gap:10px;padding:11px 10px;border-bottom:1px solid rgba(80,70,50,.18)}.unit-card:hover{background:rgba(222,212,183,.45)}.unit-card.disabled{opacity:.55}.unit-main{min-width:0}.unit-main strong{display:block}.unit-main small{display:block;color:#6b6658;font-size:12px}.unit-main em{display:block;color:#625b4b;font-size:11px;font-style:normal;margin-top:2px}.unit-points{float:right;margin-left:8px;font-weight:600;font-size:13px}.add-btn{
-  align-self:center;
-  min-width:92px;
-  padding:8px 11px;
-  border:1px solid #596765;
-  border-radius:2px;
-  background:linear-gradient(#536160,#354141);
-  color:#e6dec6;
-  box-shadow:0 2px 4px #0004,inset 0 1px rgba(255,255,255,.08);
-  font:11px "IM Fell English SC",Georgia,serif;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  transition:filter .15s,transform .15s;
+
+:root{
+  --dark:#111719;--dark2:#1b2426;--dark3:#263032;
+  --paper:#d9ceb0;--paper2:#e2d7b9;--paper3:#cfc3a1;
+  --ink:#252a29;--line:rgba(165,151,116,.36);
+  --gold:#c5aa72;--gold2:#e4d3a9;--muted:#706a5c;
+  --ok:#9fbe76;--bad:#d26d5e;
 }
-.add-btn:hover:not(:disabled){filter:brightness(1.12);transform:translateY(-1px)}
-.add-btn:disabled{background:#9d9885;color:#625d50;border-color:#858071;box-shadow:none}
-.unavailable-separator{
-  margin:12px 0 4px;
-  padding:7px 8px 5px;
-  border-top:1px solid rgba(80,70,50,.25);
-  color:#756d5b;
-  font:11px "IM Fell English SC",Georgia,serif;
-  letter-spacing:1px;
-  text-transform:uppercase;
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at 50% 20%,rgba(74,65,47,.16),transparent 52%),
+    linear-gradient(135deg,#101516 0%,#172021 48%,#111718 100%);
+  color:var(--ink);
+  font-family:Vollkorn,Georgia,serif;
+  line-height:1.35;
 }
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle at 12% 18%,rgba(180,148,91,.05),transparent 24%),
+    radial-gradient(circle at 88% 80%,rgba(180,148,91,.04),transparent 25%);
+}
+.page{width:min(1508px,calc(100% - 28px));margin:8px auto 30px}
+
+/* En-tête */
+header{
+  position:relative;min-height:96px;padding:13px 24px 10px;text-align:center;
+  background:linear-gradient(rgba(18,25,27,.97),rgba(23,31,33,.97)),
+             radial-gradient(circle at 50% 0,rgba(196,164,101,.08),transparent 58%);
+  border:1px solid rgba(157,143,111,.34);
+  box-shadow:0 7px 22px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.035);
+}
+header h1{
+  margin:5px 0 0;color:#e0d7bd;
+  font:normal clamp(34px,4.1vw,54px)/1.02 "IM Fell English SC",Georgia,serif;
+  letter-spacing:3px;text-transform:uppercase;
+}
+header p{margin:8px 0 0;color:#aaa795;letter-spacing:1.6px;text-transform:uppercase;font-size:11px}
+.home-link{
+  position:absolute;left:15px;top:18px;color:#d8ceb2;text-decoration:none;
+  font:13px "IM Fell English SC",Georgia,serif;letter-spacing:.8px;
+}
+.home-link:hover{text-decoration:underline}
+
+/* Barre de configuration */
+.toolbar{
+  display:grid;
+  grid-template-columns:minmax(300px,1.25fr) minmax(180px,.9fr) minmax(240px,1fr) 235px;
+  gap:12px;align-items:end;margin-top:10px;padding:10px 14px 12px;
+  background:rgba(18,25,27,.97);border:1px solid rgba(157,143,111,.3);
+  box-shadow:0 5px 15px rgba(0,0,0,.42);
+}
+.field label{
+  display:block;color:#c8bfa5;font:11px "IM Fell English SC",Georgia,serif;
+  letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;
+}
+.field input,.field select{
+  width:100%;min-height:39px;border:1px solid #596365;background:#151d1f;
+  color:#ded5bd;padding:7px 10px;font:14px Vollkorn,Georgia,serif;outline:none;
+}
+.field input:focus,.field select:focus{border-color:#9b8960;box-shadow:0 0 0 1px rgba(155,137,96,.18)}
+#armyField{display:none}
+.toolbar button{
+  min-height:39px;background:linear-gradient(#e3d6b8,#c9b993);color:#292b29;
+  border:1px solid #8d7d5b;box-shadow:0 2px 6px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.45);
+}
+button{
+  border:1px solid #687171;background:#c6bea7;color:#202626;padding:8px 12px;cursor:pointer;
+  font:12px "IM Fell English SC",Georgia,serif;letter-spacing:.7px;text-transform:uppercase;
+}
+button:disabled{opacity:.42;cursor:not-allowed}
+.status{
+  margin-top:7px;padding:7px 12px;min-height:31px;background:rgba(18,25,27,.94);
+  color:#d8d1b8;border:1px solid rgba(157,143,111,.26);font-size:12px;
+}
+.status.error{color:#efb7ae;border-color:#875049}.status.ok{color:#c3d0ae;border-color:#62745e}
+
+/* Trois panneaux */
+.workspace{
+  display:grid;grid-template-columns:minmax(350px,1fr) minmax(530px,1.36fr) 365px;
+  gap:14px;margin-top:9px;align-items:start;
+}
+.panel{
+  background:linear-gradient(180deg,rgba(223,213,183,.99),rgba(203,195,165,.99));
+  border:1px solid rgba(77,79,72,.85);box-shadow:0 6px 18px rgba(0,0,0,.45);overflow:hidden;
+}
+.panel.dark{background:rgba(18,25,27,.98);color:#ddd5bc;border-color:rgba(157,143,111,.34)}
+.panel-title{
+  padding:10px 14px 9px;background:rgba(18,25,27,.98);color:#e1d6b9;
+  font:17px "IM Fell English SC",Georgia,serif;letter-spacing:1.3px;text-transform:uppercase;
+  border-bottom:1px solid rgba(157,143,111,.32);
+}
+.panel-body{padding:10px}
+
+/* Catalogue */
+.filters{display:grid;grid-template-columns:1.5fr 1fr;gap:8px;margin-bottom:7px}
+.filters input,.filters select{
+  width:100%;height:34px;padding:6px 8px;border:1px solid #92876f;background:#eee6cf;color:#252a29;
+  font:13px Vollkorn,Georgia,serif;
+}
+.group-head{
+  display:flex;justify-content:space-between;align-items:center;padding:7px 9px;margin-top:4px;
+  color:#4d402e;background:rgba(187,169,126,.19);border-bottom:1px solid rgba(90,75,50,.22);
+  font:13px "IM Fell English SC",Georgia,serif;letter-spacing:.8px;text-transform:uppercase;
+}
+.unit-card{display:grid;grid-template-columns:1fr auto;gap:8px;padding:8px;border-bottom:1px solid rgba(80,70,50,.16)}
+.unit-card:hover{background:rgba(238,229,201,.45)}
 .unit-card.disabled{opacity:.48;filter:saturate(.55)}
-.roster-group{margin-bottom:18px}.roster-group>.group-head{position:sticky;top:0;z-index:2;background:#c9bd9d}.roster-entry{margin:9px 0;border:1px solid rgba(80,70,50,.25);background:rgba(232,224,198,.45);box-shadow:0 2px 5px #0001}.roster-entry-head{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:10px;background:rgba(190,170,125,.17);border-bottom:1px solid rgba(80,70,50,.18)}.roster-entry-head strong{font-size:15px}.roster-entry-head small{display:block;color:#6c6759;font-size:11px}.entry-number{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;margin-right:7px;border-radius:50%;background:#3c4848;color:#e2d8bc;font-size:11px}.entry-total{font-weight:700;white-space:nowrap}.remove{background:#66504b;color:#eee0d6;border-color:#80655e;padding:6px 9px}.roster-entry-controls{display:flex;align-items:center;gap:14px;padding:8px 10px}.qty-control{display:flex;align-items:center;gap:6px;white-space:nowrap}.qty-control button{padding:4px 9px;min-width:29px}.qty-control b{min-width:25px;text-align:center}.qty-control span{font-size:12px;color:#6c6759}.selected-options{font-size:11px;color:#665f50;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.options-box{margin:0 10px 10px;padding:10px;background:rgba(38,47,47,.08);border:1px solid rgba(80,70,50,.18)}.options-title{font:13px "IM Fell English SC";letter-spacing:1px;text-transform:uppercase;color:#51402b;margin-bottom:8px}.option-select-label{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;margin:6px 0;font-size:12px}.option-select-label select{width:100%;padding:7px;border:1px solid #8b836d;background:#eee8d2;color:#252a29}.check-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 12px;margin-top:8px}.check-options-title{grid-column:1/-1;font-size:11px;color:#665e4e;text-transform:uppercase;letter-spacing:.7px}.check-option{display:flex;gap:6px;align-items:flex-start;font-size:12px;cursor:pointer}.check-option input{margin-top:3px}.no-options{margin:0 10px 10px;padding:8px;color:#756d5b;font-size:11px;font-style:italic;background:rgba(255,255,255,.16)}
-.empty{padding:35px 15px;text-align:center;color:#6b6558;font-style:italic}.summary-total{font:normal 34px "IM Fell English SC";color:#ead8b0}.summary-line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(190,170,125,.18)}.remaining-ok{color:#a9c2a3}.remaining-bad{color:#e3aaa1}.panel.dark h3{margin:18px 0 7px;font:16px "IM Fell English SC";letter-spacing:1px;color:#d8d1b8}.valid{color:#a9c2a3}.invalid{color:#e3aaa1}.panel.dark ul{padding-left:18px;font-size:12px}.constraint{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(190,170,125,.14);font-size:12px}.constraint>div{min-width:0}.constraint strong{display:block}.constraint small{display:block;color:#aaa89b;font-size:11px}.constraint span{color:#aaa89b;text-align:right}.constraint-ok span{color:#9fb49a}.constraint-bad span{color:#e3aaa1}.muted{color:#aaa89b;font-size:12px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.actions button{width:100%}.info{border-top:1px solid rgba(190,170,125,.2);margin-top:14px;padding-top:10px;font-size:12px}.info p{margin:5px 0}.info ul{margin-top:5px}
-.main-nav{margin-top:0;background:rgba(27,35,37,.97);border:1px solid var(--line);padding:8px 12px;box-shadow:0 5px 15px #0006}.home-link{display:block;color:#d8d1b8;text-decoration:none;font:14px "IM Fell English SC";letter-spacing:1px}.home-link:hover{text-decoration:underline}.action-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:10px;margin-top:10px;background:rgba(27,35,37,.97);border:1px solid var(--line);box-shadow:0 5px 15px #0006}.action-bar button{min-height:42px}.action-bar .danger{background:#66504b;color:#eee0d6;border-color:#80655e}.action-bar-bottom{margin-top:18px}.page>footer{margin-top:28px;padding:25px 20px;text-align:center;color:#56442d;border-top:1px solid var(--line);font-size:12px;letter-spacing:1px}.page>footer p{margin:5px 0}.footer-title{font:20px "IM Fell English SC";letter-spacing:1px}@media(max-width:760px){.action-bar{grid-template-columns:1fr 1fr}.action-bar button{width:100%}}@media print{.main-nav,.action-bar,.toolbar,.status,.panel:first-child,.summary-panel,.page>footer{display:none!important}}
-@media(max-width:1200px){.workspace{grid-template-columns:1fr 1.35fr}.summary-panel{grid-column:1/-1}.toolbar{grid-template-columns:1fr 1fr}.toolbar button{grid-column:1/-1}}@media(max-width:760px){.page{width:calc(100% - 10px);margin:5px auto 25px}.workspace{grid-template-columns:1fr}.summary-panel{grid-column:auto}.toolbar{grid-template-columns:1fr}.toolbar button{grid-column:auto}.filters{grid-template-columns:1fr}.check-options{grid-template-columns:1fr}.option-select-label{grid-template-columns:1fr}.roster-entry-head{grid-template-columns:minmax(0,1fr) auto auto}.roster-entry-controls{align-items:flex-start;flex-direction:column;gap:5px}.unit-points{float:none;display:block}}
-@media print{body{background:#fff}.toolbar,.status,.panel:first-child,.summary-panel{display:none!important}.page{width:100%;margin:0}.workspace{display:block}.panel{box-shadow:none;border:0;background:#fff}.roster-entry{break-inside:avoid}.options-box{display:none}}
+.unit-main{min-width:0}.unit-main strong{display:block;font-size:14px;line-height:1.25}
+.unit-main small{display:block;color:#6b6658;font-size:11px}
+.unit-main em{display:block;color:#625b4b;font-size:10px;font-style:normal;margin-top:1px}
+.unit-points{float:right;margin-left:8px;font-weight:600;font-size:12px}
+.add-btn{
+  align-self:center;min-width:86px;padding:7px 9px;border:1px solid #8c836e;border-radius:1px;
+  background:linear-gradient(#e3d9bf,#c8bda1);color:#292b29;
+  box-shadow:0 1px 3px rgba(0,0,0,.18),inset 0 1px rgba(255,255,255,.4);
+  font:11px "IM Fell English SC",Georgia,serif;letter-spacing:.8px;text-transform:uppercase;
+}
+.add-btn:hover:not(:disabled){filter:brightness(1.05);transform:none}
+.add-btn:disabled{background:#aaa38f;color:#635f52;border-color:#8d8777;box-shadow:none}
+.unavailable-separator{
+  margin:8px 0 2px;padding:6px 8px 4px;border-top:1px solid rgba(80,70,50,.23);
+  color:#756d5b;font:10px "IM Fell English SC",Georgia,serif;letter-spacing:.8px;text-transform:uppercase;
+}
 
-.chart-toggle{display:flex;align-items:center;gap:7px;color:#d8d1b8;font-size:12px;cursor:pointer}.chart-toggle input{accent-color:#9b8b63}.composition-chart{width:185px;height:185px;margin:12px auto;border-radius:50%;position:relative;background:#4b5050;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 4px 12px #0005}.composition-chart:after{content:"";position:absolute;inset:34px;border-radius:50%;background:#202829;border:1px solid rgba(190,170,125,.25)}.composition-legend{display:grid;gap:6px;margin-top:8px}.composition-legend>div{display:grid;grid-template-columns:10px 1fr auto;gap:6px;align-items:center;font-size:11px}.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}.composition-legend strong{text-align:right}.composition-legend small{grid-column:2/-1;color:#aaa89b;margin-top:-4px}.qty-input{width:54px;min-height:31px;padding:4px;text-align:center;border:1px solid #8b836d;background:#eee8d2;color:#252a29;font:14px Georgia,serif}.magic-banner-choice{margin-top:4px}.magic-banner-choice small{grid-column:2;color:#756d5b}.unit-card.disabled{opacity:.48;filter:saturate(.55)}
+/* Liste centrale */
+.roster-group{margin-bottom:12px}
+.roster-group>.group-head{position:sticky;top:0;z-index:2;margin-top:0;background:#c9bd9d}
+.roster-entry{
+  margin:8px 0;border:1px solid rgba(80,70,50,.24);background:rgba(238,230,204,.55);
+  box-shadow:0 2px 5px rgba(0,0,0,.10);
+}
+.roster-entry-head{
+  display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;
+  padding:8px 9px;background:rgba(190,170,125,.16);border-bottom:1px solid rgba(80,70,50,.16);
+}
+.roster-entry-head strong{font-size:15px}.roster-entry-head small{display:block;color:#6c6759;font-size:10px}
+.entry-number{display:none}.entry-total{font-weight:700;white-space:nowrap;font-size:13px}
+.remove{background:#654b46;color:#f0dfd8;border-color:#7f625b;padding:5px 8px;font-size:13px;line-height:1}
+.roster-entry-controls{display:flex;align-items:center;gap:10px;padding:7px 9px}
+.qty-control{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.qty-control button{padding:3px 8px;min-width:27px;height:28px;background:#d1c7aa;border-color:#91866f}
+.qty-control b{min-width:25px;text-align:center}.qty-control span{font-size:11px;color:#6c6759}
+.qty-input{width:54px;min-height:28px;padding:3px;text-align:center;border:1px solid #8b836d;background:#eee8d2;color:#252a29;font:13px Georgia,serif}
+.selected-options{font-size:11px;color:#665f50;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* Profils */
+.profile-block,.mount-profile-block{
+  margin:0 9px 8px;padding:8px 8px 7px;background:rgba(255,255,255,.17);
+  border:1px solid rgba(80,70,50,.19);
+}
+.profile-title{margin-bottom:5px;color:#51402b;font:11px "IM Fell English SC",Georgia,serif;letter-spacing:.8px;text-transform:uppercase}
+.profile-grid{display:grid;grid-template-columns:repeat(9,minmax(35px,1fr));border:1px solid rgba(80,70,50,.22)}
+.profile-cell{min-width:0;padding:4px 2px;text-align:center;background:rgba(238,232,210,.42);border-right:1px solid rgba(80,70,50,.18)}
+.profile-cell:last-child{border-right:0}
+.profile-key{display:block;color:#5b513e;font:10px "IM Fell English SC",Georgia,serif;letter-spacing:.4px;margin-bottom:1px}
+.profile-cell strong{display:block;color:#272a29;font:600 13px Vollkorn,Georgia,serif;white-space:nowrap}
+.stat-mod{color:#9a5a52;font-size:10px;font-weight:600}.stat-mod.empty{color:#7c7566;font-weight:400}
+.profile-missing{color:#756d5b;font-size:10px;font-style:italic}
 
-.profile-block,.mount-profile-block{margin:0 10px 10px;padding:10px;background:rgba(255,255,255,.18);border:1px solid rgba(80,70,50,.22)}
-.profile-title{margin-bottom:7px;color:#51402b;font:12px "IM Fell English SC",Georgia,serif;letter-spacing:1px;text-transform:uppercase}
-.profile-grid{display:grid;grid-template-columns:repeat(9,minmax(42px,1fr));border:1px solid rgba(80,70,50,.22)}
-.profile-cell{min-width:0;padding:6px 3px;text-align:center;background:rgba(238,232,210,.38);border-right:1px solid rgba(80,70,50,.18)}
-.profile-cell:last-child{border-right:0}.profile-key{display:block;color:#5b513e;font:11px "IM Fell English SC",Georgia,serif;letter-spacing:.5px;margin-bottom:3px}.profile-cell strong{display:block;color:#272a29;font:600 14px Vollkorn,Georgia,serif;white-space:nowrap}.stat-mod{color:#9a5a52;font-size:10px;font-weight:600}.stat-mod.empty{color:#7c7566;font-weight:400}.profile-missing{color:#756d5b;font-size:11px;font-style:italic}
-.composition-chart{background:#6a5a45;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 4px 12px rgba(0,0,0,.35)}
-.legend-dot{box-shadow:0 0 0 1px rgba(255,255,255,.22)}
-@media(max-width:760px){.profile-grid{grid-template-columns:repeat(5,1fr)}.profile-cell:nth-child(5){border-right:0}.profile-cell:nth-child(n+6){border-top:1px solid rgba(80,70,50,.18)}}
+/* Options */
+.options-box{margin:0 9px 8px;padding:8px 9px;background:rgba(38,47,47,.055);border:1px solid rgba(80,70,50,.18)}
+.options-title{color:#51402b;margin-bottom:6px;font:12px "IM Fell English SC",Georgia,serif;letter-spacing:.9px;text-transform:uppercase}
+.option-select-label{display:grid;grid-template-columns:145px 1fr;gap:8px;align-items:center;margin:5px 0;font-size:11px}
+.option-select-label select{width:100%;min-height:29px;padding:5px 7px;border:1px solid #8b836d;background:#eee8d2;color:#252a29;font:12px Vollkorn,Georgia,serif}
+.check-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 12px;margin-top:7px}
+.check-options-title{grid-column:1/-1;font-size:10px;color:#665e4e;text-transform:uppercase;letter-spacing:.7px}
+.check-option{display:flex;gap:6px;align-items:flex-start;font-size:11px;cursor:pointer}.check-option input{margin-top:2px}
+.no-options{margin:0 9px 8px;padding:7px;color:#756d5b;font-size:10px;font-style:italic;background:rgba(255,255,255,.14)}
+
+/* Colonne droite */
+.summary-total{font:normal 30px "IM Fell English SC",Georgia,serif;color:#ead8b0;margin-bottom:3px}
+.summary-line{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid rgba(190,170,125,.15);font-size:12px}
+.summary-line strong{font-weight:600}.remaining-ok{color:#9fc56e}.remaining-bad{color:#e3aaa1}
+.panel.dark h3{margin:12px 0 5px;font:15px "IM Fell English SC",Georgia,serif;letter-spacing:.9px;color:#d8d1b8;text-transform:uppercase}
+.valid{color:#a9c2a3}.invalid{color:#e3aaa1}.panel.dark ul{padding-left:16px;font-size:11px}
+.constraint{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid rgba(190,170,125,.12);font-size:11px}
+.constraint>div{min-width:0}.constraint strong{display:block;font-weight:600}.constraint small{display:block;color:#aaa89b;font-size:10px}
+.constraint span{color:#aaa89b;text-align:right;font-size:10px}.constraint-ok span{color:#9fb49a}.constraint-bad span{color:#e3aaa1}
+.muted{color:#aaa89b;font-size:11px}
+.info{border-top:1px solid rgba(190,170,125,.17);margin-top:10px;padding-top:7px;font-size:10px;color:#aaa89b}
+.info p{margin:4px 0}.info ul{margin:4px 0;padding-left:15px}
+.chart-toggle{display:flex;align-items:center;gap:6px;color:#d8d1b8;font-size:10px;cursor:pointer}.chart-toggle input{accent-color:#b69b61}
+.composition-chart{width:170px;height:170px;margin:8px auto;border-radius:50%;position:relative;background:#4b5050;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 4px 12px rgba(0,0,0,.35)}
+.composition-chart:after{content:"";position:absolute;inset:31px;border-radius:50%;background:#202829;border:1px solid rgba(190,170,125,.25)}
+.composition-legend{display:grid;gap:5px;margin-top:6px}
+.composition-legend>div{display:grid;grid-template-columns:9px 1fr auto;gap:5px;align-items:center;font-size:10px}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block}.composition-legend strong{text-align:right;font-size:10px}
+.composition-legend small{grid-column:2/-1;color:#aaa89b;margin-top:-4px;font-size:9px}
+
+/* Éléments conservés pour compatibilité */
+.action-bar,.page>footer,.main-nav{display:none}
+
+/* Responsive */
+@media(max-width:1200px){
+  .workspace{grid-template-columns:1fr 1.3fr}.summary-panel{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .page{width:calc(100% - 10px);margin:5px auto 20px}
+  header{min-height:88px;padding:12px 10px 10px}header h1{font-size:34px;letter-spacing:2px}
+  header p{font-size:9px}.home-link{position:static;display:block;text-align:left;margin-bottom:4px;font-size:11px}
+  .toolbar{grid-template-columns:1fr;padding:9px}.workspace{grid-template-columns:1fr}.summary-panel{grid-column:auto}
+  .filters{grid-template-columns:1fr}.check-options{grid-template-columns:1fr}.option-select-label{grid-template-columns:1fr;gap:3px}
+  .roster-entry-head{grid-template-columns:minmax(0,1fr) auto auto}.roster-entry-controls{align-items:flex-start;flex-direction:column;gap:5px}
+  .profile-grid{grid-template-columns:repeat(5,1fr)}.profile-cell:nth-child(5){border-right:0}
+  .profile-cell:nth-child(n+6){border-top:1px solid rgba(80,70,50,.18)}
+}
+@media print{
+  body{background:#fff}.toolbar,.status,.panel:first-child,.summary-panel{display:none!important}
+  .page{width:100%;margin:0}.workspace{display:block}.panel{box-shadow:none;border:0;background:#fff}
+  .roster-entry{break-inside:avoid}.options-box{display:none}
+}
+
 </style>
 </head>
 <body>
 <div class="page">
-<header><h1>Créateur de listes</h1><p>Archives du Courant · listes d'armée pour les suppléments fan-made</p></header>
-
-<nav class="main-nav"><a class="home-link" href="index.html">← Retour aux Archives du Courant</a></nav>
-
-<section class="action-bar action-bar-top">
-  <button id="printTopBtn">Imprimer</button><button id="saveTopBtn">Sauvegarder</button><button id="loadTopBtn">Charger</button><button id="exportTxtTopBtn">Exporter TXT</button><button id="exportJsonTopBtn">Exporter JSON</button><button id="clearTopBtn" class="danger">Vider</button>
-</section>
+<header>
+  <a class="home-link" href="index.html">← Retour aux Archives du Courant</a>
+  <h1>Créateur de listes</h1>
+  <p>Archives du Courant · listes d'armée pour les suppléments fan-made</p>
+</header>
 
 <section class="toolbar">
   <div class="field"><label for="supplementSelect">Supplément</label><select id="supplementSelect"><option>Chargement…</option></select></div>
@@ -99,12 +265,11 @@ header{padding:34px 24px;text-align:center;background:linear-gradient(rgba(25,32
     <div class="summary-line"><span>Format</span><strong id="formatPoints">2000</strong></div>
     <div class="summary-line"><span>Points restants</span><strong id="remainingPoints" class="remaining-ok">2000 pts</strong></div>
     <div class="summary-line"><span>Unités</span><strong id="unitCount">0</strong></div>
-    <h3>Validation</h3><div id="validation"></div>
-    <h3>Contraintes en points</h3><div id="constraints"></div>
     <h3>Répartition des points</h3>
-    <label class="chart-toggle"><input type="checkbox" id="chartToggle"> Afficher le diagramme circulaire</label>
-    <div id="compositionChart" class="composition-chart" hidden></div>
+    <label class="chart-toggle"><input type="checkbox" id="chartToggle" checked> Afficher le diagramme</label>
+    <div id="compositionChart" class="composition-chart"></div>
     <div id="compositionLegend" class="composition-legend"></div>
+    <h3>Contraintes en points</h3><div id="constraints"></div>
     <h3>Informations</h3>
     <div class="info"><p><strong>Supplément :</strong> <span id="supplementDescription"></span></p><p><strong>Armée :</strong> <span id="armyInfo"></span></p><p id="sourceInfo"></p><ul id="specialRules"></ul><div><strong>Avertissements</strong><div id="warnings"></div></div></div>
 
@@ -112,12 +277,12 @@ header{padding:34px 24px;text-align:center;background:linear-gradient(rgba(25,32
 </aside>
 </main>
 
-<section class="action-bar action-bar-bottom">
+<section class="action-bar action-bar-bottom" aria-hidden="true">
   <button id="printBtn">Imprimer</button><button id="saveBtn">Sauvegarder</button><button id="loadBtn">Charger</button><button id="exportTxtBtn">Exporter TXT</button><button id="exportJsonBtn">Exporter JSON</button><button id="clearBtn" class="danger">Vider</button>
 </section>
 
 <footer><div class="footer-title">Archives du Courant</div><p>Suppléments • Campagnes • Cartes • Figurines</p><p>Créations fan-made — non officielles</p></footer>
 </div>
-<script src="js/generator.js"></script>
+<script src="generator_style_reference.js"></script>
 </body>
 </html>
