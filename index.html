@@ -1,13 +1,11 @@
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Archives du Courant</title>
 
@@ -17,18 +15,10 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-
         /* =========================================================
            VARIABLES
            ========================================================= */
@@ -145,13 +135,6 @@
            CONTENEUR D'ÉCHELLE
            ========================================================= */
 
-        /*
-         * Tout le site est placé dans .site-wrapper.
-         *
-         * Le transform scale permet d'agrandir ou réduire
-         * l'interface sans modifier les dimensions internes.
-         */
-
         .site-wrapper {
 
             width: 100%;
@@ -167,11 +150,6 @@
 
         }
 
-
-        /*
-         * Le réglage de hauteur permet de compenser visuellement
-         * l'espace créé par transform: scale().
-         */
 
         .site-content {
 
@@ -856,29 +834,36 @@
            ========================================================= */
 
         .button {
-    display: block;
-    width: fit-content;
-    margin: 25px auto 0;
-    padding: 12px 28px;
-    color: #202728;
-    background: #b7b39d;
-    border: 1px solid #4f5b5d;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.40);
-    text-decoration: none;
-    font-family: "IM Fell English SC", Georgia, serif;
-    font-size: 14px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    text-align: center;
-    transition: all 0.2s ease-in-out;
-}
+            display: block;
+            width: fit-content;
+            margin: 25px auto 0;
+            padding: 12px 28px;
+            color: #202728;
+            background: #b7b39d;
+            border: 1px solid #4f5b5d;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.40);
+            text-decoration: none;
+            font-family: "IM Fell English SC", Georgia, serif;
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+        }
 
-.button:hover {
-    background: #d5d0b6;
-    color: #172022;
-    transform: translateY(-1px);
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45); /* Optionnel : accentue l'effet de surélévation */
-}
+        .button:hover:not(.disabled) {
+            background: #d5d0b6;
+            color: #172022;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45);
+        }
+
+        .button.disabled {
+            color: rgba(75, 55, 31, 0.4);
+            border-color: rgba(75, 55, 31, 0.25);
+            background: rgba(0, 0, 0, 0.03);
+            cursor: not-allowed;
+        }
 
 
         /* =========================================================
@@ -1085,211 +1070,197 @@
            GRILLES
            ========================================================= */
 
-    .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 32px;
-    padding: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-/* --- CONTENEUR PRINCIPAL DU CARROUSEL --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+
+        /* =========================================================
+           CARROUSEL (styles de base — s'appliquent à TOUTES les
+           tailles d'écran, y compris le bureau)
+           ========================================================= */
+
         .carousel-container {
             position: relative;
-            max-width: 400px; /* Largeur d'une carte pour afficher 1 carte à la fois comme sur l'exemple */
-            width: 100%;
+            max-width: 1000px;
             margin: 0 auto;
-            overflow: hidden; /* Cache les cartes qui dépassent sur les côtés */
-            padding: 20px 0;
-        }
-
-        /* --- LE RAIL (Qui se déplace de gauche à droite) --- */
-        .carousel-track {
             display: flex;
-            transition: transform 0.4s ease-in-out; /* Animation fluide de glissement */
-            gap: 0px; /* Pas d'espace entre les cartes pour un défilement parfait de 1 en 1 */
-        }
-
-        /* --- STYLE DE CHAQUE CARTE --- */
-        .carousel-card {
-            min-width: 100%; /* Chaque carte prend 100% de la largeur du conteneur */
-            box-sizing: border-box;
-            background: #251f18;
-            border: 2px solid #3d3224;
-            border-radius: 8px;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: space-between;
-            min-height: 520px;
+            padding: 20px 60px 50px;
         }
 
-        .carousel-card h3 {
-            color: #ffb100;
-            margin-top: 0;
-            font-size: 1.4rem;
+        .carousel-wrapper {
+            width: 100%;
+            overflow: hidden;
         }
-        /* --- BOUTONS DE NAVIGATION (Flèches) --- */
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(37, 31, 24, 0.85);
-            color: #ffb100;
-            border: 2px solid #3d3224;
+
+        .carousel-slide {
+            display: none;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .carousel-slide.active {
+            display: flex;
+        }
+
+        .slide-content {
+            flex: 1;
+        }
+
+        .slide-content h3 {
+            font-family: "IM Fell English SC", Georgia, serif;
+            color: #d0c8aa;
             font-size: 24px;
+            margin-top: 0;
+        }
+
+        .slide-content p {
+            color: #cfc6a8;
+        }
+
+        .slide-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .slide-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .carousel-arrow {
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: 2px solid #ffcc00;
+            border-radius: 50%;
             width: 45px;
             height: 45px;
             cursor: pointer;
-            border-radius: 50%;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+            font-size: 18px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: background 0.3s;
+            flex-shrink: 0;
+            z-index: 5;
         }
 
-        .carousel-btn:hover {
-            background: #ffb100;
-            color: #251f18;
-            border-color: #ffb100;
+        .carousel-arrow:hover {
+            background: #ffcc00;
+            color: #000;
         }
 
-        /* Positionnement précis des flèches à l'extérieur des cartes si possible, ou sur les bords */
         .prev-btn { left: 10px; }
         .next-btn { right: 10px; }
 
-        /* --- INDICATEURS (Les points du bas) --- */
         .carousel-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 25px;
+            gap: 10px;
         }
 
         .dot {
             width: 12px;
             height: 12px;
-            background-color: #4a3e31;
+            background-color: #555;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid #3d3224;
+            transition: background-color 0.3s;
         }
 
-        .dot.active {
-            background-color: #ffb100;
-            transform: scale(1.2);
-            box-shadow: 0 0 8px #ffb100;
+        .dot.active,
+        .dot:hover {
+            background-color: #ffcc00;
         }
-        
-/* Base de votre carte */
-.card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    min-width: 0;
-    height: 100%; /* Égalise la hauteur de toutes les cartes d'une même ligne */
-    padding: 32px;
-    background: linear-gradient(
-        rgba(205,197,169,0.96),
-        rgba(178,173,150,0.96)
-    );
-    border: 1px solid rgba(63,73,73,0.75);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.40);
-}
 
-.card::before {
-    content: "";
-    position: absolute;
-    inset: 9px;
-    border: 1px solid rgba(75,55,31,0.25);
-    pointer-events: none;
-    z-index: 3;
-}
-
-/* Conteneur d'image avec une hauteur fixe pour vos couvertures */
-.card-image-container {
-    width: 100%;
-    height: 380px; /* Hauteur idéale pour conserver le ratio portrait style "livre" */
-    overflow: hidden;
-    background: rgba(22,26,27,0.05); /* Léger fond pour meubler si l'image est plus étroite */
-    position: relative;
-    z-index: 1;
-}
-
-/* L'image s'ajuste parfaitement à l'intérieur de sa boîte fixe sans déborder */
-.card-image {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Empêche l'image d'être rognée ou déformée */
-    object-position: center;
-}
-
-/* Bloc intermédiaire pour les textes */
-.card-content {
-    flex-grow: 1; /* Pousse automatiquement le bouton tout en bas de la carte */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 0;
-}
-
-.card h3 {
-    font-family: 'Georgia', serif;
-    color: #2c1a04;
-    text-align: center;
-    margin: 0 0 16px 0;
-    font-size: 1.35rem;
-}
-
-.card p {
-    font-family: 'Georgia', serif;
-    font-style: italic;
-    color: #3b3527;
-    text-align: center;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* Style uniforme des boutons */
-.button {
-    display: block;
-    text-align: center;
-    text-decoration: none;
-    color: #2c1a04;
-    background: transparent;
-    padding: 10px 20px;
-    border: 1px solid rgba(75,55,31,0.6);
-    font-family: 'Georgia', serif;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-    transition: all 0.2s ease;
-    z-index: 4;
-}
-
-.button:hover:not(.disabled) {
-    background: #2c1a04;
-    color: #f4ebd0;
-    border-color: #2c1a04;
-}
-
-/* Style pour l'état indisponible "Bientôt disponible" */
-.button.disabled {
-    color: rgba(75, 55, 31, 0.4);
-    border-color: rgba(75, 55, 31, 0.25);
-    background: rgba(0, 0, 0, 0.03);
-    cursor: not-allowed;
-}
 
         /* =========================================================
            CARTES
+           ========================================================= */
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 0;
+            height: 100%;
+            padding: 32px;
+            background: linear-gradient(
+                rgba(205,197,169,0.96),
+                rgba(178,173,150,0.96)
+            );
+            border: 1px solid rgba(63,73,73,0.75);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.40);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            inset: 9px;
+            border: 1px solid rgba(75,55,31,0.25);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .card-image-container {
+            width: 100%;
+            height: 380px;
+            overflow: hidden;
+            background: rgba(22,26,27,0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-carte-image {
+            display: block;
+            width: 100%;
+            height: 380px;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .card-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 0;
+        }
+
+        .card h3 {
+            font-family: 'Georgia', serif;
+            color: #2c1a04;
+            text-align: center;
+            margin: 0 0 16px 0;
+            font-size: 1.35rem;
+        }
+
+        .card p {
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            color: #3b3527;
+            text-align: center;
+            line-height: 1.5;
+            margin: 0 0 16px 0;
+        }
+
+
+        /* =========================================================
+           CARTES (map-card, non utilisée actuellement mais conservée)
            ========================================================= */
 
         .map-card {
@@ -1431,6 +1402,106 @@
 
         .instagram-link:hover {
             text-decoration: underline;
+        }
+
+
+        /* =========================================================
+           FANMADE NOTICE
+           ========================================================= */
+
+        .fanmade-notice {
+            position: relative;
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            margin: 25px 0 35px;
+            padding: 28px 32px;
+            background: linear-gradient(
+                135deg,
+                rgba(222, 212, 183, 0.92),
+                rgba(200, 189, 157, 0.92)
+            );
+            border: 1px solid rgba(63, 73, 73, 0.65);
+            border-left: 4px solid #75684c;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.30);
+        }
+
+        .fanmade-notice::before {
+            content: "";
+            position: absolute;
+            inset: 9px;
+            border: 1px solid rgba(75, 55, 31, 0.22);
+            pointer-events: none;
+        }
+
+        .fanmade-notice__icon {
+            position: relative;
+            z-index: 1;
+            flex: 0 0 48px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(75, 55, 31, 0.45);
+            border-radius: 50%;
+            color: #65583f;
+            font-size: 18px;
+        }
+
+        .fanmade-notice__content {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .fanmade-notice__eyebrow {
+            margin-bottom: 6px;
+            color: #75684c;
+            font-family: "IM Fell English SC", Georgia, serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        .fanmade-notice h2 {
+            margin: 0 0 12px;
+            color: var(--encre);
+            font-family: "IM Fell English SC", Georgia, serif;
+            font-size: 25px;
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        .fanmade-notice p {
+            margin: 0 0 10px;
+            color: #51402b;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .fanmade-notice__tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin: 17px 0;
+        }
+
+        .fanmade-notice__tags span {
+            padding: 4px 9px;
+            color: #5b4e36;
+            background: rgba(75, 55, 31, 0.06);
+            border: 1px solid rgba(75, 55, 31, 0.25);
+            font-family: "IM Fell English SC", Georgia, serif;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .fanmade-notice__legal {
+            margin-top: 15px !important;
+            margin-bottom: 0 !important;
+            color: #71634b !important;
+            font-size: 11px !important;
+            line-height: 1.5 !important;
         }
 
 
@@ -1711,94 +1782,28 @@
 
             }
 
-.carousel-container {
-    position: relative;
-    max-width: 1000px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 60px;
-}
 
-.carousel-wrapper {
-    width: 100%;
-    overflow: hidden;
-}
+            /* Ajustements du carrousel pour petits écrans :
+               on ne redéfinit QUE ce qui doit changer, le reste
+               (display flex/none, positionnement des flèches, etc.)
+               vient déjà des styles de base ci-dessus. */
 
-.carousel-slide {
-    display: none; /* Masqué par défaut */
-    align-items: center;
-    gap: 40px;
-}
+            .carousel-container {
+                padding: 15px 45px 55px;
+            }
 
-.carousel-slide.active {
-    display: flex; /* Affiché uniquement si actif */
-}
+            .carousel-slide.active {
+                flex-direction: column;
+                gap: 20px;
+            }
 
-.slide-content {
-    flex: 1;
-}
+            .carousel-arrow {
+                width: 38px;
+                height: 38px;
+                font-size: 15px;
+            }
 
-.slide-image {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
 
-.slide-image img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
-
-/* Boutons de navigation (Flèches) */
-.carousel-arrow {
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    border: 2px solid #ffcc00; /* Style rappelant l'interface */
-    border-radius: 50%;
-    width: 45px;
-    height: 45px;
-    cursor: pointer;
-    font-size: 18px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: background 0.3s;
-}
-
-.carousel-arrow:hover {
-    background: #ffcc00;
-    color: #000;
-}
-
-.prev-btn { left: 10px; }
-.next-btn { right: 10px; }
-
-/* Indicateurs (Dots) */
-.carousel-dots {
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;
-}
-
-.dot {
-    width: 12px;
-    height: 12px;
-    background-color: #555;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.dot.active, .dot:hover {
-    background-color: #ffcc00;
-}
             .card {
 
                 width:
@@ -1810,7 +1815,7 @@
             }
 
 
-            .card-image {
+            .card-carte-image {
 
                 height:
                     300px;
@@ -1870,140 +1875,6 @@
             }
 
 
-            footer {
-
-                margin-top:
-                    55px;
-
-                padding:
-                    30px 15px;
-
-                font-size:
-                    11px;
-
-                line-height:
-                    1.6;
-
-            }
-
-
-            /*
-             * Le contrôle de taille est placé légèrement plus haut
-             * sur mobile afin de ne pas gêner la navigation.
-             */
-
-            .scale-control {
-
-                right:
-                    10px;
-
-                bottom:
-                    10px;
-
-            }
-
-        }
-
-        /* =========================================================
-           ENCART FANMADE
-           ========================================================= */
-
-        .fanmade-notice {
-            position: relative;
-            display: flex;
-            gap: 24px;
-            align-items: flex-start;
-            margin: 25px 0 35px;
-            padding: 28px 32px;
-            background: linear-gradient(
-                135deg,
-                rgba(222, 212, 183, 0.92),
-                rgba(200, 189, 157, 0.92)
-            );
-            border: 1px solid rgba(63, 73, 73, 0.65);
-            border-left: 4px solid #75684c;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.30);
-        }
-
-        .fanmade-notice::before {
-            content: "";
-            position: absolute;
-            inset: 9px;
-            border: 1px solid rgba(75, 55, 31, 0.22);
-            pointer-events: none;
-        }
-
-        .fanmade-notice__icon {
-            position: relative;
-            z-index: 1;
-            flex: 0 0 48px;
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(75, 55, 31, 0.45);
-            border-radius: 50%;
-            color: #65583f;
-            font-size: 18px;
-        }
-
-        .fanmade-notice__content {
-            position: relative;
-            z-index: 1;
-            flex: 1;
-        }
-
-        .fanmade-notice__eyebrow {
-            margin-bottom: 6px;
-            color: #75684c;
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 12px;
-            letter-spacing: 2px;
-        }
-
-        .fanmade-notice h2 {
-            margin: 0 0 12px;
-            color: var(--encre);
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 25px;
-            font-weight: normal;
-            letter-spacing: 1px;
-        }
-
-        .fanmade-notice p {
-            margin: 0 0 10px;
-            color: #51402b;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .fanmade-notice__tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 7px;
-            margin: 17px 0;
-        }
-
-        .fanmade-notice__tags span {
-            padding: 4px 9px;
-            color: #5b4e36;
-            background: rgba(75, 55, 31, 0.06);
-            border: 1px solid rgba(75, 55, 31, 0.25);
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-
-        .fanmade-notice__legal {
-            margin-top: 15px !important;
-            margin-bottom: 0 !important;
-            color: #71634b !important;
-            font-size: 11px !important;
-            line-height: 1.5 !important;
-        }
-
-        @media (max-width: 700px) {
             .fanmade-notice {
                 flex-direction: column;
                 gap: 15px;
@@ -2029,842 +1900,721 @@
             .fanmade-notice__tags {
                 gap: 5px;
             }
-        }
 
+
+            footer {
+
+                margin-top:
+                    55px;
+
+                padding:
+                    30px 15px;
+
+                font-size:
+                    11px;
+
+                line-height:
+                    1.6;
+
+            }
+
+
+            .scale-control {
+
+                right:
+                    10px;
+
+                bottom:
+                    10px;
+
+            }
+
+        }
     </style>
-    <script data-goatcounter="https://cskrh7.goatcounter.com/count"
-    async src="//gc.zgo.at/count.js"></script>
+    <script data-goatcounter="https://cskrh7.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 
 
 <body>
 
 
-<!-- =========================================================
+    <!-- =========================================================
      CONTRÔLE DE TAILLE
      ========================================================= -->
 
-<div
-    class="scale-control"
-    aria-label="Ajustement de la taille du site"
->
+    <div class="scale-control" aria-label="Ajustement de la taille du site">
 
-    <button
-        type="button"
-        id="scale-minus"
-        aria-label="Réduire la taille"
-        title="Réduire"
-    >
-        −
-    </button>
+        <button type="button" id="scale-minus" aria-label="Réduire la taille" title="Réduire">
+            −
+        </button>
 
 
-    <span id="scale-value">
+        <span id="scale-value">
         100%
     </span>
 
 
-    <button
-        type="button"
-        id="scale-plus"
-        aria-label="Augmenter la taille"
-        title="Agrandir"
-    >
-        +
-    </button>
+        <button type="button" id="scale-plus" aria-label="Augmenter la taille" title="Agrandir">
+            +
+        </button>
 
-</div>
+    </div>
 
 
-<!-- =========================================================
+    <!-- =========================================================
      SITE
      ========================================================= -->
 
-<div class="site-wrapper">
+    <div class="site-wrapper">
 
-<div class="site-content">
+        <div class="site-content">
 
-<div class="page">
+            <div class="page">
 
 
-    <!-- =====================================================
+                <!-- =====================================================
          EN-TÊTE
          ===================================================== -->
 
-    <header>
+                <header>
 
-        <h1>
+                    <h1>
             Archives du Courant
         </h1>
 
-        <p class="subtitle">
-            Suppléments • Campagnes • Cartes de références
-        </p>
+                    <p class="subtitle">
+                        Suppléments • Campagnes • Cartes de références
+                    </p>
 
-        <div class="ornament"></div>
+                    <div class="ornament"></div>
 
-    </header>
+                </header>
 
 
-    <!-- =====================================================
+                <!-- =====================================================
          NAVIGATION
          ===================================================== -->
 
-    <nav>
+                <nav>
 
-        <a href="#">
+                    <a href="#">
             Accueil
         </a>
 
 
-        <div class="nav-dropdown">
+                    <div class="nav-dropdown">
 
-            <a
-                href="#supplements"
-                class="drop-title"
-            >
+                        <a href="#supplements" class="drop-title">
                 Suppléments
                 <span>⌄</span>
             </a>
 
-            <div class="dropdown-content">
+                        <div class="dropdown-content">
 
-                <a href="#maree-de-sang">
+                            <a href="#maree-de-sang">
                     La Marée de Sang
                 </a>
 
-                <a href="#courant-occidental">
+                            <a href="#courant-occidental">
                     Le Courant Occidental
                 </a>
 
-                <a href="#colonies-perdues">
+                            <a href="#colonies-perdues">
                     Les Colonies Perdues
                 </a>
 
-            </div>
+                        </div>
 
-        </div>
+                    </div>
 
 
-        <div class="nav-dropdown">
+                    <div class="nav-dropdown">
 
-            <a
-                href="#cartes-references"
-                class="drop-title"
-            >
+                        <a href="#cartes-references" class="drop-title">
                 Cartes de références
                 <span>⌄</span>
             </a>
 
-              <div class="dropdown-content">
+                        <div class="dropdown-content">
 
-                <a href="#carte-maree-de-sang">
+                            <a href="#carte-maree-de-sang">
                     La Marée de Sang
                 </a>
 
-                <a href="#carte-courant-occidental">
+                            <a href="#carte-courant-occidental">
                     Le Courant Occidental
                 </a>
 
-                <a href="#carte-colonies-perdues">
+                            <a href="#carte-colonies-perdues">
                     Les Colonies Perdues
                 </a>
 
-            </div>
-        </div>
+                        </div>
+                    </div>
 
-        <a href="Generateur.html">
+                    <a href="Generateur.html">
             Créateur de listes d'armée
         </a>
 
-<a href="#chroniques">
+                    <a href="#chroniques">
             Instagram
         </a>
 
-    </nav>
+                </nav>
 
 
 
 
 
-    <!-- =====================================================
+                <!-- =====================================================
          CONTENU
          ===================================================== -->
 
-    <main>
+                <main>
 
 
-        <!-- =================================================
+                    <!-- =================================================
              ACTUALITÉ
              ================================================= -->
 
-        <section class="hero">
+                    <section class="hero">
 
-            <div class="hero-content">
+                        <div class="hero-content">
 
-                <h2>
+                            <h2>
                     Actualité
                 </h2>
 
-                <div class="separator"></div>
+                            <div class="separator"></div>
 
-                <p>
+                            <p>
 
-                    <strong>
+                                <strong>
                         La Marée de Sang
                     </strong>
 
-                    <br>
+                                <br> Une campagne maritime fan-made pour
+                                <em>Warhammer: The Old World</em>. Deux flottes. Une mer hostile. Une chasse qui ne peut se terminer que par la destruction ou la fuite.
 
-                    Une campagne maritime fan-made pour
-                    <em>Warhammer: The Old World</em>.
-
-                    Deux flottes.
-                    Une mer hostile.
-                    Une chasse qui ne peut se terminer
-                    que par la destruction ou la fuite.
-
-                </p>
+                            </p>
 
 
-                <a
-                    class="button"
-                    href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >                     
+                            <a class="button" href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link" target="_blank" rel="noopener noreferrer">
                     Télécharger le supplément
                 </a>
 
-            </div>
+                        </div>
 
-        </section>
+                    </section>
 
-        <!-- =================================================
+                    <!-- =================================================
              SUPPLÉMENTS
              ================================================= -->
 
-        <h2
-            class="section-title"
-            id="supplements"
-        >
+                    <h2 class="section-title" id="supplements">
             Suppléments
         </h2>
 
 
-        <div class="supplement-strip">
+                    <div class="supplement-strip">
 
 
-            <a
-                href="#maree-de-sang"
-                class="strip-item"
-            >
+                        <a href="#maree-de-sang" class="strip-item">
 
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg"
-                    alt="La Marée de Sang"
-                >
+                            <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" alt="La Marée de Sang">
 
-                <span>
+                            <span>
                     La Marée de Sang
                 </span>
 
-            </a>
+                        </a>
 
 
-            <a
-                href="#courant-occidental"
-                class="strip-item"
-            >
+                        <a href="#courant-occidental" class="strip-item">
 
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg"
-                    alt="Le Courant Occidental"
-                >
+                            <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" alt="Le Courant Occidental">
 
-                <span>
+                            <span>
                     Le Courant Occidental
                 </span>
 
-            </a>
+                        </a>
 
 
-            <a
-                href="#colonies-perdues"
-                class="strip-item"
-            >
+                        <a href="#colonies-perdues" class="strip-item">
 
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg"
-                    alt="Les Colonies Perdues"
-                >
+                            <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" alt="Les Colonies Perdues">
 
-                <span>
+                            <span>
                     Les Colonies Perdues
                 </span>
 
-            </a>
+                        </a>
 
 
-        </div>
+                    </div>
 
 
-      <!-- =================================================
-     CARTES DES SUPPLÉMENTS
+                    <!-- =================================================
+     CARTES DES SUPPLÉMENTS (carrousel)
      ================================================= -->
-<div class="carousel-container">
-    <!-- Flèche Gauche -->
-    <button class="carousel-arrow prev-btn" onclick="changeSlide(-1)">&#10094;</button>
+                    <div class="carousel-container">
+                        <!-- Flèche Gauche -->
+                        <button class="carousel-arrow prev-btn" onclick="changeSlide(-1)" aria-label="Précédent">&#10094;</button>
 
-    <!-- Zone d'affichage des slides -->
-    <div class="carousel-wrapper">
-        
-        <!-- Slide 1: La Marée de Sang -->
-        <div class="carousel-slide active">
-            <div class="slide-content">
-                <h3>La Marée de Sang</h3>
-                <p>Campagne narrative consacrée aux flottes Druchii, à leurs poursuivants et aux batailles qui se déroulent sur les côtes de l'Ancien Monde.</p>
-                <a class="button" href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Télécharger</a>
-            </div>
-            <div class="slide-image">
-                <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" alt="Couverture de La Marée de Sang">
-            </div>
-        </div>
+                        <!-- Zone d'affichage des slides -->
+                        <div class="carousel-wrapper">
 
-        <!-- Slide 2: Le Courant Occidental -->
-        <div class="carousel-slide">
-            <div class="slide-content">
-                <h3>Le Courant Occidental</h3>
-                <p>Supplément consacré à une cité maritime des Hauts-Elfes et aux événements qui entourent le Courant Occidental.</p>
-                <a class="button" href="https://drive.google.com/file/d/1TyLQKbevzQcxpoqbG8CSx429Lv-Ruiuu/view?usp=sharing" target="_blank" rel="noopener noreferrer">Télécharger</a>
-            </div>
-            <div class="slide-image">
-                <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" alt="Couverture du Courant Occidental">
-            </div>
-        </div>
+                            <!-- Slide 1: La Marée de Sang -->
+                            <div class="carousel-slide active">
+                                <div class="slide-content">
+                                    <h3>La Marée de Sang</h3>
+                                    <p>Campagne narrative consacrée aux flottes Druchii, à leurs poursuivants et aux batailles qui se déroulent sur les côtes de l'Ancien Monde.</p>
+                                    <a class="button" href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Télécharger</a>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" alt="Couverture de La Marée de Sang">
+                                </div>
+                            </div>
 
-        <!-- Slide 3: Les Colonies Perdues -->
-        <div class="carousel-slide">
-            <div class="slide-content">
-                <h3>Les Colonies Perdues</h3>
-                <p>Le retour des Hauts-Elfes sur les anciennes terres elfiques, désormais englouties sous des forêts hostiles.</p>
-                <a class="button disabled" href="#">Bientôt disponible</a>
-            </div>
-            <div class="slide-image">
-                <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" alt="Couverture des Colonies Perdues">
-            </div>
-        </div>
+                            <!-- Slide 2: Le Courant Occidental -->
+                            <div class="carousel-slide">
+                                <div class="slide-content">
+                                    <h3>Le Courant Occidental</h3>
+                                    <p>Supplément consacré à une cité maritime des Hauts-Elfes et aux événements qui entourent le Courant Occidental.</p>
+                                    <a class="button" href="https://drive.google.com/file/d/1TyLQKbevzQcxpoqbG8CSx429Lv-Ruiuu/view?usp=sharing" target="_blank" rel="noopener noreferrer">Télécharger</a>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" alt="Couverture du Courant Occidental">
+                                </div>
+                            </div>
 
-    </div>
+                            <!-- Slide 3: Les Colonies Perdues -->
+                            <div class="carousel-slide">
+                                <div class="slide-content">
+                                    <h3>Les Colonies Perdues</h3>
+                                    <p>Le retour des Hauts-Elfes sur les anciennes terres elfiques, désormais englouties sous des forêts hostiles.</p>
+                                    <a class="button disabled" href="#">Bientôt disponible</a>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" alt="Couverture des Colonies Perdues">
+                                </div>
+                            </div>
 
-    <!-- Flèche Droite -->
-    <button class="carousel-arrow next-btn" onclick="changeSlide(1)">&#10095;</button>
+                        </div>
 
-    <!-- Points de navigation (Dots) -->
-    <div class="carousel-dots">
-        <span class="dot active" onclick="goToSlide(0)"></span>
-        <span class="dot" onclick="goToSlide(1)"></span>
-        <span class="dot" onclick="goToSlide(2)"></span>
-    </div>
-</div>
+                        <!-- Flèche Droite -->
+                        <button class="carousel-arrow next-btn" onclick="changeSlide(1)" aria-label="Suivant">&#10095;</button>
+
+                        <!-- Points de navigation (Dots) -->
+                        <div class="carousel-dots">
+                            <span class="dot active" onclick="goToSlide(0)"></span>
+                            <span class="dot" onclick="goToSlide(1)"></span>
+                            <span class="dot" onclick="goToSlide(2)"></span>
+                        </div>
+                    </div>
 
 
-        <!-- =================================================
+                    <!-- =================================================
              CARTES de références
              ================================================= -->
 
-        <h2
-            class="section-title"
-            id="cartes-references"
-        >
+                    <h2 class="section-title" id="cartes-references">
             Cartes de références
         </h2>
 
 
-        <section class="grid">
+                    <section class="grid">
 
-          <article
-                class="card"
-                id="carte-maree-de-sang"
-            >
+                        <article class="card" id="carte-maree-de-sang">
 
-            
 
-                <h3>
+
+                            <h3>
                     La Marée de Sang
                 </h3>
-                <img
-                    src="images/LaMareedeSang.png"
-                    alt="Cartes de références pour la Marée de Sang"
-                    class="card-carte-image"
-                >
+                            <img src="images/LaMareedeSang.png" alt="Cartes de références pour la Marée de Sang" class="card-carte-image">
 
 
-                <p>
+                            <p>
 
-                    Faites souffrir vos ennemis. Montrez-leur votre haine !
+                                Faites souffrir vos ennemis. Montrez-leur votre haine !
 
-                </p>
+                            </p>
 
 
-                 <a
-                    class="button"
-                    href="https://drive.google.com/file/d/11djj-cYnYCW9CvfDQybJNy2OuDH1OW3c/view?usp=sharing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+                            <a class="button" href="https://drive.google.com/file/d/11djj-cYnYCW9CvfDQybJNy2OuDH1OW3c/view?usp=sharing" target="_blank" rel="noopener noreferrer">
                     Télécharger
                 </a>
 
-            </article>
-            <article
-                class="card"
-                id="carte-courant-occidental"
-            >
-
-              
+                        </article>
+                        <article class="card" id="carte-courant-occidental">
 
 
-                <h3>
+
+
+                            <h3>
                     Le Courant Occidental
                 </h3>
-              <img
-                    src="images/LeCourantOccidental.png"
-                    alt="Cartes de références pour le Courant Occidental"
-                    class="card-carte-image"
-                >
+                            <img src="images/LeCourantOccidental.png" alt="Cartes de références pour le Courant Occidental" class="card-carte-image">
 
-                <p>
+                            <p>
 
-                    Lancez les vagues sur vos ennemis. Montrez leur le couroux des flots !
+                                Lancez les vagues sur vos ennemis. Montrez leur le couroux des flots !
 
-                </p>
+                            </p>
 
 
-               <a
-                    class="button"
-                    href="https://drive.google.com/file/d/1xREdxCKkC6z59k6hSt6F6q6lNNO-KQ95/view?usp=sharing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+                            <a class="button" href="https://drive.google.com/file/d/1xREdxCKkC6z59k6hSt6F6q6lNNO-KQ95/view?usp=sharing" target="_blank" rel="noopener noreferrer">
                     Télécharger
                 </a>
 
-            </article>
+                        </article>
 
-            <article
-                class="card"
-                id="carte-colonies-perdues"
-            >
+                        <article class="card" id="carte-colonies-perdues">
 
 
 
-                <h3>
+                            <h3>
                     Les Colonies Perdues
                 </h3>
 
-                <img
-                    src="images/LesColoniesPerudes.png"
-                    alt="Cartes de références pour les colonies perdues"
-                    class="card-carte-image"
-                >
+                            <img src="images/LesColoniesPerudes.png" alt="Cartes de références pour les colonies perdues" class="card-carte-image">
 
-                <p>
+                            <p>
 
-                    Après les rappels des colons, la forêt recouvre tout.
+                                Après les rappels des colons, la forêt recouvre tout.
 
-                </p>
+                            </p>
 
 
-                <a
-                    class="button"
-                    href="#"
-                >
+                            <a class="button disabled" href="#">
                     Bientôt disponible
                 </a>
 
-            </article>
+                        </article>
 
-            
-            
-        </section>
 
-        <!-- =====================================================
+
+                    </section>
+
+                    <!-- =====================================================
              À PROPOS DU PROJET
              ===================================================== -->
 
-        
-<section class="fanmade-notice" aria-label="À propos du projet">
 
-            <div class="fanmade-notice__icon" aria-hidden="true">
-                <span>◆</span>
-            </div>
+                    <section class="fanmade-notice" aria-label="À propos du projet">
 
-            <div class="fanmade-notice__content">
+                        <div class="fanmade-notice__icon" aria-hidden="true">
+                            <span>◆</span>
+                        </div>
 
-                <div class="fanmade-notice__eyebrow">
-                    PROJET FANMADE · NON OFFICIEL
-                </div>
+                        <div class="fanmade-notice__content">
 
-                <h2>Des créations de fan, pour les joueurs.</h2>
+                            <div class="fanmade-notice__eyebrow">
+                                PROJET FANMADE · NON OFFICIEL
+                            </div>
 
-                <p>
-                    Ce site rassemble mes créations réalisées pour
-                    <em>Warhammer: The Old World</em> : livres d’armée, suppléments,
-                    campagnes narratives, cartes de références et outils de création
-                    de listes.
-                </p>
+                            <h2>Des créations de fan, pour les joueurs.</h2>
 
-                <p>
-                    Ces contenus sont des créations amateurs, non officielles,
-                    proposées gratuitement et sans affiliation avec Games Workshop. Ils ne sont pas destinés à la vente.
-                    Ils sont conçus pour expérimenter de nouvelles façons de jouer
-                    et enrichir les parties entre joueurs. 
-                </p>
+                            <p>
+                                Ce site rassemble mes créations réalisées pour
+                                <em>Warhammer: The Old World</em> : livres d'armée, suppléments, campagnes narratives, cartes de références et outils de création de listes.
+                            </p>
 
-                <div class="fanmade-notice__tags">
-                    <span>Fanmade</span>
-                    <span>Non officiel</span>
-                    <span>Gratuit</span>
-                </div>
+                            <p>
+                                Ces contenus sont des créations amateurs, non officielles, proposées gratuitement et sans affiliation avec Games Workshop. Ils ne sont pas destinés à la vente. Ils sont conçus pour expérimenter de nouvelles façons de jouer et enrichir les parties entre
+                                joueurs.
+                            </p>
 
-                <p class="fanmade-notice__legal">
-                    <strong>Important :</strong>
-                    Warhammer, Warhammer: The Old World et les éléments associés
-                    sont des propriétés de leurs détenteurs respectifs.
-                    Ce projet n’est ni approuvé, ni publié, ni soutenu par
-                    Games Workshop.
-                </p>
+                            <div class="fanmade-notice__tags">
+                                <span>Fanmade</span>
+                                <span>Non officiel</span>
+                                <span>Gratuit</span>
+                            </div>
 
-            </div>
+                            <p class="fanmade-notice__legal">
+                                <strong>Important :</strong> Warhammer, Warhammer: The Old World et les éléments associés sont des propriétés de leurs détenteurs respectifs. Ce projet n'est ni approuvé, ni publié, ni soutenu par Games Workshop.
+                            </p>
 
-        </section>
+                        </div>
 
-        <!-- =================================================
+                    </section>
+
+                    <!-- =================================================
              INSTAGRAM
              ================================================= -->
 
-        <section
-            class="instagram-section"
-            id="chroniques"
-        >
+                    <section class="instagram-section" id="chroniques">
 
-            <h2 class="section-title">
+                        <h2 class="section-title">
                 Peindre
             </h2>
 
 
-            <p>
+                        <p>
 
-                Illustrations et fragments
-                des Archives du Courant publiés au fil
-                des campagnes.
+                            Illustrations et fragments des Archives du Courant publiés au fil des campagnes.
 
-            </p>
+                        </p>
 
 
-            <div class="instagram-frame">
+                        <div class="instagram-frame">
 
-                <div
-                    class="sk-instagram-feed"
-                    data-embed-id="25706437"
-                ></div>
+                            <div class="sk-instagram-feed" data-embed-id="25706437"></div>
 
-            </div>
+                        </div>
 
 
-            <a
-                class="instagram-link"
-                href="https://www.instagram.com/peintures_et_chatiment/"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
+                        <a class="instagram-link" href="https://www.instagram.com/peintures_et_chatiment/" target="_blank" rel="noopener noreferrer">
                 Suivre les Chroniques sur Instagram
             </a>
 
-        </section>
+                    </section>
 
 
-    </main>
+                </main>
 
 
-    <!-- =====================================================
+                <!-- =====================================================
          FOOTER
          ===================================================== -->
 
-    <footer>
+                <footer>
 
-        <div class="footer-title">
-            Archives du Courant
+                    <div class="footer-title">
+                        Archives du Courant
+                    </div>
+
+
+                    <p>
+                        Suppléments • Campagnes • Cartes de références
+                    </p>
+
+
+                    <p>
+                        Créations fan-made — non officielles
+                    </p>
+
+                </footer>
+
+
+            </div>
+
         </div>
 
-
-        <p>
-            Suppléments • Campagnes • Cartes de références
-        </p>
+    </div>
 
 
-        <p>
-            Créations fan-made — non officielles
-        </p>
-
-    </footer>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =========================================================
+    <!-- =========================================================
      JAVASCRIPT — AJUSTEMENT DE TAILLE
      ========================================================= -->
 
-<script>
+    <script>
+        (function () {
 
-(function () {
+            const root =
+                document.documentElement;
 
-    const root =
-        document.documentElement;
+            const minusButton =
+                document.getElementById("scale-minus");
 
-    const minusButton =
-        document.getElementById("scale-minus");
+            const plusButton =
+                document.getElementById("scale-plus");
 
-    const plusButton =
-        document.getElementById("scale-plus");
-
-    const valueDisplay =
-        document.getElementById("scale-value");
-
-
-    /*
-     * Valeur par défaut.
-     */
-
-    const defaultScale = 1;
+            const valueDisplay =
+                document.getElementById("scale-value");
 
 
-    /*
-     * Limites de réglage.
-     */
+            const defaultScale = 1;
 
-    const minScale = 0.75;
+            const minScale = 0.75;
 
-    const maxScale = 1.25;
+            const maxScale = 1.25;
 
-    const step = 0.05;
+            const step = 0.05;
 
 
-    /*
-     * Récupération du réglage précédent.
-     */
-
-    let scale =
-        parseFloat(
-            localStorage.getItem("archives-courant-scale")
-        );
-
-
-    /*
-     * Vérification.
-     */
-
-    if (
-        isNaN(scale) ||
-        scale < minScale ||
-        scale > maxScale
-    ) {
-
-        scale =
-            defaultScale;
-
-    }
-
-
-    /*
-     * Application.
-     */
-
-    function applyScale() {
-
-        root.style.setProperty(
-            "--site-scale",
-            scale
-        );
-
-
-        valueDisplay.textContent =
-            Math.round(scale * 100) + "%";
-
-
-        localStorage.setItem(
-            "archives-courant-scale",
-            scale
-        );
-
-    }
-
-
-    /*
-     * Réduction.
-     */
-
-    minusButton.addEventListener(
-        "click",
-        function () {
-
-            scale =
-                Math.max(
-                    minScale,
-                    scale - step
+            let scale =
+                parseFloat(
+                    localStorage.getItem("archives-courant-scale")
                 );
-
-            applyScale();
-
-        }
-    );
-
-
-    /*
-     * Agrandissement.
-     */
-
-    plusButton.addEventListener(
-        "click",
-        function () {
-
-            scale =
-                Math.min(
-                    maxScale,
-                    scale + step
-                );
-
-            applyScale();
-
-        }
-    );
-
-
-    /*
-     * Raccourcis clavier :
-     *
-     * Ctrl + -
-     * Ctrl + +
-     * Ctrl + 0
-     */
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (!event.ctrlKey) {
-                return;
-            }
 
 
             if (
-                event.key === "-" ||
-                event.key === "_"
+                isNaN(scale) ||
+                scale < minScale ||
+                scale > maxScale
             ) {
-
-                event.preventDefault();
-
-                scale =
-                    Math.max(
-                        minScale,
-                        scale - step
-                    );
-
-                applyScale();
-
-            }
-
-
-            if (
-                event.key === "+" ||
-                event.key === "="
-            ) {
-
-                event.preventDefault();
-
-                scale =
-                    Math.min(
-                        maxScale,
-                        scale + step
-                    );
-
-                applyScale();
-
-            }
-
-
-            if (event.key === "0") {
-
-                event.preventDefault();
 
                 scale =
                     defaultScale;
 
-                applyScale();
+            }
+
+
+            function applyScale() {
+
+                root.style.setProperty(
+                    "--site-scale",
+                    scale
+                );
+
+
+                valueDisplay.textContent =
+                    Math.round(scale * 100) + "%";
+
+
+                localStorage.setItem(
+                    "archives-courant-scale",
+                    scale
+                );
 
             }
 
+
+            minusButton.addEventListener(
+                "click",
+                function () {
+
+                    scale =
+                        Math.max(
+                            minScale,
+                            scale - step
+                        );
+
+                    applyScale();
+
+                }
+            );
+
+
+            plusButton.addEventListener(
+                "click",
+                function () {
+
+                    scale =
+                        Math.min(
+                            maxScale,
+                            scale + step
+                        );
+
+                    applyScale();
+
+                }
+            );
+
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (!event.ctrlKey) {
+                        return;
+                    }
+
+
+                    if (
+                        event.key === "-" ||
+                        event.key === "_"
+                    ) {
+
+                        event.preventDefault();
+
+                        scale =
+                            Math.max(
+                                minScale,
+                                scale - step
+                            );
+
+                        applyScale();
+
+                    }
+
+
+                    if (
+                        event.key === "+" ||
+                        event.key === "="
+                    ) {
+
+                        event.preventDefault();
+
+                        scale =
+                            Math.min(
+                                maxScale,
+                                scale + step
+                            );
+
+                        applyScale();
+
+                    }
+
+
+                    if (event.key === "0") {
+
+                        event.preventDefault();
+
+                        scale =
+                            defaultScale;
+
+                        applyScale();
+
+                    }
+
+                }
+            );
+
+
+            applyScale();
+
+        })();
+    </script>
+
+
+    <!-- =========================================================
+     JAVASCRIPT — CARROUSEL DES SUPPLÉMENTS
+     (séparé du script SociableKit ci-dessous : un <script src="…">
+     ignore tout contenu placé entre ses balises, c'était le bug
+     initial qui empêchait les flèches / points de fonctionner)
+     ========================================================= -->
+
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('.dot');
+
+        function updateCarousel() {
+            slides.forEach((slide, index) => {
+                slide.classList.remove('active');
+                dots[index].classList.remove('active');
+            });
+            slides[currentSlideIndex].classList.add('active');
+            dots[currentSlideIndex].classList.add('active');
         }
-    );
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex >= slides.length) {
+                currentSlideIndex = 0;
+            } else if (currentSlideIndex < 0) {
+                currentSlideIndex = slides.length - 1;
+            }
+            updateCarousel();
+        }
+
+        function goToSlide(index) {
+            currentSlideIndex = index;
+            updateCarousel();
+        }
+    </script>
 
 
-    /*
-     * Initialisation.
-     */
-
-    applyScale();
-
-})();
-
-</script>
-
-
-<!-- =========================================================
+    <!-- =========================================================
      SOCIABLEKIT
      ========================================================= -->
 
-<script src="https://widgets.sociablekit.com/instagram-feed/widget.js" defer></script>
+    <script src="https://widgets.sociablekit.com/instagram-feed/widget.js" defer></script>
 
-<!-- =========================================================
-     JAVASCRIPT — CARROUSEL
-     ========================================================= -->
-
-<script>
-    let currentSlideIndex = 0;
-    const slides = document.querySelectorAll('.carousel-slide');
-    const dots = document.querySelectorAll('.dot');
-
-    function updateCarousel() {
-        slides.forEach((slide, index) => {
-            slide.classList.remove('active');
-            dots[index].classList.remove('active');
-        });
-        slides[currentSlideIndex].classList.add('active');
-        dots[currentSlideIndex].classList.add('active');
-    }
-
-    function changeSlide(direction) {
-        currentSlideIndex += direction;
-        if (currentSlideIndex >= slides.length) {
-            currentSlideIndex = 0;
-        } else if (currentSlideIndex < 0) {
-            currentSlideIndex = slides.length - 1;
-        }
-        updateCarousel();
-    }
-
-    function goToSlide(index) {
-        currentSlideIndex = index;
-        updateCarousel();
-    }
-</script>
 
 </body>
 
