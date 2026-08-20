@@ -1763,10 +1763,117 @@
                     10px;
 
             }
+            /* --- ENVELOPPE PRINCIPALE --- */
+.carousel-container {
+    position: relative;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 64px; /* Laisse la place exacte pour centrer les boutons de navigation */
+}
+
+/* --- CONFIGURATION COMPORTEMENTALE DU RAIL DE DÉFILEMENT --- */
+.grid.carousel-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    gap: 28px;
+    padding: 24px 4px;
+    margin: 0;
+}
+
+/* Dissimulation des barres de navigation natives */
+.grid.carousel-track::-webkit-scrollbar { display: none; }
+.grid.carousel-track { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* --- LOGIQUE DE DIMENSIONNEMENT RESPONSIVE DES CARTES --- */
+/* Configuration Desktop par défaut : 3 cartes affichées simultanément */
+.card {
+    flex: 0 0 calc(33.333% - 19px); 
+    scroll-snap-align: start;
+    box-sizing: border-box;
+}
+
+/* Configuration Mobile & Tablettes : 1 seule carte à la fois */
+@media (max-width: 900px) {
+    .carousel-container { padding: 0 48px; }
+    .card {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+    }
+}
+
+/* --- DESIGN DES BOUTONS FLÈCHES (Ronds raffinés) --- */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(205, 197, 169, 0.4);
+    background: rgba(22, 26, 27, 0.6);
+    color: #e5dbb9;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.carousel-arrow svg {
+    transition: transform 0.2s ease;
+}
+
+.carousel-arrow:hover {
+    background: #2c1a04;
+    border-color: #cda569;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+.carousel-arrow.prev:hover svg { transform: translateX(-2px); }
+.carousel-arrow.next:hover svg { transform: translateX(2px); }
+
+.carousel-arrow.prev { left: 4px; }
+.carousel-arrow.next { right: 4px; }
+
+/* --- LES POINTS INDICATEURS (DOTS) --- */
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    min-height: 12px;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(75, 55, 31, 0.25);
+    border: 1px solid rgba(205, 197, 169, 0.1);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.dot.active {
+    background: #2c1a04;
+    transform: scale(1.2);
+    box-shadow: 0 0 6px rgba(44, 26, 4, 0.3);
+}
+
+/* Réutilisation des styles génériques appliqués précédemment */
+.card-image-container { width: 100%; height: 380px; overflow: hidden; background: rgba(22,26,27,0.04); position: relative; z-index: 1; }
+.card-image, .card-carte-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.card-content { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 20px 0; }
+
 
         }
 
-        /* =========================================================
+        /* =========================================================/
            ENCART FANMADE
            ========================================================= */
 
@@ -2101,284 +2208,115 @@
             </div>
 
         </section>
-
-        <!-- =================================================
-             SUPPLÉMENTS
-             ================================================= -->
-
-        <h2
-            class="section-title"
-            id="supplements"
-        >
-            Suppléments
-        </h2>
-
-
-        <div class="supplement-strip">
-
-
-            <a
-                href="#maree-de-sang"
-                class="strip-item"
-            >
-
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg"
-                    alt="La Marée de Sang"
-                >
-
-                <span>
-                    La Marée de Sang
-                </span>
-
-            </a>
-
-
-            <a
-                href="#courant-occidental"
-                class="strip-item"
-            >
-
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg"
-                    alt="Le Courant Occidental"
-                >
-
-                <span>
-                    Le Courant Occidental
-                </span>
-
-            </a>
-
-
-            <a
-                href="#colonies-perdues"
-                class="strip-item"
-            >
-
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg"
-                    alt="Les Colonies Perdues"
-                >
-
-                <span>
-                    Les Colonies Perdues
-                </span>
-
-            </a>
-
-
-        </div>
-
-
-      <!-- =================================================
-     CARTES DES SUPPLÉMENTS
+<!-- =================================================
+     SECTION 1 : CARTES DES SUPPLÉMENTS
      ================================================= -->
-<section class="grid">
+<div class="carousel-container">
+    <!-- Boutons de navigation stylisés -->
+    <button class="carousel-arrow prev" aria-label="Précédent">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
 
-    <article class="card" id="maree-de-sang">
-        <h3>La Marée de Sang</h3>
-        
-        <div class="card-image-container">
-            <img 
-                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" 
-                alt="Couverture de La Marée de Sang" 
-                class="card-image"
-            >
-        </div>
+    <section class="grid carousel-track">
+        <!-- SUPPLÉMENT 1 -->
+        <article class="card" id="maree-de-sang">
+            <h3>La Marée de Sang</h3>
+            <div class="card-image-container">
+                <img src="https://githubusercontent.com" alt="Couverture de La Marée de Sang" class="card-image">
+            </div>
+            <div class="card-content">
+                <p>Campagne narrative consacrée aux flottes Druchii, à leurs poursuivants et aux batailles qui se déroulent sur les côtes de l'Ancien Monde.</p>
+            </div>
+            <a class="button" href="https://google.com" target="_blank" rel="noopener noreferrer">Télécharger</a>
+        </article>
 
-        <div class="card-content">
-            <p>
-                Campagne narrative consacrée aux flottes Druchii, 
-                à leurs poursuivants et aux batailles qui se déroulent 
-                sur les côtes de l'Ancien Monde.
-            </p>
-        </div>
+        <!-- SUPPLÉMENT 2 -->
+        <article class="card" id="courant-occidental">
+            <h3>Le Courant Occidental</h3>
+            <div class="card-image-container">
+                <img src="https://githubusercontent.com" alt="Couverture du Courant Occidental" class="card-image">
+            </div>
+            <div class="card-content">
+                <p>Supplément consacré à une cité maritime des Hauts-Elfes et aux événements qui entourent le Courant Occidental.</p>
+            </div>
+            <a class="button" href="https://google.com" target="_blank" rel="noopener noreferrer">Télécharger</a>
+        </article>
 
-        <a 
-            class="button" 
-            href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link" 
-            target="_blank" 
-            rel="noopener noreferrer"
-        >
-            Télécharger
-        </a>
-    </article>
+        <!-- SUPPLÉMENT 3 -->
+        <article class="card" id="colonies-perdues">
+            <h3>Les Colonies Perdues</h3>
+            <div class="card-image-container">
+                <img src="https://githubusercontent.com" alt="Couverture des Colonies Perdues" class="card-image">
+            </div>
+            <div class="card-content">
+                <p>Le retour des Hauts-Elfes sur les anciennes terres elfiques, désormais englouties sous des forêts hostiles.</p>
+            </div>
+            <a class="button disabled" href="#">Bientôt disponible</a>
+        </article>
+    </section>
 
-    <article class="card" id="courant-occidental">
-        <h3>Le Courant Occidental</h3>
+    <button class="carousel-arrow next" aria-label="Suivant">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
 
-        <div class="card-image-container">
-            <img 
-                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" 
-                alt="Couverture du Courant Occidental" 
-                class="card-image"
-            >
-        </div>
+    <!-- Indicateurs de position (dots) -->
+    <div class="carousel-dots"></div>
+</div>
 
-        <div class="card-content">
-            <p>
-                Supplément consacré à une cité maritime des Hauts-Elfes et aux 
-                événements qui entourent le Courant Occidental.
-            </p>
-        </div>
+<!-- =================================================
+     SECTION 2 : CARTES DE RÉFÉRENCES
+     ================================================= -->
+<h2 class="section-title" id="cartes-references">Cartes de références</h2>
 
-        <a 
-            class="button" 
-            href="https://drive.google.com/file/d/1TyLQKbevzQcxpoqbG8CSx429Lv-Ruiuu/view?usp=sharing" 
-            target="_blank" 
-            rel="noopener noreferrer"
-        >
-            Télécharger
-        </a>
-    </article>
+<div class="carousel-container">
+    <button class="carousel-arrow prev" aria-label="Précédent">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
 
-    <article class="card" id="colonies-perdues">
-        <h3>Les Colonies Perdues</h3>
+    <section class="grid carousel-track">
+        <!-- CARTE DE RÉFÉRENCE 1 -->
+        <article class="card" id="carte-maree-de-sang">
+            <h3>La Marée de Sang</h3>
+            <div class="card-image-container">
+                <img src="images/LaMareedeSang.png" alt="Cartes de références pour la Marée de Sang" class="card-carte-image">
+            </div>
+            <div class="card-content">
+                <p>Faites souffrir vos ennemis. Montrez-leur votre haine !</p>
+            </div>
+            <a class="button" href="https://google.com" target="_blank" rel="noopener noreferrer">Télécharger</a>
+        </article>
 
-        <div class="card-image-container">
-            <img 
-                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" 
-                alt="Couverture des Colonies Perdues" 
-                class="card-image"
-            >
-        </div>
+        <!-- CARTE DE RÉFÉRENCE 2 -->
+        <article class="card" id="carte-courant-occidental">
+            <h3>Le Courant Occidental</h3>
+            <div class="card-image-container">
+                <img src="images/LeCourantOccidental.png" alt="Cartes de références pour le Courant Occidental" class="card-carte-image">
+            </div>
+            <div class="card-content">
+                <p>Lancez les vagues sur vos ennemis. Montrez leur le couroux des flots !</p>
+            </div>
+            <a class="button" href="https://google.com" target="_blank" rel="noopener noreferrer">Télécharger</a>
+        </article>
 
-        <div class="card-content">
-            <p>
-                Le retour des Hauts-Elfes sur les anciennes terres elfiques, 
-                désormais englouties sous des forêts hostiles.
-            </p>
-        </div>
+        <!-- CARTE DE RÉFÉRENCE 3 -->
+        <article class="card" id="carte-colonies-perdues">
+            <h3>Les Colonies Perdues</h3>
+            <div class="card-image-container">
+                <img src="images/LesColoniesPerudes.png" alt="Cartes de références pour les colonies perdues" class="card-carte-image">
+            </div>
+            <div class="card-content">
+                <p>Après les rappels des colons, la forêt recouvre tout.</p>
+            </div>
+            <a class="button disabled" href="#">Bientôt disponible</a>
+        </article>
+    </section>
 
-        <!-- Ajout de la classe 'disabled' pour styliser le bouton indisponible -->
-        <a class="button disabled" href="#">
-            Bientôt disponible
-        </a>
-    </article>
+    <button class="carousel-arrow next" aria-label="Suivant">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
 
-</section>
-
-
-        <!-- =================================================
-             CARTES de références
-             ================================================= -->
-
-        <h2
-            class="section-title"
-            id="cartes-references"
-        >
-            Cartes de références
-        </h2>
-
-
-        <section class="grid">
-
-          <article
-                class="card"
-                id="carte-maree-de-sang"
-            >
-
-            
-
-                <h3>
-                    La Marée de Sang
-                </h3>
-                <img
-                    src="images/LaMareedeSang.png"
-                    alt="Cartes de références pour la Marée de Sang"
-                    class="card-carte-image"
-                >
-
-
-                <p>
-
-                    Faites souffrir vos ennemis. Montrez-leur votre haine !
-
-                </p>
-
-
-                 <a
-                    class="button"
-                    href="https://drive.google.com/file/d/11djj-cYnYCW9CvfDQybJNy2OuDH1OW3c/view?usp=sharing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Télécharger
-                </a>
-
-            </article>
-            <article
-                class="card"
-                id="carte-courant-occidental"
-            >
-
-              
-
-
-                <h3>
-                    Le Courant Occidental
-                </h3>
-              <img
-                    src="images/LeCourantOccidental.png"
-                    alt="Cartes de références pour le Courant Occidental"
-                    class="card-carte-image"
-                >
-
-                <p>
-
-                    Lancez les vagues sur vos ennemis. Montrez leur le couroux des flots !
-
-                </p>
-
-
-               <a
-                    class="button"
-                    href="https://drive.google.com/file/d/1xREdxCKkC6z59k6hSt6F6q6lNNO-KQ95/view?usp=sharing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Télécharger
-                </a>
-
-            </article>
-
-            <article
-                class="card"
-                id="carte-colonies-perdues"
-            >
-
-
-
-                <h3>
-                    Les Colonies Perdues
-                </h3>
-
-                <img
-                    src="images/LesColoniesPerudes.png"
-                    alt="Cartes de références pour les colonies perdues"
-                    class="card-carte-image"
-                >
-
-                <p>
-
-                    Après les rappels des colons, la forêt recouvre tout.
-
-                </p>
-
-
-                <a
-                    class="button"
-                    href="#"
-                >
-                    Bientôt disponible
-                </a>
-
-            </article>
-
-            
-            
-        </section>
+    <div class="carousel-dots"></div>
+</div>
 
         <!-- =====================================================
              À PROPOS DU PROJET
@@ -2724,6 +2662,71 @@
 <script
     src="https://widgets.sociablekit.com/instagram-feed/widget.js"
     defer>
+document.querySelectorAll('.carousel-container').forEach(carousel => {
+    const track = carousel.querySelector('.carousel-track');
+    const nextBtn = carousel.querySelector('.carousel-arrow.next');
+    const prevBtn = carousel.querySelector('.carousel-arrow.prev');
+    const dotsContainer = carousel.querySelector('.carousel-dots');
+    const cards = track.querySelectorAll('.card');
+
+    if (!track || !nextBtn || !prevBtn || !dotsContainer || cards.length === 0) return;
+
+    // Fonction pour calculer l'espace exact de défilement d'une carte
+    const getScrollAmount = () => cards[0].offsetWidth + parseInt(window.getComputedStyle(track).gap || 0);
+
+    // Fonction pour générer dynamiquement les points indicateurs
+    const updateDots = () => {
+        dotsContainer.innerHTML = '';
+        const cardsVisible = Math.round(track.clientWidth / cards[0].offsetWidth);
+        const totalDots = Math.max(1, cards.length - cardsVisible + 1);
+
+        // Si toutes les cartes tiennent sur l'écran (ex: 3 cartes sur PC), on masque les contrôles inutiles
+        if (totalDots <= 1) {
+            dotsContainer.style.display = 'none';
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            return;
+        } else {
+            dotsContainer.style.display = 'flex';
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'flex';
+        }
+
+        for (let i = 0; i < totalDots; i++) {
+            const dot = document.createElement('span');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            
+            dot.addEventListener('click', () => {
+                track.scrollTo({ left: i * getScrollAmount(), behavior: 'smooth' });
+            });
+            dotsContainer.appendChild(dot);
+        }
+    };
+
+    // Déclencheurs de clics pour les flèches
+    nextBtn.addEventListener('click', () => {
+        track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+    });
+
+    prevBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+    });
+
+    // Écouteur de défilement pour synchroniser l'activation des points
+    track.addEventListener('scroll', () => {
+        const index = Math.round(track.scrollLeft / getScrollAmount());
+        const dots = dotsContainer.querySelectorAll('.dot');
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+    });
+
+    // Initialisation et recalcul si la taille de la fenêtre change (passage PC vers Mobile)
+    updateDots();
+    window.addEventListener('resize', updateDots);
+});
+    
 </script>
 
 
