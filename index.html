@@ -1,324 +1,272 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archives du Courant</title>
-
-    <!-- =========================================================
-         POLICES
-         ========================================================= -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <title>Archives du Courant - Carrousel</title>
     <style>
-        /* =========================================================
-           VARIABLES
-           ========================================================= */
-        :root {
-            --fond: #15191a;
-            --bleu-noir: #1b2325;
-            --bleu-ardoise: #2d393d;
-            --bleu-gris: #435156;
-
-            --parchemin: #c8bd9d;
-            --parchemin-clair: #ded4b7;
-            --parchemin-fonce: #a89d7e;
-
-            --encre: #252a29;
-            --encre-claire: #4b514f;
-
-            --texte-clair: #d8d1b8;
-            --argent: #91a6aa;
-
-            --ligne: rgba(125, 139, 140, 0.50);
-            --ombre: rgba(0, 0, 0, 0.45);
-
-            --site-scale: 1;
-        }
-
-        /* =========================================================
-           RESET
-           ========================================================= */
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        /* Styles de base pour la page */
         body {
+            background-color: #1a1510;
+            color: #f4f1ea;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            color: var(--encre);
-            font-family: "Vollkorn", Georgia, serif;
-            line-height: 1.65;
-            background-color: var(--parchemin);
-            background-image: linear-gradient(rgba(170, 145, 105, 0.72), rgba(170, 145, 105, 0.72)), url("images/fond-carte.jpg");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            overflow-x: hidden;
-        }
-
-        /* =========================================================
-           VIGNETTE
-           ========================================================= */
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: -1;
-            background: radial-gradient(ellipse at center, transparent 35%, rgba(55, 38, 19, 0.20) 100%);
-        }
-
-        /* =========================================================
-           CONTENEUR D'ÉCHELLE
-           ========================================================= */
-        .site-wrapper {
-            width: 100%;
-            transform: scale(var(--site-scale));
-            transform-origin: top center;
-            transition: transform 0.25s ease;
-        }
-
-        .site-content {
-            width: 100%;
-        }
-
-        /* =========================================================
-           CONTRÔLE DE TAILLE
-           ========================================================= */
-        .scale-control {
-            position: fixed;
-            right: 18px;
-            bottom: 18px;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 5px;
-            background: rgba(27, 35, 37, 0.96);
-            border: 1px solid rgba(190, 170, 125, 0.45);
-            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(5px);
-        }
-
-        .scale-control button {
-            width: 36px;
-            height: 34px;
-            padding: 0;
-            border: 1px solid transparent;
-            background: transparent;
-            color: #d8d1b8;
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background 0.2s ease, border-color 0.2s ease;
-        }
-
-        .scale-control button:hover {
-            background: rgba(190,170,125,0.15);
-            border-color: rgba(190,170,125,0.35);
-        }
-
-        #scale-value {
-            min-width: 52px;
-            text-align: center;
-            color: #d8d1b8;
-            font-size: 13px;
-        }
-
-        /* =========================================================
-           PAGE & HEADER
-           ========================================================= */
-        .page {
-            width: calc(100% - 40px);
-            max-width: 1250px;
-            margin: 30px auto;
-        }
-
-        header {
-            position: relative;
-            text-align: center;
-            padding: 55px 30px 45px;
-            background: linear-gradient(rgba(25, 32, 34, 0.88), rgba(30, 38, 40, 0.88)), url("images/fond-carte.jpg");
-            background-size: cover;
-            background-position: center;
-            border: 1px solid var(--ligne);
-            box-shadow: 0 8px 25px var(--ombre);
-            margin-bottom: 40px;
-        }
-
-        header::before {
-            content: "";
-            position: absolute;
-            inset: 12px;
-            border: 1px solid rgba(210, 195, 160, 0.25);
-            pointer-events: none;
-        }
-
-        header h1 {
-            position: relative;
-            margin: 0;
-            color: #d8d1b8;
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: clamp(38px, 6vw, 72px);
-            font-weight: normal;
-            letter-spacing: 7px;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 0 rgba(255,255,255,0.25);
-        }
-
-        header .subtitle {
-            position: relative;
-            margin: 15px 0 0;
-            color: #aaa89b;
-            font-size: 14px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-        }
-
-        header .ornament {
-            position: relative;
-            margin: 22px auto 0;
-            width: 220px;
-            height: 1px;
-            background: var(--ligne);
-        }
-
-        header .ornament::before {
-            content: "◆";
-            position: absolute;
-            top: -9px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #d8d1b8;
-            background: #1b2325;
-            padding: 0 10px;
-        }
-
-        /* =========================================================
-           STYLE NOUVEAU CARROUSEL INTERACTIF
-           ========================================================= */
-        .carousel-section {
-            margin: 50px 0;
-            text-align: center;
-        }
-
-        .section-title {
-            font-family: "IM Fell English SC", Georgia, serif;
-            color: #252a29;
-            font-size: 28px;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .carousel-container {
-            position: relative;
-            max-width: 1100px;
-            margin: 0 auto;
-            overflow: hidden; /* Cache les cartes de côté */
-            padding: 10px 60px;
-        }
-
-        .carousel-track {
-            display: flex;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            gap: 30px;
-        }
-
-        .carousel-card {
-            /* Calcule la taille pour afficher 3 cartes sur grand écran */
-            min-width: calc(100% / 3 - 20px); 
-            background: rgba(244, 241, 234, 0.95);
-            border: 1px solid rgba(45, 57, 61, 0.3);
-            border-radius: 4px;
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            align-items: center;
         }
 
-        .card-title {
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 22px;
-            margin: 0 0 15px 0;
-            color: var(--bleu-noir);
+        h1 {
+            color: #ffb100;
+            text-align: center;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        .card-image-placeholder {
+        /* --- CONTENEUR PRINCIPAL DU CARROUSEL --- */
+        .carousel-container {
+            position: relative;
+            max-width: 400px; /* Largeur d'une carte pour afficher 1 carte à la fois comme sur l'exemple */
             width: 100%;
-            height: 260px;
-            background: var(--bleu-ardoise);
-            border: 1px solid var(--ligne);
-            margin-bottom: 15px;
+            margin: 0 auto;
+            overflow: hidden; /* Cache les cartes qui dépassent sur les côtés */
+            padding: 20px 0;
+        }
+
+        /* --- LE RAIL (Qui se déplace de gauche à droite) --- */
+        .carousel-track {
+            display: flex;
+            transition: transform 0.4s ease-in-out; /* Animation fluide de glissement */
+            gap: 0px; /* Pas d'espace entre les cartes pour un défilement parfait de 1 en 1 */
+        }
+
+        /* --- STYLE DE CHAQUE CARTE --- */
+        .carousel-card {
+            min-width: 100%; /* Chaque carte prend 100% de la largeur du conteneur */
+            box-sizing: border-box;
+            background: #251f18;
+            border: 2px solid #3d3224;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 520px;
+        }
+
+        .carousel-card h3 {
+            color: #ffb100;
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        /* Simulation des couvertures de livres */
+        .card-image {
+            width: 180px;
+            height: 250px;
+            background: #14100c;
+            border: 2px solid #5c4a35;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #d8d1b8;
-            font-size: 14px;
+            color: #665;
+            font-size: 0.9rem;
+            margin: 15px 0;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
 
-        .card-desc {
-            font-size: 15px;
-            color: var(--encre-claire);
-            margin-bottom: 20px;
-            flex-grow: 1;
+        .carousel-card p {
+            font-size: 0.95rem;
+            color: #d1cbbd;
+            line-height: 1.5;
+            margin: 15px 0;
+            padding: 0 10px;
         }
 
+        /* Bouton de téléchargement */
         .download-btn {
-            background: var(--bleu-noir);
-            color: #d8d1b8;
-            border: 1px solid var(--ligne);
-            padding: 10px 20px;
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 14px;
-            letter-spacing: 1px;
+            background-color: #b37400;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            font-weight: bold;
             cursor: pointer;
-            width: 100%;
-            transition: all 0.2s ease;
+            border-radius: 4px;
+            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 1px;
+            width: 80%;
         }
 
         .download-btn:hover:not(:disabled) {
-            background: var(--bleu-ardoise);
-            color: #fff;
+            background-color: #e69500;
+            transform: scale(1.03);
         }
 
         .download-btn:disabled {
-            background: #ccc;
-            color: #777;
-            border-color: #bbb;
+            background-color: #4a3e31;
+            color: #7a6e5f;
             cursor: not-allowed;
         }
 
-        /* Flèches de navigation (Inspiration style interface de jeu) */
+        /* --- BOUTONS DE NAVIGATION (Flèches) --- */
         .carousel-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: var(--bleu-noir);
-            color: #d8d1b8;
-            border: 1px solid var(--ligne);
-            width: 44px;
-            height: 44px;
-            font-size: 20px;
+            background: rgba(37, 31, 24, 0.85);
+            color: #ffb100;
+            border: 2px solid #3d3224;
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
             cursor: pointer;
             border-radius: 50%;
             z-index: 10;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: all 0.2s;
         }
 
         .carousel-btn:hover {
-            background: var(--bleu-ardoise);
-            color: white;
+            background: #ffb100;
+            color: #251f18;
+            border-color: #ffb100;
+        }
+
+        /* Positionnement précis des flèches à l'extérieur des cartes si possible, ou sur les bords */
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+
+        /* --- INDICATEURS (Les points du bas) --- */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #4a3e31;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #3d3224;
+        }
+
+        .dot.active {
+            background-color: #ffb100;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px #ffb100;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mes Suppléments</h1>
+
+    <!-- Structure du Carrousel -->
+    <div class="carousel-container">
+        
+        <!-- Flèche Gauche -->
+        <button class="carousel-btn prev-btn" id="prevBtn" aria-label="Précédent">&#10216;</button>
+
+        <!-- Rail contenant les cartes -->
+        <div class="carousel-track" id="carouselTrack">
+            
+            <!-- Carte 1 -->
+            <div class="carousel-card">
+                <h3>La Marée de Sang</h3>
+                <div class="card-image">[ Image Couverture ]</div>
+                <p>Campagne narrative consacrée aux flottes Druchii, à leurs poursuivants et aux batailles qui se déroulent sur les côtes de l'Ancien Monde.</p>
+                <button class="download-btn">TÉLÉCHARGER</button>
+            </div>
+
+            <!-- Carte 2 -->
+            <div class="carousel-card">
+                <h3>Le Courant Occidental</h3>
+                <div class="card-image">[ Image Couverture ]</div>
+                <p>Supplément consacré à une cité maritime des Hauts-Elfes et aux événements qui entourent le Courant Occidental.</p>
+                <button class="download-btn">TÉLÉCHARGER</button>
+            </div>
+
+            <!-- Carte 3 -->
+            <div class="carousel-card">
+                <h3>Les Colonies Perdues</h3>
+                <div class="card-image">[ Image Couverture ]</div>
+                <p>Le retour des Hauts-Elfes sur les anciennes terres elfiques, désormais englouties sous des forêts hostiles.</p>
+                <button class="download-btn" disabled>BIENTÔT DISPONIBLE</button>
+            </div>
+            
+        </div>
+
+        <!-- Flèche Droite -->
+        <button class="carousel-btn next-btn" id="nextBtn" aria-label="Suivant">&#10217;</button>
+    </div>
+
+    <!-- Points indicateurs sous le carrousel -->
+    <div class="carousel-dots" id="carouselDots">
+        <span class="dot active" data-index="0"></span>
+        <span class="dot" data-index="1"></span>
+        <span class="dot" data-index="2"></span>
+    </div>
+
+    <!-- Logique JavaScript pour animer le tout -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const track = document.getElementById("carouselTrack");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            const dots = document.querySelectorAll(".dot");
+            const cards = document.querySelectorAll(".carousel-card");
+
+            let currentIndex = 0;
+            const totalCards = cards.length;
+
+            // Fonction pour changer de carte
+            function updateCarousel(index) {
+                // On s'assure que l'index reste dans les limites
+                if (index < 0) index = totalCards - 1;
+                if (index >= totalCards) index = 0;
+                
+                currentIndex = index;
+                
+                // Déplacement du rail d'une largeur exacte de carte (100% par carte)
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+                // Met à jour les points lumineux (dots)
+                dots.forEach(dot => dot.classList.remove("active"));
+                if(dots[currentIndex]) {
+                    dots[currentIndex].classList.add("active");
+                }
+            }
+
+            // Clic flèche droite
+            nextBtn.addEventListener("click", () => {
+                updateCarousel(currentIndex + 1);
+            });
+
+            // Clic flèche gauche
+            prevBtn.addEventListener("click", () => {
+                updateCarousel(currentIndex - 1);
+            });
+
+            // Clic direct sur un petit point du bas
+            dots.forEach(dot => {
+                dot.addEventListener("click", (e) => {
+                    const targetIndex = parseInt(e.target.dataset.index);
+                    updateCarousel(targetIndex);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
