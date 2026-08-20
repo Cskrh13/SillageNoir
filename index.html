@@ -1094,7 +1094,99 @@
     max-width: 1200px;
     margin: 0 auto;
 }
+/* --- CONTENEUR PRINCIPAL DU CARROUSEL --- */
+        .carousel-container {
+            position: relative;
+            max-width: 400px; /* Largeur d'une carte pour afficher 1 carte à la fois comme sur l'exemple */
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden; /* Cache les cartes qui dépassent sur les côtés */
+            padding: 20px 0;
+        }
 
+        /* --- LE RAIL (Qui se déplace de gauche à droite) --- */
+        .carousel-track {
+            display: flex;
+            transition: transform 0.4s ease-in-out; /* Animation fluide de glissement */
+            gap: 0px; /* Pas d'espace entre les cartes pour un défilement parfait de 1 en 1 */
+        }
+
+        /* --- STYLE DE CHAQUE CARTE --- */
+        .carousel-card {
+            min-width: 100%; /* Chaque carte prend 100% de la largeur du conteneur */
+            box-sizing: border-box;
+            background: #251f18;
+            border: 2px solid #3d3224;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 520px;
+        }
+
+        .carousel-card h3 {
+            color: #ffb100;
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+        /* --- BOUTONS DE NAVIGATION (Flèches) --- */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(37, 31, 24, 0.85);
+            color: #ffb100;
+            border: 2px solid #3d3224;
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .carousel-btn:hover {
+            background: #ffb100;
+            color: #251f18;
+            border-color: #ffb100;
+        }
+
+        /* Positionnement précis des flèches à l'extérieur des cartes si possible, ou sur les bords */
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+
+        /* --- INDICATEURS (Les points du bas) --- */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #4a3e31;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #3d3224;
+        }
+
+        .dot.active {
+            background-color: #ffb100;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px #ffb100;
+        }
+        
 /* Base de votre carte */
 .card {
     position: relative;
@@ -1620,7 +1712,94 @@
 
             }
 
+.carousel-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 60px;
+}
 
+.carousel-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel-slide {
+    display: none; /* Masqué par défaut */
+    align-items: center;
+    gap: 40px;
+}
+
+.carousel-slide.active {
+    display: flex; /* Affiché uniquement si actif */
+}
+
+.slide-content {
+    flex: 1;
+}
+
+.slide-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.slide-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+/* Boutons de navigation (Flèches) */
+.carousel-arrow {
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: 2px solid #ffcc00; /* Style rappelant l'interface */
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    cursor: pointer;
+    font-size: 18px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: background 0.3s;
+}
+
+.carousel-arrow:hover {
+    background: #ffcc00;
+    color: #000;
+}
+
+.prev-btn { left: 10px; }
+.next-btn { right: 10px; }
+
+/* Indicateurs (Dots) */
+.carousel-dots {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background-color: #555;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dot.active, .dot:hover {
+    background-color: #ffcc00;
+}
             .card {
 
                 width:
@@ -2134,90 +2313,61 @@
       <!-- =================================================
      CARTES DES SUPPLÉMENTS
      ================================================= -->
-<section class="grid">
+<div class="carousel-container">
+    <!-- Flèche Gauche -->
+    <button class="carousel-arrow prev-btn" onclick="changeSlide(-1)">&#10094;</button>
 
-    <article class="card" id="maree-de-sang">
-        <h3>La Marée de Sang</h3>
+    <!-- Zone d'affichage des slides -->
+    <div class="carousel-wrapper">
         
-        <div class="card-image-container">
-            <img 
-                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" 
-                alt="Couverture de La Marée de Sang" 
-                class="card-image"
-            >
+        <!-- Slide 1: La Marée de Sang -->
+        <div class="carousel-slide active">
+            <div class="slide-content">
+                <h3>La Marée de Sang</h3>
+                <p>Campagne narrative consacrée aux flottes Druchii, à leurs poursuivants et aux batailles qui se déroulent sur les côtes de l'Ancien Monde.</p>
+                <a class="button" href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link" target="_blank" rel="noopener noreferrer">Télécharger</a>
+            </div>
+            <div class="slide-image">
+                <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" alt="Couverture de La Marée de Sang">
+            </div>
         </div>
 
-        <div class="card-content">
-            <p>
-                Campagne narrative consacrée aux flottes Druchii, 
-                à leurs poursuivants et aux batailles qui se déroulent 
-                sur les côtes de l'Ancien Monde.
-            </p>
+        <!-- Slide 2: Le Courant Occidental -->
+        <div class="carousel-slide">
+            <div class="slide-content">
+                <h3>Le Courant Occidental</h3>
+                <p>Supplément consacré à une cité maritime des Hauts-Elfes et aux événements qui entourent le Courant Occidental.</p>
+                <a class="button" href="https://drive.google.com/file/d/1TyLQKbevzQcxpoqbG8CSx429Lv-Ruiuu/view?usp=sharing" target="_blank" rel="noopener noreferrer">Télécharger</a>
+            </div>
+            <div class="slide-image">
+                <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" alt="Couverture du Courant Occidental">
+            </div>
         </div>
 
-        <a 
-            class="button" 
-            href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link" 
-            target="_blank" 
-            rel="noopener noreferrer"
-        >
-            Télécharger
-        </a>
-    </article>
-
-    <article class="card" id="courant-occidental">
-        <h3>Le Courant Occidental</h3>
-
-        <div class="card-image-container">
-            <img 
-                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" 
-                alt="Couverture du Courant Occidental" 
-                class="card-image"
-            >
+        <!-- Slide 3: Les Colonies Perdues -->
+        <div class="carousel-slide">
+            <div class="slide-content">
+                <h3>Les Colonies Perdues</h3>
+                <p>Le retour des Hauts-Elfes sur les anciennes terres elfiques, désormais englouties sous des forêts hostiles.</p>
+                <a class="button disabled" href="#">Bientôt disponible</a>
+            </div>
+            <div class="slide-image">
+                <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" alt="Couverture des Colonies Perdues">
+            </div>
         </div>
 
-        <div class="card-content">
-            <p>
-                Supplément consacré à une cité maritime des Hauts-Elfes et aux 
-                événements qui entourent le Courant Occidental.
-            </p>
-        </div>
+    </div>
 
-        <a 
-            class="button" 
-            href="https://drive.google.com/file/d/1TyLQKbevzQcxpoqbG8CSx429Lv-Ruiuu/view?usp=sharing" 
-            target="_blank" 
-            rel="noopener noreferrer"
-        >
-            Télécharger
-        </a>
-    </article>
+    <!-- Flèche Droite -->
+    <button class="carousel-arrow next-btn" onclick="changeSlide(1)">&#10095;</button>
 
-    <article class="card" id="colonies-perdues">
-        <h3>Les Colonies Perdues</h3>
-
-        <div class="card-image-container">
-            <img 
-                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" 
-                alt="Couverture des Colonies Perdues" 
-                class="card-image"
-            >
-        </div>
-
-        <div class="card-content">
-            <p>
-                Le retour des Hauts-Elfes sur les anciennes terres elfiques, 
-                désormais englouties sous des forêts hostiles.
-            </p>
-        </div>
-
-        <!-- Ajout de la classe 'disabled' pour styliser le bouton indisponible -->
-        <a class="button disabled" href="#">
-            Bientôt disponible
-        </a>
-    </article>
-
-</section>
+    <!-- Points de navigation (Dots) -->
+    <div class="carousel-dots">
+        <span class="dot active" onclick="goToSlide(0)"></span>
+        <span class="dot" onclick="goToSlide(1)"></span>
+        <span class="dot" onclick="goToSlide(2)"></span>
+    </div>
+</div>
 
 
         <!-- =================================================
@@ -2684,6 +2834,34 @@
 <script
     src="https://widgets.sociablekit.com/instagram-feed/widget.js"
     defer>
+
+    let currentSlideIndex = 0;
+const slides = document.querySelectorAll('.carousel-slide');
+const dots = document.querySelectorAll('.dot');
+
+function updateCarousel() {
+    slides.forEach((slide, index) => {
+        slide.classList.remove('active');
+        dots[index].classList.remove('active');
+    });
+    slides[currentSlideIndex].classList.add('active');
+    dots[currentSlideIndex].classList.add('active');
+}
+
+function changeSlide(direction) {
+    currentSlideIndex += direction;
+    if (currentSlideIndex >= slides.length) {
+        currentSlideIndex = 0;
+    } else if (currentSlideIndex < 0) {
+        currentSlideIndex = slides.length - 1;
+    }
+    updateCarousel();
+}
+
+function goToSlide(index) {
+    currentSlideIndex = index;
+    updateCarousel();
+}
 </script>
 
 
