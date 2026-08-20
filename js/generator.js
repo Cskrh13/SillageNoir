@@ -501,6 +501,109 @@ function setSelectOption(uidValue, kind, optionId) {
   render();
 }
 
+
+const STAT_KEYS = ["M","CC","CT","F","E","PV","I","A","Cd"];
+
+function normalizeProfile(profile) {
+  if (!profile || typeof profile !== "object") return null;
+  const out = {};
+  STAT_KEYS.forEach(k => {
+    if (profile[k] !== undefined && profile[k] !== null && profile[k] !== "") out[k] = profile[k];
+  });
+  return Object.keys(out).length ? out : null;
+}
+
+function profileForOption(option) {
+  if (!option || typeof option !== "object") return null;
+  return normalizeProfile(option.profile || option.profil || option.mountProfile || option.profilMonture);
+}
+
+function modifierForObject(obj) {
+  if (!obj || typeof obj !== "object") return {};
+  return obj.modifiers || obj.profileModifiers || obj.statModifiers || obj.characteristics || obj.caracteristiques || {};
+}
+
+function numericStat(value) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && /^[-+]?\d+(?:[.,]\d+)?$/.test(value.trim())) return Number(value.replace(",", "."));
+  return null;
+}
+
+function applyModifier(base, modifier) {
+  const n = numericStat(base);
+  const delta = numericStat(modifier);
+  if (n === null || delta === null) return base;
+  return n + delta;
+}
+
+function selectedMagicObjects(entry) {
+  const result = [];
+  if (entry?.magicBannerId) {
+    const item = magicItemList().find(x => String(x.id) === String(entry.magicBannerId));
+    if (item) result.push(item);
+  }
+  return result;
+}
+
+function effectiveProfile(entry, unit) {
+  const base = normalizeProfile(unit?.profile || unit?.profil) || {};
+  const profile = {...base};
+  const mods = {};
+  const addMods = source => {
+    const m = modifierForObject(source);
+    Object.entries(m || {}).forEach(([key, value]) => {
+      if (!STAT_KEYS.includes(key)) return;
+      const n = numericStat(value);
+      if (n === null) return;
+      mods[key] = (mods[key] || 0) + n;
+    });
+  };
+
+  selectedOptions(entry).forEach(id => {
+    const option = (unit?.options || []).find(o => o.id === id);
+    if (option) addMods(option);
+  });
+  selectedMagicObjects(entry).forEach(addMods);
+
+  const result = {};
+  STAT_KEYS.forEach(key => {
+    if (profile[key] === undefined) return;
+    result[key] = applyModifier(profile[key], mods[key] || 0);
+  });
+  return {profile: result, modifiers: mods};
+}
+
+function statDisplay(value, modifier) {
+  const mod = numericStat(modifier);
+  const suffix = mod ? ` <span class="stat-mod">(${mod > 0 ? "+" : ""}${mod})</span>` : ' <span class="stat-mod empty">(—)</span>';
+  return `${esc(value)}${suffix}`;
+}
+
+function renderProfileTable(entry, unit, label="CARACTÉRISTIQUES") {
+  const data = effectiveProfile(entry, unit);
+  const profile = data.profile || {};
+  const hasProfile = STAT_KEYS.some(k => profile[k] !== undefined);
+  if (!hasProfile) return "";
+  return `<div class="profile-block">
+    <div class="profile-title">${esc(label)}</div>
+    <div class="profile-grid">
+      ${STAT_KEYS.map(k => `<div class="profile-cell"><span class="profile-key">${k}</span><strong>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</strong></div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderMountProfile(entry, unit) {
+  const selectedMountId = selectedOptions(entry).find(id => {
+    const o = (unit.options || []).find(x => x.id === id);
+    return o?.kind === "mount";
+  });
+  if (!selectedMountId) return "";
+  const mount = (unit.options || []).find(o => o.id === selectedMountId);
+  const profile = profileForOption(mount);
+  if (!profile) return `<div class="mount-profile-block"><div class="profile-title">PROFIL DE LA MONTURE</div><div class="profile-missing">Profil de monture non renseigné dans les données.</div></div>`;
+  return `<div class="mount-profile-block"><div class="profile-title">PROFIL DE LA MONTURE — ${esc(mount.name)}</div><div class="profile-grid">${STAT_KEYS.map(k => `<div class="profile-cell"><span class="profile-key">${k}</span><strong>${esc(profile[k] ?? "—")}</strong></div>`).join("")}</div></div>`;
+}
+
 function optionGroups(u) {
   const result = { banner:[], mount:[], weapon:[], armour:[], other:[] };
   (u.options || []).forEach(o => (result[o.kind] || result.other).push(o));
@@ -697,7 +800,7 @@ function renderList() {
   if (!items.length) { container.innerHTML = ""; return; }
 
   const groups = {};
-  items.forEach(x => (groups[x.unit.category] ||= []).push(x));
+  items.forEach(x => (groups[effectiveCategory(x.unit)] ||= []).push(x));
 
   container.innerHTML = Object.entries(groups).map(([cat, arr]) => `
     <section class="roster-group">
@@ -718,6 +821,8 @@ function renderList() {
             <div class="qty-control"><button data-minus="${esc(item.uid)}">−</button><input class="qty-input" type="number" min="${min}" ${max===Infinity?"":`max="${max}"`} value="${item.qty}" data-qty-input="${esc(item.uid)}" aria-label="Effectif de ${esc(unit.name)}"><button data-plus="${esc(item.uid)}">+</button><span>figurine${item.qty > 1 ? "s" : ""}</span></div>
             <div class="selected-options">${optionNames.length ? optionNames.map(esc).join(" · ") : "Aucune option"}</div>
           </div>
+          ${renderProfileTable(item, unit)}
+          ${renderMountProfile(item, unit)}
           ${renderOptionControls(item, unit)}
         </article>`;
       }).join("")}
@@ -738,10 +843,10 @@ function renderCompositionChart(){
   const cats=['Personnages','Unités de Base','Unités Spéciales','Unités Rares'];
   const values=cats.map(cat=>getCategoryTotal(cat));
   const total=values.reduce((a,b)=>a+b,0);
-  const colors=['#8c7760','#6f806e','#657782','#765e5e'];
+  const colors=['#c79a32','#5a2f24','#9a6f22','#a9503d'];
   let cursor=0;
   const stops=values.map((v,i)=>{const a=total?cursor/total*360:0; cursor+=v; const b=total?cursor/total*360:0; return `${colors[i]} ${a}deg ${b}deg`;}).join(',');
-  chart.style.background=total?`conic-gradient(${stops})`:'conic-gradient(#4b5050 0 360deg)';
+  chart.style.background=total?`conic-gradient(${stops})`:'conic-gradient(#6a5a45 0 360deg)';
   chart.hidden=!(toggle?.checked);
   legend.innerHTML=cats.map((cat,i)=>{const pct=state.pointsLimit?values[i]/state.pointsLimit*100:0; return `<div><span class="legend-dot" style="background:${colors[i]}"></span><span>${cat}</span><strong>${formatPoints(values[i])}</strong><small>${pct.toFixed(1)} % du format</small></div>`;}).join('');
 }
