@@ -1,3 +1,114 @@
 {
-  "magicItems": {}
+  "id": "tour-d-argent",
+  "name": "Objets magiques de Tour d'Argent",
+  "source": "Le Courant Occidental — Tour d'Argent",
+  "magicItems": {
+    "Armes magiques": [
+      {
+        "id": "trident-des-phares",
+        "name": "Trident des Phares",
+        "points": 60,
+        "repeatable": false,
+        "restrictions": {
+          "troopType": [
+            "infantry",
+            "cavalry"
+          ]
+        },
+        "profile": {
+          "range": "Combat",
+          "strength": "S+1",
+          "armourPiercing": -1
+        },
+        "specialRules": [
+          "Arme à deux mains",
+          "Blessures Multiples (2)",
+          "Attaque magique"
+        ],
+        "notes": "Lors de la phase à laquelle il a été chargé, le porteur gagne +1 en Capacité de Combat jusqu'à la fin de la phase de combat."
+      },
+      {
+        "id": "arc-du-vent-marin",
+        "name": "Arc du Vent Marin",
+        "points": 40,
+        "repeatable": false,
+        "profile": {
+          "range": "30\"",
+          "strength": "4",
+          "armourPiercing": -1
+        },
+        "specialRules": [
+          "Tirs multiples (2)",
+          "Attaque magique"
+        ],
+        "notes": "Si le porteur n'a pas bougé durant ce tour, les tirs effectués avec l'Arc du Vent Marin gagnent PA -1 supplémentaire et le porteur peut relancer un seul jet pour toucher lors de cette phase de tir."
+      }
+    ],
+    "Armures magiques": [
+      {
+        "id": "armures-des-quais",
+        "name": "Armures des quais",
+        "points": 45,
+        "restrictions": {
+          "troopType": [
+            "infantry"
+          ]
+        },
+        "baseType": "armure de plate complète",
+        "notes": "Lors de la phase de combat à laquelle il a été chargé, le porteur gagne +1 en Capacité de Combat."
+      },
+      {
+        "id": "cuirasse-des-brumes",
+        "name": "Cuirasse des Brumes",
+        "points": 50,
+        "restrictions": {
+          "troopType": [
+            "infantry"
+          ]
+        },
+        "baseType": "armure légère",
+        "specialRules": [
+          "Régénération (5+)"
+        ],
+        "notes": "Les attaques de tir visant le porteur et l'unité qu'il a rejointe subissent -1 pour toucher. Ce malus ne s'applique pas aux attaques magiques."
+      }
+    ],
+    "Talismans": [
+      {
+        "id": "perle-des-courants",
+        "name": "Perle des Courants",
+        "points": 40,
+        "repeatable": false,
+        "specialRules": [
+          "Résistance à la magie (1)"
+        ],
+        "notes": "Une fois par bataille, au début d'une phase de mouvement, le porteur peut utiliser la perle pour appliquer Tir Rapide à ses armes et à celles de l'unité qu'il a rejointe jusqu'à la fin du tour."
+      },
+      {
+        "id": "boussole-de-saphery",
+        "name": "Boussole de Saphery",
+        "points": 35,
+        "repeatable": false,
+        "notes": "Une fois par partie, le porteur gagne +1 à ses jets de lancement ou de dissipation jusqu'à la phase de conjuration suivante. Cependant, il ne peut pas bénéficier de ce bonus lorsqu'il tente de lancer ou dissiper un sort à plus de 18\"."
+      }
+    ],
+    "Bannières magiques": [
+      {
+        "id": "fanal-du-courant-occidental",
+        "name": "Fanal du courant occidental",
+        "points": 80,
+        "repeatable": false,
+        "notes": "Les unités amies situées à 12\" ou moins peuvent utiliser le Commandement du porteur pour leurs tests de Commandement. Une fois par bataille, au début de la phase de mouvement, le porteur peut allumer le Fanal. Les unités amies situées à 8\" ou moins peuvent effectuer un mouvement de Reformation sans pénalité. Elles peuvent bouger normalement ensuite, mais ne peuvent pas déclarer de charge."
+      },
+      {
+        "id": "banniere-des-marees",
+        "name": "Bannière des Marées",
+        "points": 45,
+        "repeatable": false,
+        "notes": "La bannière représente les périodes durant lesquelles les courants deviennent particulièrement violents."
+      }
+    ],
+    "Objets enchantés": [],
+    "Objets cabalistiques": []
+  }
 }
