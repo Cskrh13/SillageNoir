@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archives du Courant — Administration</title>
+<style>
+:root{
+  --bg:#15191a; --panel:#20282a; --panel2:#283234; --line:#667476;
+  --paper:#d8cfb4; --paper2:#c2b89c; --ink:#252a29; --muted:#aaa895;
+  --accent:#b7a476; --danger:#a85c55; --ok:#718e73; --blue:#718b96;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#344144 0,#15191a 55%);color:#ddd8c5;font:15px/1.5 Georgia,serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1450px;margin:auto;padding:20px}
+header{padding:28px;text-align:center;border:1px solid var(--line);background:rgba(20,27,29,.94);box-shadow:0 10px 30px #0008}
+header h1{margin:0;font:42px Georgia,serif;letter-spacing:4px;color:#ddd2b0}
+header p{margin:8px 0 0;color:#aaa895;letter-spacing:2px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0;padding:12px;background:#202829;border:1px solid #596769}
+.btn{border:1px solid #718080;background:#a9a68f;color:#202526;padding:9px 14px}
+.btn:hover{filter:brightness(1.12)}
+.btn.dark{background:#303a3c;color:#ddd8c5}.btn.danger{background:#6e3c39;color:#fff}.btn.ok{background:#4e6853;color:#fff}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:15px}
+.sidebar,.workspace{border:1px solid #596769;background:#202829;box-shadow:0 8px 25px #0005}
+.sidebar{padding:14px}
+.sidebar h3{font-size:13px;letter-spacing:2px;color:#bdb79f;margin:12px 5px 7px}
+.navitem{display:flex;justify-content:space-between;gap:8px;width:100%;padding:10px;border:1px solid transparent;background:transparent;color:#d8d2bd;text-align:left}
+.navitem:hover,.navitem.active{background:#303a3c;border-color:#6a7778}
+.navitem small{color:#8f9a9a}
+.workspace{min-width:0}
+.workspace-head{padding:16px 18px;border-bottom:1px solid #596769;background:#293335}
+.workspace-head h2{margin:0;color:#ded3b1;font-size:25px}.workspace-head p{margin:3px 0;color:#a9aaa0}
+.tabs{display:flex;flex-wrap:wrap;gap:5px;padding:10px;border-bottom:1px solid #596769;background:#1a2224}
+.tab{padding:8px 12px;background:#303a3c;border:1px solid #566466;color:#d4d0be}.tab.active{background:#a99b74;color:#202526}
+.content{padding:18px}
+.panel{background:#d0c6a9;color:var(--ink);border:1px solid #6c6b5c;padding:18px;margin-bottom:15px}
+.panel h3{margin-top:0;font-size:20px}.panel h4{margin-bottom:5px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}.field label{font-weight:bold;font-size:13px}
+input,select,textarea{width:100%;padding:9px;border:1px solid #767260;background:#eee8d2;color:#242827}
+textarea{min-height:130px;font-family:Consolas,monospace;font-size:13px}
+.cardlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.itemcard{padding:12px;background:#eee7d1;border:1px solid #8a836d;color:#2b302e}
+.itemcard strong{display:block;font-size:17px}.itemcard small{display:block;color:#5c5a4d;margin:3px 0 8px}
+.itemcard .actions{display:flex;gap:5px;flex-wrap:wrap}
+.badge{display:inline-block;padding:3px 7px;margin:2px;border:1px solid #82765b;background:#d2c7a6;font-size:11px}
+.notice{padding:10px 12px;background:#313b3d;border-left:4px solid var(--accent);margin-bottom:12px}
+.status{padding:9px 12px;background:#151b1d;border:1px solid #4e5a5c;color:#c9c6b6}
+pre.preview{white-space:pre-wrap;background:#171d1f;color:#ddd7c3;padding:15px;overflow:auto;max-height:520px;border:1px solid #586466}
+.hidden{display:none!important}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}.sidebar{order:2}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<h1>Archives du Courant</h1>
+<p>Administration des données — V5</p>
+</header>
+
+<div class="toolbar">
+<button class="btn" onclick="loadGitHub()">↻ Charger GitHub</button>
+<button class="btn" onclick="newArmy()">＋ Nouvelle armée</button>
+<button class="btn" onclick="newSupplement()">＋ Nouveau supplément</button>
+<button class="btn dark" onclick="exportCurrent('txt')">↓ Export TXT</button>
+<button class="btn dark" onclick="exportCurrent('json')">↓ Export JSON</button>
+<button class="btn dark" onclick="document.getElementById('fileInput').click()">↑ Importer</button>
+<button class="btn ok" onclick="saveCurrent()">Enregistrer localement</button>
+<input id="fileInput" type="file" accept=".txt,.json,application/json,text/plain" class="hidden">
+</div>
+
+<div id="status" class="status">Prêt. Les données sont chargées depuis GitHub uniquement lorsque vous cliquez sur « Charger GitHub ».</div>
+
+<div class="layout">
+<aside class="sidebar">
+<h3>ARMÉES</h3>
+<div id="armyNav"></div>
+<h3>SUPPLÉMENTS</h3>
+<div id="suppNav"></div>
+<h3>OUTILS</h3>
+<button class="navitem" onclick="showTab('dashboard')">▣ Tableau de bord</button>
+<button class="navitem" onclick="showTab('preview')">◉ Aperçu des données</button>
+</aside>
+
+<section class="workspace">
+<div class="workspace-head">
+<h2 id="title">Administration</h2>
+<p id="subtitle">Sélectionnez une armée ou un supplément.</p>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+</section>
+</div>
+</div>
+
+<script>
+const OWNER="Cskrh13";
+const REPO="Creations-Warhammer";
+const BRANCH="main";
+const BASE="data";
+let armies={};
+let supplements={};
+let currentType=null,currentId=null,currentTab="general";
+let dirty=false;
+
+const $=id=>document.getElementById(id);
+function status(msg,kind=""){ $("status").textContent=msg; $("status").style.borderLeft=kind==="ok"?"4px solid #718e73":kind==="err"?"4px solid #a85c55":"1px solid #4e5a5c"; }
+function slug(s){return s.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");}
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+
+function renderNav(){
+  $("armyNav").innerHTML=Object.values(armies).map(a=>`<button class="navitem ${currentType==="army"&&currentId===a.id?"active":""}" onclick="selectItem('army','${esc(a.id)}')">${esc(a.name||a.id)}<small>${(a.units||[]).length}</small></button>`).join("")||"<small>Aucune armée chargée.</small>";
+  $("suppNav").innerHTML=Object.values(supplements).map(s=>`<button class="navitem ${currentType==="supp"&&currentId===s.id?"active":""}" onclick="selectItem('supp','${esc(s.id)}')">${esc(s.name||s.id)}<small>${(s.armies||[]).length}</small></button>`).join("")||"<small>Aucun supplément chargé.</small>";
+}
+function selectItem(type,id){currentType=type;currentId=id;currentTab="general";renderNav();render();}
+function data(){return currentType==="army"?armies[currentId]:supplements[currentId];}
+
+function render(){
+  if(!currentType){$("title").textContent="Administration";$("subtitle").textContent="Sélectionnez une armée ou un supplément."; $("tabs").innerHTML=""; $("content").innerHTML=dashboard();return;}
+  const d=data();
+  $("title").textContent=d.name||d.id;
+  $("subtitle").textContent=(currentType==="army"?"Armée générique":"Supplément")+" · "+d.id;
+  const tabs=currentType==="army"
+    ? [["general","Général"],["units","Unités"],["rules","Règles"],["preview","Aperçu"]]
+    : [["general","Général"],["armies","Armées"],["units","Unités"],["restrictions","Restrictions"],["rules","Règles"],["preview","Aperçu"]];
+  $("tabs").innerHTML=tabs.map(([id,n])=>`<button class="tab ${currentTab===id?"active":""}" onclick="showTab('${id}')">${n}</button>`).join("");
+  $("content").innerHTML=currentTab==="general"?generalForm(d):currentTab==="units"?unitsForm(d):currentTab==="restrictions"?restrictionsForm(d):currentTab==="armies"?armiesForm(d):currentTab==="rules"?rulesForm(d):previewForm(d);
+}
+function showTab(t){currentTab=t;if(!currentType&&t!=="dashboard"&&t!=="preview"){return}render();}
+
+function dashboard(){
+ return `<div class="panel"><h3>Tableau de bord</h3>
+ <div class="notice">Cette V5 conserve les fichiers séparés et le principe de cloisonnement. Une modification de supplément ne modifie pas les données de l'armée générique.</div>
+ <div class="grid2">
+ <div><h4>Armées</h4><p>${Object.keys(armies).length} fichier(s) d'armée chargé(s).</p></div>
+ <div><h4>Suppléments</h4><p>${Object.keys(supplements).length} fichier(s) de supplément chargé(s).</p></div>
+ </div></div>
+ <div class="panel"><h3>Flux recommandé</h3><ol><li>Charger depuis GitHub.</li><li>Sélectionner une armée ou un supplément.</li><li>Modifier uniquement l'espace concerné.</li><li>Exporter en TXT/JSON pour sauvegarde.</li><li>Publier les fichiers validés dans <code>data/</code>.</li></ol></div>`;
+}
+function generalForm(d){
+ return `<div class="panel"><h3>Informations générales</h3><div class="grid2">
+ <div class="field"><label>ID</label><input id="f_id" value="${esc(d.id)}"></div>
+ <div class="field"><label>Nom</label><input id="f_name" value="${esc(d.name)}"></div>
+ ${currentType==="army"?`<div class="field"><label>Faction / armée</label><input id="f_faction" value="${esc(d.faction||"")}"></div>`:`<div class="field"><label>Description</label><input id="f_desc" value="${esc(d.description||"")}"></div>`}
+ </div><br><button class="btn ok" onclick="applyGeneral()">Appliquer</button></div>
+ <div class="panel"><h3>Structure du fichier</h3><p>Les données supplémentaires non reconnues par l'interface sont conservées lors des modifications normales.</p></div>`;
+}
+function applyGeneral(){
+ const d=data(), old=d.id;
+ d.id=$("f_id").value.trim(); d.name=$("f_name").value.trim();
+ if(currentType==="army")d.faction=$("f_faction").value.trim();else d.description=$("f_desc").value.trim();
+ if(old!==d.id){ if(currentType==="army"){delete armies[old];armies[d.id]=d}else{delete supplements[old];supplements[d.id]=d} currentId=d.id;}
+ dirty=true;renderNav();render();status("Modifications appliquées localement.","ok");
+}
+function categories(d){
+ return d.categories||d.unitCategories||["Personnages","Unités de base","Unités spéciales","Unités rares","Mercenaires","Alliés"];
+}
+function unitsForm(d){
+ const units=d.units||d.allowedUnits||[];
+ return `<div class="panel"><h3>${currentType==="army"?"Catalogue des unités":"Unités ajoutables par le supplément"}</h3>
+ <div class="notice">Les unités d'un supplément sont des références vers l'armée générique. Le supplément peut imposer des contraintes sans recopier les statistiques de l'unité.</div>
+ <button class="btn" onclick="addUnit()">＋ Ajouter une unité</button>
+ <div class="cardlist" style="margin-top:12px">${units.map((u,i)=>unitCard(u,i)).join("")||"<p>Aucune unité définie.</p>"}</div></div>`;
+}
+function unitCard(u,i){
+ const name=typeof u==="string"?u:(u.name||u.id||"Unité");
+ const id=typeof u==="string"?u:(u.id||slug(name));
+ const cat=typeof u==="string"?"":(u.category||"");
+ return `<div class="itemcard"><strong>${esc(name)}</strong><small>${esc(id)} ${cat?`· ${esc(cat)}`:""}</small>
+ <div class="actions"><button class="btn" onclick="editUnit(${i})">Modifier</button><button class="btn danger" onclick="deleteUnit(${i})">Supprimer</button></div></div>`;
+}
+function addUnit(){
+ const d=data(); if(!d.units)d.units=[]; d.units.push({id:"nouvelle-unite",name:"Nouvelle unité",category:"Unités de base"});dirty=true;render();
+}
+function editUnit(i){
+ const d=data(),u=d.units?d.units[i]:null;if(!u)return;
+ const id=prompt("ID de l'unité :",typeof u==="string"?u:u.id||"");if(id===null)return;
+ const name=prompt("Nom de l'unité :",typeof u==="string"?u:u.name||id);if(name===null)return;
+ const category=prompt("Catégorie :",typeof u==="string"?"Unités de base":u.category||"Unités de base");if(category===null)return;
+ d.units[i]={...(typeof u==="object"?u:{}),id:id.trim(),name:name.trim(),category:category.trim()};dirty=true;render();
+}
+function deleteUnit(i){if(!confirm("Supprimer cette unité ?"))return;data().units.splice(i,1);dirty=true;render();}
+
+function armiesForm(d){
+ const arr=d.armies||d.targetArmies||[];
+ return `<div class="panel"><h3>Armées concernées</h3><div class="notice">Un supplément peut maintenant cibler plusieurs armées.</div>
+ <div class="cardlist">${Object.values(armies).map(a=>`<label class="itemcard"><input type="checkbox" ${arr.includes(a.id)?"checked":""} onchange="toggleArmy('${esc(a.id)}',this.checked)"> <strong>${esc(a.name)}</strong><small>${esc(a.id)}</small></label>`).join("")}</div></div>`;
+}
+function toggleArmy(id,on){const d=data();if(!d.armies)d.armies=[];d.armies=on?[...new Set([...d.armies,id])]:d.armies.filter(x=>x!==id);dirty=true;}
+function restrictionsForm(d){
+ if(!d.restrictions)d.restrictions={categories:{},units:{},global:{}};
+ const r=d.restrictions;
+ return `<div class="panel"><h3>Restrictions</h3><div class="notice">Utilisez des nombres pour les pourcentages. Exemple : <code>{"max":25}</code>. Les champs ci-dessous acceptent du JSON libre pour conserver toute la souplesse du système.</div>
+ <div class="grid2">
+ <div class="field"><label>Catégories</label><textarea id="r_cat">${esc(JSON.stringify(r.categories||{},null,2))}</textarea></div>
+ <div class="field"><label>Unités</label><textarea id="r_units">${esc(JSON.stringify(r.units||{},null,2))}</textarea></div>
+ <div class="field"><label>Globales</label><textarea id="r_global">${esc(JSON.stringify(r.global||{},null,2))}</textarea></div>
+ </div><br><button class="btn ok" onclick="applyRestrictions()">Appliquer les restrictions</button></div>`;
+}
+function applyRestrictions(){
+ const d=data();try{d.restrictions={categories:JSON.parse($("r_cat").value||"{}"),units:JSON.parse($("r_units").value||"{}"),global:JSON.parse($("r_global").value||"{}")};dirty=true;render();status("Restrictions enregistrées localement.","ok")}catch(e){alert("JSON invalide : "+e.message)}}
+function rulesForm(d){
+ return `<div class="panel"><h3>Règles spéciales</h3><div class="field"><label>Une règle par objet JSON</label><textarea id="rules">${esc(JSON.stringify(d.specialRules||d.rules||[],null,2))}</textarea></div><br><button class="btn ok" onclick="applyRules()">Appliquer</button></div>`;
+}
+function applyRules(){const d=data();try{const v=JSON.parse($("rules").value||"[]");if(Array.isArray(v)){d.specialRules=v;dirty=true;render();status("Règles enregistrées.","ok")}else alert("La valeur doit être un tableau JSON.")}catch(e){alert("JSON invalide : "+e.message)}}
+function previewForm(d){return `<div class="panel"><h3>Aperçu du fichier</h3><pre class="preview">${esc(JSON.stringify(d,null,2))}</pre></div>`}
+
+function newArmy(){
+ const name=prompt("Nom de la nouvelle armée :");if(!name)return;const id=slug(name);
+ armies[id]={id,name,faction:id,units:[],specialRules:[]};currentType="army";currentId=id;currentTab="general";dirty=true;renderNav();render();status("Nouvelle armée créée localement.","ok");
+}
+function newSupplement(){
+ const name=prompt("Nom du nouveau supplément :");if(!name)return;const id=slug(name);
+ supplements[id]={id,name,armies:[],allowedUnits:[],excludedUnits:[],restrictions:{categories:{},units:{},global:{}},specialRules:[]};
+ currentType="supp";currentId=id;currentTab="general";dirty=true;renderNav();render();status("Nouveau supplément créé localement.","ok");
+}
+
+function saveCurrent(){if(!currentType)return;dirty=true;status("Données conservées dans la session du navigateur. Exportez-les ou publiez-les sur GitHub pour les rendre publiques.","ok");}
+
+function exportCurrent(type){
+ if(!currentType)return alert("Sélectionnez un fichier.");
+ const d=data(),blob=new Blob([type==="json"?JSON.stringify(d,null,2):toTxt(d)],{type:type==="json"?"application/json":"text/plain"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=d.id+"."+type;a.click();URL.revokeObjectURL(a.href);
+}
+function toTxt(d){
+ return `ID=${d.id}\nNOM=${d.name||""}\nTYPE=${currentType}\n\n--- JSON ---\n${JSON.stringify(d,null,2)}\n`;
+}
+$("fileInput").addEventListener("change",e=>{
+ const f=e.target.files[0];if(!f)return;const reader=new FileReader();
+ reader.onload=()=>{try{let text=reader.result,d=JSON.parse(text);if(!d.id)throw Error("ID absent");if(currentType==="army")armies[d.id]=d;else if(currentType==="supp")supplements[d.id]=d;else{if(d.armies||d.restrictions) supplements[d.id]=d;else armies[d.id]=d;currentType=(d.armies||d.restrictions)?"supp":"army"}currentId=d.id;dirty=true;renderNav();render();status("Fichier importé dans la session. Il n'est pas encore publié sur GitHub.","ok")}catch(err){alert("Import impossible : le fichier doit contenir un JSON valide. "+err.message)}};
+ reader.readAsText(f);e.target.value="";
+});
+
+async function loadGitHub(){
+ status("Chargement des fichiers depuis GitHub…");
+ try{
+  const repo=`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+  const tree=await fetch(repo).then(r=>{if(!r.ok)throw Error("GitHub inaccessible");return r.json()});
+  const files=(tree.tree||[]).filter(x=>x.type==="blob"&&(x.path.startsWith("data/armees/")||x.path.startsWith("data/supplements/"))&&x.path.endsWith(".json"));
+  armies={};supplements={};
+  for(const f of files){
+   const raw=`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
+   const r=await fetch(raw);if(!r.ok)continue;
+   const d=await r.json();
+   if(f.path.startsWith("data/armees/"))armies[d.id||f.path.split("/").pop().replace(".json","")]=d;
+   else supplements[d.id||f.path.split("/").pop().replace(".json","")]=d;
+  }
+  currentType=null;currentId=null;dirty=false;renderNav();render();status(`${Object.keys(armies).length} armée(s) et ${Object.keys(supplements).length} supplément(s) chargés depuis GitHub.`,"ok");
+ }catch(e){status("Erreur de chargement GitHub : "+e.message,"err")}
+}
+renderNav();render();
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+{
+  "id": "courant-occidental",
+  "name": "Le Courant Occidental",
+  "language": "fr",
+  "version": "1.0",
+  "source": "Le courant occidental.pdf",
+  "description": "Armée de l'Infamie de l'Ost de Tour d'Argent, utilisant les Royaumes Hauts-Elfes comme liste d'armée de référence.",
+  "armies": [
+    "hauts-elfes"
+  ],
+  "allowedUnits": [
+    "prince",
+    "archmage",
+    "noble",
+    "mage",
+    "elven-spearmen",
+    "elven-archers",
+    "shadow-warriors",
+    "lothern-sea-guard",
+    "eagle-claw-bolt-thrower",
+    "swordmasters-of-hoeth",
+    "great-eagle",
+    "eryndor-vareth",
+    "calion-vareth",
+    "elementals-currents",
+    "elemental-leviathan",
+    "lothern-skycutter"
+  ],
+  "excludedUnits": [],
+  "restrictions": {
+    "categories": {
+      "Personnages": {
+        "maxPercent": 50,
+        "notes": "0-1 Prince Haut Elfe ou Archimage par tranche de 1 000 points. Nobles et Mages Hauts-Elfes disponibles."
+      },
+      "Unités de Base": {
+        "minPercent": 33,
+        "notes": "Lanciers Hauts-Elfes et Archers Hauts-Elfes. 0-1 Guerriers Fantômes. La Garde Maritime de Lothern peut devenir un choix de Base si le Général possède l'Honneur Garde Maritime."
+      },
+      "Unités Spéciales": {
+        "maxPercent": 33,
+        "notes": "Gardes Maritimes de Lothern, Élémentaires des Courants, 0-3 Balistes Serre d'Aigle. Les Maîtres des Épées de Hoeth sont autorisés si le Général possède Gardien de Saphery ou Maître du savoir."
+      },
+      "Unités Rares": {
+        "maxPercent": 33,
+        "notes": "Léviathan élémentaire, Grand Aigle, 0-1 Maître des Épées de Hoeth par tranche de 1 000 points. Les Cotres Volants de Lothern sont autorisés si le Général possède l'Honneur Garde Maritime."
+      },
+      "Alliés": {
+        "maxPercent": 20,
+        "maxContingents": 1,
+        "notes": "Un seul contingent allié : Garnison de la Garde Maritime, Bretonnie ou Empire."
+      }
+    },
+    "units": {
+      "prince": {
+        "maxPer1000": 1,
+        "group": "prince-or-archmage"
+      },
+      "archmage": {
+        "maxPer1000": 1,
+        "group": "prince-or-archmage"
+      },
+      "shadow-warriors": {
+        "maxEntries": 1
+      },
+      "eagle-claw-bolt-thrower": {
+        "max": 3
+      },
+      "swordmasters-of-hoeth": {
+        "conditional": [
+          "Général avec l'Honneur Gardien de Saphery",
+          "Général avec l'Honneur Maître du savoir"
+        ]
+      },
+      "great-eagle": {
+        "maxPer1000": 1
+      },
+      "lothern-skycutter": {
+        "maxEntries": 2,
+        "conditional": [
+          "Général avec l'Honneur Garde Maritime"
+        ]
+      },
+      "lothern-sea-guard": {
+        "conditional": [
+          "Général avec l'Honneur Garde Maritime"
+        ]
+      },
+      "elementals-currents": {
+        "maxEntries": null
+      },
+      "elemental-leviathan": {
+        "maxEntries": 1
+      },
+      "eryndor-vareth": {
+        "maxEntries": 1
+      },
+      "calion-vareth": {
+        "maxEntries": 1
+      }
+    },
+    "global": {
+      "battleStandardBearer": {
+        "enabled": true,
+        "unit": "noble",
+        "points": 25,
+        "magicBanner": "Une seule bannière magique sans limite de points, en plus de l'allocation normale."
+      }
+    }
+  },
+  "specialRules": [
+    {
+      "id": "heritage-saphery",
+      "name": "Héritage de Saphery",
+      "text": "Les personnages pouvant prendre un Honneur Elfique ne peuvent choisir que Maître du savoir, Gardien de Saphery, Pur de cœur, Garde Maritime ou Gardiens des Courants."
+    },
+    {
+      "id": "gardiens-des-courants",
+      "name": "Gardiens des Courants",
+      "text": "Tout Mage ou Archimage peut choisir le Domaine des Brumes."
+    },
+    {
+      "id": "vigies-des-phares",
+      "name": "Vigies des Phares",
+      "text": "Les Balistes Serre d'Aigle gagnent Tir Préparé."
+    },
+    {
+      "id": "lecture-des-courants",
+      "name": "Lecture des Courants",
+      "text": "Les Maîtres des Épées de Hoeth et les Guerriers Fantômes gagnent Suivre le courant."
+    }
+  ],
+  "units": [
+    {
+      "id": "eryndor-vareth",
+      "name": "Éryndor Vareth, Maître du Courant",
+      "category": "Personnages",
+      "points": 140,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 2,
+        "I": 4,
+        "A": 1,
+        "Cd": 9
+      },
+      "type": "Infanterie régulière, personnage nommé",
+      "unitSize": "1",
+      "equipment": [
+        "Arme de base",
+        "Armure légère",
+        "Tome des Archives"
+      ],
+      "options": [
+        "Coursier elfique +14 pts",
+        "Grand Aigle +60 pts"
+      ],
+      "specialRules": [
+        "Réflexes Elfiques",
+        "Valeur des Âges",
+        "Réquisition avisée",
+        "Premier citoyen",
+        "Logisticien"
+      ],
+      "notes": [
+        "Compte comme un Noble dans les restrictions de personnage.",
+        "Peut inclure une option d'unité spéciale ou rare comme choix de Base."
+      ]
+    },
+    {
+      "id": "calion-vareth",
+      "name": "Calion Vareth, Capitaine du Lys d’Azur",
+      "category": "Personnages",
+      "points": 120,
+      "profile": {
+        "M": 5,
+        "CC": 6,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 3,
+        "I": 4,
+        "A": 3,
+        "Cd": 9
+      },
+      "type": "Infanterie régulière, personnage nommé",
+      "unitSize": "1",
+      "equipment": [
+        "Arme de base",
+        "Lances d'infanterie",
+        "Armure légère",
+        "Bouclier des Vareth",
+        "Arc de guerre"
+      ],
+      "options": [],
+      "specialRules": [
+        "Réflexes Elfiques",
+        "Valeur des Âges",
+        "Discipline Navale",
+        "Première citoyenne",
+        "Derrière toi !",
+        "Capitaine avisée"
+      ],
+      "notes": [
+        "Compte comme un Noble dans les restrictions de personnage.",
+        "Est considérée comme ayant l'Honneur Elfique Garde Maritime."
+      ]
+    },
+    {
+      "id": "elementals-currents",
+      "name": "Élémentaires des Courants",
+      "category": "Unités Spéciales",
+      "points": 60,
+      "profile": {
+        "M": 6,
+        "CC": 4,
+        "CT": "-",
+        "F": 4,
+        "E": 4,
+        "PV": 4,
+        "I": 3,
+        "A": 3,
+        "Cd": 6
+      },
+      "type": "Cavalerie monstrueuse",
+      "unitSize": "3+",
+      "equipment": [
+        "Arme de base"
+      ],
+      "options": [],
+      "specialRules": [
+        "Instable",
+        "Rapide",
+        "Mouvement à couvert",
+        "Ordre dispersé",
+        "Régénération (5+)",
+        "Corps liquide",
+        "Force du courant"
+      ],
+      "notes": []
+    },
+    {
+      "id": "elemental-leviathan",
+      "name": "Léviathan élémentaire",
+      "category": "Unités Rares",
+      "points": 220,
+      "profile": {
+        "M": 6,
+        "CC": 5,
+        "CT": "-",
+        "F": 6,
+        "E": 5,
+        "PV": 6,
+        "I": 4,
+        "A": 4,
+        "Cd": 6
+      },
+      "type": "Créature monstrueuse",
+      "unitSize": "1",
+      "equipment": [
+        "Arme de base"
+      ],
+      "options": [],
+      "specialRules": [
+        "Instable",
+        "Grande Cible",
+        "Terreur",
+        "Mouvement à couvert",
+        "Régénération (5+)",
+        "Corps liquide",
+        "Vague déferlante",
+        "Courant irrésistible"
+      ],
+      "notes": []
+    },
+    {
+      "id": "lothern-skycutter",
+      "name": "Cotre Volant de Lothern",
+      "category": "Unités Rares",
+      "points": null,
+      "profile": null,
+      "type": "Char volant",
+      "unitSize": "1",
+      "equipment": [],
+      "options": [],
+      "specialRules": [],
+      "notes": [
+        "Profil et coût non présents dans les données actuellement récupérées ; ajout bloqué tant que le coût n'est pas renseigné."
+      ]
+    }
+  ],
+  "allies": [
+    {
+      "name": "Garnison de la Garde Maritime",
+      "maxPercent": 20,
+      "maxContingents": 1
+    },
+    {
+      "name": "Bretonnie",
+      "maxPercent": 20,
+      "maxContingents": 1
+    },
+    {
+      "name": "Empire",
+      "maxPercent": 20,
+      "maxContingents": 1
+    }
+  ],
+  "generatorNotes": [
+    "Liste basée sur les Royaumes Hauts-Elfes.",
+    "Les unités non mentionnées dans allowedUnits ne sont pas proposées.",
+    "Les conditions liées aux Honneurs Elfiques sont conservées dans les champs conditional ; le générateur actuel les expose comme données mais ne les applique pas encore automatiquement.",
+    "Le Cotre Volant de Lothern est volontairement sans coût tant que son profil complet n'est pas renseigné."
+  ]
+}

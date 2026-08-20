@@ -1,0 +1,1129 @@
+{
+  "id": "elfes-sylvains",
+  "name": "Royaumes des Elfes Sylvains",
+  "nameEnglish": "Wood Elf Realms",
+  "army": "elfes-sylvains",
+  "source": "https://tow.whfb.app/army/wood-elf-realms",
+  "sourceArmyList": "https://tow.whfb.app/warhammer-armies/wood-elf-realms-army-list",
+  "language": "fr",
+  "version": "source consultée le 19 août 2026",
+  "notes": [
+    "Les données de profil et la structure de l'armée sont transcrites depuis la source indiquée.",
+    "Les textes complets des règles ne sont pas reproduits ici ; les règles spéciales sont identifiées par leur nom français et un résumé court.",
+    "Les coûts en points détaillés des unités doivent être ajoutés/validés dans le fichier lorsque le générateur en a besoin."
+  ],
+  "composition": {
+    "grande-armee": {
+      "personnages": {
+        "maxPercent": 50,
+        "restrictions": [
+          "0-1 Seigneur des Clairières ou Tisseuse de Sorts par tranche de 1000 points",
+          "0-1 Homme-arbre Vénérable par tranche de 1000 points"
+        ]
+      },
+      "base": {
+        "minPercent": 25,
+        "requirements": [
+          "Au moins 1 unité de Garde des Clairières"
+        ],
+        "restrictions": [
+          "0-1 Éclaireurs des Bois Profonds comme choix Base par tranche de 1000 points"
+        ]
+      },
+      "speciales": {
+        "maxPercent": 50,
+        "restrictions": [
+          "0-2 unités de Dryades Anciennes par tranche de 1000 points"
+        ]
+      },
+      "rares": {
+        "maxPercent": 25,
+        "restrictions": [
+          "0-1 unité de Rôdeurs par Traqueur des Voies inclus",
+          "0-3 Grands Aigles par tranche de 1000 points"
+        ]
+      },
+      "mercenaires": {
+        "maxPercent": 20,
+        "units": [
+          "ogres-des-marches"
+        ],
+        "notes": "Les unités mercenaires provenant d'une autre liste sont soumises aux règles de mercenaires."
+      },
+      "allies": {
+        "maxPercent": 25,
+        "maxContingents": 1,
+        "allowedArmies": [
+          "elfes-sylvains-ost-de-talsyn",
+          "elfes-sylvains-chasse-sauvage-orion",
+          "empire",
+          "grand-cathay",
+          "bretonnie",
+          "hauts-elfes"
+        ]
+      }
+    },
+    "porte-banniere-de-bataille": {
+      "unit": "glade-captain",
+      "upgradeCost": 25,
+      "notes": "Un Capitaine des Clairières peut devenir Porteur de la Grande Bannière."
+    }
+  },
+  "units": [
+    {
+      "id": "araloth",
+      "name": "Araloth, Seigneur de Talsyn",
+      "category": "personnages",
+      "type": "personnage_nomme",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 8,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 3,
+        "I": 8,
+        "A": 4,
+        "Cd": 10
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "orion",
+      "name": "Orion, le Roi des Bois",
+      "category": "personnages",
+      "type": "personnage_nomme",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 9,
+        "CC": 8,
+        "CT": 6,
+        "F": 5,
+        "E": 6,
+        "PV": 5,
+        "I": 8,
+        "A": 5,
+        "Cd": 10
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "branchwraith",
+      "name": "Esprit des Branches",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 6,
+        "CC": 6,
+        "CT": 6,
+        "F": 4,
+        "E": 4,
+        "PV": 2,
+        "I": 6,
+        "A": 2,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "glade-captain",
+      "name": "Capitaine des Clairières",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 6,
+        "CT": 6,
+        "F": 4,
+        "E": 3,
+        "PV": 2,
+        "I": 5,
+        "A": 3,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "glade-lord",
+      "name": "Seigneur des Clairières",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 7,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 3,
+        "I": 6,
+        "A": 4,
+        "Cd": 10
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "shadowdancer",
+      "name": "Danseur des Ombres",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 8,
+        "CT": 6,
+        "F": 4,
+        "E": 3,
+        "PV": 2,
+        "I": 7,
+        "A": 3,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "spellsinger",
+      "name": "Chanteur de Sorts",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 2,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "spellweaver",
+      "name": "Tisseuse de Sorts",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 3,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "treeman-ancient",
+      "name": "Homme-arbre Vénérable",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 5,
+        "CT": 5,
+        "F": 5,
+        "E": 6,
+        "PV": 6,
+        "I": 2,
+        "A": 3,
+        "Cd": 10
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "warden-talsyn",
+      "name": "Gardien de Talsyn",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 7,
+        "CT": 4,
+        "F": 4,
+        "E": 3,
+        "PV": 3,
+        "I": 6,
+        "A": 4,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "waystalker",
+      "name": "Traqueur des Voies",
+      "category": "personnages",
+      "type": "personnage",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 6,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 2,
+        "I": 5,
+        "A": 2,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "bear-loren",
+      "name": "Ours de Loren",
+      "category": "base",
+      "type": "bete_de_guerre",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": null,
+        "F": 4,
+        "E": 4,
+        "PV": 2,
+        "I": 3,
+        "A": 2,
+        "Cd": 6
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "beast-keeper",
+      "name": "Gardien des Bêtes",
+      "category": "base",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "deepwood-hound",
+      "name": "Chien des Bois Profonds",
+      "category": "base",
+      "type": "bete_de_guerre",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 9,
+        "CC": 4,
+        "CT": null,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 3,
+        "A": 1,
+        "Cd": 5
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "deepwood-scouts",
+      "name": "Éclaireurs des Bois Profonds",
+      "category": "base",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "dryads",
+      "name": "Dryades",
+      "category": "base",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 6,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 4,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "eternal-guard",
+      "name": "Garde Éternelle",
+      "category": "base",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "forest-cat",
+      "name": "Félin Sylvestre",
+      "category": "base",
+      "type": "bete_de_guerre",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 7,
+        "CC": 4,
+        "CT": null,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 5
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "glade-guard",
+      "name": "Garde des Clairières",
+      "category": "base",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "guardians-talsyn",
+      "name": "Gardiens de Talsyn",
+      "category": "base",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "sylvan-boar",
+      "name": "Sanglier Sylvestre",
+      "category": "base",
+      "type": "bete_de_guerre",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 6,
+        "CC": 3,
+        "CT": null,
+        "F": 4,
+        "E": 4,
+        "PV": 1,
+        "I": 3,
+        "A": 1,
+        "Cd": 5
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "tree-kin",
+      "name": "Dryades Anciennes",
+      "category": "speciales",
+      "type": "infanterie_monstre",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 4,
+        "E": 6,
+        "PV": 3,
+        "I": 3,
+        "A": 3,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "wardancers",
+      "name": "Danseurs de Guerre",
+      "category": "speciales",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 6,
+        "CT": 4,
+        "F": 4,
+        "E": 3,
+        "PV": 1,
+        "I": 6,
+        "A": 2,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "waywatchers",
+      "name": "Rôdeurs",
+      "category": "rares",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 1,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "wildwood-rangers",
+      "name": "Rangers des Bois Sauvages",
+      "category": "speciales",
+      "type": "infanterie",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "wood-elf-beast-pack",
+      "name": "Meute de Bêtes Sylvestres",
+      "category": "rares",
+      "type": "unite_speciale",
+      "points": null,
+      "minimumSize": null,
+      "profile": null,
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "glade-riders",
+      "name": "Cavaliers des Clairières",
+      "category": "base",
+      "type": "cavalerie_legere",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": null,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "sisters-thorn",
+      "name": "Sœurs de l'Épine",
+      "category": "speciales",
+      "type": "cavalerie_legere",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": null,
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "warhawk-riders",
+      "name": "Cavaliers Faucons",
+      "category": "speciales",
+      "type": "cavalerie_monstre",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": null,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 4,
+        "PV": 2,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "wild-riders",
+      "name": "Cavaliers Sauvages",
+      "category": "speciales",
+      "type": "cavalerie_legere",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": null,
+        "CC": 5,
+        "CT": 4,
+        "F": 4,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 1,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "forest-dragon",
+      "name": "Dragon Sylvestre",
+      "category": "rare",
+      "type": "behemoth",
+      "points": null,
+      "minimumSize": null,
+      "profile": null,
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "great-eagle",
+      "name": "Grand Aigle",
+      "category": "rare",
+      "type": "creature_monstreuse",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 2,
+        "CC": 5,
+        "CT": 0,
+        "F": 4,
+        "E": 4,
+        "PV": 3,
+        "I": 4,
+        "A": 3,
+        "Cd": 6
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    },
+    {
+      "id": "treeman",
+      "name": "Homme-arbre",
+      "category": "rare",
+      "type": "behemoth",
+      "points": null,
+      "minimumSize": null,
+      "profile": {
+        "M": 5,
+        "CC": 6,
+        "CT": 4,
+        "F": 5,
+        "E": 6,
+        "PV": 5,
+        "I": 2,
+        "A": 5,
+        "Cd": 9
+      },
+      "options": [],
+      "specialRules": [],
+      "equipment": [],
+      "notes": "Profil transcrit depuis le tableau de référence de la source."
+    }
+  ],
+  "mounts": [
+    {
+      "id": "elven-steed",
+      "name": "Coursier Elfique",
+      "points": null,
+      "profile": {
+        "M": 9,
+        "CC": 3,
+        "CT": null,
+        "F": 3,
+        "E": null,
+        "PV": null,
+        "I": 4,
+        "A": 1,
+        "Cd": null
+      },
+      "specialRules": [],
+      "notes": "Monture listée séparément dans la source."
+    },
+    {
+      "id": "great-eagle-mount",
+      "name": "Grand Aigle",
+      "points": null,
+      "profile": {
+        "M": 2,
+        "CC": 5,
+        "CT": null,
+        "F": 4,
+        "E": "+1",
+        "PV": "+1",
+        "I": 4,
+        "A": 3,
+        "Cd": null
+      },
+      "specialRules": [],
+      "notes": "Monture listée séparément dans la source."
+    },
+    {
+      "id": "great-stag",
+      "name": "Grand Cerf",
+      "points": null,
+      "profile": {
+        "M": 8,
+        "CC": 4,
+        "CT": null,
+        "F": 5,
+        "E": "+1",
+        "PV": "+1",
+        "I": 4,
+        "A": 2,
+        "Cd": null
+      },
+      "specialRules": [],
+      "notes": "Monture listée séparément dans la source."
+    },
+    {
+      "id": "unicorn",
+      "name": "Licorne",
+      "points": null,
+      "profile": {
+        "M": 10,
+        "CC": 4,
+        "CT": null,
+        "F": 4,
+        "E": null,
+        "PV": "+1",
+        "I": 5,
+        "A": 2,
+        "Cd": null
+      },
+      "specialRules": [],
+      "notes": "Monture listée séparément dans la source."
+    },
+    {
+      "id": "warhawk",
+      "name": "Faucon de Guerre",
+      "points": null,
+      "profile": {
+        "M": 2,
+        "CC": 3,
+        "CT": null,
+        "F": 4,
+        "E": "+1",
+        "PV": null,
+        "I": 4,
+        "A": 2,
+        "Cd": null
+      },
+      "specialRules": [],
+      "notes": "Monture listée séparément dans la source."
+    }
+  ],
+  "specialRules": [
+    {
+      "id": "ancient-enemies",
+      "name": "Ancient Enemies",
+      "nameFr": "Ennemis ancestraux",
+      "summaryFr": "Animosité ancestrale entre les anciens ennemis des Asrai."
+    },
+    {
+      "id": "arrow-kurnous",
+      "name": "Arrow Kurnous",
+      "nameFr": "La Flèche de Kurnous",
+      "summaryFr": "Règle liée à la flèche de Kurnous."
+    },
+    {
+      "id": "awakened-wood",
+      "name": "Awakened Wood",
+      "nameFr": "Le Bois Éveillé",
+      "summaryFr": "Règle associée aux bois éveillés et à leur influence sur la bataille."
+    },
+    {
+      "id": "beguiling-aura",
+      "name": "Beguiling Aura",
+      "nameFr": "Aura ensorcelante",
+      "summaryFr": "Aura surnaturelle qui perturbe ou attire les adversaires."
+    },
+    {
+      "id": "boldest-of-the-bold",
+      "name": "Boldest Of The Bold",
+      "nameFr": "Les Plus Audacieux",
+      "summaryFr": "Règle de courage réservée aux plus audacieux."
+    },
+    {
+      "id": "chieftains-hunter-king",
+      "name": "Chieftains Hunter King",
+      "nameFr": "Chefs du Roi-Chasseur",
+      "summaryFr": "Règle associée aux chefs du Roi-Chasseur."
+    },
+    {
+      "id": "cleaving-blow",
+      "name": "Cleaving Blow",
+      "nameFr": "Coup dévastateur",
+      "summaryFr": "Règle améliorant les attaques de taille."
+    },
+    {
+      "id": "courage-beyond-compare",
+      "name": "Courage Beyond Compare",
+      "nameFr": "Courage incomparable",
+      "summaryFr": "Règle représentant un courage exceptionnel."
+    },
+    {
+      "id": "crown-of-antlers",
+      "name": "Crown Of Antlers",
+      "nameFr": "Couronne de Ramures",
+      "summaryFr": "Règle liée à la Couronne de Ramures."
+    },
+    {
+      "id": "dances-loec",
+      "name": "Dances Loec",
+      "nameFr": "Danses de Loec",
+      "summaryFr": "Règle représentant les danses rituelles de Loec."
+    },
+    {
+      "id": "daughters-eternity",
+      "name": "Daughters Eternity",
+      "nameFr": "Filles de l'Éternité",
+      "summaryFr": "Règle associée aux Filles de l'Éternité."
+    },
+    {
+      "id": "deepwood-coven",
+      "name": "Deepwood Coven",
+      "nameFr": "Coven des Bois Profonds",
+      "summaryFr": "Règle liée au cercle des bois profonds."
+    },
+    {
+      "id": "elven-reflexes",
+      "name": "Elven Reflexes",
+      "nameFr": "Réflexes elfiques",
+      "summaryFr": "Réflexes elfiques surnaturels."
+    },
+    {
+      "id": "favour-goddess",
+      "name": "Favour Goddess",
+      "nameFr": "Faveur de la Déesse",
+      "summaryFr": "Faveur accordée par la déesse."
+    },
+    {
+      "id": "guardians-wildwood",
+      "name": "Guardians Wildwood",
+      "nameFr": "Gardiens des Bois Sauvages",
+      "summaryFr": "Règle des gardiens des bois sauvages."
+    },
+    {
+      "id": "hawk-eyed-archer",
+      "name": "Hawk Eyed Archer",
+      "nameFr": "Archer à l'œil de faucon",
+      "summaryFr": "Expertise exceptionnelle avec les armes de tir."
+    },
+    {
+      "id": "in-tune-nature",
+      "name": "In Tune Nature",
+      "nameFr": "En harmonie avec la nature",
+      "summaryFr": "Harmonie particulière avec le monde naturel."
+    },
+    {
+      "id": "martial-prowess",
+      "name": "Martial Prowess",
+      "nameFr": "Prouesse martiale",
+      "summaryFr": "Maîtrise martiale elfique."
+    },
+    {
+      "id": "parry-wood-elves",
+      "name": "Parry Wood Elves",
+      "nameFr": "Parade (Elfes Sylvains)",
+      "summaryFr": "Règle de parade propre aux Elfes Sylvains."
+    },
+    {
+      "id": "protectors-ancient-wood",
+      "name": "Protectors Ancient Wood",
+      "nameFr": "Protecteurs du Bois Ancien",
+      "summaryFr": "Protection des bois anciens."
+    },
+    {
+      "id": "razor-tusks",
+      "name": "Razor Tusks",
+      "nameFr": "Défenses acérées",
+      "summaryFr": "Défenses ou crocs particulièrement dangereux."
+    },
+    {
+      "id": "run-with-pack",
+      "name": "Run With Pack",
+      "nameFr": "Courir avec la meute",
+      "summaryFr": "Capacité à combattre et se déplacer avec une meute."
+    },
+    {
+      "id": "skaryn-eye-thief",
+      "name": "Skaryn Eye Thief",
+      "nameFr": "Skaryn, le Voleur d'Yeux",
+      "summaryFr": "Règle particulière de Skaryn, le Voleur d'Yeux."
+    },
+    {
+      "id": "spectral-hounds",
+      "name": "Spectral Hounds",
+      "nameFr": "Chiens spectraux",
+      "summaryFr": "Présence de chiens spectraux."
+    },
+    {
+      "id": "spirit-kurnous",
+      "name": "Spirit Kurnous",
+      "nameFr": "L'Esprit de Kurnous",
+      "summaryFr": "Lien avec l'esprit de Kurnous."
+    },
+    {
+      "id": "talismanic-tattoos",
+      "name": "Talismanic Tattoos",
+      "nameFr": "Tatouages talismaniques",
+      "summaryFr": "Tatouages conférant une protection surnaturelle."
+    },
+    {
+      "id": "tree-spirit",
+      "name": "Tree Spirit",
+      "nameFr": "Esprit de l'arbre",
+      "summaryFr": "Nature spirituelle des créatures sylvestres."
+    },
+    {
+      "id": "tree-whack",
+      "name": "Tree Whack",
+      "nameFr": "Coup d'arbre",
+      "summaryFr": "Attaque ou capacité particulière des créatures arboricoles."
+    },
+    {
+      "id": "troubadour-loec",
+      "name": "Troubadour Loec",
+      "nameFr": "Troubadour de Loec",
+      "summaryFr": "Lien avec les traditions de Loec."
+    },
+    {
+      "id": "woodland-ambush",
+      "name": "Woodland Ambush",
+      "nameFr": "Embuscade sylvestre",
+      "summaryFr": "Capacité à déployer un élément de bois et à exploiter la forêt."
+    },
+    {
+      "id": "worthy-kurnous",
+      "name": "Worthy Kurnous",
+      "nameFr": "Digne de Kurnous",
+      "summaryFr": "Règle accordée aux serviteurs jugés dignes de Kurnous."
+    }
+  ],
+  "weaponsOfWar": [
+    "arcane-bodkins",
+    "asrai-longbow",
+    "asrai-spear",
+    "blackbriar-javelin",
+    "enchanted-arrows",
+    "hagbane-tips",
+    "hunting-spear",
+    "mighty-antlers",
+    "moonfire-shot",
+    "oaken-fists",
+    "rangers-glaive",
+    "serrated-maw",
+    "soporific-breath",
+    "spear-loec",
+    "strangleroots",
+    "swiftshiver-shards",
+    "tricksters-blades",
+    "trueflight-arrows",
+    "wicked-claws"
+  ],
+  "magicLores": [
+    "Lores d'Athel Loren",
+    "Lores de la Nature Sauvage"
+  ],
+  "armyListsOfInfamy": [
+    "La Chasse Sauvage d'Orion",
+    "Ost de Talsyn"
+  ],
+  "magicItemsAndAbilities": [
+    "Esprits de la Forêt",
+    "Objets magiques des Elfes Sylvains",
+    "Lignées des Elfes Sylvains",
+    "Lignées des Altérés",
+    "Lignées Nobles"
+  ]
+}
