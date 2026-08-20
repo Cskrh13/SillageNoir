@@ -6,374 +6,265 @@
     "Armes magiques": [
       {
         "id": "hél-woudsman-axe",
-        "name": "Woodsman's Axe",
+        "name": "Hache du Bûcheron",
         "points": 90,
-        "restrictions": {
-          "armyOfInfamy": [
-            "Chracian Warhost"
-          ]
-        },
-        "profile": {
-          "range": "Combat",
-          "strength": "S+3",
-          "armourPiercing": -4
-        },
-        "specialRules": [
-          "Attaques magiques",
-          "Monster Slayer",
-          "Requires Two Hands",
-          "Strike Last"
-        ]
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force S+3, PA -4. Peut uniquement être prise par les modèles d'une armée de renom Chracian Warhost."
       },
       {
         "id": "hél-white-sword",
-        "name": "The White Sword",
+        "name": "L'Épée Blanche",
         "points": 70,
-        "restrictions": {
-          "troopType": [
-            "infantry",
-            "chariot"
-          ]
-        },
-        "profile": {
-          "range": "Combat",
-          "strength": "S+3",
-          "armourPiercing": -2
-        }
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force S+3, PA -2. Réservée aux modèles dont le type de troupe est Infanterie ou Char."
       },
       {
         "id": "hél-blade-leaping-gold",
-        "name": "The Blade of Leaping Gold",
+        "name": "Lame d'Or Bondissante",
         "points": 50,
-        "profile": {
-          "range": "Combat",
-          "strength": "S",
-          "armourPiercing": 0
-        }
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force S, PA -."
       },
       {
         "id": "hél-bow-seafarer",
-        "name": "Bow of the Seafarer",
+        "name": "Arc du Marin",
         "points": 50,
-        "profile": {
-          "range": "30\"",
-          "strength": "5",
-          "armourPiercing": -3
-        },
-        "countsAs": "Bow of Avelorn",
-        "specialRules": [
-          "Through & Through"
-        ],
-        "notes": "The Bow of the Seafarer shoots like a bolt thrower, using the Through & Through special rule."
+        "repeatable": false,
+        "description": "Portée 30\", Force 5, PA -3. Compte comme un Arc d'Avelorn. Cette arme tire comme un lance-carreaux, en utilisant la règle spéciale À Travers Tout."
       },
       {
         "id": "hél-star-lance",
-        "name": "Star Lance",
+        "name": "Lance Stellaire",
         "points": 45,
-        "restrictions": {
-          "troopType": [
-            "cavalry",
-            "monster"
-          ]
-        },
-        "profile": {
-          "range": "Combat",
-          "strength": "S+3",
-          "armourPiercing": -4
-        },
-        "notes": "The Star Lance can only be used during a turn in which the wielder charged. In subsequent turns, or if the wielder did not charge, the model must use its hand weapon instead."
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force S+3, PA -4. Réservée aux modèles dont le type de troupe est Cavalerie ou Monstre. Ne peut être utilisée que pendant un tour au cours duquel le porteur a chargé. Les tours suivants, ou si le porteur n'a pas chargé, le modèle doit utiliser son arme de base."
       },
       {
         "id": "hél-blade-sea-gold",
-        "name": "Blade of Sea Gold",
+        "name": "Lame d'Or de la Mer",
         "points": 40,
-        "restrictions": {
-          "armyOfInfamy": [
-            "Sea Guard Garrison"
-          ]
-        },
-        "profile": {
-          "range": "Combat",
-          "strength": "S+1",
-          "armourPiercing": -1
-        }
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force S+1, PA -1. Peut uniquement être prise par les modèles d'une armée de renom Garnison de la Garde Maritime."
       },
       {
         "id": "hél-reaver-bow",
-        "name": "Reaver Bow",
+        "name": "Arc des Guerriers Fantômes",
         "points": 40,
-        "profile": {
-          "range": "30\"",
-          "strength": "S+1",
-          "armourPiercing": 0
-        },
-        "countsAs": "Bow of Avelorn",
-        "specialRules": [
-          "Multiple Shots"
-        ],
-        "notes": "The wielder may make a number of shooting attacks equal to their Attacks characteristic, rather than the usual one. This model does not suffer modifiers for firing multiple shots."
+        "repeatable": false,
+        "description": "Portée 30\", Force S+1, PA -. Compte comme un Arc d'Avelorn. Le porteur peut effectuer un nombre d'attaques de tir égal à sa caractéristique d'Attaques au lieu d'une seule. Le modèle ne subit aucun malus pour avoir effectué des tirs multiples."
       },
       {
         "id": "hél-foe-bane",
-        "name": "Foe Bane",
+        "name": "Fléau des Ennemis",
         "points": 20,
-        "profile": {
-          "range": "Combat",
-          "strength": "S",
-          "armourPiercing": 0
-        },
-        "notes": "When the wielder makes a roll To Wound, a roll of 4+ is always a success, regardless of the target's Toughness."
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force S, PA -. Lorsqu'un jet pour blesser est effectué avec cette arme, un résultat de 4+ est toujours une réussite, quelle que soit l'Endurance de la cible."
       }
     ],
     "Armures magiques": [
       {
         "id": "hél-armour-stars",
-        "name": "Armour of Stars",
+        "name": "Armure des Étoiles",
         "points": 40,
-        "restrictions": {
-          "troopType": [
-            "infantry",
-            "cavalry"
-          ]
-        },
-        "baseType": "heavy armour",
-        "specialRules": [
-          "Immune to Killing Blow"
-        ],
-        "notes": "If struck by Killing Blow, the wearer is permitted armour and Regeneration saves as normal. If the wound is unsaved, they lose a single Wound."
+        "repeatable": false,
+        "description": "Armure lourde réservée aux modèles dont le type de troupe est Infanterie ou Cavalerie. Le porteur est immunisé à la règle spéciale Coup Fatal. S'il est touché par un Coup Fatal, il peut effectuer normalement ses sauvegardes d'armure et de Régénération. Si la blessure n'est pas sauvegardée, il ne perd qu'un seul PV."
       },
       {
         "id": "hél-armour-caledor",
-        "name": "Armour of Caledor",
+        "name": "Armure de Caledor",
         "points": 35,
-        "baseType": "full plate armour",
-        "specialRules": [
-          "Ward (5+)"
-        ]
+        "repeatable": false,
+        "description": "Armure de plates complète. Le porteur bénéficie d'une sauvegarde invulnérable de 5+ contre toute blessure subie."
       },
       {
         "id": "hél-golden-shield",
-        "name": "The Golden Shield",
+        "name": "Bouclier d'Or",
         "points": 30,
-        "baseType": "shield",
-        "notes": "Any enemy model that directs its attacks against its bearer during the Combat phase must re-roll any rolls To Hit of a natural 6."
+        "repeatable": false,
+        "description": "Bouclier magique. Tout modèle ennemi qui dirige ses attaques contre le porteur pendant la phase de Combat doit relancer les jets pour toucher donnant naturellement 6."
       },
       {
         "id": "hél-dragon-helm",
-        "name": "Dragon Helm",
+        "name": "Heaume du Dragon",
         "points": 10,
-        "mayBeWornWithOtherArmour": true,
-        "notes": "The wearer improves their armour value by 1, to a maximum of 2+. In addition, its wearer has a 6+ Ward save against wounds caused by an attack with Flaming Attacks."
+        "repeatable": false,
+        "description": "Peut être porté avec une autre armure. Le porteur améliore sa valeur d'armure de 1, jusqu'à un maximum de 2+. Il bénéficie également d'une sauvegarde invulnérable de 6+ contre les blessures causées par une attaque avec la règle Attaques Enflammées."
       }
     ],
     "Talismans": [
       {
         "id": "hél-circlet-atrazar",
-        "name": "Circlet of Atrazar",
+        "name": "Diadème d'Atrazar",
         "points": 55,
-        "effects": [
-          "+1 Wound"
-        ],
-        "notes": "If the bearer's troop type is infantry or cavalry, they also have a +1 modifier to Toughness."
+        "repeatable": false,
+        "description": "Le porteur gagne +1 PV sur son profil. Si son type de troupe est Infanterie ou Cavalerie, il bénéficie également d'un modificateur de +1 en Endurance."
       },
       {
         "id": "hél-sacred-incense",
-        "name": "Sacred Incense",
+        "name": "Encens Sacré",
         "points": 35,
-        "notes": "Any enemy model that targets this character or any unit they have joined during the Shooting phase suffers an additional -1 To Hit modifier."
+        "repeatable": false,
+        "description": "Tout modèle ennemi qui cible le porteur ou toute unité qu'il a rejointe pendant la phase de Tir subit un malus supplémentaire de -1 pour toucher."
       },
       {
         "id": "hél-loremaster-cloak",
-        "name": "The Loremaster's Cloak",
+        "name": "Cape du Maître du Savoir",
         "points": 25,
-        "notes": "The bearer and any unit they have joined has a 4+ Ward save against wounds caused by a Magic Missile."
+        "repeatable": false,
+        "description": "Le porteur et toute unité qu'il a rejointe bénéficient d'une sauvegarde invulnérable de 4+ contre les blessures causées par un Projectile magique."
       },
       {
         "id": "hél-opal-amulet",
-        "name": "Opal Amulet",
+        "name": "Amulette d'Opale",
         "points": 20,
         "repeatable": true,
-        "unique": false,
-        "singleUse": true,
-        "notes": "An Opal Amulet gives its bearer a 2+ Ward save against a single wound."
+        "description": "Usage unique. Le porteur bénéficie d'une sauvegarde invulnérable de 2+ contre une seule blessure."
       }
     ],
     "Bannières magiques": [
       {
         "id": "hél-banner-resilience",
-        "name": "Banner of Resilience",
+        "name": "Bannière de Résilience",
         "points": 80,
-        "effects": [
-          "+1 Toughness"
-        ]
+        "repeatable": false,
+        "description": "L'unité portant cette bannière bénéficie d'un modificateur de +1 en Endurance."
       },
       {
         "id": "hél-banner-arcane-protection",
-        "name": "Banner of Arcane Protection",
+        "name": "Bannière de Protection Arcanique",
         "points": 70,
-        "specialRules": [
-          "Magic Resistance (-3)"
-        ],
-        "notes": "Friendly units within 6\" of the model carrying this standard gain Magic Resistance (-1)."
+        "repeatable": false,
+        "description": "L'unité portant cette bannière gagne Résistance à la Magie (-3). De plus, les unités amies situées à 6\" ou moins du modèle portant cette bannière gagnent Résistance à la Magie (-1)."
       },
       {
         "id": "hél-battle-banner",
-        "name": "Battle Banner",
+        "name": "Bannière de Bataille",
         "points": 60,
-        "effects": [
-          "+D3 combat result points"
-        ]
+        "repeatable": false,
+        "description": "Lors du calcul du résultat de Combat, l'unité portant cette bannière peut compter un bonus supplémentaire de +D3 points de résultat de Combat."
       },
       {
         "id": "hél-banner-lothern",
-        "name": "The Banner of Lothern",
+        "name": "Bannière de Lothern",
         "points": 55,
-        "notes": "If the unit is equipped with thrusting spears, half of the models in the third rank or file, rounding up, can make supporting attacks."
+        "repeatable": false,
+        "description": "Si l'unité portant cette bannière est équipée de lances d'estoc, la moitié des modèles du troisième rang ou de la troisième file, arrondie au supérieur, peut effectuer des attaques de soutien."
       },
       {
         "id": "hél-banner-balance",
-        "name": "Banner of Balance",
+        "name": "Bannière de l'Équilibre",
         "points": 25,
-        "notes": "Whilst in base contact with a unit carrying the Banner of Balance, enemy units cannot re-roll any rolls To Hit or To Wound. However, nor can the unit carrying the Banner of Balance."
+        "repeatable": false,
+        "description": "Tant qu'une unité ennemie est en contact socle à socle avec une unité portant cette bannière, elle ne peut relancer aucun jet pour toucher ni pour blesser. L'unité portant la Bannière de l'Équilibre ne peut pas non plus effectuer ces relances."
       },
       {
         "id": "hél-lion-standard",
-        "name": "Lion Standard",
+        "name": "Bannière du Lion",
         "points": 25,
-        "specialRules": [
-          "Fear",
-          "Terror"
-        ],
-        "notes": "The unit automatically passes any Fear or Terror tests it is required to make."
+        "repeatable": false,
+        "description": "L'unité portant cette bannière provoque la Peur et la Terreur et réussit automatiquement tous les tests de Peur ou de Terreur qu'elle doit effectuer."
       },
       {
         "id": "hél-banner-confidence",
-        "name": "Banner of Confidence",
+        "name": "Bannière de Confiance",
         "points": 20,
-        "notes": "The unit does not suffer the usual -1 To Hit modifier when making a Stand & Shoot charge reaction."
+        "repeatable": false,
+        "description": "L'unité portant cette bannière ne subit pas le malus habituel de -1 pour toucher lorsqu'elle effectue une réaction de charge Tenir et Tirer."
       },
       {
         "id": "hél-banner-ellyrion",
-        "name": "Banner of Ellyrion",
+        "name": "Bannière d'Ellyrion",
         "points": 20,
-        "specialRules": [
-          "Move Through Cover"
-        ]
+        "repeatable": false,
+        "description": "L'unité portant cette bannière gagne la règle spéciale Mouvement à Travers les Obstacles."
       }
     ],
     "Objets enchantés": [
       {
         "id": "hél-null-stone",
-        "name": "Null Stone",
+        "name": "Pierre d'Annulation",
         "points": 75,
-        "notes": "Whilst within the Command range of the bearer, all Wizards, friend or foe, suffer a -1 modifier to their Casting and Dispel rolls. During the Command sub-phase, if not engaged in combat, the character may make a Leadership test using unmodified Leadership; if passed, until the next Start of Turn sub-phase, the character cannot be targeted by spells and is immune to their effects."
+        "repeatable": false,
+        "description": "Tant qu'ils se trouvent dans la portée de Commandement du porteur, tous les Sorciers, amis ou ennemis, subissent un modificateur de -1 à leurs jets de lancement et de dissipation. Pendant sa sous-phase de Commandement, si le porteur n'est pas engagé au combat, il peut effectuer un test de Commandement non modifié. En cas de réussite, jusqu'à sa prochaine sous-phase de Début de Tour, il ne peut pas être ciblé par des sorts et est immunisé à leurs effets."
       },
       {
         "id": "hél-amulet-tempest",
-        "name": "Amulet of the Tempest",
+        "name": "Amulette de la Tempête",
         "points": 50,
-        "restrictions": {
-          "armyOfInfamy": [
-            "Sea Guard Garrison"
-          ]
-        },
-        "notes": "Whilst within 9\" of the bearer, enemy Wizards cannot add their Level of Wizardry to Casting rolls."
+        "repeatable": false,
+        "description": "Peut uniquement être prise par un modèle d'une armée de renom Garnison de la Garde Maritime. Les Sorciers ennemis situés à 9\" ou moins du porteur ne peuvent pas ajouter leur Niveau de Sorcellerie à leurs jets de lancement."
       },
       {
         "id": "hél-cloak-beards",
-        "name": "The Cloak of Beards",
+        "name": "Cape des Barbes",
         "points": 30,
-        "specialRules": [
-          "Terror"
-        ],
-        "notes": "Other models cannot use the wearer's Leadership."
+        "repeatable": false,
+        "description": "Le porteur provoque la Terreur. Les autres modèles ne peuvent pas utiliser sa caractéristique de Commandement."
       },
       {
         "id": "hél-ring-fury",
-        "name": "Ring of Fury",
+        "name": "Anneau de Fureur",
         "points": 25,
         "repeatable": true,
-        "unique": false,
-        "boundSpell": {
-          "spell": "Hammerhand",
-          "lore": "Battle Magic",
-          "powerLevel": 1
-        }
+        "description": "Le porteur peut lancer le sort Poigne de Fer du Domaine de Magie de Bataille comme un sort lié, avec un Niveau de Puissance de 1."
       },
       {
         "id": "hél-seed-rebirth",
-        "name": "Seed of Rebirth",
+        "name": "Graine de Renaissance",
         "points": 20,
-        "specialRules": [
-          "Regeneration (5+)"
-        ]
+        "repeatable": false,
+        "description": "Le porteur gagne la règle spéciale Régénération (5+)."
       },
       {
         "id": "hél-gem-courage",
-        "name": "Gem of Courage",
+        "name": "Gemme du Courage",
         "points": 15,
         "repeatable": true,
-        "unique": false,
-        "restrictions": {
-          "armyOfInfamy": [
-            "Chracian Warhost"
-          ]
-        },
-        "singleUse": true,
-        "notes": "Once per game, when required to make a Break test, the bearer and their unit may roll an extra D6 and discard the highest result."
+        "description": "Peut uniquement être prise par un modèle d'une armée de renom Chracian Warhost. Usage unique. Une fois par partie, lorsque le porteur doit effectuer un test de Moral, lui et son unité peuvent lancer un D6 supplémentaire et ignorer le résultat le plus élevé."
       }
     ],
     "Objets cabalistiques": [
       {
         "id": "hél-vortex-shard",
-        "name": "The Vortex Shard",
+        "name": "Éclat du Vortex",
         "points": 50,
-        "singleUse": true,
-        "wizardOnly": true,
-        "notes": "A Wizard may use this instead of making a dispel attempt. The spell is automatically dispelled with no Dispel roll required. In addition, all Remains in Play spells currently in play are dispelled, including spells cast by friendly Wizards."
+        "repeatable": false,
+        "description": "Usage unique. Un Sorcier peut utiliser cet objet à la place d'une tentative de dissipation. Le sort est alors automatiquement dissipé, sans jet de dissipation. De plus, tous les sorts Reste en Jeu actuellement actifs sont dissipés, y compris ceux lancés par des Sorciers alliés."
       },
       {
         "id": "hél-sigil-asuryan",
-        "name": "Sigil of Asuryan",
+        "name": "Sceau d'Asuryan",
         "points": 40,
         "repeatable": true,
-        "unique": false,
-        "singleUse": true,
-        "wizardOnly": true,
-        "notes": "A Wizard may use this instead of making a dispel attempt. The spell is automatically dispelled with no Dispel roll required. A perfect invocation cannot be dispelled."
+        "description": "Usage unique. Un Sorcier peut utiliser cet objet à la place d'une tentative de dissipation. Le sort est alors automatiquement dissipé, sans jet de dissipation. Une Invocation Parfaite ne peut toutefois pas être dissipée."
       },
       {
         "id": "hél-tricksters-pendant",
-        "name": "The Trickster's Pendant",
+        "name": "Pendentif du Trompeur",
         "points": 40,
-        "wizardOnly": true,
-        "singleUse": true,
-        "notes": "When attempting a Wizardly dispel, roll an extra D6 and discard the lowest result. If dispelled, the opposing Wizard cannot cast more spells for the remainder of the current turn. If a double 1 is rolled on any two dice rolled, the bearer is outclassed in the art."
+        "repeatable": false,
+        "description": "Usage unique. Lors d'une tentative de dissipation par un Sorcier, lancez un D6 supplémentaire et défaussez le résultat le plus bas. Si le sort est dissipé, le Sorcier qui l'a lancé ne peut plus tenter de lancer de sorts jusqu'à la fin du tour en cours. Si un double 1 est obtenu sur deux des dés lancés, le porteur est considéré comme dépassé dans l'art de la magie."
       },
       {
         "id": "hél-annulian-crystal",
-        "name": "Annulian Crystal",
+        "name": "Cristal d'Annulii",
         "points": 30,
-        "wizardOnly": true,
-        "notes": "Once per turn, upon successfully casting a spell, the bearer can choose to forget that spell and immediately generate another, not including signature spells, in the usual manner."
+        "repeatable": false,
+        "description": "Une fois par tour, après avoir lancé un sort avec succès, le porteur peut choisir d'oublier ce sort et d'en générer immédiatement un autre de la manière habituelle. Les sorts signature ne peuvent pas être générés de cette manière."
       },
       {
         "id": "hél-silvery-wand",
-        "name": "Silvery Wand",
+        "name": "Baguette d'Argent",
         "points": 15,
-        "wizardOnly": true,
-        "effects": [
-          "Knows one additional spell"
-        ],
-        "notes": "This does not increase the Wizard's Level."
+        "repeatable": false,
+        "description": "Le porteur connaît un sort supplémentaire. Cela n'augmente pas son Niveau de Sorcellerie."
       },
       {
         "id": "hél-staff-solidity",
-        "name": "Staff of Solidity",
+        "name": "Bâton de Solidité",
         "points": 15,
-        "wizardOnly": true,
-        "singleUse": true,
-        "notes": "Once per game, when the bearer is required to roll on the Miscast table, they may choose not to."
+        "repeatable": false,
+        "description": "Usage unique. Une fois par partie, lorsque le porteur doit effectuer un jet sur la table des Fiascos, il peut choisir de ne pas effectuer ce jet."
       }
     ]
   }
