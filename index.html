@@ -1126,137 +1126,116 @@
            GRILLES
            ========================================================= */
 
-        .grid {
+    .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
 
-            display:
-                grid;
+/* Base de votre carte */
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+    height: 100%; /* Égalise la hauteur de toutes les cartes d'une même ligne */
+    padding: 32px;
+    background: linear-gradient(
+        rgba(205,197,169,0.96),
+        rgba(178,173,150,0.96)
+    );
+    border: 1px solid rgba(63,73,73,0.75);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.40);
+}
 
-            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-            gap:24px;
+.card::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    border: 1px solid rgba(75,55,31,0.25);
+    pointer-events: none;
+    z-index: 3;
+}
 
-            align-items:
-                stretch;
+/* Conteneur d'image avec une hauteur fixe pour vos couvertures */
+.card-image-container {
+    width: 100%;
+    height: 380px; /* Hauteur idéale pour conserver le ratio portrait style "livre" */
+    overflow: hidden;
+    background: rgba(22,26,27,0.05); /* Léger fond pour meubler si l'image est plus étroite */
+    position: relative;
+    z-index: 1;
+}
 
-        }
+/* L'image s'ajuste parfaitement à l'intérieur de sa boîte fixe sans déborder */
+.card-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Empêche l'image d'être rognée ou déformée */
+    object-position: center;
+}
 
+/* Bloc intermédiaire pour les textes */
+.card-content {
+    flex-grow: 1; /* Pousse automatiquement le bouton tout en bas de la carte */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0;
+}
 
-        /* =========================================================
-           CARTES
-           ========================================================= */
+.card h3 {
+    font-family: 'Georgia', serif;
+    color: #2c1a04;
+    text-align: center;
+    margin: 0 0 16px 0;
+    font-size: 1.35rem;
+}
 
-       .card {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            min-width: 0;
-    
-    /* MODIFICATION : On ajoute un padding de 32px en haut pour décoller le titre du bord */
-            padding: 32px; 
-    
-            background: linear-gradient(
-                rgba(205,197,169,0.96),
-                rgba(178,173,150,0.96)
-            );
-            border: 1px solid rgba(63,73,73,0.75);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.40);
-        }
+.card p {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #3b3527;
+    text-align: center;
+    line-height: 1.5;
+    margin: 0;
+}
 
-        .card::before {
-            content: "";
-            position: absolute;
-            inset: 9px;
-            border: 1px solid rgba(75,55,31,0.25);
-            pointer-events: none;
-            z-index: 3;
-        }
+/* Style uniforme des boutons */
+.button {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: #2c1a04;
+    background: transparent;
+    padding: 10px 20px;
+    border: 1px solid rgba(75,55,31,0.6);
+    font-family: 'Georgia', serif;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    z-index: 4;
+}
 
+.button:hover:not(.disabled) {
+    background: #2c1a04;
+    color: #f4ebd0;
+    border-color: #2c1a04;
+}
 
-        .card-image {
-            display: block;
-            width: 100%;
-            object-fit: cover;
-            object-position: center;
-    
-    /* CORRECTION : 24px en haut/bas pour espacer, 0 à gauche/droite pour aligner */
-            margin: 24px 0; 
-    
-            background: rgba(22,26,27,0.35);
-            border-bottom: 1px solid rgba(63,73,73,0.75);
-        }
-        
-        .card-carte-image {
-            display: block;
-            height: 250px;   
-            object-fit: cover;
-            object-position: center;
-    
-    /* MODIFICATION : On supprime les marges latérales (0) pour aligner l'image avec le texte */
-    /* On garde 24px en haut et en bas pour espacer l'image du titre et du texte */
-            margin: 24px 0; 
-    
-    /* MODIFICATION optionnelle : pour que l'image passe sous la bordure décorative ::before */
-            position: relative;
-            z-index: 1;
-
-            background: rgba(22,26,27,0.35);
-            border-bottom: 1px solid rgba(63,73,73,0.75);
-        }
-
-
-        .card h3 {
-
-            position:
-                relative;
-
-            margin:
-                0 0 20px;
-
-            color:
-                var(--encre);
-
-            font-family:
-                "IM Fell English SC",
-                Georgia,
-                serif;
-
-            font-size:
-                25px;
-
-            font-weight:
-                normal;
-
-            letter-spacing:
-                1px;
-
-            overflow-wrap:
-                anywhere;
-
-        }
-
-
-        .card p {
-
-            position:
-                relative;
-
-            margin:
-                0;
-
-            color:
-                #51402b;
-
-            font-size:
-                16px;
-
-        }
-
-
-        .card .button {
-            position: relative;
-            margin-top: auto;
-        }
-
+/* Style pour l'état indisponible "Bientôt disponible" */
+.button.disabled {
+    color: rgba(75, 55, 31, 0.4);
+    border-color: rgba(75, 55, 31, 0.25);
+    background: rgba(0, 0, 0, 0.03);
+    cursor: not-allowed;
+}
 
         /* =========================================================
            CARTES
@@ -2192,130 +2171,93 @@
         </div>
 
 
-        <!-- =================================================
-             CARTES DES SUPPLÉMENTS
-             ================================================= -->
+      <!-- =================================================
+     CARTES DES SUPPLÉMENTS
+     ================================================= -->
+<section class="grid">
 
-        <section class="grid">
-
-
-            <article
-                class="card"
-                id="maree-de-sang"
+    <article class="card" id="maree-de-sang">
+        <h3>La Marée de Sang</h3>
+        
+        <div class="card-image-container">
+            <img 
+                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" 
+                alt="Couverture de La Marée de Sang" 
+                class="card-image"
             >
+        </div>
 
-                
+        <div class="card-content">
+            <p>
+                Campagne narrative consacrée aux flottes Druchii, 
+                à leurs poursuivants et aux batailles qui se déroulent 
+                sur les côtes de l'Ancien Monde.
+            </p>
+        </div>
 
+        <a 
+            class="button" 
+            href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link" 
+            target="_blank" 
+            rel="noopener noreferrer"
+        >
+            Télécharger
+        </a>
+    </article>
 
-                <h3>
-                    La Marée de Sang
-                </h3>
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg"
-                    alt="Couverture de La Marée de Sang"
-                    class="card-image"
-                >
+    <article class="card" id="courant-occidental">
+        <h3>Le Courant Occidental</h3>
 
-                <p>
-
-                    Campagne narrative consacrée
-                    aux flottes Druchii,
-                    à leurs poursuivants et aux
-                    batailles qui se déroulent
-                    sur les côtes de l'Ancien Monde.
-
-                </p>
-
-
-                <a
-                    class="button"
-                    href="https://drive.google.com/file/d/10QD5QOSD9ZPTSF-KMtlz_VVmbEQQSrSO/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Télécharger
-                </a>
-
-            </article>
-
-
-            <article
-                class="card"
-                id="courant-occidental"
+        <div class="card-image-container">
+            <img 
+                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" 
+                alt="Couverture du Courant Occidental" 
+                class="card-image"
             >
+        </div>
 
+        <div class="card-content">
+            <p>
+                Supplément consacré à une cité maritime des Hauts-Elfes et aux 
+                événements qui entourent le Courant Occidental.
+            </p>
+        </div>
 
-                <h3>
-                    Le Courant Occidental
-                </h3>
+        <a 
+            class="button" 
+            href="https://drive.google.com/file/d/1TyLQKbevzQcxpoqbG8CSx429Lv-Ruiuu/view?usp=sharing" 
+            target="_blank" 
+            rel="noopener noreferrer"
+        >
+            Télécharger
+        </a>
+    </article>
 
-                <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg"
-                    alt="Couverture du Courant Occidental"
-                    class="card-image"
-                >
+    <article class="card" id="colonies-perdues">
+        <h3>Les Colonies Perdues</h3>
 
-
-                <p>
-
-                    Supplément consacré à une cité
-                    maritime des Hauts-Elfes et aux
-                    événements qui entourent le
-                    Courant Occidental.
-
-                </p>
-
-
-                <a
-                    class="button"
-                    href="https://drive.google.com/file/d/1TyLQKbevzQcxpoqbG8CSx429Lv-Ruiuu/view?usp=sharing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Télécharger
-                </a>
-
-            </article>
-
-
-            <article
-                class="card"
-                id="colonies-perdues"
+        <div class="card-image-container">
+            <img 
+                src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" 
+                alt="Couverture des Colonies Perdues" 
+                class="card-image"
             >
+        </div>
 
-             
+        <div class="card-content">
+            <p>
+                Le retour des Hauts-Elfes sur les anciennes terres elfiques, 
+                désormais englouties sous des forêts hostiles.
+            </p>
+        </div>
 
+        <!-- Ajout de la classe 'disabled' pour styliser le bouton indisponible -->
+        <a class="button disabled" href="#">
+            Bientôt disponible
+        </a>
+    </article>
 
-                <h3>
-                    Les Colonies Perdues
-                </h3>
-               <img
-                    src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg"
-                    alt="Couverture des Colonies Perdues"
-                    class="card-image"
-                >
-
-                <p>
-
-                    Le retour des Hauts-Elfes sur
-                    les anciennes terres elfiques,
-                    désormais englouties sous des
-                    forêts hostiles.
-
-                </p>
-
-
-                <a
-                    class="button"
-                    href="#"
-                >
-                    Bientôt disponible
-                </a>
-
-            </article>
-
-
-        </section>
+</section>
 
 
         <!-- =================================================
