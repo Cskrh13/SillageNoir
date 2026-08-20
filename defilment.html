@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archives du Courant - Carrousel</title>
+    <style>
+        /* Styles de base pour la page */
+        body {
+            background-color: #1a1510;
+            color: #f4f1ea;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #ffb100;
+            text-align: center;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* --- CONTENEUR PRINCIPAL DU CARROUSEL --- */
+        .carousel-container {
+            position: relative;
+            max-width: 400px; /* Largeur d'une carte pour afficher 1 carte à la fois comme sur l'exemple */
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden; /* Cache les cartes qui dépassent sur les côtés */
+            padding: 20px 0;
+        }
+
+        /* --- LE RAIL (Qui se déplace de gauche à droite) --- */
+        .carousel-track {
+            display: flex;
+            transition: transform 0.4s ease-in-out; /* Animation fluide de glissement */
+            gap: 0px; /* Pas d'espace entre les cartes pour un défilement parfait de 1 en 1 */
+        }
+
+        /* --- STYLE DE CHAQUE CARTE --- */
+        .carousel-card {
+            min-width: 100%; /* Chaque carte prend 100% de la largeur du conteneur */
+            box-sizing: border-box;
+            background: #251f18;
+            border: 2px solid #3d3224;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 520px;
+        }
+
+        .carousel-card h3 {
+            color: #ffb100;
+            margin-top: 0;
+            font-size: 1.4rem;
+        }
+
+        /* Simulation des couvertures de livres */
+        .card-image {
+            width: 180px;
+            height: 250px;
+            background: #14100c;
+            border: 2px solid #5c4a35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #665;
+            font-size: 0.9rem;
+            margin: 15px 0;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .carousel-card p {
+            font-size: 0.95rem;
+            color: #d1cbbd;
+            line-height: 1.5;
+            margin: 15px 0;
+            padding: 0 10px;
+        }
+
+        /* Bouton de téléchargement */
+        .download-btn {
+            background-color: #b37400;
+            color: #fff;
+            border: none;
+            padding: 12px 28px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s, transform 0.1s;
+            letter-spacing: 1px;
+            width: 80%;
+        }
+
+        .download-btn:hover:not(:disabled) {
+            background-color: #e69500;
+            transform: scale(1.03);
+        }
+
+        .download-btn:disabled {
+            background-color: #4a3e31;
+            color: #7a6e5f;
+            cursor: not-allowed;
+        }
+
+        /* --- BOUTONS DE NAVIGATION (Flèches) --- */
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(37, 31, 24, 0.85);
+            color: #ffb100;
+            border: 2px solid #3d3224;
+            font-size: 24px;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .carousel-btn:hover {
+            background: #ffb100;
+            color: #251f18;
+            border-color: #ffb100;
+        }
+
+        /* Positionnement précis des flèches à l'extérieur des cartes si possible, ou sur les bords */
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+
+        /* --- INDICATEURS (Les points du bas) --- */
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #4a3e31;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #3d3224;
+        }
+
+        .dot.active {
+            background-color: #ffb100;
+            transform: scale(1.2);
+            box-shadow: 0 0 8px #ffb100;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Mes Suppléments</h1>
+
+    <!-- Structure du Carrousel -->
+    <div class="carousel-container">
+        
+        <!-- Flèche Gauche -->
+        <button class="carousel-btn prev-btn" id="prevBtn" aria-label="Précédent">&#10216;</button>
+
+        <!-- Rail contenant les cartes -->
+        <div class="carousel-track" id="carouselTrack">
+            
+            <!-- Carte 1 -->
+            <div class="carousel-card">
+                <h3>La Marée de Sang</h3>
+                <div class="card-image">[ Image Couverture ]</div>
+                <p>Campagne narrative consacrée aux flottes Druchii, à leurs poursuivants et aux batailles qui se déroulent sur les côtes de l'Ancien Monde.</p>
+                <button class="download-btn">TÉLÉCHARGER</button>
+            </div>
+
+            <!-- Carte 2 -->
+            <div class="carousel-card">
+                <h3>Le Courant Occidental</h3>
+                <div class="card-image">[ Image Couverture ]</div>
+                <p>Supplément consacré à une cité maritime des Hauts-Elfes et aux événements qui entourent le Courant Occidental.</p>
+                <button class="download-btn">TÉLÉCHARGER</button>
+            </div>
+
+            <!-- Carte 3 -->
+            <div class="carousel-card">
+                <h3>Les Colonies Perdues</h3>
+                <div class="card-image">[ Image Couverture ]</div>
+                <p>Le retour des Hauts-Elfes sur les anciennes terres elfiques, désormais englouties sous des forêts hostiles.</p>
+                <button class="download-btn" disabled>BIENTÔT DISPONIBLE</button>
+            </div>
+            
+        </div>
+
+        <!-- Flèche Droite -->
+        <button class="carousel-btn next-btn" id="nextBtn" aria-label="Suivant">&#10217;</button>
+    </div>
+
+    <!-- Points indicateurs sous le carrousel -->
+    <div class="carousel-dots" id="carouselDots">
+        <span class="dot active" data-index="0"></span>
+        <span class="dot" data-index="1"></span>
+        <span class="dot" data-index="2"></span>
+    </div>
+
+    <!-- Logique JavaScript pour animer le tout -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const track = document.getElementById("carouselTrack");
+            const prevBtn = document.getElementById("prevBtn");
+            const nextBtn = document.getElementById("nextBtn");
+            const dots = document.querySelectorAll(".dot");
+            const cards = document.querySelectorAll(".carousel-card");
+
+            let currentIndex = 0;
+            const totalCards = cards.length;
+
+            // Fonction pour changer de carte
+            function updateCarousel(index) {
+                // On s'assure que l'index reste dans les limites
+                if (index < 0) index = totalCards - 1;
+                if (index >= totalCards) index = 0;
+                
+                currentIndex = index;
+                
+                // Déplacement du rail d'une largeur exacte de carte (100% par carte)
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+                // Met à jour les points lumineux (dots)
+                dots.forEach(dot => dot.classList.remove("active"));
+                if(dots[currentIndex]) {
+                    dots[currentIndex].classList.add("active");
+                }
+            }
+
+            // Clic flèche droite
+            nextBtn.addEventListener("click", () => {
+                updateCarousel(currentIndex + 1);
+            });
+
+            // Clic flèche gauche
+            prevBtn.addEventListener("click", () => {
+                updateCarousel(currentIndex - 1);
+            });
+
+            // Clic direct sur un petit point du bas
+            dots.forEach(dot => {
+                dot.addEventListener("click", (e) => {
+                    const targetIndex = parseInt(e.target.dataset.index);
+                    updateCarousel(targetIndex);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
