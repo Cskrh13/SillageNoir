@@ -1,3 +1,138 @@
 {
-  "magicItems": {}
+  "id": "communs",
+  "name": "Objets magiques communs",
+  "source": "Warhammer: The Old World — Objets magiques extrêmement courants",
+  "magicItems": {
+    "Armes magiques": [
+      {
+        "id": "epee-de-puissance",
+        "name": "Épée de Puissance",
+        "points": 20,
+        "repeatable": true,
+        "description": "Le porteur gagne +1 en Force et son arme a PA -1."
+      },
+      {
+        "id": "epee-de-frappe",
+        "name": "Épée de Frappe",
+        "points": 15,
+        "repeatable": true,
+        "description": "Le porteur bénéficie de +1 pour toucher au corps à corps."
+      },
+      {
+        "id": "lame-brulante",
+        "name": "Lame Brûlante",
+        "points": 5,
+        "repeatable": true,
+        "description": "Arme magique dont les attaques sont enflammées."
+      }
+    ],
+    "Armures magiques": [
+      {
+        "id": "bouclier-envoute",
+        "name": "Bouclier Enchanté",
+        "points": 10,
+        "repeatable": true,
+        "description": "Bouclier magique. Le porteur bénéficie d'une sauvegarde invulnérable de 6+ contre les blessures causées par une attaque ennemie non magique."
+      },
+      {
+        "id": "bouclier-charmé",
+        "name": "Bouclier Porte-Bonheur",
+        "points": 5,
+        "repeatable": true,
+        "description": "Bouclier magique. Une fois par partie, il confère une sauvegarde invulnérable de 5+ contre une seule blessure. Après utilisation, il devient un bouclier ordinaire non magique."
+      },
+      {
+        "id": "bouclier-anti-sort",
+        "name": "Bouclier Anti-sort",
+        "points": 25,
+        "repeatable": true,
+        "description": "Bouclier magique. Le porteur bénéficie d'une sauvegarde invulnérable de 5+ contre les blessures causées par un Projectile magique, un Vortex magique ou un Assaut."
+      }
+    ],
+    "Talismans": [
+      {
+        "id": "piece-du-paye-maitre",
+        "name": "Pièce du Payeur",
+        "points": 25,
+        "repeatable": true,
+        "description": "Usage unique. Le porteur peut relancer ses jets pour toucher ratés au corps à corps."
+      },
+      {
+        "id": "lodestone-obsidienne",
+        "name": "Lodestone d'Obsidienne",
+        "points": 20,
+        "repeatable": true,
+        "maxPerBearer": 3,
+        "description": "Un modèle peut en acheter jusqu'à trois. Un, deux ou trois Lodestones confèrent respectivement Résistance à la magie (-1), (-2) ou (-3)."
+      },
+      {
+        "id": "pierre-de-chance",
+        "name": "Pierre de Chance",
+        "points": 15,
+        "repeatable": true,
+        "description": "Usage unique. Le porteur peut relancer un jet de sauvegarde d'armure raté."
+      }
+    ],
+    "Bannières magiques": [],
+    "Objets enchantés": [
+      {
+        "id": "potion-de-guerison",
+        "name": "Potion de Guérison",
+        "points": 35,
+        "repeatable": true,
+        "description": "Usage unique. Pendant la phase de Commandement, le porteur peut boire la potion et récupérer immédiatement D3 PV perdus."
+      },
+      {
+        "id": "potion-de-force",
+        "name": "Potion de Force",
+        "points": 25,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne +D3 en Force, jusqu'à un maximum de 10."
+      },
+      {
+        "id": "potion-de-robustesse",
+        "name": "Potion de Robustesse",
+        "points": 20,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne +D3 en Endurance, jusqu'à un maximum de 10."
+      },
+      {
+        "id": "potion-de-vitesse",
+        "name": "Potion de Vitesse",
+        "points": 10,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne +D3 en Initiative, jusqu'à un maximum de 10."
+      },
+      {
+        "id": "potion-de-temerite",
+        "name": "Potion de Témérité",
+        "points": 5,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne la règle spéciale Immunisé à la psychologie."
+      }
+    ],
+    "Objets cabalistiques": [
+      {
+        "id": "parchemin-de-transmogrification",
+        "name": "Parchemin de Transmogrification",
+        "points": 50,
+        "repeatable": true,
+        "description": "Usage unique. Le porteur peut utiliser ce parchemin à la place d'une tentative de dissipation. Si le sort est résolu, le sorcier lance 1D6 et doit obtenir un résultat inférieur ou égal à son Niveau de Sorcellerie ; sinon il est transformé en grenouille."
+      },
+      {
+        "id": "parchemin-de-dissipation",
+        "name": "Parchemin de Dissipation",
+        "points": 20,
+        "repeatable": true,
+        "description": "Usage unique. Lors d'une tentative de dissipation, le sorcier lance un D6 supplémentaire et défausse le résultat le plus bas. Un double 1 sur deux dés ou plus provoque l'état prévu par la règle correspondante."
+      },
+      {
+        "id": "parchemin-de-puissance",
+        "name": "Parchemin de Puissance",
+        "points": 20,
+        "repeatable": true,
+        "description": "Usage unique. Lors d'une tentative de lancement, le sorcier lance un D6 supplémentaire et défausse le résultat le plus bas. Un double 1 sur deux dés ou plus provoque un fiasco."
+      }
+    ]
+  }
 }
