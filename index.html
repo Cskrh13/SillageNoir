@@ -40,7 +40,7 @@
         }
 
         /* =========================================================
-           RESET
+           RESET & ESSENTIELS
            ========================================================= */
         * {
             box-sizing: border-box;
@@ -63,9 +63,6 @@
             overflow-x: hidden;
         }
 
-        /* =========================================================
-           VIGNETTE
-           ========================================================= */
         body::before {
             content: "";
             position: fixed;
@@ -75,9 +72,6 @@
             background: radial-gradient(ellipse at center, transparent 35%, rgba(55, 38, 19, 0.20) 100%);
         }
 
-        /* =========================================================
-           CONTENEUR D'ÉCHELLE
-           ========================================================= */
         .site-wrapper {
             width: 100%;
             transform: scale(var(--site-scale));
@@ -202,7 +196,95 @@
         }
 
         /* =========================================================
-           STYLE DU CARROUSEL AVEC ANIMATIONS FLUIDES
+           STYLE DE LA BANNIÈRE "ACTUALITÉ" (NOUVEAU)
+           ========================================================= */
+        .news-banner {
+            position: relative;
+            width: 100%;
+            min-height: 480px;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            
+            /* Fond de l'image avec assombrissement intégré */
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("images/actualite-fond.jpg") no-repeat center center;
+            background-size: cover;
+            
+            /* Si l'image n'est pas encore présente, ce fond sombre prend le relais */
+            background-color: #0b0d0e; 
+            
+            /* Bordures extérieures et ombres massives */
+            border: 1px solid rgba(191, 161, 95, 0.4);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Double bordure dorée intérieure fine */
+        .news-banner::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border: 1px solid rgba(191, 161, 95, 0.25);
+            pointer-events: none;
+        }
+
+        .news-title {
+            font-family: "IM Fell English SC", Georgia, serif;
+            color: #ded4b7;
+            font-size: clamp(36px, 5vw, 64px);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin: 0 0 25px 0;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+        }
+
+        .news-subtitle {
+            font-family: "IM Fell English SC", Georgia, serif;
+            color: #bfa15f; /* Teinte or/bronze */
+            font-size: 20px;
+            letter-spacing: 2px;
+            margin: 0 0 15px 0;
+            z-index: 2;
+        }
+
+        .news-text {
+            color: #d8d1b8;
+            font-size: clamp(15px, 2vw, 17px);
+            max-width: 800px;
+            line-height: 1.7;
+            margin: 0 0 35px 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+            z-index: 2;
+        }
+
+        /* Bouton spécial pour la bannière d'actualité */
+        .news-btn {
+            background: transparent;
+            color: #a89d7e;
+            border: 1px solid rgba(168, 157, 126, 0.4);
+            padding: 12px 30px;
+            font-family: "IM Fell English SC", Georgia, serif;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .news-btn:hover {
+            color: #ded4b7;
+            border-color: rgba(222, 212, 183, 0.8);
+            background: rgba(222, 212, 183, 0.05);
+            box-shadow: 0 0 15px rgba(191, 161, 95, 0.2);
+        }
+
+        /* =========================================================
+           STYLE DU CARROUSEL AVEC ANIMATIONS
            ========================================================= */
         .carousel-section {
             margin: 50px 0;
@@ -223,97 +305,14 @@
             max-width: 1100px;
             margin: 0 auto;
             overflow: hidden; 
-            padding: 20px 60px; /* Un peu plus d'espace en haut/bas pour l'effet de zoom */
+            padding: 20px 60px;
         }
 
         .carousel-track {
             display: flex;
-            /* La transition gère la fluidité du déplacement horizontal */
             transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
             gap: 30px;
         }
 
         .carousel-card {
-            min-width: calc(100% / 3 - 20px); 
-            background: rgba(244, 241, 234, 0.95);
-            border: 1px solid rgba(45, 57, 61, 0.3);
-            border-radius: 4px;
-            padding: 25px 20px;
-            text-align: center;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            
-            /* Préparation des animations individuelles des cartes */
-            opacity: 0.5; /* Les cartes non sélectionnées sont légèrement estompées */
-            transform: scale(0.95); /* Légèrement plus petites par défaut */
-            transition: transform 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;
-        }
-
-        /* Style de la carte active (Mise en valeur) */
-        .carousel-card.active-slide {
-            opacity: 1;
-            transform: scale(1); /* Reprend sa taille normale */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-            border-color: rgba(191, 161, 95, 0.6);
-        }
-
-        .card-title {
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 22px;
-            margin: 0 0 15px 0;
-            color: var(--bleu-noir);
-        }
-
-        .card-image-placeholder {
-            width: 100%;
-            height: 260px;
-            background: var(--bleu-ardoise);
-            border: 1px solid var(--ligne);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #d8d1b8;
-            font-size: 14px;
-        }
-
-        .card-desc {
-            font-size: 15px;
-            color: var(--encre-claire);
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
-
-        .download-btn {
-            background: var(--bleu-noir);
-            color: #d8d1b8;
-            border: 1px solid var(--ligne);
-            padding: 10px 20px;
-            font-family: "IM Fell English SC", Georgia, serif;
-            font-size: 14px;
-            letter-spacing: 1px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.2s ease;
-        }
-
-        .download-btn:hover:not(:disabled) {
-            background: var(--bleu-ardoise);
-            color: #fff;
-        }
-
-        .download-btn:disabled {
-            background: #ccc;
-            color: #777;
-            border-color: #bbb;
-            cursor: not-allowed;
-        }
-
-        /* Flèches de navigation */
-        
-        .carousel-btn {
-            position: absolute;
-top: 50%;transform: translateY(-50%);background: var(--bleu-noir);color: #d8d1b8;border: 1px solid var(--ligne);width: 44px;height: 44px;font-size: 20px;cursor: pointer;border-radius: 50%;z-index: 10;display: flex;align-items: center;justify-content: center;box-shadow: 0 4px 10px rgba(0,0,0,0.3);transition: all 0.2s;}.carousel-btn:hover {background: var(--bleu-ardoise);color: white;border-color: #d8d1b8;}.prev-btn { left: 5px; }.next-btn { right: 5px; }/* Points indicateurs */.carousel-dots {display: flex;justify-content: center;gap: 10px;margin-top: 25px;}.dot {width: 12px;height: 12px;background-color: var(--bleu-gris);border: 1px solid rgba(255,255,255,0.3);border-radius: 50%;cursor: pointer;transition: all 0.3s ease;}.dot.active {background-color: #bfa15f;transform: scale(1.2);box-shadow: 0 0 8px #bfa15f;}/* Version Mobile */@media (max-width: 850px) {.carousel-card {min-width: 100%;opacity: 0.4;}.carousel-card.active-slide {opacity: 1;transform: scale(1);}.carousel-container {padding: 10px 50px;}}-100 %+document.addEventListener("DOMContentLoaded", () => {// 1. GESTION DU CARROUSEL EN FONDU ET GLISSEMENTconst track = document.getElementById("carouselTrack");const prevBtn = document.getElementById("prevBtn");const nextBtn = document.getElementById("nextBtn");const dots = document.querySelectorAll(".dot");const cards = document.querySelectorAll(".carousel-card");let currentIndex = 0;function getVisibleCardsCount() {return window.innerWidth <= 850 ? 1 : 3;}function updateCarousel(index) {const visibleCards = getVisibleCardsCount();const maxIndex = cards.length - visibleCards;// Forcer l'index à rester dans les limites validescurrentIndex = Math.max(0, Math.min(index, maxIndex));// Déplacement horizontal du railconst cardWidth = cards[0].getBoundingClientRect().width + 30;track.style.transform = translateX(-${currentIndex * cardWidth}px);// Animation des cartes (Opacité + Zoom)cards.forEach((card, idx) => {// La carte reçoit la classe "active-slide" si elle correspond à l'index sélectionnéif (idx === currentIndex) {card.classList.add("active-slide");} else {card.classList.remove("active-slide");}});// Mise à jour de la puce (dot) activedots.forEach(dot => dot.classList.remove("active"));if(dots[currentIndex]) {dots[currentIndex].classList.add("active");}}nextBtn.addEventListener("click", () => {const visibleCards = getVisibleCardsCount();if (currentIndex < cards.length - visibleCards) {updateCarousel(currentIndex + 1);} else {updateCarousel(0); // Boucle au début}});prevBtn.addEventListener("click", () => {const visibleCards = getVisibleCardsCount();if (currentIndex > 0) {updateCarousel(currentIndex - 1);} else {updateCarousel(cards.length - visibleCards); // Boucle à la fin}});dots.forEach(dot => {dot.addEventListener("click", (e) => {const targetIndex = parseInt(e.target.dataset.index);updateCarousel(targetIndex);});});window.addEventListener("resize", () => updateCarousel(currentIndex));// 2. CONTRÔLE DE L'ÉCHELLE (ZOOM GLOBAL)const scaleDec = document.getElementById("scale-dec");const scaleInc = document.getElementById("scale-inc");const scaleValue = document.getElementById("scale-value");let currentScale = 1;scaleDec.addEventListener("click", () => {if (currentScale > 0.75) {currentScale -= 0.05;document.documentElement.style.setProperty('--site-scale', currentScale);scaleValue.textContent = Math.round(currentScale * 100) + " %";}});scaleInc.addEventListener("click", () => {if (currentScale < 1.25) {currentScale += 0.05;document.documentElement.style.setProperty('--site-scale', currentScale);scaleValue.textContent = Math.round(currentScale * 100) + " %";}});});
-        
+min-width: calc(100% / 3 - 20px);background: rgba(244, 241, 234, 0.95);border: 1px solid rgba(45, 57, 61, 0.3);border-radius: 4px;padding: 25px 20px;text-align: center;box-shadow: 0 6px 15px rgba(0,0,0,0.15);display: flex;flex-direction: column;justify-content: space-between;opacity: 0.5;transform: scale(0.95);transition: transform 0.5s ease, opacity 0.5s ease, box-shadow 0.5s ease;}.carousel-card.active-slide {opacity: 1;transform: scale(1);box-shadow: 0 10px 25px rgba(0,0,0,0.25);border-color: rgba(191, 161, 95, 0.6);}.card-title {font-family: "IM Fell English SC", Georgia, serif;font-size: 22px;margin: 0 0 15px 0;color: var(--bleu-noir);}.card-image-placeholder {width: 100%;height: 260px;background: var(--bleu-ardoise);border: 1px solid var(--ligne);margin-bottom: 15px;display: flex;align-items: center;justify-content: center;color: #d8d1b8;font-size: 14px;}.card-desc {font-size: 15px;color: var(--encre-claire);margin-bottom: 20px;flex-grow: 1;}.download-btn {background: var(--bleu-noir);color: #d8d1b8;border: 1px solid var(--ligne);padding: 10px 20px;font-family: "IM Fell English SC", Georgia, serif;font-size: 14px;letter-spacing: 1px;cursor: pointer;width: 100%;transition: all 0.2s ease;}.download-btn:hover:not(:disabled) {background: var(--bleu-ardoise);color: #fff;}.download-btn:disabled {background: #ccc;color: #777;border-color: #bbb;cursor: not-allowed;}.carousel-btn {position: absolute;top: 50%;transform: translateY(-50%);background: var(--bleu-noir);color: #d8d1b8;border: 1px solid var(--ligne);width: 44px;height: 44px;font-size: 20px;cursor: pointer;border-radius: 50%;z-index: 10;display: flex;align-items: center;justify-content: center;box-shadow: 0 4px 10px rgba(0,0,0,0.3);transition: all 0.2s;}.carousel-btn:hover {background: var(--bleu-ardoise);color: white;border-color: #d8d1b8;}.prev-btn { left: 5px; }.next-btn { right: 5px; }.carousel-dots {display: flex;justify-content: center;gap: 10px;margin-top: 25px;}.dot {width: 12px;height: 12px;background-color: var(--bleu-gris);border: 1px solid rgba(255,255,255,0.3);border-radius: 50%;cursor: pointer;transition: all 0.3s ease;}.dot.active {background-color: #bfa15f;transform: scale(1.2);box-shadow: 0 0 8px #bfa15f;}@media (max-width: 850px) {.carousel-card {min-width: 100%;opacity: 0.4;}.carousel-card.active-slide {opacity: 1;transform: scale(1);}.carousel-container {padding: 10px 50px;}}-100 %+document.addEventListener("DOMContentLoaded", () => {// LOGIQUE DU CARROUSELconst track = document.getElementById("carouselTrack");const prevBtn = document.getElementById("prevBtn");const nextBtn = document.getElementById("nextBtn");const dots = document.querySelectorAll(".dot");const cards = document.querySelectorAll(".carousel-card");let currentIndex = 0;function getVisibleCardsCount() {return window.innerWidth <= 850 ? 1 : 3;}function updateCarousel(index) {const visibleCards = getVisibleCardsCount();const maxIndex = cards.length - visibleCards;currentIndex = Math.max(0, Math.min(index, maxIndex));const cardWidth = cards.getBoundingClientRect().width + 30;track.style.transform = translateX(-${currentIndex * cardWidth}px);cards.forEach((card, idx) => {if (idx === currentIndex) {card.classList.add("active-slide");} else {card.classList.remove("active-slide");}});dots.forEach(dot => dot.classList.remove("active"));if(dots[currentIndex]) {dots[currentIndex].classList.add("active");}}nextBtn.addEventListener("click", () => {const visibleCards = getVisibleCardsCount();if (currentIndex < cards.length - visibleCards) {updateCarousel(currentIndex + 1);} else {updateCarousel(0);}});prevBtn.addEventListener("click", () => {const visibleCards = getVisibleCardsCount();if (currentIndex > 0) {updateCarousel(currentIndex - 1);} else {updateCarousel(cards.length - visibleCards);}});dots.forEach(dot => {dot.addEventListener("click", (e) => {const targetIndex = parseInt(e.target.dataset.index);updateCarousel(targetIndex);});});window.addEventListener("resize", () => updateCarousel(currentIndex));// LOGIQUE DE ZOOM GLOBALconst scaleDec = document.getElementById("scale-dec");const scaleInc = document.getElementById("scale-inc");const scaleValue = document.getElementById("scale-value");let currentScale = 1;scaleDec.addEventListener("click", () => {if (currentScale > 0.75) {currentScale -= 0.05;document.documentElement.style.setProperty('--site-scale', currentScale);scaleValue.textContent = Math.round(currentScale * 100) + " %";}});scaleInc.addEventListener("click", () => {if (currentScale < 1.25) {currentScale += 0.05;document.documentElement.style.setProperty('--site-scale', currentScale);scaleValue.textContent = Math.round(currentScale * 100) + " %";}});});
