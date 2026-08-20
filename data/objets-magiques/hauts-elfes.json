@@ -1,3 +1,380 @@
 {
-  "magicItems": {}
+  "id": "hauts-elfes",
+  "name": "Objets magiques des Royaumes Hauts Elfes",
+  "source": "Warhammer: The Old World — High Elf Realms Magic Items",
+  "magicItems": {
+    "Armes magiques": [
+      {
+        "id": "hél-woudsman-axe",
+        "name": "Woodsman's Axe",
+        "points": 90,
+        "restrictions": {
+          "armyOfInfamy": [
+            "Chracian Warhost"
+          ]
+        },
+        "profile": {
+          "range": "Combat",
+          "strength": "S+3",
+          "armourPiercing": -4
+        },
+        "specialRules": [
+          "Attaques magiques",
+          "Monster Slayer",
+          "Requires Two Hands",
+          "Strike Last"
+        ]
+      },
+      {
+        "id": "hél-white-sword",
+        "name": "The White Sword",
+        "points": 70,
+        "restrictions": {
+          "troopType": [
+            "infantry",
+            "chariot"
+          ]
+        },
+        "profile": {
+          "range": "Combat",
+          "strength": "S+3",
+          "armourPiercing": -2
+        }
+      },
+      {
+        "id": "hél-blade-leaping-gold",
+        "name": "The Blade of Leaping Gold",
+        "points": 50,
+        "profile": {
+          "range": "Combat",
+          "strength": "S",
+          "armourPiercing": 0
+        }
+      },
+      {
+        "id": "hél-bow-seafarer",
+        "name": "Bow of the Seafarer",
+        "points": 50,
+        "profile": {
+          "range": "30\"",
+          "strength": "5",
+          "armourPiercing": -3
+        },
+        "countsAs": "Bow of Avelorn",
+        "specialRules": [
+          "Through & Through"
+        ],
+        "notes": "The Bow of the Seafarer shoots like a bolt thrower, using the Through & Through special rule."
+      },
+      {
+        "id": "hél-star-lance",
+        "name": "Star Lance",
+        "points": 45,
+        "restrictions": {
+          "troopType": [
+            "cavalry",
+            "monster"
+          ]
+        },
+        "profile": {
+          "range": "Combat",
+          "strength": "S+3",
+          "armourPiercing": -4
+        },
+        "notes": "The Star Lance can only be used during a turn in which the wielder charged. In subsequent turns, or if the wielder did not charge, the model must use its hand weapon instead."
+      },
+      {
+        "id": "hél-blade-sea-gold",
+        "name": "Blade of Sea Gold",
+        "points": 40,
+        "restrictions": {
+          "armyOfInfamy": [
+            "Sea Guard Garrison"
+          ]
+        },
+        "profile": {
+          "range": "Combat",
+          "strength": "S+1",
+          "armourPiercing": -1
+        }
+      },
+      {
+        "id": "hél-reaver-bow",
+        "name": "Reaver Bow",
+        "points": 40,
+        "profile": {
+          "range": "30\"",
+          "strength": "S+1",
+          "armourPiercing": 0
+        },
+        "countsAs": "Bow of Avelorn",
+        "specialRules": [
+          "Multiple Shots"
+        ],
+        "notes": "The wielder may make a number of shooting attacks equal to their Attacks characteristic, rather than the usual one. This model does not suffer modifiers for firing multiple shots."
+      },
+      {
+        "id": "hél-foe-bane",
+        "name": "Foe Bane",
+        "points": 20,
+        "profile": {
+          "range": "Combat",
+          "strength": "S",
+          "armourPiercing": 0
+        },
+        "notes": "When the wielder makes a roll To Wound, a roll of 4+ is always a success, regardless of the target's Toughness."
+      }
+    ],
+    "Armures magiques": [
+      {
+        "id": "hél-armour-stars",
+        "name": "Armour of Stars",
+        "points": 40,
+        "restrictions": {
+          "troopType": [
+            "infantry",
+            "cavalry"
+          ]
+        },
+        "baseType": "heavy armour",
+        "specialRules": [
+          "Immune to Killing Blow"
+        ],
+        "notes": "If struck by Killing Blow, the wearer is permitted armour and Regeneration saves as normal. If the wound is unsaved, they lose a single Wound."
+      },
+      {
+        "id": "hél-armour-caledor",
+        "name": "Armour of Caledor",
+        "points": 35,
+        "baseType": "full plate armour",
+        "specialRules": [
+          "Ward (5+)"
+        ]
+      },
+      {
+        "id": "hél-golden-shield",
+        "name": "The Golden Shield",
+        "points": 30,
+        "baseType": "shield",
+        "notes": "Any enemy model that directs its attacks against its bearer during the Combat phase must re-roll any rolls To Hit of a natural 6."
+      },
+      {
+        "id": "hél-dragon-helm",
+        "name": "Dragon Helm",
+        "points": 10,
+        "mayBeWornWithOtherArmour": true,
+        "notes": "The wearer improves their armour value by 1, to a maximum of 2+. In addition, its wearer has a 6+ Ward save against wounds caused by an attack with Flaming Attacks."
+      }
+    ],
+    "Talismans": [
+      {
+        "id": "hél-circlet-atrazar",
+        "name": "Circlet of Atrazar",
+        "points": 55,
+        "effects": [
+          "+1 Wound"
+        ],
+        "notes": "If the bearer's troop type is infantry or cavalry, they also have a +1 modifier to Toughness."
+      },
+      {
+        "id": "hél-sacred-incense",
+        "name": "Sacred Incense",
+        "points": 35,
+        "notes": "Any enemy model that targets this character or any unit they have joined during the Shooting phase suffers an additional -1 To Hit modifier."
+      },
+      {
+        "id": "hél-loremaster-cloak",
+        "name": "The Loremaster's Cloak",
+        "points": 25,
+        "notes": "The bearer and any unit they have joined has a 4+ Ward save against wounds caused by a Magic Missile."
+      },
+      {
+        "id": "hél-opal-amulet",
+        "name": "Opal Amulet",
+        "points": 20,
+        "repeatable": true,
+        "unique": false,
+        "singleUse": true,
+        "notes": "An Opal Amulet gives its bearer a 2+ Ward save against a single wound."
+      }
+    ],
+    "Bannières magiques": [
+      {
+        "id": "hél-banner-resilience",
+        "name": "Banner of Resilience",
+        "points": 80,
+        "effects": [
+          "+1 Toughness"
+        ]
+      },
+      {
+        "id": "hél-banner-arcane-protection",
+        "name": "Banner of Arcane Protection",
+        "points": 70,
+        "specialRules": [
+          "Magic Resistance (-3)"
+        ],
+        "notes": "Friendly units within 6\" of the model carrying this standard gain Magic Resistance (-1)."
+      },
+      {
+        "id": "hél-battle-banner",
+        "name": "Battle Banner",
+        "points": 60,
+        "effects": [
+          "+D3 combat result points"
+        ]
+      },
+      {
+        "id": "hél-banner-lothern",
+        "name": "The Banner of Lothern",
+        "points": 55,
+        "notes": "If the unit is equipped with thrusting spears, half of the models in the third rank or file, rounding up, can make supporting attacks."
+      },
+      {
+        "id": "hél-banner-balance",
+        "name": "Banner of Balance",
+        "points": 25,
+        "notes": "Whilst in base contact with a unit carrying the Banner of Balance, enemy units cannot re-roll any rolls To Hit or To Wound. However, nor can the unit carrying the Banner of Balance."
+      },
+      {
+        "id": "hél-lion-standard",
+        "name": "Lion Standard",
+        "points": 25,
+        "specialRules": [
+          "Fear",
+          "Terror"
+        ],
+        "notes": "The unit automatically passes any Fear or Terror tests it is required to make."
+      },
+      {
+        "id": "hél-banner-confidence",
+        "name": "Banner of Confidence",
+        "points": 20,
+        "notes": "The unit does not suffer the usual -1 To Hit modifier when making a Stand & Shoot charge reaction."
+      },
+      {
+        "id": "hél-banner-ellyrion",
+        "name": "Banner of Ellyrion",
+        "points": 20,
+        "specialRules": [
+          "Move Through Cover"
+        ]
+      }
+    ],
+    "Objets enchantés": [
+      {
+        "id": "hél-null-stone",
+        "name": "Null Stone",
+        "points": 75,
+        "notes": "Whilst within the Command range of the bearer, all Wizards, friend or foe, suffer a -1 modifier to their Casting and Dispel rolls. During the Command sub-phase, if not engaged in combat, the character may make a Leadership test using unmodified Leadership; if passed, until the next Start of Turn sub-phase, the character cannot be targeted by spells and is immune to their effects."
+      },
+      {
+        "id": "hél-amulet-tempest",
+        "name": "Amulet of the Tempest",
+        "points": 50,
+        "restrictions": {
+          "armyOfInfamy": [
+            "Sea Guard Garrison"
+          ]
+        },
+        "notes": "Whilst within 9\" of the bearer, enemy Wizards cannot add their Level of Wizardry to Casting rolls."
+      },
+      {
+        "id": "hél-cloak-beards",
+        "name": "The Cloak of Beards",
+        "points": 30,
+        "specialRules": [
+          "Terror"
+        ],
+        "notes": "Other models cannot use the wearer's Leadership."
+      },
+      {
+        "id": "hél-ring-fury",
+        "name": "Ring of Fury",
+        "points": 25,
+        "repeatable": true,
+        "unique": false,
+        "boundSpell": {
+          "spell": "Hammerhand",
+          "lore": "Battle Magic",
+          "powerLevel": 1
+        }
+      },
+      {
+        "id": "hél-seed-rebirth",
+        "name": "Seed of Rebirth",
+        "points": 20,
+        "specialRules": [
+          "Regeneration (5+)"
+        ]
+      },
+      {
+        "id": "hél-gem-courage",
+        "name": "Gem of Courage",
+        "points": 15,
+        "repeatable": true,
+        "unique": false,
+        "restrictions": {
+          "armyOfInfamy": [
+            "Chracian Warhost"
+          ]
+        },
+        "singleUse": true,
+        "notes": "Once per game, when required to make a Break test, the bearer and their unit may roll an extra D6 and discard the highest result."
+      }
+    ],
+    "Objets cabalistiques": [
+      {
+        "id": "hél-vortex-shard",
+        "name": "The Vortex Shard",
+        "points": 50,
+        "singleUse": true,
+        "wizardOnly": true,
+        "notes": "A Wizard may use this instead of making a dispel attempt. The spell is automatically dispelled with no Dispel roll required. In addition, all Remains in Play spells currently in play are dispelled, including spells cast by friendly Wizards."
+      },
+      {
+        "id": "hél-sigil-asuryan",
+        "name": "Sigil of Asuryan",
+        "points": 40,
+        "repeatable": true,
+        "unique": false,
+        "singleUse": true,
+        "wizardOnly": true,
+        "notes": "A Wizard may use this instead of making a dispel attempt. The spell is automatically dispelled with no Dispel roll required. A perfect invocation cannot be dispelled."
+      },
+      {
+        "id": "hél-tricksters-pendant",
+        "name": "The Trickster's Pendant",
+        "points": 40,
+        "wizardOnly": true,
+        "singleUse": true,
+        "notes": "When attempting a Wizardly dispel, roll an extra D6 and discard the lowest result. If dispelled, the opposing Wizard cannot cast more spells for the remainder of the current turn. If a double 1 is rolled on any two dice rolled, the bearer is outclassed in the art."
+      },
+      {
+        "id": "hél-annulian-crystal",
+        "name": "Annulian Crystal",
+        "points": 30,
+        "wizardOnly": true,
+        "notes": "Once per turn, upon successfully casting a spell, the bearer can choose to forget that spell and immediately generate another, not including signature spells, in the usual manner."
+      },
+      {
+        "id": "hél-silvery-wand",
+        "name": "Silvery Wand",
+        "points": 15,
+        "wizardOnly": true,
+        "effects": [
+          "Knows one additional spell"
+        ],
+        "notes": "This does not increase the Wizard's Level."
+      },
+      {
+        "id": "hél-staff-solidity",
+        "name": "Staff of Solidity",
+        "points": 15,
+        "wizardOnly": true,
+        "singleUse": true,
+        "notes": "Once per game, when the bearer is required to roll on the Miscast table, they may choose not to."
+      }
+    ]
+  }
 }
