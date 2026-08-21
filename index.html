@@ -1146,33 +1146,36 @@
         }
 
         .carousel-arrow {
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            border: 2px solid #ffcc00;
+            background: rgba(27, 35, 37, 0.92);
+            color: #d8d1b8;
+            border: 2px solid #c8bd9d;
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
+            width: 42px;
+            height: 42px;
             cursor: pointer;
             font-size: 18px;
+            line-height: 1;
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: background 0.3s;
+            top: auto;
+            bottom: 8px;
+            transform: none;
+            transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
             flex-shrink: 0;
             z-index: 5;
         }
 
         .carousel-arrow:hover {
-            background: #ffcc00;
-            color: #000;
+            background: #c8bd9d;
+            color: #1b2325;
+            border-color: #ded4b7;
         }
 
-        .prev-btn { left: 10px; }
-        .next-btn { right: 10px; }
+        .prev-btn { left: calc(50% - 100px); }
+        .next-btn { right: calc(50% - 100px); }
 
         .carousel-dots {
             position: absolute;
-            bottom: 10px;
+            bottom: 22px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -1180,17 +1183,19 @@
         }
 
         .dot {
-            width: 12px;
-            height: 12px;
-            background-color: #555;
+            width: 11px;
+            height: 11px;
+            background-color: #435156;
+            border: 1px solid rgba(200, 189, 157, 0.55);
             border-radius: 50%;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
         }
 
         .dot.active,
         .dot:hover {
-            background-color: #ffcc00;
+            background-color: #c8bd9d;
+            border-color: #ded4b7;
         }
 
 
@@ -1808,6 +1813,14 @@
                 width: 38px;
                 height: 38px;
                 font-size: 15px;
+                bottom: 8px;
+            }
+
+            .prev-btn { left: 25%; }
+            .next-btn { right: 25%; }
+
+            .carousel-dots {
+                bottom: 21px;
             }
 
 
@@ -2018,15 +2031,15 @@
 
                         <div class="dropdown-content">
 
-                            <a href="#maree-de-sang">
+                            <a href="#supplements-carousel" data-slide="0">
                     La Marée de Sang
                 </a>
 
-                            <a href="#courant-occidental">
+                            <a href="#supplements-carousel" data-slide="1">
                     Le Courant Occidental
                 </a>
 
-                            <a href="#colonies-perdues">
+                            <a href="#supplements-carousel" data-slide="2">
                     Les Colonies Perdues
                 </a>
 
@@ -2122,7 +2135,7 @@
                     <div class="supplement-strip">
 
 
-                        <a href="#maree-de-sang" class="strip-item">
+                        <a href="#supplements-carousel" class="strip-item" data-slide="0">
 
                             <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture.jpg" alt="La Marée de Sang">
 
@@ -2133,7 +2146,7 @@
                         </a>
 
 
-                        <a href="#courant-occidental" class="strip-item">
+                        <a href="#supplements-carousel" class="strip-item" data-slide="1">
 
                             <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/0b55e3d9fee3ab744f28bdf5add6df2a6fa4c848/Couverture2.jpg" alt="Le Courant Occidental">
 
@@ -2144,7 +2157,7 @@
                         </a>
 
 
-                        <a href="#colonies-perdues" class="strip-item">
+                        <a href="#supplements-carousel" class="strip-item" data-slide="2">
 
                             <img src="https://raw.githubusercontent.com/Cskrh13/Creations-Warhammer/6dc8f5fd4a92593fb80752e3218522d6b34bf30f/LesColoniesPerudes.jpg" alt="Les Colonies Perdues">
 
@@ -2161,7 +2174,7 @@
                     <!-- =================================================
      CARTES DES SUPPLÉMENTS (carrousel)
      ================================================= -->
-                    <div class="carousel-container">
+                    <div class="carousel-container" id="supplements-carousel">
                         <!-- Flèche Gauche -->
                         <button class="carousel-arrow prev-btn" onclick="changeSlide(-1)" aria-label="Précédent">&#10094;</button>
 
@@ -2585,30 +2598,56 @@
         let currentSlideIndex = 0;
         const slides = document.querySelectorAll('.carousel-slide');
         const dots = document.querySelectorAll('.dot');
+        const supplementLinks = document.querySelectorAll('[data-slide]');
+        const carousel = document.getElementById('supplements-carousel');
 
         function updateCarousel() {
             slides.forEach((slide, index) => {
-                slide.classList.remove('active');
-                dots[index].classList.remove('active');
+                slide.classList.toggle('active', index === currentSlideIndex);
+                if (dots[index]) {
+                    dots[index].classList.toggle('active', index === currentSlideIndex);
+                }
             });
-            slides[currentSlideIndex].classList.add('active');
-            dots[currentSlideIndex].classList.add('active');
         }
 
         function changeSlide(direction) {
             currentSlideIndex += direction;
+
             if (currentSlideIndex >= slides.length) {
                 currentSlideIndex = 0;
             } else if (currentSlideIndex < 0) {
                 currentSlideIndex = slides.length - 1;
             }
+
             updateCarousel();
         }
 
         function goToSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+
             currentSlideIndex = index;
             updateCarousel();
         }
+
+        // Les vignettes et les liens du menu activent directement
+        // le slide correspondant au supplément sélectionné.
+        supplementLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                const index = Number(this.dataset.slide);
+
+                if (Number.isNaN(index)) return;
+
+                event.preventDefault();
+                goToSlide(index);
+
+                carousel.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        updateCarousel();
     </script>
 
 
