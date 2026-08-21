@@ -103,7 +103,7 @@
       "battleStandardBearer": {
         "enabled": true,
         "unit": "noble",
-        "points": 25,
+        "points": 100,
         "magicBanner": "Une seule bannière magique sans limite de points, en plus de l'allocation normale."
       }
     }
@@ -133,7 +133,7 @@
   "units": [
     {
       "id": "eryndor-vareth",
-      "name": "Éryndor Vareth, Maître du Courant",
+      "name": "Eryndor Vareth, Maître du Courant",
       "category": "Personnages",
       "points": 140,
       "profile": {
