@@ -33,7 +33,12 @@
 const PATHS = {
   catalog: "data/supplements.json",
   armies: "data/armees/",
-  supplements: "data/supplements/"
+  supplements: "data/supplements/",
+  // Fichier commun (toutes armées) des objets magiques universels — fusionné
+  // avec le fichier spécifique de chaque armée dans loadMagicItems().
+  commonMagicItems: "data/objets-magiques/communs.json",
+  // Catalogue global des Honneurs Elfiques, chargé une seule fois au démarrage.
+  honours: "data/aptitudes/honneurs-elfiques.json"
 };
 
 // Hiérarchie d'affichage standard des catégories, respectée partout où une
@@ -62,7 +67,10 @@ const state = {
   filter: "",
   category: "Toutes",
   magicItems: null,
-  magicItemsLoading: false
+  magicItemsLoading: false,
+  // Catalogue global des Honneurs Elfiques (data/aptitudes/honneurs-elfiques.json),
+  // indépendant de l'armée/supplément chargé — chargé une seule fois au démarrage.
+  honours: []
 };
 
 const $ = id => document.getElementById(id);
@@ -355,18 +363,72 @@ function normalizeMagicItems(raw) {
   return result;
 }
 
+// Fusionne deux catalogues d'objets magiques déjà normalisés (par
+// catégorie) : utilisé pour combiner les objets communs (toutes armées)
+// avec ceux spécifiques à l'armée chargée.
+function mergeMagicItems(a, b) {
+  const result = {};
+  [a, b].forEach(source => {
+    Object.entries(source || {}).forEach(([category, items]) => {
+      result[category] = [...(result[category] || []), ...items];
+    });
+  });
+  return result;
+}
+
 async function loadMagicItems(armyId) {
   state.magicItems = null;
-  if (!armyId) return;
   state.magicItemsLoading = true;
   try {
-    const raw = await getJSON(PATHS.armies + "../objets-magiques/" + armyId + ".json");
-    state.magicItems = normalizeMagicItems(raw);
+    // Les objets communs (data/objets-magiques/communs.json) sont
+    // disponibles pour toutes les armées ; ils sont fusionnés avec le
+    // fichier spécifique de l'armée chargée (s'il existe).
+    const [common, own] = await Promise.all([
+      getJSON(PATHS.commonMagicItems).catch(() => null),
+      armyId ? getJSON(PATHS.armies + "../objets-magiques/" + armyId + ".json").catch(() => null) : Promise.resolve(null)
+    ]);
+    const merged = mergeMagicItems(normalizeMagicItems(common), normalizeMagicItems(own));
+    state.magicItems = Object.keys(merged).length ? merged : null;
   } catch (e) {
-    // A missing magic-item file is not fatal: the army can still be built.
+    // Un fichier d'objets magiques manquant n'est pas bloquant : l'armée
+    // reste jouable, simplement sans objets magiques proposés.
     state.magicItems = null;
   } finally {
     state.magicItemsLoading = false;
+  }
+}
+
+// Honneurs Elfiques : catalogue global (indépendant de l'armée), chargé une
+// seule fois au démarrage — voir data/aptitudes/honneurs-elfiques.json,
+// dont la clé racine est "aptitudes" (tableau d'objets {id, name, points,
+// description…}), suivant le même schéma que les objets magiques.
+function normalizeHonours(raw) {
+  const source = Array.isArray(raw?.aptitudes) ? raw.aptitudes
+    : (Array.isArray(raw?.honours) ? raw.honours
+    : (Array.isArray(raw?.honneurs) ? raw.honneurs : []));
+  return source.map((item, index) => {
+    if (typeof item === "string") {
+      return { id: "honneur-" + slug(item), name: item, points: 0, repeatable: false };
+    }
+    const name = item.name || item.nom || "Honneur";
+    return {
+      ...item,
+      id: String(item.id || ("honneur-" + slug(name) + "-" + index)),
+      name,
+      points: item.points == null ? 0 : Number(item.points),
+      repeatable: item.repeatable === true
+    };
+  });
+}
+
+async function loadHonours() {
+  try {
+    const raw = await getJSON(PATHS.honours);
+    state.honours = normalizeHonours(raw);
+  } catch (e) {
+    // Un catalogue d'honneurs manquant ou vide n'est pas bloquant : le
+    // sélecteur d'honneurs ne s'affiche simplement pour aucun personnage.
+    state.honours = [];
   }
 }
 
@@ -450,6 +512,13 @@ function allSelectedOptionNames(){
       const o=(u.options||[]).find(x=>x.id===id) || (u.ruleOptions||[]).find(x=>x.id===id);
       if(o) names.push(String(o.name).toLocaleLowerCase("fr"));
     });
+    // Un honneur elfique choisi compte comme une option sélectionnée pour
+    // l'évaluation des conditions (ex. l'honneur "Garde Maritime" débloque
+    // les mêmes effets que le texte "Garde Maritime" trouvé ailleurs).
+    if (entry.honour) {
+      const h = (state.honours||[]).find(x=>x.id===entry.honour);
+      if (h) names.push(String(h.name).toLocaleLowerCase("fr"));
+    }
     [u.rules, u.equipment].forEach(v=>{
       normalizeTextList(v).forEach(x=>names.push(String(x).toLocaleLowerCase("fr")));
     });
@@ -476,39 +545,77 @@ function conditionalAllowed(u){
   return conditions.some(c=>hasCondition(c,u));
 }
 
-// Une condition de recatégorisation ("when") peut être :
-//  - l'id exact d'un personnage/unité (ex. "eryndor-vareth") : vraie si cet
-//    id est présent dans la liste en cours ;
+// Une condition ("when") peut être :
+//  - l'id exact d'un personnage/unité présent dans la liste (ex. "eryndor-vareth") ;
+//  - l'id exact d'un honneur elfique choisi par une entrée (ex. "garde-maritime") ;
 //  - un texte libre (nom d'honneur, d'option, de règle…), évalué avec le
 //    même moteur que les conditions d'autorisation (hasCondition).
 function conditionMet(when) {
   if (!when) return false;
   if (state.list.some(x => x.id === when)) return true;
+  if (state.list.some(x => x.honour === when)) return true;
   return hasCondition(when);
-}
-
-// Règles de recatégorisation conditionnelle d'une unité, déclarées dans le
-// supplément (restrictions.units[id].conditionalRules), ex. :
-//   "lothern-sea-guard": {
-//     "conditionalRules": [
-//       { "when": "eryndor-vareth", "category": "Unités de Base", "max": 1 }
-//     ]
-//   }
-// Remplace les cas particuliers auparavant codés en dur dans le générateur :
-// n'importe quel personnage/honneur permettant à une unité de changer de
-// catégorie (ou d'ouvrir un choix limité) peut désormais être décrit
-// uniquement dans les données, sans toucher au code.
-function unitConditionalRules(u) {
-  return restrictionForUnit(u?.id)?.conditionalRules || [];
-}
-function activeConditionalRule(u) {
-  return unitConditionalRules(u).find(rule => conditionMet(rule.when));
 }
 
 function effectiveCategory(u){
   if(!u) return 'Autres';
-  const rule = activeConditionalRule(u);
-  if (rule?.category) return rule.category;
+  return u.category;
+}
+
+// --- Recatégorisation conditionnelle, par entrée --------------------------
+// Déclarée au niveau du supplément (et non plus par unité), dans
+// restrictions.reclassifications, ex. pour "Éryndor Vareth" :
+//   "reclassifications": [
+//     {
+//       "id": "eryndor-base-choice",
+//       "label": "Éryndor Vareth",
+//       "when": "eryndor-vareth",
+//       "fromCategories": ["Unités Spéciales", "Unités Rares"],
+//       "toCategory": "Unités de Base",
+//       "max": 1
+//     }
+//   ]
+// Une telle règle rend éligibles TOUTES les unités des catégories listées
+// (pas une unité en particulier) : dans l'exemple, la Garde Maritime, les
+// Élémentaires de Courant, ou toute autre unité Spéciale/Rare. Le choix se
+// fait ensuite entrée par entrée, via une case à cocher dans "Ma liste" —
+// avec 3 Gardes Maritimes et un budget "max: 1", une seule peut être
+// cochée comme choix de Base ; les 2 autres restent normalement des choix
+// Spéciaux, sans qu'il faille tout recharger ni recalculer la liste.
+function reclassificationRules() {
+  return state.supplement?.restrictions?.reclassifications || [];
+}
+function findReclassificationRule(id) {
+  return reclassificationRules().find(r => r.id === id) || null;
+}
+function ruleAppliesToUnit(rule, u) {
+  if (!rule || !u) return false;
+  const from = Array.isArray(rule.fromCategories) ? rule.fromCategories
+    : (rule.fromCategory ? [rule.fromCategory] : []);
+  return from.includes(u.category);
+}
+function activeReclassificationRulesFor(u) {
+  if (!u) return [];
+  return reclassificationRules().filter(rule => ruleAppliesToUnit(rule, u) && conditionMet(rule.when));
+}
+function reclassifiedCount(ruleId, excludeUid=null) {
+  return state.list.filter(e => e.uid !== excludeUid && e.reclassified === ruleId).length;
+}
+function reclassificationSlotsLeft(rule, excludeUid=null) {
+  if (!rule || rule.max == null) return Infinity;
+  return Math.max(0, Number(rule.max) - reclassifiedCount(rule.id, excludeUid));
+}
+
+// Catégorie réellement utilisée pour une entrée précise de "Ma liste" (et
+// pour les totaux/compositions) : celle de la règle de recatégorisation si
+// l'entrée l'a cochée et que la condition est toujours active, sinon la
+// catégorie normale de l'unité.
+function entryEffectiveCategory(entry, u) {
+  if (!u) return 'Autres';
+  if (entry?.reclassified) {
+    const rule = findReclassificationRule(entry.reclassified);
+    if (rule && ruleAppliesToUnit(rule, u) && conditionMet(rule.when)) return rule.toCategory;
+  }
   return u.category;
 }
 
@@ -548,15 +655,10 @@ function maxEntriesForUnit(u) {
     max=Math.min(max,Math.max(0,groupMax-currentGroup));
   }
 
-  // Une règle de recatégorisation conditionnelle active (ex. "0-1 comme
-  // choix de Base") peut plafonner le nombre d'entrées tant qu'elle
-  // s'applique. Remarque : ce plafond porte sur l'unité dans son ensemble
-  // (toutes ses entrées basculent de catégorie ensemble) — voir la note de
-  // conception pour une répartition plus fine (une partie en Base, le
-  // reste en Spécial/Rare) si elle devient nécessaire.
-  const conditionalRule = activeConditionalRule(u);
-  if (conditionalRule?.max != null) max = Math.min(max, Number(conditionalRule.max));
-
+  // Le nombre d'exemplaires qu'on peut AJOUTER pour cette unité n'est pas
+  // plafonné par les règles de recatégorisation : celles-ci ne portent que
+  // sur des entrées déjà présentes dans la liste (choix a posteriori, via
+  // la case à cocher de "Ma liste"), pas sur l'ajout lui-même.
   return max;
 }
 
@@ -591,16 +693,21 @@ function optionCost(u, entry) {
   }, 0);
 }
 
+function honourCost(entry) {
+  const h = (state.honours||[]).find(x => x.id === entry?.honour);
+  return h ? Number(h.points||0) : 0;
+}
+
 function entryPoints(entry) {
   const u = getUnit(entry.id);
   if (!u || u.points == null) return 0;
-  return Number(u.points) * Number(entry.qty || 0) + optionCost(u, entry) + magicCost(entry);
+  return Number(u.points) * Number(entry.qty || 0) + optionCost(u, entry) + magicCost(entry) + honourCost(entry);
 }
 
 function getCategoryTotal(category) {
   return state.list.reduce((sum, item) => {
     const u = getUnit(item.id);
-    return sum + (effectiveCategory(u) === category ? entryPoints(item) : 0);
+    return sum + (entryEffectiveCategory(item, u) === category ? entryPoints(item) : 0);
   }, 0);
 }
 
@@ -643,6 +750,10 @@ function addUnit(id) {
     qty: entryModelMin(u),
     options: [],
     magicItems: [],
+    honour: null,
+    // Choix "compte comme un choix de Base/Spécial/…" via une règle de
+    // recatégorisation (ex. Éryndor Vareth) — voir reclassificationRules().
+    reclassified: null,
     // La fiche complète n'est chargée que si l'entrée est développée ; par
     // défaut, seuls le nom et le coût total sont affichés dans "Ma liste".
     expanded: false
@@ -752,6 +863,32 @@ function removeMagicItem(uidValue, itemId) {
   const entry = findEntry(uidValue);
   if (!entry) return;
   entry.magicItems = (entry.magicItems || []).filter(x => x !== itemId);
+  render();
+}
+
+// Coche/décoche "Compter comme choix de Base…" pour une entrée. Le budget
+// partagé (rule.max) est vérifié au moment de cocher — s'il n'y a plus de
+// place, l'action est refusée avec un message explicite plutôt que
+// silencieusement ignorée.
+function setReclassified(uidValue, ruleId, checked) {
+  const entry = findEntry(uidValue);
+  if (!entry) return;
+  if (!checked) { entry.reclassified = null; render(); return; }
+  const rule = findReclassificationRule(ruleId);
+  if (!rule) return;
+  const slotsLeft = reclassificationSlotsLeft(rule, entry.uid);
+  if (slotsLeft <= 0) {
+    setStatus(`Plus de place disponible pour un choix de ${rule.toCategory}${rule.label?` (${rule.label})`:""}.`, "error");
+    return;
+  }
+  entry.reclassified = ruleId;
+  render();
+}
+
+function setHonour(uidValue, honourId) {
+  const entry = findEntry(uidValue);
+  if (!entry) return;
+  entry.honour = honourId || null;
   render();
 }
 
@@ -941,6 +1078,21 @@ function magicItemList(){
   return result;
 }
 
+// Honneurs Elfiques réellement proposables : tous ceux du catalogue global
+// (data/aptitudes/honneurs-elfiques.json), filtrés par la restriction du
+// supplément (restrictions.honours.allowed / .excluded), ex. pour le
+// "Héritage de Saphery" de l'Ost du Courant Occidental :
+//   "restrictions": {
+//     "honours": { "allowed": ["maitre-du-savoir", "gardien-de-saphery", "pur-de-coeur", "garde-maritime"] }
+//   }
+function allowedHonours() {
+  const all = state.honours || [];
+  const restr = state.supplement?.restrictions?.honours || {};
+  const allowed = Array.isArray(restr.allowed) ? restr.allowed : null;
+  const excluded = new Set(Array.isArray(restr.excluded) ? restr.excluded : []);
+  return all.filter(h => (!allowed || allowed.includes(h.id)) && !excluded.has(h.id));
+}
+
 // Identifiants d'objets magiques déjà pris par d'autres entrées de la liste.
 // Un objet marqué "repeatable" (unique === false / multiple === true dans les
 // données) reste disponible pour toutes les unités.
@@ -1120,6 +1272,53 @@ function renderRuleOptions(entry, u) {
   </div>`;
 }
 
+// Case "Compter comme choix de Base/Spécial/…" : n'apparaît que si une
+// règle de recatégorisation du supplément (restrictions.reclassifications)
+// s'applique à la catégorie normale de cette unité ET que sa condition
+// (ex. Éryndor Vareth dans la liste) est active. La décision est prise
+// entrée par entrée : le budget "max" est partagé entre toutes les unités
+// concernées (Garde Maritime, Élémentaires de Courant…), pas par unité.
+function renderReclassificationToggle(entry, u) {
+  const active = activeReclassificationRulesFor(u);
+  const currentRule = entry.reclassified ? findReclassificationRule(entry.reclassified) : null;
+  // La règle déjà appliquée à cette entrée reste proposée (pour pouvoir la
+  // décocher) même si elle ne serait plus "active" au sens strict.
+  const rule = active[0] || (currentRule && ruleAppliesToUnit(currentRule, u) ? currentRule : null);
+  if (!rule) return "";
+  const checked = entry.reclassified === rule.id;
+  const slotsLeft = reclassificationSlotsLeft(rule, entry.uid);
+  const disabled = !checked && slotsLeft <= 0;
+  const slotsText = Number.isFinite(rule.max) ? ` — ${slotsLeft + (checked?1:0)}/${rule.max} disponible${rule.max>1?"s":""}` : "";
+  return `<div class="options-box">
+    <label class="check-option">
+      <input type="checkbox" data-reclassify="${esc(entry.uid)}" data-rule-id="${esc(rule.id)}" ${checked?"checked":""} ${disabled?"disabled":""}>
+      <span>Compter comme choix de ${esc(rule.toCategory)}${rule.label?` (${esc(rule.label)})`:""}${esc(slotsText)}</span>
+    </label>
+  </div>`;
+}
+
+// Sélecteur "Honneur Elfique" : disponible pour les Personnages, filtré
+// par la liste des honneurs autorisés par le supplément (le cas échéant).
+// Le coût de l'honneur choisi s'ajoute au total de l'entrée, et son nom
+// alimente les conditions (allSelectedOptionNames / hasCondition).
+function renderHonourSelector(entry, u) {
+  if (u.category !== "Personnages") return "";
+  const pool = allowedHonours();
+  if (!pool.length) return "";
+  const current = entry.honour || "";
+  const chosen = pool.find(h => h.id === current);
+  return `<div class="options-box">
+    <div class="options-title">Honneur Elfique</div>
+    <label class="option-select-label">Honneur
+      <select data-select-honour="${esc(entry.uid)}">
+        <option value="">Aucun</option>
+        ${pool.map(h => `<option value="${esc(h.id)}" ${h.id===current?"selected":""}>${esc(h.name)} (${formatPoints(h.points)})</option>`).join("")}
+      </select>
+    </label>
+    ${chosen?.description ? `<div class="unit-block-line">${esc(chosen.description)}</div>` : ""}
+  </div>`;
+}
+
 function optionPrice(o) {
   const flat = Number(o.points || 0);
   const per = Number(o.pointsPerModel || 0);
@@ -1171,7 +1370,25 @@ function validate() {
       const weaponCost = categoryMagicCost(item, "Armes magiques");
       if (weaponCost > weaponLimit) errors.push(`${u.name} : arme magique du chef au-dessus de la limite de ${formatPoints(weaponLimit)}.`);
     }
+
+    if (item.honour && !allowedHonours().some(h => h.id === item.honour)) {
+      errors.push(`${u.name} : l'honneur elfique choisi n'est plus autorisé par ce supplément.`);
+    }
   }
+
+  // Budgets de recatégorisation (ex. Éryndor Vareth : 0-1 choix Spécial/Rare
+  // en Base) : un budget partagé peut être dépassé après coup si la
+  // condition qui le rendait actif a changé entre-temps (retrait du
+  // personnage qui l'accorde, par exemple).
+  reclassificationRules().forEach(rule => {
+    const count = reclassifiedCount(rule.id);
+    if (!count) return;
+    if (!conditionMet(rule.when)) {
+      errors.push(`Recatégorisation « ${rule.label || rule.id} » : la condition n'est plus remplie.`);
+    } else if (rule.max != null && count > Number(rule.max)) {
+      errors.push(`Recatégorisation « ${rule.label || rule.id} » : ${count} entrées comptées comme ${rule.toCategory}, maximum ${rule.max}.`);
+    }
+  });
 
   for (const u of allUnits()) {
     const r = restrictionForUnit(u.id);
@@ -1259,7 +1476,7 @@ function renderList() {
   if (!items.length) { container.innerHTML = ""; return; }
 
   const groups = {};
-  items.forEach(x => (groups[effectiveCategory(x.unit)] ||= []).push(x));
+  items.forEach(x => (groups[entryEffectiveCategory(x.item, x.unit)] ||= []).push(x));
 
   container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
     <section class="roster-group">
@@ -1272,6 +1489,7 @@ function renderList() {
         const pool = [...(unit.options||[]), ...(unit.ruleOptions||[])];
         const optionNames = selected.map(id => pool.find(o=>o.id===id)?.name).filter(Boolean);
         optionNames.push(...magicItemsLabel(item));
+        if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) optionNames.push(h.name); }
         // Fiche repliée par défaut : seuls le nom et le coût total de
         // l'entrée sont visibles. Cocher la case "onglet" charge la fiche
         // complète (caractéristiques, équipement, options, objets…).
@@ -1293,11 +1511,13 @@ function renderList() {
             <div class="qty-control"><button data-minus="${esc(item.uid)}">−</button><input class="qty-input" type="number" min="${min}" ${max===Infinity?"":`max="${max}"`} value="${item.qty}" data-qty-input="${esc(item.uid)}" aria-label="Effectif de ${esc(unit.name)}"><button data-plus="${esc(item.uid)}">+</button><span>figurine${item.qty > 1 ? "s" : ""}</span></div>
             <div class="selected-options">${optionNames.length ? optionNames.map(esc).join(" · ") : "Aucune option"}</div>
           </div>
+          ${renderReclassificationToggle(item, unit)}
           ${renderStatsTable(item, unit)}
           ${renderEquipment(unit)}
           ${renderNativeRules(unit)}
           ${renderMountSelector(item, unit)}
           ${renderCharacterOptions(item, unit)}
+          ${renderHonourSelector(item, unit)}
           ${renderMagicItemsSelector(item, unit)}
           ${renderBannerItemsSelector(item, unit)}
           ${renderChampionWeaponSelector(item, unit)}
@@ -1316,6 +1536,8 @@ function renderList() {
   container.querySelectorAll("[data-select-option]").forEach(s => s.onchange = () => setSelectOption(s.dataset.selectOption,s.dataset.optionKind,s.value));
   container.querySelectorAll("[data-add-magic]").forEach(s => s.onchange = () => { addMagicItem(s.dataset.addMagic, s.value); });
   container.querySelectorAll("[data-remove-magic]").forEach(b => b.onclick = () => removeMagicItem(b.dataset.removeMagic, b.dataset.magicId));
+  container.querySelectorAll("[data-reclassify]").forEach(b => b.onchange = () => setReclassified(b.dataset.reclassify, b.dataset.ruleId, b.checked));
+  container.querySelectorAll("[data-select-honour]").forEach(s => s.onchange = () => setHonour(s.dataset.selectHonour, s.value));
 }
 
 // Barre de proportions (remplace l'ancien diagramme circulaire) : un seul
@@ -1541,7 +1763,7 @@ function exportTXT() {
     ""
   ];
   const groups = {};
-  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[effectiveCategory(u)] ||= []).push({u,item}); });
+  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[entryEffectiveCategory(item, u)] ||= []).push({u,item}); });
   sortByCategory(Object.entries(groups)).forEach(([cat,arr]) => {
     lines.push(cat.toUpperCase());
     lines.push("-".repeat(cat.length));
@@ -1549,6 +1771,7 @@ function exportTXT() {
       const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
       const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
       opts.push(...magicItemsLabel(item));
+      if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
       lines.push(`${i+1}. ${item.qty} figurine${item.qty>1?"s":""} — ${u.name}${opts.length?" — "+opts.join(", "):""} — ${entryPoints(item)} pts`);
     });
     lines.push("");
@@ -1568,13 +1791,14 @@ function printList() {
   const ordered = state.list
     .map(item => ({ item, u: getUnit(item.id) }))
     .filter(x => x.u)
-    .sort((a,b) => categoryRank(effectiveCategory(a.u)) - categoryRank(effectiveCategory(b.u)));
+    .sort((a,b) => categoryRank(entryEffectiveCategory(a.item, a.u)) - categoryRank(entryEffectiveCategory(b.item, b.u)));
   const rows = ordered.map(({item,u},index) => {
     const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
     const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
     opts.push(...magicItemsLabel(item));
+    if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
     const optText=opts.join(", ");
-    return `<tr><td>${index+1}</td><td>${esc(effectiveCategory(u))}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
+    return `<tr><td>${index+1}</td><td>${esc(entryEffectiveCategory(item, u))}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
   }).join("");
   const w=window.open("","_blank");
   if(!w) return setStatus("La fenêtre d'impression a été bloquée.", "error");
@@ -1610,7 +1834,9 @@ const chartToggle=$('chartToggle'); if(chartToggle) chartToggle.onchange=()=>ren
 
 async function init() {
   try {
-    const raw = await getJSON(PATHS.catalog);
+    // Le catalogue d'Honneurs Elfiques est indépendant de l'armée/supplément :
+    // chargé en parallèle du catalogue de suppléments, une seule fois.
+    const [raw] = await Promise.all([getJSON(PATHS.catalog), loadHonours()]);
     state.catalog = Array.isArray(raw) ? raw : (raw.supplements || []);
     if (!state.catalog.length) throw new Error("Aucun supplément n'est défini.");
     updateSelectors();
