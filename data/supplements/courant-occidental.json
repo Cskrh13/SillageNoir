@@ -51,6 +51,10 @@
         "notes": "Un seul contingent allié : Garnison de la Garde Maritime, Bretonnie ou Empire."
       }
     },
+    "honours": {
+      "allowed": ["maitre-du-savoir", "gardien-de-saphery", "pur-de-coeur", "garde-maritime"],
+      "notes": "Héritage de Saphery : seuls ces Honneurs Elfiques (définis dans honneurs-elfiques.json) sont proposables aux personnages de l'Ost de la Tour d'Argent."
+    },
     "units": {
       "prince": {
         "maxPer1000": 1,
@@ -275,21 +279,6 @@
         "Courant irrésistible"
       ],
       "notes": []
-    },
-    {
-      "id": "lothern-skycutter",
-      "name": "Cotre Volant de Lothern",
-      "category": "Unités Rares",
-      "points": null,
-      "profile": null,
-      "type": "Char volant",
-      "unitSize": "1",
-      "equipment": [],
-      "options": [],
-      "specialRules": [],
-      "notes": [
-        "Profil et coût non présents dans les données actuellement récupérées ; ajout bloqué tant que le coût n'est pas renseigné."
-      ]
     }
   ],
   "allies": [
@@ -312,7 +301,8 @@
   "generatorNotes": [
     "Liste basée sur les Royaumes Hauts-Elfes.",
     "Les unités non mentionnées dans allowedUnits ne sont pas proposées.",
-    "Les conditions liées aux Honneurs Elfiques sont conservées dans les champs conditional ; le générateur actuel les expose comme données mais ne les applique pas encore automatiquement.",
-    "Le Cotre Volant de Lothern est volontairement sans coût tant que son profil complet n'est pas renseigné."
+    "Les conditions liées aux Honneurs Elfiques (champs conditional) sont évaluées automatiquement par le générateur via l'Honneur choisi pour le Général.",
+    "restrictions.honours.allowed restreint le choix d'Honneur Elfique proposé aux personnages de cette liste (Héritage de Saphery) ; le générateur lit ces id directement dans honneurs-elfiques.json, sans logique codée en dur.",
+    "Le Cotre Volant de Lothern utilise désormais uniquement la définition complète (profil, coût 90 pts) de hauts-elfes.json ; l'ancienne entrée locale sans coût, qui l'écrasait et bloquait son ajout, a été supprimée."
   ]
 }
