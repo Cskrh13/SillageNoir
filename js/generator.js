@@ -41,6 +41,83 @@ const PATHS = {
   honours: "data/aptitudes/honneurs-elfiques.json"
 };
 
+// Les six catégories officielles d'objets magiques (règles génériques) :
+// chaque fichier de données (data/objets-magiques/*.json) range ses objets
+// sous l'une de ces clés françaises ; Generator leur associe une clé
+// canonique stable, utilisée pour la règle générique "un seul objet par
+// catégorie et par modèle" — jamais codée objet par objet.
+const MAGIC_ITEM_CATEGORY_KEYS = {
+  "Armes magiques": "magic_weapon",
+  "Armures magiques": "magic_armour",
+  "Talismans": "talisman",
+  "Bannières magiques": "magic_standard",
+  "Objets enchantés": "enchanted_item",
+  "Objets cabalistiques": "arcane_item"
+};
+// Par défaut, les Objets cabalistiques ("arcane items") ne peuvent être pris
+// que par un Sorcier — règle générique des livres d'armée. Un objet peut
+// lever explicitement cette exigence via `restriction.requires` (tableau
+// vide) ou `restriction.override: "no-wizard-required"` dans les données.
+const CATEGORY_DEFAULT_REQUIRES = { arcane_item: ["wizard"] };
+
+// Détermine si une unité (dans son état de base ou choisi) est un Sorcier,
+// uniquement à partir de ses propres données (règles spéciales déclarées),
+// jamais à partir du texte d'un objet magique.
+function isWizardUnit(u, entry) {
+  if (!u) return false;
+  const rules = normalizeTextList(u.rules).map(r => r.toLocaleLowerCase("fr"));
+  if (rules.some(r => r.includes("domaine de") || r.includes("lore of"))) return true;
+  // Un Honneur Elfique octroyant un niveau de Sorcier (ex. Maître du Savoir)
+  // rend le porteur Sorcier — lu depuis le catalogue d'honneurs, pas codé ici.
+  const h = entry?.honour ? honourById(entry.honour) : null;
+  if (h) {
+    const text = [h.name, ...(Array.isArray(h.rules) ? h.rules : [])].join(" ").toLocaleLowerCase("fr");
+    if (text.includes("sorcier de niveau") || text.includes("wizard")) return true;
+  }
+  return false;
+}
+
+// Type de troupe d'une unité (Infanterie, Cavalerie, Char, Monstre…), tel
+// que déclaré dans ses propres données (`type`), utilisé pour les objets
+// réservés à certains types de troupe.
+function unitTroopType(u) {
+  return String(u?.type || u?.troopType || "").toLocaleLowerCase("fr");
+}
+
+// Résout la restriction propre d'un objet magique (`item.restriction`) pour
+// un porteur donné. La restriction est une structure de données
+// (`{requires:[...]}`), jamais une recherche dans le texte de description
+// de l'objet. Chaque entrée de `requires` peut être :
+//   "wizard"                      — le porteur doit être un Sorcier
+//   { troopType: [...] }          — le type de troupe du porteur doit
+//                                    correspondre à l'une des valeurs
+//   { renown: "identifiant" }     — le porteur doit appartenir à l'armée de
+//                                    renom indiquée (non modélisé pour
+//                                    l'instant : voir renownMatches ci-dessous)
+function renownMatches(id, entry, u) {
+  // Aucune donnée de "armée de renom" n'existe encore dans le moteur ou les
+  // fiches d'unité : on refuse par défaut (échec fermé) plutôt que de
+  // proposer un objet à un porteur qui n'y a peut-être pas droit. À adapter
+  // dès qu'un champ dédié (ex. state.army.renown / entry.renown) existera.
+  const current = entry?.renown || u?.renown || state.army?.renown || null;
+  return current != null && String(current) === String(id);
+}
+function isItemAllowedForEntry(item, entry, u) {
+  const explicit = item?.restriction?.requires;
+  const requires = Array.isArray(explicit) ? explicit
+    : (explicit != null ? [explicit] : (CATEGORY_DEFAULT_REQUIRES[item?.categoryKey] || []));
+  if (item?.restriction?.override === "no-wizard-required") return true;
+  return requires.every(req => {
+    if (req === "wizard") return isWizardUnit(u, entry);
+    if (req && typeof req === "object" && req.troopType) {
+      const allowed = (Array.isArray(req.troopType) ? req.troopType : [req.troopType]).map(t => String(t).toLocaleLowerCase("fr"));
+      return allowed.some(t => unitTroopType(u).includes(t));
+    }
+    if (req && typeof req === "object" && req.renown) return renownMatches(req.renown, entry, u);
+    return true;
+  });
+}
+
 // Hiérarchie d'affichage standard des catégories, respectée partout où une
 // liste ou un catalogue est présenté (colonne de gauche, "Ma liste" au
 // centre, export TXT, impression). Toute catégorie absente de cette liste
@@ -338,7 +415,7 @@ function classifyUnitOptions(rawList, mounts) {
 }
 
 
-function normalizeMagicItems(raw) {
+function normalizeMagicItems(raw, sourceLabel = "") {
   if (!raw || typeof raw !== "object") return {};
   const source = raw.magicItems || raw.objetsMagiques || raw.categories || raw;
   const result = {};
@@ -346,7 +423,7 @@ function normalizeMagicItems(raw) {
     if (!Array.isArray(items)) return;
     result[category] = items.map((item, index) => {
       if (typeof item === "string") {
-        return { id: "magic-" + slug(item), name: item, points: 0 };
+        return { id: "magic-" + slug(item), name: item, points: 0, category, categoryKey: MAGIC_ITEM_CATEGORY_KEYS[category] || slug(category), sourceLabel };
       }
       const name = item.name || item.nom || "Objet magique";
       return {
@@ -354,6 +431,9 @@ function normalizeMagicItems(raw) {
         id: String(item.id || ("magic-" + slug(name) + "-" + index)),
         name,
         points: item.points == null ? 0 : Number(item.points),
+        category,
+        categoryKey: MAGIC_ITEM_CATEGORY_KEYS[category] || slug(category),
+        sourceLabel: item.sourceLabel || sourceLabel,
         // certains objets (ex. talismans communs) peuvent être pris par
         // plusieurs unités simultanément : repeatable / unique==false / multiple
         repeatable: item.repeatable === true || item.unique === false || item.multiple === true
@@ -366,9 +446,9 @@ function normalizeMagicItems(raw) {
 // Fusionne deux catalogues d'objets magiques déjà normalisés (par
 // catégorie) : utilisé pour combiner les objets communs (toutes armées)
 // avec ceux spécifiques à l'armée chargée.
-function mergeMagicItems(a, b) {
+function mergeMagicItems(...sources) {
   const result = {};
-  [a, b].forEach(source => {
+  sources.forEach(source => {
     Object.entries(source || {}).forEach(([category, items]) => {
       result[category] = [...(result[category] || []), ...items];
     });
@@ -376,18 +456,29 @@ function mergeMagicItems(a, b) {
   return result;
 }
 
-async function loadMagicItems(armyId) {
+// Charge et fusionne les trois sources d'objets magiques dans le même
+// système de sélection, chacune identifiée par une étiquette de source
+// (utilisée pour le regroupement <optgroup> dans le sélecteur) :
+//   - communs.json                    -> "Objets magiques communs"
+//   - objets-magiques/<armée>.json     -> "Objets magiques des <armée>"
+//   - objets-magiques/<supplément>.json -> "Objets magiques du <supplément>"
+// Un fichier manquant (armée ou supplément sans catalogue propre) n'est
+// jamais bloquant : l'armée reste jouable, simplement avec moins d'objets.
+async function loadMagicItems(armyId, supplementId) {
   state.magicItems = null;
   state.magicItemsLoading = true;
   try {
-    // Les objets communs (data/objets-magiques/communs.json) sont
-    // disponibles pour toutes les armées ; ils sont fusionnés avec le
-    // fichier spécifique de l'armée chargée (s'il existe).
-    const [common, own] = await Promise.all([
+    const base = PATHS.armies + "../objets-magiques/";
+    const [common, own, supp] = await Promise.all([
       getJSON(PATHS.commonMagicItems).catch(() => null),
-      armyId ? getJSON(PATHS.armies + "../objets-magiques/" + armyId + ".json").catch(() => null) : Promise.resolve(null)
+      armyId ? getJSON(base + armyId + ".json").catch(() => null) : Promise.resolve(null),
+      (supplementId && supplementId !== armyId) ? getJSON(base + supplementId + ".json").catch(() => null) : Promise.resolve(null)
     ]);
-    const merged = mergeMagicItems(normalizeMagicItems(common), normalizeMagicItems(own));
+    const merged = mergeMagicItems(
+      normalizeMagicItems(common, "Objets magiques communs"),
+      normalizeMagicItems(own, own?.source || own?.name || `Objets magiques des ${armyLabel(armyId)}`),
+      normalizeMagicItems(supp, supp?.source || supp?.name || "Objets magiques du supplément")
+    );
     state.magicItems = Object.keys(merged).length ? merged : null;
   } catch (e) {
     // Un fichier d'objets magiques manquant n'est pas bloquant : l'armée
@@ -1322,11 +1413,19 @@ function renderBudgetItemSelector(entry, u, { limit, category, title }) {
   const chosenAll = selectedMagicObjects(entry);
   const chosen = category ? chosenAll.filter(x => x.category === category) : chosenAll;
   const used = chosen.reduce((s,x)=>s+Number(x.points||0),0);
+  // Catégories déjà occupées par un objet non répétable sur CETTE entrée :
+  // règle générique "un seul objet magique par catégorie et par modèle".
+  const categorySlotsUsed = new Set(
+    chosenAll.filter(x => !x.repeatable).map(x => x.categoryKey)
+  );
   const otherEntriesUsed = usedMagicItemIds(entry.uid);
   const available = magicItemList().filter(item => {
     if (category && item.category !== category) return false;
     if (otherEntriesUsed.has(String(item.id))) return false;
     if (chosenAll.some(c => String(c.id) === String(item.id))) return false;
+    // Restriction propre à l'objet (porteur compatible ?), lue depuis ses
+    // propres données (item.restriction), jamais du texte de description.
+    if (!isItemAllowedForEntry(item, entry, u)) return false;
     return true;
   });
 
@@ -1340,13 +1439,28 @@ function renderBudgetItemSelector(entry, u, { limit, category, title }) {
       </label>`).join("") + `</div>`;
   }
 
+  // Regroupement par source (communs / Hauts Elfes / Courant Occidental…)
+  // dans le même sélecteur, sans changer la structure d'affichage existante.
+  const bySource = new Map();
+  available.forEach(item => {
+    const label = item.sourceLabel || "Objets magiques";
+    if (!bySource.has(label)) bySource.set(label, []);
+    bySource.get(label).push(item);
+  });
+
   html += `<label class="option-select-label">Ajouter un objet
     <select data-add-magic="${esc(entry.uid)}">
       <option value="">Choisir…</option>
-      ${available.map(item => {
-        const disabledByLimit = (used + Number(item.points||0)) > limit;
-        return `<option value="${esc(item.id)}" ${disabledByLimit?"disabled":""}>${esc(item.category)} — ${esc(item.name)} (${formatPoints(item.points||0)})</option>`;
-      }).join("")}
+      ${[...bySource.entries()].map(([label, items]) => `<optgroup label="${esc(label)}">${items.map(item => {
+        const overLimit = (used + Number(item.points||0)) > limit;
+        // Catégorie déjà occupée par un autre objet non répétable de cette
+        // entrée (règle générique "une catégorie par modèle") : l'objet
+        // reste visible pour information mais n'est pas sélectionnable.
+        const categoryTaken = !item.repeatable && categorySlotsUsed.has(item.categoryKey);
+        const disabled = overLimit || categoryTaken;
+        const reason = categoryTaken ? " — catégorie déjà prise" : "";
+        return `<option value="${esc(item.id)}" ${disabled?"disabled":""}>${esc(item.category)} — ${esc(item.name)} (${formatPoints(item.points||0)})${reason}</option>`;
+      }).join("")}</optgroup>`).join("")}
     </select>
   </label>`;
 
@@ -1792,7 +1906,7 @@ async function loadArmy(id, reset=true) {
     const raw = await getJSON(PATHS.armies + id + ".json");
     state.army = normalizeArmy(raw,id);
     if (reset) state.list = [];
-    await loadMagicItems(id);
+    await loadMagicItems(id, state.supplement?.id);
     updateSelectors();
     render();
     setStatus(`${state.supplement.name} · ${state.army.name}`, "ok");
