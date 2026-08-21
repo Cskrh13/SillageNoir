@@ -261,7 +261,22 @@
         "Tenace",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "crewProfiles": [
+        {
+          "name": "Cocher du Char de chef de Chrace",
+          "count": 1,
+          "M": "-",
+          "CC": 5,
+          "CT": 4,
+          "F": 4,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": "-"
+        }
+      ]
     },
     {
       "id": "archmage",
@@ -517,7 +532,7 @@
         "Arme de base"
       ],
       "options": [
-          "Objets magiques jusqu'à 100 pts"
+        "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
         "Réflexes elfiques",
@@ -549,7 +564,7 @@
         "Arme de base"
       ],
       "options": [
-         "Objets magiques jusqu'à 100 pts"
+        "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
         "Réflexes elfiques",
@@ -634,7 +649,19 @@
         "Unité régimentaire",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Sentinelle",
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "elven-archers",
@@ -668,7 +695,19 @@
       "specialRules": [
         "Réflexes elfiques"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Sentinelle",
+        "M": 5,
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      }
     },
     {
       "id": "lothern-sea-guard",
@@ -710,7 +749,19 @@
         "Discipline navale",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Maître de la mer",
+        "M": 5,
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "ellyrian-reavers",
@@ -752,7 +803,19 @@
         "Rapidité",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Héraut",
+        "M": "-",
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "silver-helms",
@@ -793,7 +856,19 @@
         "Rapidité",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Haut Heaume",
+        "M": "-",
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "white-lions-of-chrace",
@@ -837,7 +912,19 @@
         "Tenace",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Gardien",
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 4,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "swordmasters-of-hoeth",
@@ -880,7 +967,19 @@
         "Valeur des âges",
         "Guerriers de la Tour Blanche"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Maître des lames",
+        "M": 5,
+        "CC": 6,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 6,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "phoenix-guard",
@@ -922,7 +1021,19 @@
         "Vétéran",
         "Témoin du destin"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Gardien de la Flamme",
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 9
+      }
     },
     {
       "id": "shadow-warriors",
@@ -947,11 +1058,26 @@
         "Armes de base",
         "Arcs longs"
       ],
-      "options": [],
+      "options": [
+        "Marcheur de l'Ombre +6 pts",
+        "Objets magiques jusqu'à 25 pts"
+      ],
       "specialRules": [
         "Guerriers de Nagarythe"
       ],
-      "notes": "Coût/options à vérifier."
+      "notes": "Coût/options à vérifier.",
+      "championProfile": {
+        "name": "Marcheur de l'Ombre",
+        "M": 5,
+        "CC": 5,
+        "CT": 6,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 1,
+        "Cd": 8
+      }
     },
     {
       "id": "tiranoc-chariot",
@@ -980,7 +1106,22 @@
       "specialRules": [
         "Ordre ouvert"
       ],
-      "notes": "Coût/options à vérifier."
+      "notes": "Coût/options à vérifier.",
+      "crewProfiles": [
+        {
+          "name": "Équipage du Char de Tiranoc",
+          "count": 2,
+          "M": "-",
+          "CC": 4,
+          "CT": 4,
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": 8
+        }
+      ]
     },
     {
       "id": "dragon-princes",
@@ -1028,7 +1169,19 @@
         "Rapidité",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "championProfile": {
+        "name": "Drakemaster",
+        "M": "-",
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 3,
+        "Cd": 9
+      }
     },
     {
       "id": "sisters-of-avelorn",
@@ -1053,11 +1206,26 @@
         "Armes de base",
         "Arcs d'Avelorn"
       ],
-      "options": [],
+      "options": [
+        "Grande Sœur +7 pts",
+        "Objets magiques jusqu'à 50 pts"
+      ],
       "specialRules": [
         "Flèches d'Isha"
       ],
-      "notes": "Coût/options à vérifier."
+      "notes": "Coût/options à vérifier.",
+      "championProfile": {
+        "name": "Grande Sœur",
+        "M": 5,
+        "CC": 5,
+        "CT": 6,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 1,
+        "Cd": 8
+      }
     },
     {
       "id": "lion-chariot-of-chrace",
@@ -1093,7 +1261,22 @@
         "Tenace",
         "Valeur des âges"
       ],
-      "notes": ""
+      "notes": "",
+      "crewProfiles": [
+        {
+          "name": "Conducteur de lions",
+          "count": 2,
+          "M": "-",
+          "CC": 5,
+          "CT": 4,
+          "F": 4,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": "-"
+        }
+      ]
     },
     {
       "id": "lothern-skycutter",
@@ -1122,7 +1305,35 @@
       "specialRules": [
         "Ordre serré"
       ],
-      "notes": "Coût/options à vérifier."
+      "notes": "Coût/options à vérifier.",
+      "crewProfiles": [
+        {
+          "name": "Équipage de la Garde Maritime",
+          "count": 3,
+          "M": "-",
+          "CC": 4,
+          "CT": 4,
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": 8
+        },
+        {
+          "name": "Roc à plumes véloces",
+          "count": 1,
+          "M": 2,
+          "CC": 5,
+          "CT": "-",
+          "F": 4,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 2,
+          "Cd": "-"
+        }
+      ]
     },
     {
       "id": "flamespyre-phoenix",
@@ -1365,7 +1576,22 @@
         "Tirailleurs",
         "Valeur des âges"
       ],
-      "notes": "Coût à vérifier."
+      "notes": "Coût à vérifier.",
+      "crewProfiles": [
+        {
+          "name": "Garde Maritime (équipage)",
+          "count": 1,
+          "M": 5,
+          "CC": 4,
+          "CT": 4,
+          "F": 3,
+          "E": 3,
+          "PV": 2,
+          "I": 4,
+          "A": 2,
+          "Cd": 8
+        }
+      ]
     }
   ],
   "mounts": [
