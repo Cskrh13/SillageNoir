@@ -6,56 +6,282 @@
       "points": 35,
       "repeatable": false,
       "restriction": "Réservé aux Seigneurs Hauts Elfes.",
-      "description": "Le porteur ne peut pas être monté. Devient Sorcier de Niveau 1 et connaît un sort tiré aléatoirement dans l'un des domaines de Magie de Bataille, Élémentalisme, Haute Magie ou Illusion (le domaine est choisi avant la partie, le sort est déterminé aléatoirement). Peut être équipé d'une Épée de Hoeth sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Armure d'Ithilmar, Bénédiction de Lileath et Domaine de Saphery."
+      "description": "Le porteur ne peut pas être monté. Devient Sorcier de Niveau 1 et connaît un sort tiré aléatoirement dans l'un des domaines de Magie de Bataille, Élémentalisme, Haute Magie ou Illusion (le domaine est choisi avant la partie, le sort est déterminé aléatoirement). Peut être équipé d'une Épée de Hoeth sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Armure d'Ithilmar, Bénédiction de Lileath et Domaine de Saphery.",
+      "effects": [
+        {
+          "type": "forbid_mount"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Sorcier de Niveau 1 (domaine choisi avant la partie : Bataille, Élémentalisme, Haute Magie ou Illusion ; sort déterminé aléatoirement)"
+        },
+        {
+          "type": "grant_option",
+          "kind": "weapon",
+          "name": "Épée de Hoeth",
+          "points": 0,
+          "exclusiveKind": "weapon"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Armure d'Ithilmar"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Bénédiction de Lileath"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Domaine de Saphery"
+        }
+      ]
     },
     {
       "id": "traqueur-de-l-ombre",
       "name": "Traqueur de l'Ombre",
       "points": 20,
       "repeatable": false,
-      "description": "Le porteur ne peut pas être monté et ne peut pas porter d'armure lourde ni d'armure intégrale. Peut être équipé d'un Arc d'Avelorn sans coût supplémentaire ; s'il le prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Embusqueurs, Insaisissable, Tir et Fuite, Mouvement à Travers les Obstacles et Éclaireurs."
+      "description": "Le porteur ne peut pas être monté et ne peut pas porter d'armure lourde ni d'armure intégrale. Peut être équipé d'un Arc d'Avelorn sans coût supplémentaire ; s'il le prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Embusqueurs, Insaisissable, Tir et Fuite, Mouvement à Travers les Obstacles et Éclaireurs.",
+      "effects": [
+        {
+          "type": "forbid_mount"
+        },
+        {
+          "type": "forbid_option_match",
+          "kind": "armour",
+          "match": [
+            "armure lourde",
+            "armure intégrale"
+          ]
+        },
+        {
+          "type": "grant_option",
+          "kind": "weapon",
+          "name": "Arc d'Avelorn",
+          "points": 0,
+          "exclusiveKind": "weapon"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Embusqueurs"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Insaisissable"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Tir et Fuite"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Mouvement à Travers les Obstacles"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Éclaireurs"
+        }
+      ]
     },
     {
       "id": "oint-d-asuryan",
       "name": "Oint d'Asuryan",
       "points": 15,
       "repeatable": false,
-      "description": "Le porteur ne peut être monté que sur un Phénix flamboyant ou un Phénix givrecœur (aucune autre option de monture). Peut être équipé d'une Hallebarde cérémonielle sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Bénédictions d'Asuryan, Peur et Témoin de la Destinée ; remplace sa règle spéciale Valeur des Âges par Vétéran."
+      "description": "Le porteur ne peut être monté que sur un Phénix flamboyant ou un Phénix givrecœur (aucune autre option de monture). Peut être équipé d'une Hallebarde cérémonielle sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Bénédictions d'Asuryan, Peur et Témoin de la Destinée ; remplace sa règle spéciale Valeur des Âges par Vétéran.",
+      "effects": [
+        {
+          "type": "restrict_mount",
+          "match": [
+            "Phénix flamboyant",
+            "Phénix givrecœur"
+          ]
+        },
+        {
+          "type": "grant_option",
+          "kind": "weapon",
+          "name": "Hallebarde cérémonielle",
+          "points": 0,
+          "exclusiveKind": "weapon"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Bénédictions d'Asuryan"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Peur"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Témoin de la Destinée"
+        },
+        {
+          "type": "replace_special_rule",
+          "from": "Valeur des Âges",
+          "to": "Vétéran"
+        }
+      ]
     },
     {
       "id": "sang-de-caledor",
       "name": "Sang de Caledor",
       "points": 15,
       "repeatable": false,
-      "description": "Le porteur (mais pas sa monture) doit être monté sur un Coursier elfe bardé, un Dragon solaire, un Dragon lunaire ou un Dragon stellaire. Gagne un modificateur de +1 en Capacité de Combat. Peut être équipé d'une armure intégrale sans coût supplémentaire. Gagne les règles spéciales Armure de Dragon et Impétueux."
+      "description": "Le porteur (mais pas sa monture) doit être monté sur un Coursier elfe bardé, un Dragon solaire, un Dragon lunaire ou un Dragon stellaire. Gagne un modificateur de +1 en Capacité de Combat. Peut être équipé d'une armure intégrale sans coût supplémentaire. Gagne les règles spéciales Armure de Dragon et Impétueux.",
+      "effects": [
+        {
+          "type": "restrict_mount",
+          "match": [
+            "Coursier elfe bardé",
+            "Dragon solaire",
+            "Dragon lunaire",
+            "Dragon stellaire"
+          ],
+          "required": true
+        },
+        {
+          "type": "stat_modifier",
+          "stat": "CC",
+          "value": 1
+        },
+        {
+          "type": "grant_option",
+          "kind": "armour",
+          "name": "Armure intégrale",
+          "points": 0
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Armure de Dragon"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Impétueux"
+        }
+      ]
     },
     {
       "id": "chasseur-chracian",
       "name": "Chasseur Chracian",
       "points": 10,
       "repeatable": false,
-      "description": "Le porteur ne peut être monté que sur un Char des Lions Blancs (aucune autre option de monture). Peut être équipé d'une Grande Lame Chracienne sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Cape de Lion, Mouvement à Travers les Obstacles et Obstiné."
+      "description": "Le porteur ne peut être monté que sur un Char des Lions Blancs (aucune autre option de monture). Peut être équipé d'une Grande Lame Chracienne sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Cape de Lion, Mouvement à Travers les Obstacles et Obstiné.",
+      "effects": [
+        {
+          "type": "restrict_mount",
+          "match": [
+            "Char des Lions Blancs"
+          ],
+          "required": true
+        },
+        {
+          "type": "grant_option",
+          "kind": "weapon",
+          "name": "Grande Lame Chracienne",
+          "points": 0,
+          "exclusiveKind": "weapon"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Cape de Lion"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Mouvement à Travers les Obstacles"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Obstiné"
+        }
+      ]
     },
     {
       "id": "gardien-de-saphery",
       "name": "Gardien de Saphery",
       "points": 10,
       "repeatable": false,
-      "description": "Le porteur ne peut pas être monté. Peut être équipé d'une Épée de Hoeth sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Déviation de Tirs, Armure d'Ithilmar et Coup Fatal."
+      "description": "Le porteur ne peut pas être monté. Peut être équipé d'une Épée de Hoeth sans coût supplémentaire ; s'il la prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Déviation de Tirs, Armure d'Ithilmar et Coup Fatal.",
+      "effects": [
+        {
+          "type": "forbid_mount"
+        },
+        {
+          "type": "grant_option",
+          "kind": "weapon",
+          "name": "Épée de Hoeth",
+          "points": 0,
+          "exclusiveKind": "weapon"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Déviation de Tirs"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Armure d'Ithilmar"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Coup Fatal"
+        }
+      ]
     },
     {
       "id": "pur-de-coeur",
       "name": "Pur de Cœur",
       "points": 0,
       "repeatable": false,
-      "description": "Sauf s'il fuit, toutes les unités amies situées dans sa portée de Commandement peuvent utiliser sa caractéristique de Commandement à la place de la leur. De plus, ce personnage et toute unité qu'il a rejointe réussissent automatiquement tout test de Panique qu'ils doivent effectuer."
+      "description": "Sauf s'il fuit, toutes les unités amies situées dans sa portée de Commandement peuvent utiliser sa caractéristique de Commandement à la place de la leur. De plus, ce personnage et toute unité qu'il a rejointe réussissent automatiquement tout test de Panique qu'ils doivent effectuer.",
+      "effects": [
+        {
+          "type": "grant_special_rule",
+          "name": "Pur de Cœur (Commandement partagé avec les unités amies à portée ; tests de Panique automatiquement réussis)"
+        }
+      ]
     },
     {
       "id": "garde-maritime",
       "name": "Garde Maritime",
       "points": 0,
       "repeatable": false,
-      "description": "Le porteur ne peut être monté que sur un Aéronef de Lothern (aucune autre option de monture). Peut être équipé d'un Arc de guerre sans coût supplémentaire ; s'il le prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Discipline Navale et Cri de Ralliement."
+      "description": "Le porteur ne peut être monté que sur un Aéronef de Lothern (aucune autre option de monture). Peut être équipé d'un Arc de guerre sans coût supplémentaire ; s'il le prend, il ne peut porter aucune autre arme non magique. Gagne les règles spéciales Discipline Navale et Cri de Ralliement.",
+      "effects": [
+        {
+          "type": "restrict_mount",
+          "match": [
+            "Aéronef de Lothern"
+          ],
+          "required": true
+        },
+        {
+          "type": "grant_option",
+          "kind": "weapon",
+          "name": "Arc de guerre",
+          "points": 0,
+          "exclusiveKind": "weapon"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Discipline Navale"
+        },
+        {
+          "type": "grant_special_rule",
+          "name": "Cri de Ralliement"
+        },
+        {
+          "type": "unlock_unit",
+          "unit": "lothern-sea-guard",
+          "category": "Unités de Base",
+          "max": 1
+        },
+        {
+          "type": "unlock_unit",
+          "unit": "lothern-skycutter",
+          "category": "Unités Rares",
+          "max": 2
+        }
+      ]
     }
   ]
 }
