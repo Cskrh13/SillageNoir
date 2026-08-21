@@ -58,7 +58,33 @@ const MAGIC_ITEM_CATEGORY_KEYS = {
 // que par un Sorcier — règle générique des livres d'armée. Un objet peut
 // lever explicitement cette exigence via `restriction.requires` (tableau
 // vide) ou `restriction.override: "no-wizard-required"` dans les données.
-const CATEGORY_DEFAULT_REQUIRES = { arcane_item: ["wizard"] };
+// Par défaut, une Bannière magique ("magic_standard") ne peut être prise que
+// par le porteur de la Grande Bannière (voir isGrandBannerBearer) — un
+// personnage sans Grande Bannière ne peut prendre aucune bannière.
+const CATEGORY_DEFAULT_REQUIRES = { arcane_item: ["wizard"], magic_standard: ["grand_banner_bearer"] };
+
+// Motif reconnaissant l'option "Grande Bannière" (Étendard de Bataille),
+// quel que soit le supplément/armée qui la définit — jamais un id codé en
+// dur, comme pour "Porte-étendard" ou "Mur de boucliers" plus haut.
+const GRAND_BANNER_RE = /grande?\s+banni[eè]re/i;
+function isGrandBannerOption(o) { return !!(o && GRAND_BANNER_RE.test(String(o.name || ""))); }
+// Un personnage est porteur de la Grande Bannière s'il a coché une option
+// dont le nom correspond à ce motif (voir renderCharacterOptions).
+function isGrandBannerBearer(entry, u) {
+  if (!entry || !u) return false;
+  return effectiveOptions(entry, u).some(o => isGrandBannerOption(o) && (entry.options || []).includes(o.id));
+}
+// uid de l'entrée qui porte actuellement la Grande Bannière dans la liste
+// (une seule par armée — voir optionGroups pour l'application de la règle).
+function grandBannerBearerUid() {
+  const found = state.list.find(item => { const u = getUnit(item.id); return u && isGrandBannerBearer(item, u); });
+  return found ? found.uid : null;
+}
+// Seul un Noble peut porter la Grande Bannière — détecté sur le nom de
+// l'unité, comme les autres correspondances de texte du moteur.
+function isNobleUnit(u) {
+  return String(u?.name || u?.id || "").toLocaleLowerCase("fr").includes("noble");
+}
 
 // Détermine si une unité (dans son état de base ou choisi) est un Sorcier,
 // uniquement à partir de ses propres données (règles spéciales déclarées),
@@ -109,6 +135,7 @@ function isItemAllowedForEntry(item, entry, u) {
   if (item?.restriction?.override === "no-wizard-required") return true;
   return requires.every(req => {
     if (req === "wizard") return isWizardUnit(u, entry);
+    if (req === "grand_banner_bearer") return isGrandBannerBearer(entry, u);
     if (req && typeof req === "object" && req.troopType) {
       const allowed = (Array.isArray(req.troopType) ? req.troopType : [req.troopType]).map(t => String(t).toLocaleLowerCase("fr"));
       return allowed.some(t => unitTroopType(u).includes(t));
@@ -160,7 +187,10 @@ const state = {
   magicItemsLoading: false,
   // Catalogue global des Honneurs Elfiques (data/aptitudes/honneurs-elfiques.json),
   // indépendant de l'armée/supplément chargé — chargé une seule fois au démarrage.
-  honours: []
+  honours: [],
+  // uid de l'entrée choisie manuellement comme Général en cas d'égalité de
+  // Commandement (Cd) entre plusieurs Personnages — voir resolvedGeneralUid().
+  generalUid: null
 };
 
 const $ = id => document.getElementById(id);
@@ -751,9 +781,22 @@ function allSelectedOptionNames(){
 function hasCondition(text, unit=null){
   const t=String(text||'').toLocaleLowerCase('fr');
   if(!t) return true;
+  if(t.includes('eryndor') || t.includes('éryndor')) {
+    const generalIds=state.list.filter(x=>getUnit(x.id)?.category==='Personnages').map(x=>x.id);
+    return generalIds.includes('eryndor-vareth');
+  }
+  // "Général avec l'Honneur X" ne teste plus n'importe quel Personnage de la
+  // liste : seul l'Honneur choisi par le Général réellement désigné (voir
+  // resolvedGeneralUid) compte, comme l'exige la liste de composition.
+  const generalMatch = t.match(/^g[ée]n[ée]ral avec l['’]honneur\s*(.*)$/);
+  if (generalMatch) {
+    const cleaned = generalMatch[1].split(/[,.]/)[0].trim();
+    const generalEntry = state.list.find(x => x.uid === resolvedGeneralUid());
+    const h = generalEntry?.honour ? (state.honours||[]).find(x=>x.id===generalEntry.honour) : null;
+    const name = h ? String(h.name).toLocaleLowerCase("fr") : "";
+    return !!name && (name.includes(cleaned) || cleaned.includes(name));
+  }
   const names=allSelectedOptionNames();
-  const generalIds=state.list.filter(x=>getUnit(x.id)?.category==='Personnages').map(x=>x.id);
-  if(t.includes('eryndor') || t.includes('éryndor')) return generalIds.includes('eryndor-vareth');
   const cleaned = t
     .replace(/^général avec l['’]honneur\s*/,'')
     .replace(/^general avec l['’]honneur\s*/,'')
@@ -1356,6 +1399,15 @@ function optionGroups(entry, u) {
   // seule l'armure magique (objets magiques) reste autorisée, car elle
   // n'est jamais proposée ici (voir renderMagicItemsSelector).
   if (isWizardUnit(u, entry)) { result.armour = []; result.shield = []; }
+  // Grande Bannière : réservée aux Nobles, et un seul porteur par armée —
+  // l'option disparaît pour les autres unités et pour toute autre entrée
+  // dès qu'un porteur existe déjà ailleurs dans la liste.
+  const bearer = grandBannerBearerUid();
+  result.banner = result.banner.filter(o => {
+    if (!isGrandBannerOption(o)) return true;
+    if (!isNobleUnit(u)) return false;
+    return !bearer || bearer === entry.uid;
+  });
   return result;
 }
 
@@ -1493,15 +1545,16 @@ function renderCharacterOptions(entry, u) {
 // (sauf s'il est marqué répétable dans les données), et un objet dont le
 // coût ferait dépasser le budget restant est proposé mais désactivé : il
 // n'est donc plus possible de sélectionner un objet au-delà de la limite.
-function renderBudgetItemSelector(entry, u, { limit, category, title }) {
+function renderBudgetItemSelector(entry, u, { limit, category, title, excludeCategory }) {
   if (limit == null) return "";
   if (!state.magicItems) {
     return state.magicItemsLoading
       ? `<div class="no-options">Chargement des objets magiques…</div>`
       : "";
   }
-  const chosenAll = selectedMagicObjects(entry);
+  const chosenAll = selectedMagicObjects(entry).filter(x => !excludeCategory || x.category !== excludeCategory);
   const chosen = category ? chosenAll.filter(x => x.category === category) : chosenAll;
+  const unlimited = limit === Infinity;
   const used = chosen.reduce((s,x)=>s+Number(x.points||0),0);
   // Catégories déjà occupées par un objet non répétable sur CETTE entrée :
   // règle générique "un seul objet magique par catégorie et par modèle".
@@ -1511,6 +1564,7 @@ function renderBudgetItemSelector(entry, u, { limit, category, title }) {
   const otherEntriesUsed = usedMagicItemIds(entry.uid);
   const available = magicItemList().filter(item => {
     if (category && item.category !== category) return false;
+    if (excludeCategory && item.category === excludeCategory) return false;
     if (otherEntriesUsed.has(String(item.id))) return false;
     if (chosenAll.some(c => String(c.id) === String(item.id))) return false;
     // Restriction propre à l'objet (porteur compatible ?), lue depuis ses
@@ -1519,7 +1573,7 @@ function renderBudgetItemSelector(entry, u, { limit, category, title }) {
     return true;
   });
 
-  let html = `<div class="options-box"><div class="options-title">${esc(title)} (max ${formatPoints(limit)})</div>`;
+  let html = `<div class="options-box"><div class="options-title">${esc(title)}${unlimited ? " (sans limite de points)" : ` (max ${formatPoints(limit)})`}</div>`;
 
   if (chosen.length) {
     html += `<div class="check-options">` + chosen.map(item => `
@@ -1542,7 +1596,7 @@ function renderBudgetItemSelector(entry, u, { limit, category, title }) {
     <select data-add-magic="${esc(entry.uid)}">
       <option value="">Choisir…</option>
       ${[...bySource.entries()].map(([label, items]) => `<optgroup label="${esc(label)}">${items.map(item => {
-        const overLimit = (used + Number(item.points||0)) > limit;
+        const overLimit = !unlimited && (used + Number(item.points||0)) > limit;
         // Catégorie déjà occupée par un autre objet non répétable de cette
         // entrée (règle générique "une catégorie par modèle") : l'objet
         // reste visible pour information mais n'est pas sélectionnable.
@@ -1562,11 +1616,24 @@ function renderBudgetItemSelector(entry, u, { limit, category, title }) {
 // Objets magiques du personnage (arme, armure, talisman, bannière, objet
 // enchanté ou cabalistique) : disponible uniquement pour les personnages
 // portant la phrase "Objets magiques jusqu'à X pts" dans leurs options —
-// les autres ne peuvent prendre aucun objet.
+// les autres ne peuvent prendre aucun objet. La Bannière magique est exclue
+// de ce budget normal : le Porteur de la Grande Bannière la prend via son
+// propre sélecteur sans limite de points (voir renderGrandBannerItemSelector),
+// et un non-porteur ne peut de toute façon pas en prendre une (voir
+// CATEGORY_DEFAULT_REQUIRES.magic_standard).
 function renderMagicItemsSelector(entry, u) {
   const limit = effectiveBudget(u, "magicItemsLimit");
   if (limit == null) return "";
-  return renderBudgetItemSelector(entry, u, { limit, category: null, title: "Objets magiques" });
+  return renderBudgetItemSelector(entry, u, { limit, category: null, title: "Objets magiques", excludeCategory: "Bannières magiques" });
+}
+
+// Bannière magique du Porteur de la Grande Bannière : « en plus de son
+// allocation normale de points à dépenser en objets magiques », il peut
+// prendre une seule bannière magique sans limite de points — donc un
+// sélecteur séparé, à budget illimité, distinct de renderMagicItemsSelector.
+function renderGrandBannerItemSelector(entry, u) {
+  if (!isGrandBannerBearer(entry, u)) return "";
+  return renderBudgetItemSelector(entry, u, { limit: Infinity, category: "Bannières magiques", title: "Bannière magique (Porteur de la Grande Bannière)" });
 }
 
 // Bannière magique de l'unité : disponible seulement si l'unité définit un
@@ -1720,7 +1787,11 @@ function validate() {
     if (item.qty > maxSize) errors.push(`${u.name} : maximum ${maxSize} figurine${maxSize > 1 ? "s" : ""}.`);
 
     const limit = effectiveBudget(u, "magicItemsLimit");
-    if (limit != null && magicCost(item) > limit) errors.push(`${u.name} : objets magiques au-dessus de la limite de ${formatPoints(limit)}.`);
+    // La Bannière magique du Porteur de la Grande Bannière est prise "en
+    // plus" de ce budget normal (voir renderGrandBannerItemSelector) : elle
+    // n'est jamais comptée dedans, même pour la validation.
+    const normalMagicCost = magicCost(item) - categoryMagicCost(item, "Bannières magiques");
+    if (limit != null && normalMagicCost > limit) errors.push(`${u.name} : objets magiques au-dessus de la limite de ${formatPoints(limit)}.`);
 
     const bannerLimit = effectiveBudget(u, "bannerItemsLimit");
     if (bannerLimit != null) {
@@ -1777,6 +1848,11 @@ function validate() {
     }
     if (u.points == null) warnings.push(`Coût non renseigné : ${u.name}.`);
   }
+
+  const grandBannerBearers = state.list.filter(item => { const u = getUnit(item.id); return u && isGrandBannerBearer(item, u); });
+  if (grandBannerBearers.length > 1) errors.push("Un seul personnage peut porter la Grande Bannière.");
+  const nonNobleBearer = grandBannerBearers.find(item => !isNobleUnit(getUnit(item.id)));
+  if (nonNobleBearer) errors.push(`${getUnit(nonNobleBearer.id)?.name || "Ce personnage"} : seul un Noble peut porter la Grande Bannière.`);
 
   const global = state.supplement?.restrictions?.global || {};
   if (global.minPoints != null && total < Number(global.minPoints)) errors.push(`Minimum de ${global.minPoints} points requis.`);
@@ -1839,6 +1915,55 @@ function renderAvailable() {
   container.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addUnit(b.dataset.add));
 }
 
+// --- Général de l'armée -----------------------------------------------
+// Le Général est, par défaut, le Personnage ayant le plus haut Commandement
+// (Cd) de la liste ; il est transféré automatiquement si un Personnage avec
+// un Commandement plus élevé est ajouté, et retransféré s'il est retiré. En
+// cas d'égalité, une coche manuelle (voir renderGeneralMarker) tranche entre
+// les personnages à égalité. Un Noble porteur de la Grande Bannière ne peut
+// jamais être Général.
+function entryStatValue(item, u, key) {
+  const n = numericStat(effectiveProfile(item, u).profile[key]);
+  return n === null ? -Infinity : n;
+}
+function personnageGeneralPool() {
+  return state.list
+    .map(item => ({ item, u: getUnit(item.id) }))
+    .filter(({item,u}) => u && u.category === "Personnages" && !isGrandBannerBearer(item, u));
+}
+function generalCandidates() {
+  const pool = personnageGeneralPool();
+  if (!pool.length) return [];
+  const max = pool.reduce((m,{item,u}) => Math.max(m, entryStatValue(item,u,"Cd")), -Infinity);
+  if (!Number.isFinite(max)) return [];
+  return pool.filter(({item,u}) => entryStatValue(item,u,"Cd") === max);
+}
+function resolvedGeneralUid() {
+  const cands = generalCandidates();
+  if (!cands.length) return null;
+  if (cands.length === 1) return cands[0].item.uid;
+  if (state.generalUid && cands.some(c => c.item.uid === state.generalUid)) return state.generalUid;
+  return cands[0].item.uid;
+}
+function setGeneral(uidValue) {
+  if (!generalCandidates().some(c => c.item.uid === uidValue)) return;
+  state.generalUid = uidValue;
+  render();
+}
+// Badge "Général" (automatique) ou coche (en cas d'égalité de Cd) affiché à
+// côté du nom d'un Personnage candidat.
+function renderGeneralMarker(item, u) {
+  if (u.category !== "Personnages") return "";
+  const candidates = generalCandidates();
+  if (!candidates.some(c => c.item.uid === item.uid)) return "";
+  const resolved = resolvedGeneralUid();
+  if (candidates.length === 1) {
+    return item.uid === resolved ? ` <span class="general-badge" title="Général de l'armée">★ Général</span>` : "";
+  }
+  const checked = item.uid === resolved;
+  return ` <label class="general-tie" title="Commandement à égalité : cocher pour désigner le Général"><input type="checkbox" data-set-general="${esc(item.uid)}" ${checked?"checked":""}> Général</label>`;
+}
+
 function renderList() {
   const container = $("armyList");
   const items = state.list.map(item => ({ item, unit: getUnit(item.id) })).filter(x => x.unit);
@@ -1866,7 +1991,7 @@ function renderList() {
                 <input type="checkbox" data-toggle-expand="${esc(item.uid)}" ${expanded?"checked":""} title="Afficher la fiche complète">
                 <span class="entry-number">${index+1}</span>
                 <strong>${esc(unit.name)}</strong>
-              </label>
+              </label>${renderGeneralMarker(item, unit)}
               ${expanded ? `<small>${formatPoints(unit.points)} / figurine · Taille ${min}${maxText}</small>` : ""}
             </div>
             <div class="entry-total">${formatPoints(entryPoints(item))}</div>
@@ -1885,6 +2010,7 @@ function renderList() {
           ${renderHonourSelector(item, unit)}
           ${renderMagicDomainSelector(item, unit)}
           ${renderMagicItemsSelector(item, unit)}
+          ${renderGrandBannerItemSelector(item, unit)}
           ${renderBannerItemsSelector(item, unit)}
           ${renderChampionWeaponSelector(item, unit)}
           ${renderRuleOptions(item, unit)}
@@ -1905,6 +2031,7 @@ function renderList() {
   container.querySelectorAll("[data-reclassify]").forEach(b => b.onchange = () => setReclassified(b.dataset.reclassify, b.dataset.ruleId, b.checked));
   container.querySelectorAll("[data-select-honour]").forEach(s => s.onchange = () => setHonour(s.dataset.selectHonour, s.value));
   container.querySelectorAll("[data-select-domain]").forEach(s => s.onchange = () => setMagicDomain(s.dataset.selectDomain, s.value));
+  container.querySelectorAll("[data-set-general]").forEach(b => b.onchange = () => { if (b.checked) setGeneral(b.dataset.setGeneral); else render(); });
 }
 
 // Barre de proportions (remplace l'ancien diagramme circulaire) : un seul
