@@ -36,6 +36,23 @@ const PATHS = {
   supplements: "data/supplements/"
 };
 
+// Hiérarchie d'affichage standard des catégories, respectée partout où une
+// liste ou un catalogue est présenté (colonne de gauche, "Ma liste" au
+// centre, export TXT, impression). Toute catégorie absente de cette liste
+// (ex. "Autres") est affichée après, par ordre alphabétique.
+const CATEGORY_ORDER = ["Personnages", "Unités de Base", "Unités Spéciales", "Unités Rares"];
+function categoryRank(cat) {
+  const idx = CATEGORY_ORDER.indexOf(cat);
+  return idx === -1 ? CATEGORY_ORDER.length : idx;
+}
+function sortByCategory(entries) {
+  // entries : tableau de paires [categorie, ...]
+  return entries.slice().sort((a, b) => {
+    const r = categoryRank(a[0]) - categoryRank(b[0]);
+    return r !== 0 ? r : String(a[0]).localeCompare(String(b[0]), "fr");
+  });
+}
+
 const state = {
   catalog: [],
   supplement: null,
@@ -458,11 +475,40 @@ function conditionalAllowed(u){
   const conditions=Array.isArray(r.conditional)?r.conditional:[r.conditional];
   return conditions.some(c=>hasCondition(c,u));
 }
+
+// Une condition de recatégorisation ("when") peut être :
+//  - l'id exact d'un personnage/unité (ex. "eryndor-vareth") : vraie si cet
+//    id est présent dans la liste en cours ;
+//  - un texte libre (nom d'honneur, d'option, de règle…), évalué avec le
+//    même moteur que les conditions d'autorisation (hasCondition).
+function conditionMet(when) {
+  if (!when) return false;
+  if (state.list.some(x => x.id === when)) return true;
+  return hasCondition(when);
+}
+
+// Règles de recatégorisation conditionnelle d'une unité, déclarées dans le
+// supplément (restrictions.units[id].conditionalRules), ex. :
+//   "lothern-sea-guard": {
+//     "conditionalRules": [
+//       { "when": "eryndor-vareth", "category": "Unités de Base", "max": 1 }
+//     ]
+//   }
+// Remplace les cas particuliers auparavant codés en dur dans le générateur :
+// n'importe quel personnage/honneur permettant à une unité de changer de
+// catégorie (ou d'ouvrir un choix limité) peut désormais être décrit
+// uniquement dans les données, sans toucher au code.
+function unitConditionalRules(u) {
+  return restrictionForUnit(u?.id)?.conditionalRules || [];
+}
+function activeConditionalRule(u) {
+  return unitConditionalRules(u).find(rule => conditionMet(rule.when));
+}
+
 function effectiveCategory(u){
   if(!u) return 'Autres';
-  // Éryndor permet explicitement à la Garde Maritime de devenir un choix de Base.
-  if(u.id==='lothern-sea-guard' && hasCondition('Général avec l’Honneur Garde Maritime')) return 'Unités de Base';
-  if(u.category==='Unités Spéciales' && u.id==='lothern-sea-guard' && state.list.some(x=>x.id==='eryndor-vareth')) return 'Unités de Base';
+  const rule = activeConditionalRule(u);
+  if (rule?.category) return rule.category;
   return u.category;
 }
 
@@ -501,6 +547,15 @@ function maxEntriesForUnit(u) {
     const currentGroup=groupRules.reduce((n,[id])=>n+getEntriesForUnit(id).length,0);
     max=Math.min(max,Math.max(0,groupMax-currentGroup));
   }
+
+  // Une règle de recatégorisation conditionnelle active (ex. "0-1 comme
+  // choix de Base") peut plafonner le nombre d'entrées tant qu'elle
+  // s'applique. Remarque : ce plafond porte sur l'unité dans son ensemble
+  // (toutes ses entrées basculent de catégorie ensemble) — voir la note de
+  // conception pour une répartition plus fine (une partie en Base, le
+  // reste en Spécial/Rare) si elle devient nécessaire.
+  const conditionalRule = activeConditionalRule(u);
+  if (conditionalRule?.max != null) max = Math.min(max, Number(conditionalRule.max));
 
   return max;
 }
@@ -587,13 +642,23 @@ function addUnit(id) {
     id,
     qty: entryModelMin(u),
     options: [],
-    magicItems: []
+    magicItems: [],
+    // La fiche complète n'est chargée que si l'entrée est développée ; par
+    // défaut, seuls le nom et le coût total sont affichés dans "Ma liste".
+    expanded: false
   });
   render();
   requestAnimationFrame(() => {
     const last = document.querySelector(`[data-entry="${CSS.escape(state.list.at(-1).uid)}"]`);
     last?.scrollIntoView({ behavior:"smooth", block:"nearest" });
   });
+}
+
+function toggleExpanded(uidValue) {
+  const entry = findEntry(uidValue);
+  if (!entry) return;
+  entry.expanded = !entry.expanded;
+  render();
 }
 
 function findEntry(uidValue) { return state.list.find(x => x.uid === uidValue); }
@@ -1152,36 +1217,33 @@ function formatPoints(n) { return Number(n || 0).toLocaleString("fr-FR") + " pts
 
 function renderAvailable() {
   const container = $("availableUnits");
-  const units = filteredUnits();
+  // Seules les unités réellement sélectionnables sont affichées : plus
+  // d'unités grisées ni de séparateur "indisponibles" dans la colonne de
+  // gauche — une unité qu'on ne peut pas ajouter (coût manquant, non
+  // autorisée par le supplément, maximum atteint…) n'y apparaît plus.
+  const units = filteredUnits().filter(u => u.points != null && isAllowed(u) && canAdd(u, true));
   if (!units.length) {
-    container.innerHTML = `<div class="empty">Aucune unité ne correspond aux critères.</div>`;
+    container.innerHTML = `<div class="empty">Aucune unité disponible ne correspond aux critères.</div>`;
     return;
   }
 
   const groups = {};
   units.forEach(u => (groups[effectiveCategory(u)] ||= []).push(u));
 
-  container.innerHTML = Object.entries(groups).map(([cat, arr]) => `
+  container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
     <section class="unit-group">
       <div class="group-head"><span>${esc(cat)}</span><span>${arr.length}</span></div>
-      ${[
-        ...arr.filter(u => !(u.points == null || !isAllowed(u) || !canAdd(u, true))),
-        ...arr.filter(u =>  (u.points == null || !isAllowed(u) || !canAdd(u, true)))
-      ].map((u, pos, ordered) => {
-        const can = canAdd(u, true);
-        const disabled = u.points == null || !isAllowed(u) || !can;
+      ${arr.map(u => {
         const entries = getEntriesForUnit(u.id).length;
         const max = maxEntriesForUnit(u);
         const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
-        const firstDisabled = disabled && !ordered.slice(0,pos).some(x => x.points == null || !isAllowed(x) || !canAdd(x, true));
-        const separator = firstDisabled ? `<div class="unavailable-separator">Unités actuellement indisponibles</div>` : "";
-        return separator + `<article class="unit-card ${disabled ? "disabled" : ""}">
+        return `<article class="unit-card">
           <div class="unit-main">
             <strong>${esc(u.name)}</strong>
-            <span class="unit-points">${u.points == null ? "Coût à renseigner" : formatPoints(u.points) + " / figurine"}</span>
+            <span class="unit-points">${formatPoints(u.points)} / figurine</span>
             <small>${esc(limitText)}</small>
           </div>
-          <button class="add-btn" data-add="${esc(u.id)}" ${disabled ? "disabled" : ""}>＋ Ajouter</button>
+          <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
         </article>`;
       }).join("")}
     </section>`).join("");
@@ -1199,22 +1261,34 @@ function renderList() {
   const groups = {};
   items.forEach(x => (groups[effectiveCategory(x.unit)] ||= []).push(x));
 
-  container.innerHTML = Object.entries(groups).map(([cat, arr]) => `
+  container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
     <section class="roster-group">
       <div class="group-head"><span>${esc(cat)}</span><span>${formatPoints(arr.reduce((s,x)=>s+entryPoints(x.item),0))}</span></div>
       ${arr.map(({item,unit}, index) => {
+        const expanded = !!item.expanded;
         const min = entryModelMin(unit), max = entryModelMax(unit);
         const maxText = max === Infinity ? "" : ` / ${max}`;
         const selected = selectedOptions(item);
         const pool = [...(unit.options||[]), ...(unit.ruleOptions||[])];
         const optionNames = selected.map(id => pool.find(o=>o.id===id)?.name).filter(Boolean);
         optionNames.push(...magicItemsLabel(item));
-        return `<article class="roster-entry" data-entry="${esc(item.uid)}">
+        // Fiche repliée par défaut : seuls le nom et le coût total de
+        // l'entrée sont visibles. Cocher la case "onglet" charge la fiche
+        // complète (caractéristiques, équipement, options, objets…).
+        return `<article class="roster-entry ${expanded ? "expanded" : "collapsed"}" data-entry="${esc(item.uid)}">
           <div class="roster-entry-head">
-            <div><span class="entry-number">${index+1}</span><strong>${esc(unit.name)}</strong><small>${formatPoints(unit.points)} / figurine · Taille ${min}${maxText}</small></div>
+            <div>
+              <label class="entry-toggle">
+                <input type="checkbox" data-toggle-expand="${esc(item.uid)}" ${expanded?"checked":""} title="Afficher la fiche complète">
+                <span class="entry-number">${index+1}</span>
+                <strong>${esc(unit.name)}</strong>
+              </label>
+              ${expanded ? `<small>${formatPoints(unit.points)} / figurine · Taille ${min}${maxText}</small>` : ""}
+            </div>
             <div class="entry-total">${formatPoints(entryPoints(item))}</div>
             <button class="remove" data-remove="${esc(item.uid)}" title="Retirer cette unité">×</button>
           </div>
+          ${!expanded ? "" : `
           <div class="roster-entry-controls">
             <div class="qty-control"><button data-minus="${esc(item.uid)}">−</button><input class="qty-input" type="number" min="${min}" ${max===Infinity?"":`max="${max}"`} value="${item.qty}" data-qty-input="${esc(item.uid)}" aria-label="Effectif de ${esc(unit.name)}"><button data-plus="${esc(item.uid)}">+</button><span>figurine${item.qty > 1 ? "s" : ""}</span></div>
             <div class="selected-options">${optionNames.length ? optionNames.map(esc).join(" · ") : "Aucune option"}</div>
@@ -1228,6 +1302,7 @@ function renderList() {
           ${renderBannerItemsSelector(item, unit)}
           ${renderChampionWeaponSelector(item, unit)}
           ${renderRuleOptions(item, unit)}
+          `}
         </article>`;
       }).join("")}
     </section>`).join("");
@@ -1236,12 +1311,16 @@ function renderList() {
   container.querySelectorAll("[data-plus]").forEach(b => b.onclick = () => changeQty(b.dataset.plus,1));
   container.querySelectorAll("[data-qty-input]").forEach(i => { i.onchange = () => setQty(i.dataset.qtyInput,i.value); i.onkeydown = e => { if(e.key === "Enter") i.blur(); }; });
   container.querySelectorAll("[data-remove]").forEach(b => b.onclick = () => removeEntry(b.dataset.remove));
+  container.querySelectorAll("[data-toggle-expand]").forEach(b => b.onchange = () => toggleExpanded(b.dataset.toggleExpand));
   container.querySelectorAll("[data-check-option]").forEach(b => b.onchange = () => setOption(b.dataset.checkOption,b.dataset.optionId,b.checked));
   container.querySelectorAll("[data-select-option]").forEach(s => s.onchange = () => setSelectOption(s.dataset.selectOption,s.dataset.optionKind,s.value));
   container.querySelectorAll("[data-add-magic]").forEach(s => s.onchange = () => { addMagicItem(s.dataset.addMagic, s.value); });
   container.querySelectorAll("[data-remove-magic]").forEach(b => b.onclick = () => removeMagicItem(b.dataset.removeMagic, b.dataset.magicId));
 }
 
+// Barre de proportions (remplace l'ancien diagramme circulaire) : un seul
+// bandeau horizontal, un segment par catégorie, largeur proportionnelle à
+// sa part dans le total de points de la liste actuelle.
 function renderCompositionChart(){
   const chart=$('compositionChart'), legend=$('compositionLegend'), toggle=$('chartToggle');
   if(!chart||!legend) return;
@@ -1249,10 +1328,21 @@ function renderCompositionChart(){
   const values=cats.map(cat=>getCategoryTotal(cat));
   const total=values.reduce((a,b)=>a+b,0);
   const colors=['#c79a32','#5a2f24','#9a6f22','#a9503d'];
-  let cursor=0;
-  const stops=values.map((v,i)=>{const a=total?cursor/total*360:0; cursor+=v; const b=total?cursor/total*360:0; return `${colors[i]} ${a}deg ${b}deg`;}).join(',');
-  chart.style.background=total?`conic-gradient(${stops})`:'conic-gradient(#6a5a45 0 360deg)';
+
+  chart.style.display = "flex";
+  chart.style.overflow = "hidden";
+  if (!chart.style.height) chart.style.height = "28px";
+  if (!chart.style.borderRadius) chart.style.borderRadius = "6px";
+
+  chart.innerHTML = total
+    ? values.map((v,i) => {
+        const pct = v/total*100;
+        if (pct <= 0) return "";
+        return `<div class="composition-bar-segment" style="flex:${pct} 0 0;height:100%;background:${colors[i]}" title="${esc(cats[i])} — ${formatPoints(v)} (${pct.toFixed(1)} % de la liste)"></div>`;
+      }).join("")
+    : `<div class="composition-bar-segment" style="flex:1 0 0;height:100%;background:#6a5a45"></div>`;
   chart.hidden=!(toggle?.checked);
+
   legend.innerHTML=cats.map((cat,i)=>{const pct=state.pointsLimit?values[i]/state.pointsLimit*100:0; return `<div><span class="legend-dot" style="background:${colors[i]}"></span><span>${cat}</span><strong>${formatPoints(values[i])}</strong><small>${pct.toFixed(1)} % du format</small></div>`;}).join('');
 }
 
@@ -1451,8 +1541,8 @@ function exportTXT() {
     ""
   ];
   const groups = {};
-  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[u.category] ||= []).push({u,item}); });
-  Object.entries(groups).forEach(([cat,arr]) => {
+  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[effectiveCategory(u)] ||= []).push({u,item}); });
+  sortByCategory(Object.entries(groups)).forEach(([cat,arr]) => {
     lines.push(cat.toUpperCase());
     lines.push("-".repeat(cat.length));
     arr.forEach(({u,item},i) => {
@@ -1475,13 +1565,16 @@ function download(name, content, type) {
 }
 
 function printList() {
-  const rows = state.list.map((item,index) => {
-    const u=getUnit(item.id); if(!u) return "";
+  const ordered = state.list
+    .map(item => ({ item, u: getUnit(item.id) }))
+    .filter(x => x.u)
+    .sort((a,b) => categoryRank(effectiveCategory(a.u)) - categoryRank(effectiveCategory(b.u)));
+  const rows = ordered.map(({item,u},index) => {
     const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
     const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
     opts.push(...magicItemsLabel(item));
     const optText=opts.join(", ");
-    return `<tr><td>${index+1}</td><td>${esc(u.category)}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
+    return `<tr><td>${index+1}</td><td>${esc(effectiveCategory(u))}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
   }).join("");
   const w=window.open("","_blank");
   if(!w) return setStatus("La fenêtre d'impression a été bloquée.", "error");
