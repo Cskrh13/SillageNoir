@@ -101,7 +101,7 @@
       "points": 15,
       "repeatable": false,
       "description": "Arme de Force normale avec PA -2."
-    }
+    },
       {
         "id": "epee-de-puissance",
         "name": "Épée de Puissance",
@@ -175,7 +175,7 @@
       "points": 30,
       "repeatable": false,
       "description": "Le porteur bénéficie d'une sauvegarde invulnérable de 5+ contre toute blessure subie."
-    }
+    },
       {
         "id": "piece-du-paye-maitre",
         "name": "Pièce du Payeur",
@@ -255,7 +255,7 @@
       "points": 25,
       "repeatable": false,
       "description": "Lors du calcul du résultat de Combat, une unité portant cette bannière peut compter un bonus supplémentaire de +1 point de résultat de Combat."
-    }
+    },
        {
       "id": "banniere-incandescente",
       "name": "Bannière incandescente",
@@ -265,7 +265,6 @@
     }
     ],
     "Objets enchantés": [
-      "Objets cabalistiques": [
     {
       "id": "parchemin-de-retour-de-flamme",
       "name": "Parchemin de Retour de Flamme",
@@ -321,7 +320,7 @@
       "points": 5,
       "repeatable": false,
       "description": "Usage unique. Lorsqu'un Sorcier provoque un fiasco en lançant un sort, il peut utiliser le Bâton de Mise à la Terre pour relancer le résultat obtenu sur la table des Fiascos."
-    }
+    },
       {
       "id": "chapeau-de-sorcier",
       "name": "Chapeau de Sorcier",
@@ -363,7 +362,7 @@
       "points": 20,
       "repeatable": false,
       "description": "Usage unique. Le porteur peut lancer le sort lié suivant avec un Niveau de Puissance de 1 : Malédiction, Valeur de lancement 8+, portée personnelle. Jusqu'à la prochaine sous-phase de Début de Tour, les Sorciers ennemis situés à 15 pouces du lanceur lorsqu'ils tentent de lancer un sort doivent augmenter de 2 la valeur de lancement de ce sort."
-    }
+    },
       {
         "id": "potion-de-guerison",
         "name": "Potion de Guérison",
