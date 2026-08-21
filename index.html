@@ -673,323 +673,78 @@
            HERO
            ========================================================= */
 
-    /* =========================================================
-   HERO ANIMÉ
-   ========================================================= */
+        .hero {
 
-.hero {
-    --mouse-x: 0px;
-    --mouse-y: 0px;
-    position: relative;
+            position:
+                relative;
 
-    min-height: 600px;
+            min-height:
+                600px;
 
-    display: flex;
+            display:
+                flex;
 
-    flex-direction: column;
+            flex-direction:
+                column;
 
-    justify-content: flex-end;
+            justify-content:
+                flex-end;
 
-    align-items: center;
+            align-items:
+                center;
 
-    text-align: center;
+            text-align:
+                center;
 
-    padding: 70px 40px;
+            padding:
+                70px 40px;
 
-    overflow: hidden;
+            overflow:
+                hidden;
 
-    border: 1px solid var(--ligne);
+            border:
+                1px solid var(--ligne);
 
-    box-shadow:
-        0 8px 25px var(--ombre);
+            box-shadow:
+                0 8px 25px var(--ombre);
 
-    background-image:
+            background:
 
-        linear-gradient(
-            to bottom,
-            rgba(20,25,25,0.05) 15%,
-            rgba(20,25,25,0.88) 100%
-        ),
+                linear-gradient(
+                    to bottom,
+                    rgba(20,25,25,0.05) 20%,
+                    rgba(20,25,25,0.88) 100%
+                ),
 
-        url("images/LeBanquet.png");
+                url("images/LeBanquet.png");
 
-    background-size: 105% auto;
+            background-size:
+                cover;
 
-    background-position: center center;
+            background-position:
+                center;
 
-    background-repeat: no-repeat;
+        }
 
-    animation:
-        hero-pan 18s ease-in-out infinite alternate;
 
-}
+        .hero::before {
 
+            content:
+                "";
 
-/* ---------------------------------------------------------
-   CADRE
-   --------------------------------------------------------- */
+            position:
+                absolute;
 
-.hero::before {
+            inset:
+                15px;
 
-    content: "";
+            border:
+                1px solid rgba(224,201,157,0.65);
 
-    position: absolute;
+            pointer-events:
+                none;
 
-    inset: 15px;
-
-    border:
-        1px solid rgba(224,201,157,0.65);
-
-    pointer-events: none;
-
-    z-index: 5;
-
-}
-
-
-/* ---------------------------------------------------------
-   HALO ROUGE
-   --------------------------------------------------------- */
-
-.hero::after {
-
-    content: "";
-
-    position: absolute;
-
-    inset: -15%;
-
-    pointer-events: none;
-
-    z-index: 1;
-
-    background:
-
-        radial-gradient(
-            circle at 70% 17%,
-            rgba(150, 20, 10, 0.22) 0%,
-            rgba(110, 10, 5, 0.10) 18%,
-            transparent 42%
-        );
-
-    mix-blend-mode: screen;
-
-    animation:
-        red-pulse 6s ease-in-out infinite alternate;
-
-}
-
-
-/* ---------------------------------------------------------
-   CONTENU
-   --------------------------------------------------------- */
-
-.hero-content {
-
-    position:
-        relative;
-
-    z-index:
-        10;
-
-    max-width:
-        800px;
-
-    color:
-        #ead8b0;
-
-    animation:
-        hero-content-in 1.5s ease-out both;
-     transform:
-        translate(
-            calc(var(--mouse-x) * -0.35),
-            calc(var(--mouse-y) * -0.35)
-        );
-
-    transition:
-        transform 0.15s ease-out;
-
-}
-
-
-/* ---------------------------------------------------------
-   TITRE
-   --------------------------------------------------------- */
-
-.hero h2 {
-
-    margin:
-        0;
-
-    font-family:
-        "IM Fell English SC",
-        Georgia,
-        serif;
-
-    font-size:
-        clamp(34px,5vw,58px);
-
-    font-weight:
-        normal;
-
-    letter-spacing:
-        4px;
-
-    text-transform:
-        uppercase;
-
-    text-shadow:
-        2px 2px 4px rgba(0,0,0,0.75);
-
-}
-
-
-/* ---------------------------------------------------------
-   SÉPARATEUR
-   --------------------------------------------------------- */
-
-.hero .separator {
-
-    width:
-        180px;
-
-    height:
-        1px;
-
-    margin:
-        18px auto;
-
-    background:
-        #d7bd89;
-
-    box-shadow:
-        0 0 8px rgba(215,189,137,0.25);
-
-}
-
-
-/* ---------------------------------------------------------
-   TEXTE
-   --------------------------------------------------------- */
-
-.hero p {
-
-    margin:
-        0 auto;
-
-    max-width:
-        720px;
-
-    font-size:
-        18px;
-
-    color:
-        #e1d1ad;
-
-    text-shadow:
-        1px 1px 3px #000;
-
-}
-
-
-/* ---------------------------------------------------------
-   ANIMATION DU DÉCOR
-   --------------------------------------------------------- */
-
-@keyframes hero-pan {
-
-    0% {
-
-        background-position:
-            48% 50%;
-
-    }
-
-    100% {
-
-        background-position:
-            52% 48%;
-
-    }
-
-}
-
-
-/* ---------------------------------------------------------
-   PULSATION DE LA LUEUR ROUGE
-   --------------------------------------------------------- */
-
-@keyframes red-pulse {
-
-    0% {
-
-        opacity:
-            0.35;
-
-        transform:
-            scale(0.98);
-
-    }
-
-    100% {
-
-        opacity:
-            0.75;
-
-        transform:
-            scale(1.04);
-
-    }
-
-}
-
-
-/* ---------------------------------------------------------
-   APPARITION DU CONTENU
-   --------------------------------------------------------- */
-
-@keyframes hero-content-in {
-
-    from {
-
-        opacity:
-            0;
-
-        transform:
-            translateY(15px);
-
-    }
-
-    to {
-
-        opacity:
-            1;
-
-        transform:
-            translateY(0);
-
-    }
-
-}
-
-
-/* ---------------------------------------------------------
-   RÉDUCTION DU MOUVEMENT
-   POUR LES UTILISATEURS QUI LE DEMANDENT
-   --------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-
-    .hero,
-    .hero::after,
-    .hero-content {
-
-        animation:
-            none;
-
-    }
-
-}
+        }
 
 
         .hero-content {
@@ -2902,57 +2657,7 @@
 
     <script src="https://widgets.sociablekit.com/instagram-feed/widget.js" defer></script>
 
-<script>
-    const hero = document.querySelector('.hero');
 
-    if (hero && window.matchMedia('(pointer: fine)').matches) {
-
-        hero.addEventListener('mousemove', function(event) {
-
-            const rect = hero.getBoundingClientRect();
-
-            const x =
-                (event.clientX - rect.left) /
-                rect.width -
-                0.5;
-
-            const y =
-                (event.clientY - rect.top) /
-                rect.height -
-                0.5;
-
-            const moveX = x * 8;
-            const moveY = y * 5;
-
-            hero.style.setProperty(
-                '--mouse-x',
-                moveX + 'px'
-            );
-
-            hero.style.setProperty(
-                '--mouse-y',
-                moveY + 'px'
-            );
-
-        });
-
-        hero.addEventListener('mouseleave', function() {
-
-            hero.style.setProperty(
-                '--mouse-x',
-                '0px'
-            );
-
-            hero.style.setProperty(
-                '--mouse-y',
-                '0px'
-            );
-
-        });
-
-    }
-</script>
-    
 </body>
 
 </html>
