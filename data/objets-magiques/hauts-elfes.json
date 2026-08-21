@@ -9,56 +9,102 @@
         "name": "Hache du Bûcheron",
         "points": 90,
         "repeatable": false,
-        "description": "Arme de corps à corps, Force S+3, PA -4. Peut uniquement être prise par les modèles d'une armée de renom Chracian Warhost."
+        "description": "Arme de corps à corps, Force S+3, PA -4. Peut uniquement être prise par les modèles d'une armée de renom Chracian Warhost.",
+        "restriction": {
+          "requires": [
+            {
+              "renown": "chracian-warhost"
+            }
+          ]
+        }
       },
       {
         "id": "hél-white-sword",
         "name": "L'Épée Blanche",
         "points": 70,
         "repeatable": false,
-        "description": "Arme de corps à corps, Force S+3, PA -2. Réservée aux modèles dont le type de troupe est Infanterie ou Char."
+        "description": "Arme de corps à corps, Force S+3, PA -2. Réservée aux modèles dont le type de troupe est Infanterie ou Char.",
+        "restriction": {
+          "requires": [
+            {
+              "troopType": [
+                "Infanterie",
+                "Char"
+              ]
+            }
+          ]
+        }
       },
       {
         "id": "hél-blade-leaping-gold",
         "name": "Lame d'Or Bondissante",
         "points": 50,
         "repeatable": false,
-        "description": "Arme de corps à corps, Force S, PA -."
+        "description": "Arme de corps à corps, Force S, PA -.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-bow-seafarer",
         "name": "Arc du Marin",
         "points": 50,
         "repeatable": false,
-        "description": "Portée 30\", Force 5, PA -3. Compte comme un Arc d'Avelorn. Cette arme tire comme un lance-carreaux, en utilisant la règle spéciale À Travers Tout."
+        "description": "Portée 30\", Force 5, PA -3. Compte comme un Arc d'Avelorn. Cette arme tire comme un lance-carreaux, en utilisant la règle spéciale À Travers Tout.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-star-lance",
         "name": "Lance Stellaire",
         "points": 45,
         "repeatable": false,
-        "description": "Arme de corps à corps, Force S+3, PA -4. Réservée aux modèles dont le type de troupe est Cavalerie ou Monstre. Ne peut être utilisée que pendant un tour au cours duquel le porteur a chargé. Les tours suivants, ou si le porteur n'a pas chargé, le modèle doit utiliser son arme de base."
+        "description": "Arme de corps à corps, Force S+3, PA -4. Réservée aux modèles dont le type de troupe est Cavalerie ou Monstre. Ne peut être utilisée que pendant un tour au cours duquel le porteur a chargé. Les tours suivants, ou si le porteur n'a pas chargé, le modèle doit utiliser son arme de base.",
+        "restriction": {
+          "requires": [
+            {
+              "troopType": [
+                "Cavalerie",
+                "Monstre"
+              ]
+            }
+          ]
+        }
       },
       {
         "id": "hél-blade-sea-gold",
         "name": "Lame d'Or de la Mer",
         "points": 40,
         "repeatable": false,
-        "description": "Arme de corps à corps, Force S+1, PA -1. Peut uniquement être prise par les modèles d'une armée de renom Garnison de la Garde Maritime."
+        "description": "Arme de corps à corps, Force S+1, PA -1. Peut uniquement être prise par les modèles d'une armée de renom Garnison de la Garde Maritime.",
+        "restriction": {
+          "requires": [
+            {
+              "renown": "garnison-garde-maritime"
+            }
+          ]
+        }
       },
       {
         "id": "hél-reaver-bow",
         "name": "Arc des Guerriers Fantômes",
         "points": 40,
         "repeatable": false,
-        "description": "Portée 30\", Force S+1, PA -. Compte comme un Arc d'Avelorn. Le porteur peut effectuer un nombre d'attaques de tir égal à sa caractéristique d'Attaques au lieu d'une seule. Le modèle ne subit aucun malus pour avoir effectué des tirs multiples."
+        "description": "Portée 30\", Force S+1, PA -. Compte comme un Arc d'Avelorn. Le porteur peut effectuer un nombre d'attaques de tir égal à sa caractéristique d'Attaques au lieu d'une seule. Le modèle ne subit aucun malus pour avoir effectué des tirs multiples.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-foe-bane",
         "name": "Fléau des Ennemis",
         "points": 20,
         "repeatable": false,
-        "description": "Arme de corps à corps, Force S, PA -. Lorsqu'un jet pour blesser est effectué avec cette arme, un résultat de 4+ est toujours une réussite, quelle que soit l'Endurance de la cible."
+        "description": "Arme de corps à corps, Force S, PA -. Lorsqu'un jet pour blesser est effectué avec cette arme, un résultat de 4+ est toujours une réussite, quelle que soit l'Endurance de la cible.",
+        "restriction": {
+          "requires": []
+        }
       }
     ],
     "Armures magiques": [
@@ -67,28 +113,47 @@
         "name": "Armure des Étoiles",
         "points": 40,
         "repeatable": false,
-        "description": "Armure lourde réservée aux modèles dont le type de troupe est Infanterie ou Cavalerie. Le porteur est immunisé à la règle spéciale Coup Fatal. S'il est touché par un Coup Fatal, il peut effectuer normalement ses sauvegardes d'armure et de Régénération. Si la blessure n'est pas sauvegardée, il ne perd qu'un seul PV."
+        "description": "Armure lourde réservée aux modèles dont le type de troupe est Infanterie ou Cavalerie. Le porteur est immunisé à la règle spéciale Coup Fatal. S'il est touché par un Coup Fatal, il peut effectuer normalement ses sauvegardes d'armure et de Régénération. Si la blessure n'est pas sauvegardée, il ne perd qu'un seul PV.",
+        "restriction": {
+          "requires": [
+            {
+              "troopType": [
+                "Infanterie",
+                "Cavalerie"
+              ]
+            }
+          ]
+        }
       },
       {
         "id": "hél-armour-caledor",
         "name": "Armure de Caledor",
         "points": 35,
         "repeatable": false,
-        "description": "Armure de plates complète. Le porteur bénéficie d'une sauvegarde invulnérable de 5+ contre toute blessure subie."
+        "description": "Armure de plates complète. Le porteur bénéficie d'une sauvegarde invulnérable de 5+ contre toute blessure subie.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-golden-shield",
         "name": "Bouclier d'Or",
         "points": 30,
         "repeatable": false,
-        "description": "Bouclier magique. Tout modèle ennemi qui dirige ses attaques contre le porteur pendant la phase de Combat doit relancer les jets pour toucher donnant naturellement 6."
+        "description": "Bouclier magique. Tout modèle ennemi qui dirige ses attaques contre le porteur pendant la phase de Combat doit relancer les jets pour toucher donnant naturellement 6.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-dragon-helm",
         "name": "Heaume du Dragon",
         "points": 10,
         "repeatable": false,
-        "description": "Peut être porté avec une autre armure. Le porteur améliore sa valeur d'armure de 1, jusqu'à un maximum de 2+. Il bénéficie également d'une sauvegarde invulnérable de 6+ contre les blessures causées par une attaque avec la règle Attaques Enflammées."
+        "description": "Peut être porté avec une autre armure. Le porteur améliore sa valeur d'armure de 1, jusqu'à un maximum de 2+. Il bénéficie également d'une sauvegarde invulnérable de 6+ contre les blessures causées par une attaque avec la règle Attaques Enflammées.",
+        "restriction": {
+          "requires": []
+        }
       }
     ],
     "Talismans": [
@@ -97,28 +162,40 @@
         "name": "Diadème d'Atrazar",
         "points": 55,
         "repeatable": false,
-        "description": "Le porteur gagne +1 PV sur son profil. Si son type de troupe est Infanterie ou Cavalerie, il bénéficie également d'un modificateur de +1 en Endurance."
+        "description": "Le porteur gagne +1 PV sur son profil. Si son type de troupe est Infanterie ou Cavalerie, il bénéficie également d'un modificateur de +1 en Endurance.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-sacred-incense",
         "name": "Encens Sacré",
         "points": 35,
         "repeatable": false,
-        "description": "Tout modèle ennemi qui cible le porteur ou toute unité qu'il a rejointe pendant la phase de Tir subit un malus supplémentaire de -1 pour toucher."
+        "description": "Tout modèle ennemi qui cible le porteur ou toute unité qu'il a rejointe pendant la phase de Tir subit un malus supplémentaire de -1 pour toucher.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-loremaster-cloak",
         "name": "Cape du Maître du Savoir",
         "points": 25,
         "repeatable": false,
-        "description": "Le porteur et toute unité qu'il a rejointe bénéficient d'une sauvegarde invulnérable de 4+ contre les blessures causées par un Projectile magique."
+        "description": "Le porteur et toute unité qu'il a rejointe bénéficient d'une sauvegarde invulnérable de 4+ contre les blessures causées par un Projectile magique.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-opal-amulet",
         "name": "Amulette d'Opale",
         "points": 20,
         "repeatable": true,
-        "description": "Usage unique. Le porteur bénéficie d'une sauvegarde invulnérable de 2+ contre une seule blessure."
+        "description": "Usage unique. Le porteur bénéficie d'une sauvegarde invulnérable de 2+ contre une seule blessure.",
+        "restriction": {
+          "requires": []
+        }
       }
     ],
     "Bannières magiques": [
@@ -127,56 +204,80 @@
         "name": "Bannière de Résilience",
         "points": 80,
         "repeatable": false,
-        "description": "L'unité portant cette bannière bénéficie d'un modificateur de +1 en Endurance."
+        "description": "L'unité portant cette bannière bénéficie d'un modificateur de +1 en Endurance.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-banner-arcane-protection",
         "name": "Bannière de Protection Arcanique",
         "points": 70,
         "repeatable": false,
-        "description": "L'unité portant cette bannière gagne Résistance à la Magie (-3). De plus, les unités amies situées à 6\" ou moins du modèle portant cette bannière gagnent Résistance à la Magie (-1)."
+        "description": "L'unité portant cette bannière gagne Résistance à la Magie (-3). De plus, les unités amies situées à 6\" ou moins du modèle portant cette bannière gagnent Résistance à la Magie (-1).",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-battle-banner",
         "name": "Bannière de Bataille",
         "points": 60,
         "repeatable": false,
-        "description": "Lors du calcul du résultat de Combat, l'unité portant cette bannière peut compter un bonus supplémentaire de +D3 points de résultat de Combat."
+        "description": "Lors du calcul du résultat de Combat, l'unité portant cette bannière peut compter un bonus supplémentaire de +D3 points de résultat de Combat.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-banner-lothern",
         "name": "Bannière de Lothern",
         "points": 55,
         "repeatable": false,
-        "description": "Si l'unité portant cette bannière est équipée de lances d'estoc, la moitié des modèles du troisième rang ou de la troisième file, arrondie au supérieur, peut effectuer des attaques de soutien."
+        "description": "Si l'unité portant cette bannière est équipée de lances d'estoc, la moitié des modèles du troisième rang ou de la troisième file, arrondie au supérieur, peut effectuer des attaques de soutien.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-banner-balance",
         "name": "Bannière de l'Équilibre",
         "points": 25,
         "repeatable": false,
-        "description": "Tant qu'une unité ennemie est en contact socle à socle avec une unité portant cette bannière, elle ne peut relancer aucun jet pour toucher ni pour blesser. L'unité portant la Bannière de l'Équilibre ne peut pas non plus effectuer ces relances."
+        "description": "Tant qu'une unité ennemie est en contact socle à socle avec une unité portant cette bannière, elle ne peut relancer aucun jet pour toucher ni pour blesser. L'unité portant la Bannière de l'Équilibre ne peut pas non plus effectuer ces relances.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-lion-standard",
         "name": "Bannière du Lion",
         "points": 25,
         "repeatable": false,
-        "description": "L'unité portant cette bannière provoque la Peur et la Terreur et réussit automatiquement tous les tests de Peur ou de Terreur qu'elle doit effectuer."
+        "description": "L'unité portant cette bannière provoque la Peur et la Terreur et réussit automatiquement tous les tests de Peur ou de Terreur qu'elle doit effectuer.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-banner-confidence",
         "name": "Bannière de Confiance",
         "points": 20,
         "repeatable": false,
-        "description": "L'unité portant cette bannière ne subit pas le malus habituel de -1 pour toucher lorsqu'elle effectue une réaction de charge Tenir et Tirer."
+        "description": "L'unité portant cette bannière ne subit pas le malus habituel de -1 pour toucher lorsqu'elle effectue une réaction de charge Tenir et Tirer.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-banner-ellyrion",
         "name": "Bannière d'Ellyrion",
         "points": 20,
         "repeatable": false,
-        "description": "L'unité portant cette bannière gagne la règle spéciale Mouvement à Travers les Obstacles."
+        "description": "L'unité portant cette bannière gagne la règle spéciale Mouvement à Travers les Obstacles.",
+        "restriction": {
+          "requires": []
+        }
       }
     ],
     "Objets enchantés": [
@@ -185,42 +286,68 @@
         "name": "Pierre d'Annulation",
         "points": 75,
         "repeatable": false,
-        "description": "Tant qu'ils se trouvent dans la portée de Commandement du porteur, tous les Sorciers, amis ou ennemis, subissent un modificateur de -1 à leurs jets de lancement et de dissipation. Pendant sa sous-phase de Commandement, si le porteur n'est pas engagé au combat, il peut effectuer un test de Commandement non modifié. En cas de réussite, jusqu'à sa prochaine sous-phase de Début de Tour, il ne peut pas être ciblé par des sorts et est immunisé à leurs effets."
+        "description": "Tant qu'ils se trouvent dans la portée de Commandement du porteur, tous les Sorciers, amis ou ennemis, subissent un modificateur de -1 à leurs jets de lancement et de dissipation. Pendant sa sous-phase de Commandement, si le porteur n'est pas engagé au combat, il peut effectuer un test de Commandement non modifié. En cas de réussite, jusqu'à sa prochaine sous-phase de Début de Tour, il ne peut pas être ciblé par des sorts et est immunisé à leurs effets.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-amulet-tempest",
         "name": "Amulette de la Tempête",
         "points": 50,
         "repeatable": false,
-        "description": "Peut uniquement être prise par un modèle d'une armée de renom Garnison de la Garde Maritime. Les Sorciers ennemis situés à 9\" ou moins du porteur ne peuvent pas ajouter leur Niveau de Sorcellerie à leurs jets de lancement."
+        "description": "Peut uniquement être prise par un modèle d'une armée de renom Garnison de la Garde Maritime. Les Sorciers ennemis situés à 9\" ou moins du porteur ne peuvent pas ajouter leur Niveau de Sorcellerie à leurs jets de lancement.",
+        "restriction": {
+          "requires": [
+            {
+              "renown": "garnison-garde-maritime"
+            }
+          ]
+        }
       },
       {
         "id": "hél-cloak-beards",
         "name": "Cape des Barbes",
         "points": 30,
         "repeatable": false,
-        "description": "Le porteur provoque la Terreur. Les autres modèles ne peuvent pas utiliser sa caractéristique de Commandement."
+        "description": "Le porteur provoque la Terreur. Les autres modèles ne peuvent pas utiliser sa caractéristique de Commandement.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-ring-fury",
         "name": "Anneau de Fureur",
         "points": 25,
         "repeatable": true,
-        "description": "Le porteur peut lancer le sort Poigne de Fer du Domaine de Magie de Bataille comme un sort lié, avec un Niveau de Puissance de 1."
+        "description": "Le porteur peut lancer le sort Poigne de Fer du Domaine de Magie de Bataille comme un sort lié, avec un Niveau de Puissance de 1.",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-seed-rebirth",
         "name": "Graine de Renaissance",
         "points": 20,
         "repeatable": false,
-        "description": "Le porteur gagne la règle spéciale Régénération (5+)."
+        "description": "Le porteur gagne la règle spéciale Régénération (5+).",
+        "restriction": {
+          "requires": []
+        }
       },
       {
         "id": "hél-gem-courage",
         "name": "Gemme du Courage",
         "points": 15,
         "repeatable": true,
-        "description": "Peut uniquement être prise par un modèle d'une armée de renom Chracian Warhost. Usage unique. Une fois par partie, lorsque le porteur doit effectuer un test de Moral, lui et son unité peuvent lancer un D6 supplémentaire et ignorer le résultat le plus élevé."
+        "description": "Peut uniquement être prise par un modèle d'une armée de renom Chracian Warhost. Usage unique. Une fois par partie, lorsque le porteur doit effectuer un test de Moral, lui et son unité peuvent lancer un D6 supplémentaire et ignorer le résultat le plus élevé.",
+        "restriction": {
+          "requires": [
+            {
+              "renown": "chracian-warhost"
+            }
+          ]
+        }
       }
     ],
     "Objets cabalistiques": [
@@ -229,42 +356,72 @@
         "name": "Éclat du Vortex",
         "points": 50,
         "repeatable": false,
-        "description": "Usage unique. Un Sorcier peut utiliser cet objet à la place d'une tentative de dissipation. Le sort est alors automatiquement dissipé, sans jet de dissipation. De plus, tous les sorts Reste en Jeu actuellement actifs sont dissipés, y compris ceux lancés par des Sorciers alliés."
+        "description": "Usage unique. Un Sorcier peut utiliser cet objet à la place d'une tentative de dissipation. Le sort est alors automatiquement dissipé, sans jet de dissipation. De plus, tous les sorts Reste en Jeu actuellement actifs sont dissipés, y compris ceux lancés par des Sorciers alliés.",
+        "restriction": {
+          "requires": [
+            "wizard"
+          ]
+        }
       },
       {
         "id": "hél-sigil-asuryan",
         "name": "Sceau d'Asuryan",
         "points": 40,
         "repeatable": true,
-        "description": "Usage unique. Un Sorcier peut utiliser cet objet à la place d'une tentative de dissipation. Le sort est alors automatiquement dissipé, sans jet de dissipation. Une Invocation Parfaite ne peut toutefois pas être dissipée."
+        "description": "Usage unique. Un Sorcier peut utiliser cet objet à la place d'une tentative de dissipation. Le sort est alors automatiquement dissipé, sans jet de dissipation. Une Invocation Parfaite ne peut toutefois pas être dissipée.",
+        "restriction": {
+          "requires": [
+            "wizard"
+          ]
+        }
       },
       {
         "id": "hél-tricksters-pendant",
         "name": "Pendentif du Trompeur",
         "points": 40,
         "repeatable": false,
-        "description": "Usage unique. Lors d'une tentative de dissipation par un Sorcier, lancez un D6 supplémentaire et défaussez le résultat le plus bas. Si le sort est dissipé, le Sorcier qui l'a lancé ne peut plus tenter de lancer de sorts jusqu'à la fin du tour en cours. Si un double 1 est obtenu sur deux des dés lancés, le porteur est considéré comme dépassé dans l'art de la magie."
+        "description": "Usage unique. Lors d'une tentative de dissipation par un Sorcier, lancez un D6 supplémentaire et défaussez le résultat le plus bas. Si le sort est dissipé, le Sorcier qui l'a lancé ne peut plus tenter de lancer de sorts jusqu'à la fin du tour en cours. Si un double 1 est obtenu sur deux des dés lancés, le porteur est considéré comme dépassé dans l'art de la magie.",
+        "restriction": {
+          "requires": [
+            "wizard"
+          ]
+        }
       },
       {
         "id": "hél-annulian-crystal",
         "name": "Cristal d'Annulii",
         "points": 30,
         "repeatable": false,
-        "description": "Une fois par tour, après avoir lancé un sort avec succès, le porteur peut choisir d'oublier ce sort et d'en générer immédiatement un autre de la manière habituelle. Les sorts signature ne peuvent pas être générés de cette manière."
+        "description": "Une fois par tour, après avoir lancé un sort avec succès, le porteur peut choisir d'oublier ce sort et d'en générer immédiatement un autre de la manière habituelle. Les sorts signature ne peuvent pas être générés de cette manière.",
+        "restriction": {
+          "requires": [
+            "wizard"
+          ]
+        }
       },
       {
         "id": "hél-silvery-wand",
         "name": "Baguette d'Argent",
         "points": 15,
         "repeatable": false,
-        "description": "Le porteur connaît un sort supplémentaire. Cela n'augmente pas son Niveau de Sorcellerie."
+        "description": "Le porteur connaît un sort supplémentaire. Cela n'augmente pas son Niveau de Sorcellerie.",
+        "restriction": {
+          "requires": [
+            "wizard"
+          ]
+        }
       },
       {
         "id": "hél-staff-solidity",
         "name": "Bâton de Solidité",
         "points": 15,
         "repeatable": false,
-        "description": "Usage unique. Une fois par partie, lorsque le porteur doit effectuer un jet sur la table des Fiascos, il peut choisir de ne pas effectuer ce jet."
+        "description": "Usage unique. Une fois par partie, lorsque le porteur doit effectuer un jet sur la table des Fiascos, il peut choisir de ne pas effectuer ce jet.",
+        "restriction": {
+          "requires": [
+            "wizard"
+          ]
+        }
       }
     ]
   }
