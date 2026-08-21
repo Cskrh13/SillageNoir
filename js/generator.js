@@ -118,6 +118,19 @@ function isItemAllowedForEntry(item, entry, u) {
   });
 }
 
+// Domaines de magie proposés à tout Mage/Archimage — ou tout personnage
+// devenant Sorcier via un Honneur Elfique (ex. Gardiens des Courants) —
+// via un menu déroulant (voir renderMagicDomainSelector). Le choix est
+// purement déclaratif : il n'est jamais codé en dur ailleurs, seulement
+// affiché et ajouté aux règles spéciales de l'entrée.
+const MAGIC_DOMAINS = [
+  "Magie de bataille",
+  "Magie élémentaire",
+  "Haute Magie",
+  "Magie de l'illusion",
+  "Magie des brumes"
+];
+
 // Hiérarchie d'affichage standard des catégories, respectée partout où une
 // liste ou un catalogue est présenté (colonne de gauche, "Ma liste" au
 // centre, export TXT, impression). Toute catégorie absente de cette liste
@@ -219,7 +232,11 @@ function inferOptionKind(name) {
   const s = String(name).toLocaleLowerCase("fr");
   if (s.includes("bannière") || s.includes("banniere") || s.includes("étendard") || s.includes("etendard")) return "banner";
   if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) return "mount";
-  if (s.includes("armure") || s.includes("heaume") || s.includes("bouclier")) return "armour";
+  // Bouclier séparé de l'armure : un personnage peut porter les deux à la
+  // fois (un seul profil d'armure ET un seul bouclier, chacun via son
+  // propre menu déroulant — voir renderCharacterOptions).
+  if (s.includes("bouclier")) return "shield";
+  if (s.includes("armure") || s.includes("heaume")) return "armour";
   if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("épée") || s.includes("epee") || s.includes("arc") || s.includes("arbalète") || s.includes("arbalete") || s.includes("poing")) return "weapon";
   return "other";
 }
@@ -1064,9 +1081,19 @@ function setSelectOption(uidValue, kind, optionId) {
 
 function addMagicItem(uidValue, itemId) {
   const entry = findEntry(uidValue);
-  if (!entry || !itemId) return;
+  const u = entry && getUnit(entry.id);
+  if (!entry || !u || !itemId) return;
   entry.magicItems ||= [];
   if (!entry.magicItems.includes(itemId)) entry.magicItems.push(itemId);
+  // Une armure/un bouclier magique remplace l'option de personnage
+  // mondaine correspondante : on la retire pour éviter un double profil et
+  // un double coût (voir renderCharacterOptions / selectedMagicArmourOfKind).
+  const item = magicItemList().find(x => String(x.id) === String(itemId));
+  if (item && item.categoryKey === "magic_armour") {
+    const kind = magicArmourKind(item);
+    const sameKind = (u.options || []).filter(o => o.kind === kind).map(o => o.id);
+    entry.options = (entry.options || []).filter(id => !sameKind.includes(id));
+  }
   render();
 }
 
@@ -1138,6 +1165,20 @@ function applyModifier(base, modifier) {
   return n + delta;
 }
 
+// Classe un objet magique de catégorie "Armures magiques" comme bouclier ou
+// armure de corps, à partir de son propre nom (jamais codé objet par objet).
+function magicArmourKind(item) {
+  if (!item) return null;
+  const name = String(item.name || "").toLocaleLowerCase("fr");
+  return name.includes("bouclier") ? "shield" : "armour";
+}
+// Objet magique d'Armures magiques déjà choisi pour cette entrée, du type
+// demandé ("armour" ou "shield") — utilisé pour faire remplacer l'option de
+// personnage correspondante par l'objet magique (voir renderCharacterOptions).
+function selectedMagicArmourOfKind(entry, kind) {
+  return selectedMagicObjects(entry).find(x => x.categoryKey === "magic_armour" && magicArmourKind(x) === kind) || null;
+}
+
 function selectedMagicObjects(entry) {
   return selectedMagicItemIds(entry)
     .map(id => magicItemList().find(x => String(x.id) === String(id)))
@@ -1165,12 +1206,18 @@ function effectiveBudget(u, key) {
 // Option sélectionnée d'un type donné ("mount", "champion", "standard"…)
 // pour une entrée, ou null si aucune ne l'est.
 function selectedOptionOfKind(entry, unit, kind) {
+  // Utilise les options *effectives* (après filtrage par l'Honneur Elfique
+  // choisi) : si un Honneur supprime la monture (forbid_mount/restrict_mount),
+  // une monture précédemment cochée ne doit plus être considérée comme
+  // sélectionnée — ni comptée dans les points, ni affichée dans le tableau
+  // de caractéristiques (voir renderStatsTable).
+  const pool = effectiveOptions(entry, unit);
   const id = selectedOptions(entry).find(id => {
-    const o = (unit.options || []).find(x => x.id === id);
+    const o = pool.find(x => x.id === id);
     return o?.kind === kind;
   });
   if (!id) return null;
-  return (unit.options || []).find(o => o.id === id) || null;
+  return pool.find(o => o.id === id) || null;
 }
 
 // Monture actuellement sélectionnée pour une entrée (ou null).
@@ -1262,21 +1309,38 @@ function renderStatsTable(entry, unit) {
   </div>`;
 }
 
-// Équipement natif (fixe, non modifiable) de l'unité — affiché sur une
-// seule ligne, éléments séparés par des virgules.
-function renderEquipment(unit) {
-  if (!unit.equipment?.length) return "";
+// Équipement de l'unité : équipement natif (fixe), complété directement par
+// les armes / armure / bouclier choisis en options de personnage et par les
+// objets magiques d'équipement (armes et armures magiques) — plutôt que de
+// les laisser séparés dans les blocs d'options.
+function renderEquipment(entry, unit) {
+  const lines = [...(unit.equipment || [])];
+  effectiveOptions(entry, unit)
+    .filter(o => ["weapon","armour","shield"].includes(o.kind) && selectedOptions(entry).includes(o.id))
+    .forEach(o => lines.push(o.name));
+  selectedMagicObjects(entry)
+    .filter(x => x.categoryKey === "magic_weapon" || x.categoryKey === "magic_armour")
+    .forEach(x => lines.push(x.name));
+  if (!lines.length) return "";
   return `<div class="unit-block">
     <div class="profile-title">Équipement</div>
-    <div class="unit-block-line">${unit.equipment.map(esc).join(", ")}</div>
+    <div class="unit-block-line">${lines.map(esc).join(", ")}</div>
   </div>`;
 }
 
 // Règles spéciales de l'unité — natives, puis ajoutées/remplacées par
-// l'Honneur Elfique choisi le cas échéant (voir effectiveRules). Seul le
-// résultat concret est affiché : jamais le texte de l'Honneur lui-même.
+// l'Honneur Elfique choisi le cas échéant (voir effectiveRules), complétées
+// directement par le domaine de magie choisi, les options de règles
+// spéciales cochées et les objets magiques qui ne sont pas de l'équipement
+// (talismans, bannières magiques, objets enchantés, objets cabalistiques).
+// Seul le résultat concret est affiché : jamais le texte de l'Honneur lui-même.
 function renderNativeRules(entry, unit) {
   const rules = effectiveRules(entry, unit);
+  if (entry.magicDomain) rules.push(`Domaine de ${entry.magicDomain}`);
+  (unit.ruleOptions || []).forEach(o => { if (entry.options.includes(o.id)) rules.push(o.name); });
+  selectedMagicObjects(entry)
+    .filter(x => x.categoryKey !== "magic_weapon" && x.categoryKey !== "magic_armour")
+    .forEach(x => rules.push(x.name));
   if (!rules.length) return "";
   return `<div class="unit-block">
     <div class="profile-title">Règles spéciales</div>
@@ -1285,8 +1349,13 @@ function renderNativeRules(entry, unit) {
 }
 
 function optionGroups(entry, u) {
-  const result = { banner:[], mount:[], weapon:[], armour:[], champion:[], standard:[], musician:[], other:[] };
+  const result = { banner:[], mount:[], weapon:[], armour:[], shield:[], champion:[], standard:[], musician:[], other:[] };
   effectiveOptions(entry, u).forEach(o => (result[o.kind] || result.other).push(o));
+  // Un Mage ou un Archimage (ou tout personnage devenu Sorcier via un
+  // Honneur Elfique) ne peut pas porter d'armure ou de bouclier mondain —
+  // seule l'armure magique (objets magiques) reste autorisée, car elle
+  // n'est jamais proposée ici (voir renderMagicItemsSelector).
+  if (isWizardUnit(u, entry)) { result.armour = []; result.shield = []; }
   return result;
 }
 
@@ -1361,7 +1430,7 @@ function renderCharacterOptions(entry, u) {
   const groups = optionGroups(entry, u);
   const label = u.category === "Personnages" ? "Options de personnage" : "Options de l'unité";
   const commandOptions = [...groups.champion, ...groups.standard, ...groups.musician];
-  const hasAny = commandOptions.length || groups.banner.length || groups.weapon.length || groups.armour.length || groups.other.length;
+  const hasAny = commandOptions.length || groups.banner.length || groups.weapon.length || groups.armour.length || groups.shield.length || groups.other.length;
   if (!hasAny) return "";
 
   let html = `<div class="options-box"><div class="options-title">${esc(label)}</div>`;
@@ -1376,9 +1445,30 @@ function renderCharacterOptions(entry, u) {
     html += `</div>`;
   }
 
-  const labels = { banner:"Bannière / étendard", weapon:"Arme", armour:"Armure / protection" };
-  ["banner","weapon","armour"].forEach(kind => {
+  // Armes : plusieurs peuvent être prises simultanément, donc sous forme de
+  // cases à cocher (et non un menu déroulant à choix unique).
+  if (groups.weapon.length) {
+    html += `<div class="check-options"><div class="check-options-title">Armes</div>`;
+    html += groups.weapon.map(o => {
+      const checked = entry.options.includes(o.id);
+      return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""}><span>${esc(o.name)}${optionPrice(o)}</span></label>`;
+    }).join("");
+    html += `</div>`;
+  }
+
+  // Bannière / armure / bouclier : un seul profil possible pour chacun (menu
+  // déroulant), mais armure et bouclier peuvent être pris en même temps. Si
+  // un objet magique équivalent (Armures magiques) est déjà choisi pour
+  // cette entrée, il remplace l'option de personnage correspondante : le
+  // menu n'est alors plus proposé.
+  const labels = { banner:"Bannière / étendard", armour:"Armure", shield:"Bouclier" };
+  ["banner","armour","shield"].forEach(kind => {
     const arr = groups[kind];
+    const magicOverride = (kind === "armour" || kind === "shield") ? selectedMagicArmourOfKind(entry, kind) : null;
+    if (magicOverride) {
+      html += `<div class="option-select-label">${labels[kind]}<br><small class="muted">Remplacée par l'objet magique : ${esc(magicOverride.name)}</small></div>`;
+      return;
+    }
     if (!arr.length) return;
     const current = entry.options.find(id => arr.some(o => o.id === id)) || "";
     html += `<label class="option-select-label">${labels[kind]}<select data-select-option="${esc(entry.uid)}" data-option-kind="${kind}"><option value="">Aucune</option>${arr.map(o => `<option value="${esc(o.id)}" ${o.id===current?"selected":""}>${esc(o.name)}${optionPrice(o)}</option>`).join("")}</select></label>`;
@@ -1566,6 +1656,32 @@ function renderHonourSelector(entry, u) {
   </div>`;
 }
 
+// Domaine de magie : proposé à tout Mage/Archimage, ou à tout personnage
+// devenant Sorcier via un Honneur Elfique (ex. Gardiens des Courants) —
+// détection générique via isWizardUnit, jamais liée au nom d'un Honneur
+// précis. Le choix est ajouté aux règles spéciales de l'entrée (voir
+// renderNativeRules) et n'affecte jamais le coût en points.
+function renderMagicDomainSelector(entry, u) {
+  if (!isWizardUnit(u, entry)) return "";
+  const current = entry.magicDomain || "";
+  return `<div class="options-box">
+    <div class="options-title">Domaine de magie</div>
+    <label class="option-select-label">Domaine
+      <select data-select-domain="${esc(entry.uid)}">
+        <option value="">Choisir…</option>
+        ${MAGIC_DOMAINS.map(d => `<option value="${esc(d)}" ${d===current?"selected":""}>${esc(d)}</option>`).join("")}
+      </select>
+    </label>
+  </div>`;
+}
+
+function setMagicDomain(uidValue, value) {
+  const entry = findEntry(uidValue);
+  if (!entry) return;
+  entry.magicDomain = value || null;
+  render();
+}
+
 function optionPrice(o) {
   const flat = Number(o.points || 0);
   const per = Number(o.pointsPerModel || 0);
@@ -1740,11 +1856,6 @@ function renderList() {
         const expanded = !!item.expanded;
         const min = entryModelMin(unit), max = entryModelMax(unit);
         const maxText = max === Infinity ? "" : ` / ${max}`;
-        const selected = selectedOptions(item);
-        const pool = effectivePool(item, unit);
-        const optionNames = selected.map(id => pool.find(o=>o.id===id)?.name).filter(Boolean);
-        optionNames.push(...magicItemsLabel(item));
-        if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) optionNames.push(h.name); }
         // Fiche repliée par défaut : seuls le nom et le coût total de
         // l'entrée sont visibles. Cocher la case "onglet" charge la fiche
         // complète (caractéristiques, équipement, options, objets…).
@@ -1764,15 +1875,15 @@ function renderList() {
           ${!expanded ? "" : `
           <div class="roster-entry-controls">
             <div class="qty-control"><button data-minus="${esc(item.uid)}">−</button><input class="qty-input" type="number" min="${min}" ${max===Infinity?"":`max="${max}"`} value="${item.qty}" data-qty-input="${esc(item.uid)}" aria-label="Effectif de ${esc(unit.name)}"><button data-plus="${esc(item.uid)}">+</button><span>figurine${item.qty > 1 ? "s" : ""}</span></div>
-            <div class="selected-options">${optionNames.length ? optionNames.map(esc).join(" · ") : "Aucune option"}</div>
           </div>
           ${renderReclassificationToggle(item, unit)}
           ${renderStatsTable(item, unit)}
-          ${renderEquipment(unit)}
+          ${renderEquipment(item, unit)}
           ${renderNativeRules(item, unit)}
           ${renderMountSelector(item, unit)}
           ${renderCharacterOptions(item, unit)}
           ${renderHonourSelector(item, unit)}
+          ${renderMagicDomainSelector(item, unit)}
           ${renderMagicItemsSelector(item, unit)}
           ${renderBannerItemsSelector(item, unit)}
           ${renderChampionWeaponSelector(item, unit)}
@@ -1793,6 +1904,7 @@ function renderList() {
   container.querySelectorAll("[data-remove-magic]").forEach(b => b.onclick = () => removeMagicItem(b.dataset.removeMagic, b.dataset.magicId));
   container.querySelectorAll("[data-reclassify]").forEach(b => b.onchange = () => setReclassified(b.dataset.reclassify, b.dataset.ruleId, b.checked));
   container.querySelectorAll("[data-select-honour]").forEach(s => s.onchange = () => setHonour(s.dataset.selectHonour, s.value));
+  container.querySelectorAll("[data-select-domain]").forEach(s => s.onchange = () => setMagicDomain(s.dataset.selectDomain, s.value));
 }
 
 // Barre de proportions (remplace l'ancien diagramme circulaire) : un seul
