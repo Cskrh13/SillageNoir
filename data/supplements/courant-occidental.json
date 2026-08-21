@@ -56,11 +56,21 @@
       "notes": "Héritage de Saphery : seuls ces Honneurs Elfiques (définis dans honneurs-elfiques.json) sont proposables aux personnages de l'Ost de la Tour d'Argent."
     },
     "units": {
-      "prince": { "group": "haut-commandement", "maxPer1000": 1 },
-      "archmage": { "group": "haut-commandement", "maxPer1000": 1 },
-
-      "shadow-warriors": {        "maxEntries": 1      },
-      "eagle-claw-bolt-thrower": {        "max": 3
+      "prince": {
+        "maxPer1000": 1,
+        "group": "prince-or-archmage"
+      },
+      "archmage": {
+        "maxPer1000": 1,
+        "group": "prince-or-archmage"
+      },
+      "prince-haut-elfe": { "group": "haut-commandement", "maxPer1000": 1 },
+      "archimage": { "group": "haut-commandement", "maxPer1000": 1 },
+      "shadow-warriors": {
+        "maxEntries": 1
+      },
+      "eagle-claw-bolt-thrower": {
+        "max": 3
       },
       "swordmasters-of-hoeth": {
         "conditional": [
