@@ -64,8 +64,6 @@
         "maxPer1000": 1,
         "group": "prince-or-archmage"
       },
-      "prince-haut-elfe": { "group": "haut-commandement", "maxPer1000": 1 },
-      "archimage": { "group": "haut-commandement", "maxPer1000": 1 },
       "shadow-warriors": {
         "maxEntries": 1
       },
