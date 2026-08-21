@@ -432,6 +432,115 @@ async function loadHonours() {
   }
 }
 
+// --- Moteur d'effets des Honneurs Elfiques ---------------------------------
+// Un Honneur Elfique n'est jamais codé en dur ici : `Generator` lit le champ
+// `effects` de honneurs-elfiques.json (tableau d'objets {type, ...}) et en
+// déduit les conséquences concrètes sur la fiche du personnage. Le texte
+// narratif de l'Honneur (`description`) n'est jamais affiché — seules ses
+// conséquences le sont, via les blocs Équipement / Règles spéciales /
+// Monture déjà existants.
+//
+// Types d'effets pris en charge :
+//   forbid_mount            — aucune option de monture proposée
+//   restrict_mount           {match:[...]} — seules les montures dont le nom
+//                             correspond à un des motifs restent proposées
+//   forbid_option_match      {kind, match:[...]} — retire les options du kind
+//                             donné dont le nom correspond à un des motifs
+//   grant_option              {kind, name, points, exclusiveKind} — ajoute une
+//                             option gratuite ; si exclusiveKind est défini et
+//                             que cette option est sélectionnée, les autres
+//                             options de ce kind disparaissent de la fiche
+//   grant_special_rule        {name} — ajoute une règle spéciale au profil
+//   replace_special_rule      {from, to} — remplace une règle spéciale native
+//   stat_modifier              {stat, value} — modifie une caractéristique
+//   unlock_unit                {unit, category, max} — rend une unité
+//                             accessible dans la composition d'armée
+function honourById(id) {
+  return (state.honours || []).find(h => h.id === id) || null;
+}
+function honourEffectsList(entry) {
+  const h = entry?.honour ? honourById(entry.honour) : null;
+  return Array.isArray(h?.effects) ? h.effects : [];
+}
+// Comparaison de libellés insensible à la casse/accents/ordre des mots,
+// utilisée pour rapprocher un motif de donnée ("phénix flamboyant") d'un
+// nom d'option ou de règle affiché ("Phénix flamboyant, chevauché par...").
+function matchesPattern(name, pattern) {
+  const n = " " + slug(name).replace(/-/g, " ") + " ";
+  const p = " " + slug(pattern).replace(/-/g, " ") + " ";
+  return n.includes(p) || p.includes(n);
+}
+// Options réellement proposables pour une entrée : options natives de
+// l'unité, filtrées/complétées par les effets de l'Honneur Elfique choisi
+// (le cas échéant). C'est la seule source utilisée pour l'affichage des
+// menus ET pour le calcul des coûts, afin qu'une option interdite par un
+// Honneur ne puisse ni être affichée ni être comptabilisée.
+function effectiveOptions(entry, u) {
+  let opts = [...(u?.options || [])];
+  const effects = honourEffectsList(entry);
+  if (!effects.length) return opts;
+
+  if (effects.some(e => e.type === "forbid_mount")) {
+    opts = opts.filter(o => o.kind !== "mount");
+  }
+  const restrictMount = effects.find(e => e.type === "restrict_mount");
+  if (restrictMount) {
+    const patterns = restrictMount.match || [];
+    opts = opts.filter(o => o.kind !== "mount" || patterns.some(p => matchesPattern(o.name, p)));
+  }
+  effects.filter(e => e.type === "forbid_option_match").forEach(e => {
+    const patterns = e.match || [];
+    opts = opts.filter(o => !(o.kind === e.kind && patterns.some(p => matchesPattern(o.name, p))));
+  });
+
+  const granted = effects.filter(e => e.type === "grant_option").map(e => ({
+    id: "honour-opt-" + slug(e.name),
+    name: e.name,
+    points: Number(e.points || 0),
+    pointsPerModel: 0,
+    kind: e.kind || "other",
+    maxPoints: null,
+    honourGranted: true,
+    exclusiveKind: e.exclusiveKind || null
+  }));
+  opts = opts.concat(granted);
+
+  const selected = new Set(selectedOptions(entry));
+  granted.forEach(g => {
+    if (g.exclusiveKind && selected.has(g.id)) {
+      opts = opts.filter(o => o.id === g.id || o.kind !== g.exclusiveKind);
+    }
+  });
+  return opts;
+}
+// Options + règles optionnelles, telles que réellement disponibles pour
+// cette entrée (utilisé partout où un id d'option doit être résolu en nom
+// ou en coût — fiche, export, impression).
+function effectivePool(entry, u) {
+  return [...effectiveOptions(entry, u), ...(u?.ruleOptions || [])];
+}
+// Règles spéciales natives de l'unité, après ajout/remplacement par les
+// effets de l'Honneur Elfique choisi.
+function effectiveRules(entry, u) {
+  let rules = [...(u?.rules || [])];
+  const effects = honourEffectsList(entry);
+  effects.filter(e => e.type === "replace_special_rule").forEach(e => {
+    rules = rules.map(r => matchesPattern(r, e.from) ? e.to : r);
+  });
+  effects.filter(e => e.type === "grant_special_rule").forEach(e => {
+    if (!rules.some(r => matchesPattern(r, e.name))) rules.push(e.name);
+  });
+  return rules;
+}
+// Une unité de la composition d'armée est débloquée par un Honneur Elfique
+// dès qu'un personnage de la liste a choisi un Honneur dont un effet
+// `unlock_unit` cible son id — sans qu'aucun nom d'Honneur ne soit testé en
+// dur ici.
+function honourUnlocksUnit(unitId) {
+  if (!unitId) return false;
+  return state.list.some(entry => honourEffectsList(entry).some(e => e.type === "unlock_unit" && e.unit === unitId));
+}
+
 function normalizeArmy(raw, fallbackId) {
   const mounts = normalizeMounts(raw);
   return {
@@ -509,7 +618,7 @@ function allSelectedOptionNames(){
   state.list.forEach(entry=>{
     const u=getUnit(entry.id); if(!u) return;
     (entry.options||[]).forEach(id=>{
-      const o=(u.options||[]).find(x=>x.id===id) || (u.ruleOptions||[]).find(x=>x.id===id);
+      const o=effectivePool(entry,u).find(x=>x.id===id);
       if(o) names.push(String(o.name).toLocaleLowerCase("fr"));
     });
     // Un honneur elfique choisi compte comme une option sélectionnée pour
@@ -525,24 +634,35 @@ function allSelectedOptionNames(){
   });
   return names;
 }
+// Aucun nom d'Honneur n'est testé en dur : un texte de condition libre (ex.
+// "Général avec l'Honneur Garde Maritime") est simplement débarrassé de son
+// préfixe générique, puis comparé aux noms d'options/règles/Honneurs
+// réellement sélectionnés dans la liste (voir allSelectedOptionNames). Le
+// cas "Éryndor Vareth" reste un identifiant de personnage nommé, pas un
+// Honneur, et est traité séparément.
 function hasCondition(text, unit=null){
   const t=String(text||'').toLocaleLowerCase('fr');
   if(!t) return true;
   const names=allSelectedOptionNames();
   const generalIds=state.list.filter(x=>getUnit(x.id)?.category==='Personnages').map(x=>x.id);
   if(t.includes('eryndor') || t.includes('éryndor')) return generalIds.includes('eryndor-vareth');
-  if(t.includes('garde maritime')) return generalIds.includes('eryndor-vareth') || names.some(n=>n.includes('garde maritime')) || state.list.some(x=>{
-    const u=getUnit(x.id); return normalizeTextList(u?.rules).some(r=>r.toLocaleLowerCase('fr').includes('honneur elfique garde maritime') || r.toLocaleLowerCase('fr').includes('honneur garde maritime'));
-  });
-  if(t.includes('gardien de saphery')) return names.some(n=>n.includes('gardien de saphery'));
-  if(t.includes('maître du savoir') || t.includes('maitre du savoir')) return names.some(n=>n.includes('maître du savoir')||n.includes('maitre du savoir'));
-  return names.some(n=>t.replace(/^général avec l'honneur\s*/,'').replace(/^general avec l'honneur\s*/,'').split(/[,.]/)[0].trim() && n.includes(t.replace(/^général avec l'honneur\s*/,'').replace(/^general avec l'honneur\s*/,'').split(/[,.]/)[0].trim()));
+  const cleaned = t
+    .replace(/^général avec l['’]honneur\s*/,'')
+    .replace(/^general avec l['’]honneur\s*/,'')
+    .split(/[,.]/)[0]
+    .trim();
+  if (cleaned) return names.some(n => n.includes(cleaned) || cleaned.includes(n));
+  return names.some(n => t.includes(n) || n.includes(t));
 }
 function conditionalAllowed(u){
   const r=restrictionForUnit(u?.id);
-  if(!r?.conditional) return true;
+  if(!r?.conditional){
+    // Même sans condition textuelle déclarée, une unité reste débloquée par
+    // un Honneur Elfique dont l'effet `unlock_unit` la cible explicitement.
+    return true;
+  }
   const conditions=Array.isArray(r.conditional)?r.conditional:[r.conditional];
-  return conditions.some(c=>hasCondition(c,u));
+  return conditions.some(c=>hasCondition(c,u)) || honourUnlocksUnit(u?.id);
 }
 
 // Une condition ("when") peut être :
@@ -685,7 +805,7 @@ function selectedMagicItemIds(entry) {
 
 function optionCost(u, entry) {
   const selected = selectedOptions(entry);
-  const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
+  const pool = effectivePool(entry, u);
   return selected.reduce((sum, id) => {
     const opt = pool.find(o => o.id === id);
     if (!opt) return sum;
@@ -982,12 +1102,20 @@ function effectiveProfile(entry, unit) {
   };
 
   selectedOptions(entry).forEach(id => {
-    const option = (unit?.options || []).find(o => o.id === id);
+    const option = effectiveOptions(entry, unit).find(o => o.id === id);
     // les modificateurs de la monture s'appliquent au profil de la
     // monture elle-même, pas à celui du porteur : on les ignore ici.
     if (option && option.kind !== "mount") addMods(option);
   });
   selectedMagicObjects(entry).forEach(addMods);
+  // Modificateurs de caractéristiques accordés directement par l'Honneur
+  // Elfique choisi (ex. Sang de Caledor : +1 CC), lus depuis ses données.
+  honourEffectsList(entry).filter(e => e.type === "stat_modifier").forEach(e => {
+    if (!STAT_KEYS.includes(e.stat)) return;
+    const n = numericStat(e.value);
+    if (n === null) return;
+    mods[e.stat] = (mods[e.stat] || 0) + n;
+  });
 
   const result = {};
   STAT_KEYS.forEach(key => {
@@ -1053,19 +1181,21 @@ function renderEquipment(unit) {
   </div>`;
 }
 
-// Règles spéciales natives (fixes, toujours actives) de l'unité — affichées
-// sur une seule ligne, séparées par des virgules.
-function renderNativeRules(unit) {
-  if (!unit.rules?.length) return "";
+// Règles spéciales de l'unité — natives, puis ajoutées/remplacées par
+// l'Honneur Elfique choisi le cas échéant (voir effectiveRules). Seul le
+// résultat concret est affiché : jamais le texte de l'Honneur lui-même.
+function renderNativeRules(entry, unit) {
+  const rules = effectiveRules(entry, unit);
+  if (!rules.length) return "";
   return `<div class="unit-block">
     <div class="profile-title">Règles spéciales</div>
-    <div class="unit-block-line">${unit.rules.map(esc).join(", ")}</div>
+    <div class="unit-block-line">${rules.map(esc).join(", ")}</div>
   </div>`;
 }
 
-function optionGroups(u) {
+function optionGroups(entry, u) {
   const result = { banner:[], mount:[], weapon:[], armour:[], champion:[], standard:[], musician:[], other:[] };
-  (u.options || []).forEach(o => (result[o.kind] || result.other).push(o));
+  effectiveOptions(entry, u).forEach(o => (result[o.kind] || result.other).push(o));
   return result;
 }
 
@@ -1118,7 +1248,7 @@ function magicItemsLabel(entry){
 
 // Bloc "Monture" : sélecteur dédié, uniquement si l'unité propose des montures.
 function renderMountSelector(entry, u) {
-  const mounts = (u.options || []).filter(o => o.kind === "mount");
+  const mounts = effectiveOptions(entry, u).filter(o => o.kind === "mount");
   if (!mounts.length) return "";
   const current = entry.options.find(id => mounts.some(o => o.id === id)) || "";
   return `<div class="options-box">
@@ -1137,7 +1267,7 @@ function renderMountSelector(entry, u) {
 // armes, armures (menus, un seul choix possible) et autres options hors
 // monture / objets magiques.
 function renderCharacterOptions(entry, u) {
-  const groups = optionGroups(u);
+  const groups = optionGroups(entry, u);
   const label = u.category === "Personnages" ? "Options de personnage" : "Options de l'unité";
   const commandOptions = [...groups.champion, ...groups.standard, ...groups.musician];
   const hasAny = commandOptions.length || groups.banner.length || groups.weapon.length || groups.armour.length || groups.other.length;
@@ -1301,12 +1431,16 @@ function renderReclassificationToggle(entry, u) {
 // par la liste des honneurs autorisés par le supplément (le cas échéant).
 // Le coût de l'honneur choisi s'ajoute au total de l'entrée, et son nom
 // alimente les conditions (allSelectedOptionNames / hasCondition).
+// N'affiche que le nom et le coût de l'Honneur choisi : jamais sa
+// description, son texte de règles ou ses restrictions narratives — celles-
+// ci sont uniquement *appliquées* (voir effectiveOptions/effectiveRules),
+// et leurs conséquences concrètes apparaissent dans les blocs Monture /
+// Équipement / Options / Règles spéciales de la fiche.
 function renderHonourSelector(entry, u) {
   if (u.category !== "Personnages") return "";
   const pool = allowedHonours();
   if (!pool.length) return "";
   const current = entry.honour || "";
-  const chosen = pool.find(h => h.id === current);
   return `<div class="options-box">
     <div class="options-title">Honneur Elfique</div>
     <label class="option-select-label">Honneur
@@ -1315,7 +1449,6 @@ function renderHonourSelector(entry, u) {
         ${pool.map(h => `<option value="${esc(h.id)}" ${h.id===current?"selected":""}>${esc(h.name)} (${formatPoints(h.points)})</option>`).join("")}
       </select>
     </label>
-    ${chosen?.description ? `<div class="unit-block-line">${esc(chosen.description)}</div>` : ""}
   </div>`;
 }
 
@@ -1373,6 +1506,14 @@ function validate() {
 
     if (item.honour && !allowedHonours().some(h => h.id === item.honour)) {
       errors.push(`${u.name} : l'honneur elfique choisi n'est plus autorisé par ce supplément.`);
+    }
+
+    // Une monture imposée par l'Honneur Elfique choisi (restrict_mount avec
+    // required:true, ex. Sang de Caledor, Garde Maritime) doit être prise —
+    // "à pied" n'est alors plus une option légale.
+    const requiredMount = honourEffectsList(item).find(e => e.type === "restrict_mount" && e.required);
+    if (requiredMount && !selectedMount(item, u)) {
+      errors.push(`${u.name} : l'honneur elfique choisi impose une monture, aucune n'est sélectionnée.`);
     }
   }
 
@@ -1486,7 +1627,7 @@ function renderList() {
         const min = entryModelMin(unit), max = entryModelMax(unit);
         const maxText = max === Infinity ? "" : ` / ${max}`;
         const selected = selectedOptions(item);
-        const pool = [...(unit.options||[]), ...(unit.ruleOptions||[])];
+        const pool = effectivePool(item, unit);
         const optionNames = selected.map(id => pool.find(o=>o.id===id)?.name).filter(Boolean);
         optionNames.push(...magicItemsLabel(item));
         if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) optionNames.push(h.name); }
@@ -1514,7 +1655,7 @@ function renderList() {
           ${renderReclassificationToggle(item, unit)}
           ${renderStatsTable(item, unit)}
           ${renderEquipment(unit)}
-          ${renderNativeRules(unit)}
+          ${renderNativeRules(item, unit)}
           ${renderMountSelector(item, unit)}
           ${renderCharacterOptions(item, unit)}
           ${renderHonourSelector(item, unit)}
@@ -1768,7 +1909,7 @@ function exportTXT() {
     lines.push(cat.toUpperCase());
     lines.push("-".repeat(cat.length));
     arr.forEach(({u,item},i) => {
-      const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
+      const pool = effectivePool(item, u);
       const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
       opts.push(...magicItemsLabel(item));
       if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
@@ -1793,7 +1934,7 @@ function printList() {
     .filter(x => x.u)
     .sort((a,b) => categoryRank(entryEffectiveCategory(a.item, a.u)) - categoryRank(entryEffectiveCategory(b.item, b.u)));
   const rows = ordered.map(({item,u},index) => {
-    const pool = [...(u.options||[]), ...(u.ruleOptions||[])];
+    const pool = effectivePool(item, u);
     const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
     opts.push(...magicItemsLabel(item));
     if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
