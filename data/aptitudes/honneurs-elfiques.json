@@ -1,3 +1,105 @@
 {
-  "aptitudes": []
+  "Honneurs Elfiques": [
+    {
+      "id": "honneur-maitre-du-savoir",
+      "name": "Honneur Elfique : Maître du Savoir",
+      "points": 35,
+      "restriction": "Seigneurs Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Ne peut pas être monté.",
+        "Devient Sorcier de Niveau 1 et connaît un sort tiré aléatoirement dans l'un des domaines suivants : Magie de Bataille, Élémentalisme, Haute Magie ou Illusion.",
+        "Peut recevoir gratuitement l'Épée de Hoeth ; dans ce cas, ne peut prendre aucune autre arme non magique.",
+        "Gagne les règles spéciales Armure d'Ithilmar, Bénédiction de Lileath et Domaine de Saphery."
+      ]
+    },
+    {
+      "id": "honneur-traqueur-de-l-ombre",
+      "name": "Honneur Elfique : Traqueur de l'Ombre",
+      "points": 20,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Ne peut pas être monté.",
+        "Peut recevoir gratuitement l'Arc d'Avelorn ; dans ce cas, ne peut prendre aucune autre arme non magique.",
+        "Ne peut pas porter d'armure lourde ni d'armure de plates complète.",
+        "Gagne les règles spéciales Embuscadeurs, Évasion, Tir et Fuite, Déplacement en Terrain Couvert et Éclaireurs."
+      ]
+    },
+    {
+      "id": "honneur-beni-d-asuryan",
+      "name": "Honneur Elfique : Béni d'Asuryan",
+      "points": 15,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Peut être monté sur un Phénix de Flamme ou un Phénix des Glaces (aucune autre monture autorisée).",
+        "Peut recevoir gratuitement une hallebarde cérémonielle ; dans ce cas, ne peut prendre aucune autre arme non magique.",
+        "Gagne les règles spéciales Bénédictions d'Asuryan, Terreur et Témoin de la Destinée.",
+        "Remplace la règle spéciale Valeur des Âges par la règle spéciale Vétéran."
+      ]
+    },
+    {
+      "id": "honneur-sang-de-caledor",
+      "name": "Honneur Elfique : Sang de Caledor",
+      "points": 15,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Doit être monté sur un Coursier Elfique bardé, un Dragon Solaire, un Dragon Lunaire ou un Dragon Astral (la monture elle-même n'est pas concernée par l'honneur).",
+        "Bonus de +1 en Capacité de Combat.",
+        "Peut recevoir gratuitement une armure de plates complète.",
+        "Gagne les règles spéciales Armure de Dragon et Impétueux."
+      ]
+    },
+    {
+      "id": "honneur-chasseur-de-chrace",
+      "name": "Honneur Elfique : Chasseur de Chracé",
+      "points": 10,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Ne peut être monté que sur un Char des Lions Blancs (aucune autre monture autorisée).",
+        "Peut recevoir gratuitement une grande lame chracienne ; dans ce cas, ne peut prendre aucune autre arme non magique.",
+        "Gagne les règles spéciales Cape de Lion, Déplacement en Terrain Couvert et Obstiné."
+      ]
+    },
+    {
+      "id": "honneur-gardien-de-saphery",
+      "name": "Honneur Elfique : Gardien de Saphery",
+      "points": 10,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Ne peut pas être monté.",
+        "Peut recevoir gratuitement l'Épée de Hoeth ; dans ce cas, ne peut prendre aucune autre arme non magique.",
+        "Gagne les règles spéciales Déviation des Tirs, Armure d'Ithilmar et Coup Fatal."
+      ]
+    },
+    {
+      "id": "honneur-pur-de-coeur",
+      "name": "Honneur Elfique : Pur de Cœur",
+      "points": 0,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Gratuit.",
+        "À moins de fuir, toutes les unités amies dans la portée de Commandement de ce personnage peuvent utiliser sa valeur de Commandement à la place de la leur.",
+        "Ce personnage et l'unité qu'il a rejointe réussissent automatiquement tout test de Panique."
+      ]
+    },
+    {
+      "id": "honneur-garde-maritime",
+      "name": "Honneur Elfique : Garde Maritime",
+      "points": 0,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "rules": [
+        "Gratuit.",
+        "Ne peut être monté que sur un Aéronef de Lothern (aucune autre monture autorisée).",
+        "Peut recevoir gratuitement un arc de guerre ; dans ce cas, ne peut prendre aucune autre arme non magique.",
+        "Gagne les règles spéciales Discipline Navale et Cri de Ralliement."
+      ]
+    }
+  ]
 }
