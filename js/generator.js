@@ -125,7 +125,7 @@ function renownMatches(id, entry, u) {
   // fiches d'unité : on refuse par défaut (échec fermé) plutôt que de
   // proposer un objet à un porteur qui n'y a peut-être pas droit. À adapter
   // dès qu'un champ dédié (ex. state.army.renown / entry.renown) existera.
-  const current = entry?.renown || u?.renown || state.army?.renown || null;
+  const current = entry?.renown || u?.renown || state.army?.renown || state.supplement?.renown || null;
   return current != null && String(current) === String(id);
 }
 function isItemAllowedForEntry(item, entry, u) {
@@ -939,26 +939,15 @@ function maxEntriesForUnit(u) {
     max = Math.min(max, getCharacterEntryCount() * Number(r.maxPerCharacter));
   }
 
-if (r.group) {
-  // 1. Trouver toutes les règles du même groupe
-  const groupRules = Object.entries(state.supplement?.restrictions?.units || {})
-    .filter(([id, rule]) => rule?.group === r.group);
-
-  // 2. Calculer le max global du groupe (on prend la limite la plus stricte définie dans le groupe)
-  const groupMax = groupRules.reduce((m, [id, rule]) => {
-    if (rule.maxPer1000 == null) return m;
-    return Math.min(m, Math.floor(state.pointsLimit / 1000) * Number(rule.maxPer1000));
-  }, Infinity);
-
-  // 3. Compter TOUTES les unités déjà prises dans ce groupe
-  const currentGroup = groupRules.reduce((n, [id]) => n + getEntriesForUnit(id).length, 0);
-
-  // 4. Calculer combien de figurines TOUS TYPES CONFONDUS on peut encore ajouter dans ce groupe
-  const remainingInGroup = Math.max(0, groupMax - currentGroup);
-
-  // 5. Appliquer la restriction de groupe au max actuel
-  max = Math.min(max, remainingInGroup);
-}
+  if(r.group){
+    const groupRules=Object.entries(state.supplement?.restrictions?.units||{}).filter(([id,rule])=>rule?.group===r.group);
+    const groupMax=groupRules.reduce((m,[id,rule])=>{
+      if(rule.maxPer1000==null) return m;
+      return Math.min(m,Math.floor(state.pointsLimit/1000)*Number(rule.maxPer1000));
+    },Infinity);
+    const currentGroup=groupRules.reduce((n,[id])=>n+getEntriesForUnit(id).length,0);
+    max=Math.min(max,Math.max(0,groupMax-currentGroup));
+  }
 
   // Le nombre d'exemplaires qu'on peut AJOUTER pour cette unité n'est pas
   // plafonné par les règles de recatégorisation : celles-ci ne portent que
@@ -1784,7 +1773,7 @@ function setMagicDomain(uidValue, value) {
 }
 
 function optionPrice(o) {
-  const flat = 0;
+  const flat = Number(o.points || 0);
   const per = Number(o.pointsPerModel || 0);
   if (!flat && !per) return "";
   if (per && flat) return ` (+${flat} pts + ${per} pts/mod.)`;
