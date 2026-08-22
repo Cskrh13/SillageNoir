@@ -830,7 +830,12 @@ function conditionMet(when) {
 
 function effectiveCategory(u){
   if(!u) return 'Autres';
-  return u.category;
+  // Un supplément peut reclasser une unité dans une autre catégorie que sa
+  // catégorie native (ex. Maîtres des épées de Hoeth : Unités Spéciales
+  // dans l'armée de base, mais Unités Rares par défaut dans ce supplément),
+  // via restrictions.units[id].categoryOverride — jamais codé en dur ici.
+  const r = restrictionForUnit(u.id);
+  return r.categoryOverride || u.category;
 }
 
 // --- Recatégorisation conditionnelle, par entrée --------------------------
@@ -863,7 +868,7 @@ function ruleAppliesToUnit(rule, u) {
   if (!rule || !u) return false;
   const from = Array.isArray(rule.fromCategories) ? rule.fromCategories
     : (rule.fromCategory ? [rule.fromCategory] : []);
-  if (!from.includes(u.category)) return false;
+  if (!from.includes(effectiveCategory(u))) return false;
   // `units` (optionnel) restreint la règle à une liste précise d'unités
   // (ex. seuls les Maîtres des épées de Hoeth) plutôt qu'à toute la
   // catégorie d'origine — sans quoi n'importe quelle autre unité Rare
@@ -893,7 +898,7 @@ function entryEffectiveCategory(entry, u) {
     const rule = findReclassificationRule(entry.reclassified);
     if (rule && ruleAppliesToUnit(rule, u) && conditionMet(rule.when)) return rule.toCategory;
   }
-  return u.category;
+  return effectiveCategory(u);
 }
 
 function getEntriesForUnit(id) {
