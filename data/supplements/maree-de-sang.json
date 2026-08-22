@@ -58,23 +58,16 @@
       }
     },
     "units": {
-      "esclaves": {
-        "maxPerCharacter": 2,
-        "maxUnitSize": 20
+      "dark-elf-dreadlord": {
+         "group": "lord-archmage-or-prince",
+         "maxPer1000": 1
       },
-      "cavaliers-noirs": {
-        "maxPer1000": 1
+      "supreme-sorceress": {
+         "group": "lord-archmage-or-prince",
+       "maxPer1000": 1
       },
-      "balistes-faucheuses": {
-        "max": 3
-      },
-      "chevaliers-sur-sang-froid": {
-        "maxPer1000": 1
-      },
-      "char-a-sang-froid": {
-        "maxPer1000": 1
-      },
-      "garde-noire-de-naggarond": {
+      "high-beastmaster": {
+         "group": "lord-archmage-or-prince",
         "maxPer1000": 1
       },
       "maldris-dravelyth": {
@@ -83,6 +76,25 @@
       "moraveth-dravelyth": {
         "max": 1
       },
+      "esclaves": {
+        "maxPerCharacter": 2,
+        "maxUnitSize": 20
+      },
+      "cavaliers-noirs": {
+        "maxPer1000": 1
+      },
+      "balistes-faucheuses": {
+         "maxPer1000": 3
+      },
+      "chevaliers-sur-sang-froid": {
+        "maxPer1000": 2
+      },
+      "char-a-sang-froid": {
+        "maxPer1000": 1
+      },
+      "garde-noire-de-naggarond": {
+        "maxPer1000": 1
+      },    
       "kharyx": {
         "max": 1
       }
@@ -101,19 +113,7 @@
         ]
       }
     },
-    "groups": {
-      "commandCharactersPer1000": {
-        "label": "Despote / Sorcière suprême / Haut Belluaire",
-        "unitIds": [
-          "dark-elf-dreadlord",
-          "supreme-sorceress",
-          "high-beastmaster"
-        ],
-        "maxPer1000": 1,
-        "mode": "combined"
-      }
-    }
-  },
+   
   "units": [
     {
       "id": "khainite-assassin",
