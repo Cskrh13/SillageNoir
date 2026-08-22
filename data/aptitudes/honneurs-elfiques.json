@@ -1,0 +1,124 @@
+{
+  "aptitudes": [
+    {
+      "id": "honneur-maitre-du-savoir",
+      "name": "Maître du Savoir",
+      "points": 35,
+      "repeatable": false,
+      "restriction": "Seigneurs Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "forbid_mount" },
+        { "type": "grant_special_rule", "name": "Sorcier de Niveau 1 (domaine choisi avant la partie : Bataille, Élémentalisme, Haute Magie ou Illusion ; sort déterminé aléatoirement)" },
+        { "type": "grant_option", "kind": "weapon", "name": "Épée de Hoeth", "points": 0, "exclusiveKind": "weapon" },
+        { "type": "grant_special_rule", "name": "Armure d'Ithilmar" },
+        { "type": "grant_special_rule", "name": "Bénédiction de Lileath" },
+        { "type": "grant_special_rule", "name": "Domaine de Saphery" }
+      ]
+    },
+    {
+      "id": "honneur-gardien-de-saphery",
+      "name": "Gardien de Saphery",
+      "points": 10,
+      "repeatable": false,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "forbid_mount" },
+        { "type": "grant_option", "kind": "weapon", "name": "Épée de Hoeth", "points": 0, "exclusiveKind": "weapon" },
+        { "type": "grant_special_rule", "name": "Déviation des Tirs" },
+        { "type": "grant_special_rule", "name": "Armure d'Ithilmar" },
+        { "type": "grant_special_rule", "name": "Coup Fatal" }
+      ]
+    },
+    {
+      "id": "honneur-traqueur-de-l-ombre",
+      "name": "Traqueur de l'Ombre",
+      "points": 20,
+      "repeatable": false,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "forbid_mount" },
+        { "type": "grant_option", "kind": "weapon", "name": "Arc d'Avelorn", "points": 0, "exclusiveKind": "weapon" },
+        { "type": "forbid_option_match", "kind": "armour", "match": ["lourde", "intégrale", "plates"] },
+        { "type": "grant_special_rule", "name": "Embuscadeurs" },
+        { "type": "grant_special_rule", "name": "Évasion" },
+        { "type": "grant_special_rule", "name": "Tir et Fuite" },
+        { "type": "grant_special_rule", "name": "Déplacement en Terrain Couvert" },
+        { "type": "grant_special_rule", "name": "Éclaireurs" }
+      ]
+    },
+    {
+      "id": "honneur-beni-d-asuryan",
+      "name": "Béni d'Asuryan",
+      "points": 15,
+      "repeatable": false,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "restrict_mount", "match": ["Phénix de Flamme", "Phénix des Glaces"] },
+        { "type": "grant_option", "kind": "weapon", "name": "Hallebarde cérémonielle", "points": 0, "exclusiveKind": "weapon" },
+        { "type": "grant_special_rule", "name": "Bénédictions d'Asuryan" },
+        { "type": "grant_special_rule", "name": "Terreur" },
+        { "type": "grant_special_rule", "name": "Témoin de la Destinée" },
+        { "type": "replace_special_rule", "from": "Valeur des âges", "to": "Vétéran" }
+      ]
+    },
+    {
+      "id": "honneur-sang-de-caledor",
+      "name": "Sang de Caledor",
+      "points": 15,
+      "repeatable": false,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "restrict_mount", "match": ["Coursier Elfique bardé", "Dragon Solaire", "Dragon Lunaire", "Dragon Astral"], "required": true },
+        { "type": "stat_modifier", "stat": "CC", "value": 1 },
+        { "type": "grant_option", "kind": "armour", "name": "Armure de plates complète", "points": 0, "exclusiveKind": "armour" },
+        { "type": "grant_special_rule", "name": "Armure de Dragon" },
+        { "type": "grant_special_rule", "name": "Impétueux" }
+      ]
+    },
+    {
+      "id": "honneur-chasseur-de-chrace",
+      "name": "Chasseur de Chracé",
+      "points": 10,
+      "repeatable": false,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "restrict_mount", "match": ["Char des Lions Blancs"], "required": true },
+        { "type": "grant_option", "kind": "weapon", "name": "Grande lame chracienne", "points": 0, "exclusiveKind": "weapon" },
+        { "type": "grant_special_rule", "name": "Cape de Lion" },
+        { "type": "grant_special_rule", "name": "Déplacement en Terrain Couvert" },
+        { "type": "grant_special_rule", "name": "Obstiné" }
+      ]
+    },
+    {
+      "id": "honneur-pur-de-coeur",
+      "name": "Pur de Cœur",
+      "points": 0,
+      "repeatable": false,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "grant_special_rule", "name": "Pur de Cœur (Cd partagé aux unités amies dans la portée de Commandement ; succès automatique aux tests de Panique)" }
+      ]
+    },
+    {
+      "id": "honneur-garde-maritime",
+      "name": "Garde Maritime",
+      "points": 0,
+      "repeatable": false,
+      "restriction": "Seigneurs et Héros Hauts Elfes uniquement",
+      "source": "Ravening Hordes, p.179",
+      "effects": [
+        { "type": "restrict_mount", "match": ["Aéronef de Lothern", "Lothern Skycutter"], "required": true },
+        { "type": "grant_option", "kind": "weapon", "name": "Arc de guerre", "points": 0, "exclusiveKind": "weapon" },
+        { "type": "grant_special_rule", "name": "Discipline Navale" },
+        { "type": "grant_special_rule", "name": "Cri de Ralliement" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "id": "tour-d-argent",
+  "name": "Objets magiques de Tour d'Argent",
+  "source": "Le Courant Occidental — Tour d'Argent",
+  "magicItems": {
+    "Armes magiques": [
+      {
+        "id": "lame-du-courant-favorable",
+        "name": "Lame du Courant Favorable",
+        "points": 10,
+        "repeatable": true,
+        "description": "Arme de corps à corps, PA -1, avec la règle spéciale Frappe en premier. Lors d'un tour où le porteur a effectué une charge, il peut relancer un seul jet pour toucher effectué avec cette arme."
+      },
+      {
+        "id": "arc-du-vent-marin",
+        "name": "Arc du Vent Marin",
+        "points": 40,
+        "repeatable": false,
+        "description": "Portée 30\", Force -, PA -1. Si le porteur n'a pas bougé durant ce tour, les tirs effectués avec l'Arc du Vent Marin gagnent PA -1 supplémentaire et le porteur peut relancer un seul jet pour toucher lors de cette phase de tir."
+      }
+    ],
+    "Armures magiques": [
+      {
+        "id": "armures-des-quais",
+        "name": "Armures des Quais",
+        "points": 45,
+        "repeatable": false,
+        "description": "Réservée aux figurines dont le type de troupe est Infanterie. Armure de plate complète. Lors de la phase de combat à laquelle le porteur a été chargé, il gagne +1 en Capacité de Combat."
+      },
+      {
+        "id": "cuirasse-des-brumes",
+        "name": "Cuirasse des Brumes",
+        "points": 50,
+        "repeatable": false,
+        "description": "Réservée aux figurines dont le type de troupe est Infanterie. Armure légère. Le porteur gagne Régénération (5+). Les attaques de tir visant le porteur et l'unité qu'il a rejointe subissent -1 pour toucher. Ce malus ne s'applique pas aux attaques magiques."
+      }
+    ],
+    "Talismans": [
+      {
+        "id": "perle-des-courants",
+        "name": "Perle des Courants",
+        "points": 40,
+        "repeatable": false,
+        "description": "Le porteur gagne Résistance à la Magie (1). Une fois par bataille, au début d'une phase de mouvement, le porteur peut utiliser la perle pour appliquer Tir Rapide à ses armes et à celles de l'unité qu'il a rejointe jusqu'à la fin du tour."
+      },
+      {
+        "id": "boussole-de-saphery",
+        "name": "Boussole de Saphery",
+        "points": 35,
+        "repeatable": false,
+        "description": "Une fois par partie, le porteur gagne +1 à ses jets de lancement ou de dissipation jusqu'à la phase de Conjuration suivante. Cependant, il ne peut pas bénéficier de ce bonus lorsqu'il tente de lancer ou de dissiper un sort à plus de 18\"."
+      }
+    ],
+    "Bannières magiques": [
+      {
+        "id": "fanal-du-courant-occidental",
+        "name": "Fanal du Courant Occidental",
+        "points": 80,
+        "repeatable": false,
+        "description": "Les unités amies situées à 12\" ou moins peuvent utiliser le Commandement du porteur pour leurs tests de Commandement. Une fois par bataille, au début de la phase de mouvement, le porteur peut allumer le Fanal. Les unités amies situées à 8\" ou moins peuvent effectuer un mouvement de Reformation sans pénalité. Elles peuvent bouger normalement ensuite, mais ne peuvent pas déclarer de charge."
+      },
+      {
+        "id": "banniere-des-marees",
+        "name": "Bannière des Marées",
+        "points": 45,
+        "repeatable": false,
+        "description": "Une fois par bataille, au début de sa phase de mouvement, le porteur peut déployer la Bannière des Marées. Jusqu'au début de la prochaine phase de mouvement du porteur, toutes les unités amies situées à 12\" avancent de D3\" en avant."
+      }
+    ],
+    "Objets enchantés": [
+      {
+        "id": "anneaux-des-marees",
+        "name": "Anneaux des Marées",
+        "points": 35,
+        "repeatable": true,
+        "description": "Réservés aux figurines d'une Armée de l'Infamie de Tour d'Argent. Une fois par bataille, au début de la phase de mouvement, le porteur peut choisir une unité amie située à 6\" ou moins. Cette unité recule de D3\" sans pénalité."
+      },
+      {
+        "id": "conque-des-vagues",
+        "name": "Conque des Vagues",
+        "points": 25,
+        "repeatable": false,
+        "description": "Réservée aux figurines d'une Armée de l'Infamie de Tour d'Argent. Le porteur peut lancer Vague Brisante comme un sort lié, avec un Niveau de Pouvoir de 1. La Conque des Vagues peut être utilisée même si son porteur n'est pas un Sorcier."
+      }
+    ],
+    "Objets cabalistiques": [
+      {
+        "id": "astrolabe-des-courants",
+        "name": "Astrolabe des Courants",
+        "points": 25,
+        "repeatable": false,
+        "description": "Une fois par partie, lors de la phase de Magie, lorsque le porteur ou l'unité qu'il a rejointe est la cible d'un sort lancé par un Sorcier ennemi situé à 18\" ou moins, il peut utiliser l'Astrolabe pour imposer un malus de -1 au jet de lancement."
+      },
+      {
+        "id": "perle-des-profondeurs",
+        "name": "Perle des Profondeurs",
+        "points": 40,
+        "repeatable": false,
+        "description": "Réservée aux Sorciers d'une Armée de l'Infamie de Tour d'Argent. Usage unique. Une fois par partie, lors de la phase de Combat, le porteur peut libérer le pouvoir de la Perle. Jusqu'au début de son prochain tour, il gagne les règles spéciales Corps liquide, Régénération (5+), Mouvement à Travers les Obstacles et Rapide, ainsi que +1 en Force et +1 en Endurance. Le porteur conserve son profil, son équipement et ses autres règles spéciales. Les PV perdus pendant cette transformation ne sont pas récupérés. Les modifications apportées par cet objet n'affectent pas la monture."
+      }
+    ]
+  }
+}

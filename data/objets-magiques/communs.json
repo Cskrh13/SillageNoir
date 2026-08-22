@@ -1,0 +1,426 @@
+{
+  "id": "communs",
+  "name": "Objets magiques communs",
+  "source": "Warhammer: The Old World — Objets magiques extrêmement courants",
+  "magicItems": {
+    "Armes magiques": [
+      {
+      "id": "lame-ogre",
+      "name": "Lame Ogre",
+      "points": 75,
+      "repeatable": false,
+      "description": "Le porteur gagne +2 en Force et son arme a PA -2."
+    },
+    {
+      "id": "lame-rieuse",
+      "name": "Lame Rieuse",
+      "points": 65,
+      "repeatable": false,
+      "description": "Le porteur gagne +1 en Force et son arme a PA -1. Si un 6 naturel est obtenu pour la règle spéciale Attaques supplémentaires (+D6), le porteur perd immédiatement 1 PV."
+    },
+    {
+      "id": "epee-de-bataille",
+      "name": "Épée de Bataille",
+      "points": 60,
+      "repeatable": false,
+      "description": "Le porteur gagne +1 en Force et son arme a PA -1."
+    },
+    {
+      "id": "lames-duellistes",
+      "name": "Lames du Duelliste",
+      "points": 55,
+      "repeatable": false,
+      "description": "Le porteur combat avec une arme de Force normale, PA -1."
+    },
+    {
+      "id": "epee-tueuse-de-dragons",
+      "name": "Épée Tueuse de Dragons",
+      "points": 50,
+      "repeatable": false,
+      "description": "Arme magique de Force normale et PA normale."
+    },
+    {
+      "id": "marteau-meteorique",
+      "name": "Marteau Météorique",
+      "points": 50,
+      "repeatable": false,
+      "description": "Arme de Force normale et PA -3. Lors d'un jet pour blesser avec cette arme, un résultat de 3+ est toujours une réussite, quelle que soit l'Endurance de la cible."
+    },
+    {
+      "id": "hache-du-bourreau",
+      "name": "Hache du Bourreau",
+      "points": 45,
+      "repeatable": false,
+      "description": "Le porteur gagne +1 en Force et son arme a PA -1."
+    },
+    {
+      "id": "hache-mange-sort",
+      "name": "Hache Mange-Sorts",
+      "points": 35,
+      "repeatable": false,
+      "description": "Arme de Force normale avec PA -1."
+    },
+    {
+      "id": "lame-geante",
+      "name": "Lame Géante",
+      "points": 30,
+      "repeatable": false,
+      "description": "Le porteur gagne +1 en Force. L'arme n'a pas de PA supplémentaire."
+    },
+    {
+      "id": "hache-forgee-enfer",
+      "name": "Hache Forgée-en-Enfer",
+      "points": 30,
+      "repeatable": false,
+      "description": "Le porteur gagne +1 en Force et son arme a PA -1."
+    },
+    {
+      "id": "epee-du-chagrin",
+      "name": "Épée du Chagrin",
+      "points": 30,
+      "repeatable": false,
+      "description": "Arme de tir de portée 30\", Force 5 et PA -1. Cette arme ne peut pas être utilisée au corps à corps. Aucune sauvegarde invulnérable ni Régénération n'est autorisée contre les blessures causées par l'Épée du Chagrin."
+    },
+    {
+      "id": "epee-de-rapidite",
+      "name": "Épée de Rapidité",
+      "points": 25,
+      "repeatable": false,
+      "description": "Arme de Force normale sans PA supplémentaire."
+    },
+    {
+      "id": "lame-berserker",
+      "name": "Lame Berserker",
+      "points": 20,
+      "repeatable": false,
+      "description": "Le porteur gagne +1 en Force. Il possède également la règle spéciale Impétueux."
+    },
+    {
+      "id": "lame-mordante",
+      "name": "Lame Mordante",
+      "points": 15,
+      "repeatable": false,
+      "description": "Arme de Force normale avec PA -2."
+    },
+      {
+        "id": "epee-de-puissance",
+        "name": "Épée de Puissance",
+        "points": 20,
+        "repeatable": true,
+        "description": "Le porteur gagne +1 en Force et son arme a PA -1."
+      },
+      {
+        "id": "epee-de-frappe",
+        "name": "Épée de Frappe",
+        "points": 15,
+        "repeatable": true,
+        "description": "Le porteur bénéficie de +1 pour toucher au corps à corps."
+      },
+      {
+        "id": "lame-brulante",
+        "name": "Lame Brûlante",
+        "points": 5,
+        "repeatable": true,
+        "description": "Arme magique dont les attaques sont enflammées."
+      }
+    ],
+    "Armures magiques": [
+      {
+        "id": "bouclier-envoute",
+        "name": "Bouclier Enchanté",
+        "points": 10,
+        "repeatable": true,
+        "description": "Bouclier magique. Le porteur bénéficie d'une sauvegarde invulnérable de 6+ contre les blessures causées par une attaque ennemie non magique."
+      },
+      {
+        "id": "bouclier-charmé",
+        "name": "Bouclier Porte-Bonheur",
+        "points": 5,
+        "repeatable": true,
+        "description": "Bouclier magique. Une fois par partie, il confère une sauvegarde invulnérable de 5+ contre une seule blessure. Après utilisation, il devient un bouclier ordinaire non magique."
+      },
+      {
+        "id": "bouclier-anti-sort",
+        "name": "Bouclier Anti-sort",
+        "points": 25,
+        "repeatable": true,
+        "description": "Bouclier magique. Le porteur bénéficie d'une sauvegarde invulnérable de 5+ contre les blessures causées par un Projectile magique, un Vortex magique ou un Assaut."
+      }
+    ],
+    "Talismans": [
+       {
+      "id": "pierre-aube",
+      "name": "Pierre d'Aube",
+      "points": 35,
+      "repeatable": false,
+      "description": "Le porteur peut relancer tout jet de sauvegarde d'armure donnant naturellement 1."
+    },
+    {
+      "id": "icone-de-fortitude",
+      "name": "Icône de Fortitude",
+      "points": 35,
+      "repeatable": false,
+      "description": "Réservé aux modèles d'infanterie ou de cavalerie. Le porteur est immunisé à la règle spéciale Blessures Multiples (X). S'il est blessé par une attaque possédant cette règle, il ne subit qu'une seule blessure."
+    },
+    {
+      "id": "talisman-de-peau-de-fer",
+      "name": "Talisman de Peau de Fer",
+      "points": 30,
+      "repeatable": false,
+      "description": "Réservé aux modèles d'infanterie. Tout modèle ennemi qui réussit un jet pour toucher contre le porteur pendant la phase de Tir ou de Combat doit relancer les jets pour blesser donnant naturellement 6. Ne fonctionne pas contre les attaques qui touchent automatiquement."
+    },
+    {
+      "id": "talisman-de-protection",
+      "name": "Talisman de Protection",
+      "points": 30,
+      "repeatable": false,
+      "description": "Le porteur bénéficie d'une sauvegarde invulnérable de 5+ contre toute blessure subie."
+    },
+      {
+        "id": "piece-du-paye-maitre",
+        "name": "Pièce du Payeur",
+        "points": 25,
+        "repeatable": true,
+        "description": "Usage unique. Le porteur peut relancer ses jets pour toucher ratés au corps à corps."
+      },
+      {
+        "id": "lodestone-obsidienne",
+        "name": "Lodestone d'Obsidienne",
+        "points": 20,
+        "repeatable": true,
+        "maxPerBearer": 3,
+        "description": "Un modèle peut en acheter jusqu'à trois. Un, deux ou trois Lodestones confèrent respectivement Résistance à la magie (-1), (-2) ou (-3)."
+      },
+      {
+        "id": "pierre-de-chance",
+        "name": "Pierre de Chance",
+        "points": 15,
+        "repeatable": true,
+        "description": "Usage unique. Le porteur peut relancer un jet de sauvegarde d'armure raté."
+      }
+    ],
+    "Bannières magiques": [
+       {
+      "id": "banniere-de-fermete",
+      "name": "Bannière de Fermeté",
+      "points": 50,
+      "repeatable": false,
+      "description": "L'unité portant cette bannière gagne la règle spéciale Tenace."
+    },
+    {
+      "id": "banniere-de-l-inflexibilite",
+      "name": "Bannière de l'Inflexibilité",
+      "points": 50,
+      "repeatable": false,
+      "description": "Réservée aux unités d'infanterie. Si l'unité perd un Combat, elle peut Effectuer un Repli en Bon Ordre même si l'Unit Strength du camp vainqueur est supérieure à deux fois la sienne."
+    },
+    {
+      "id": "totem-de-colere",
+      "name": "Totem de Colère",
+      "points": 50,
+      "repeatable": false,
+      "description": "Pendant un tour au cours duquel l'unité a chargé, les modèles de l'unité améliorent de 1 la caractéristique de Pénétration d'Armure de leurs armes et peuvent relancer les jets pour blesser donnant naturellement 1."
+    },
+    {
+      "id": "banniere-rasoir",
+      "name": "Bannière Rasoir",
+      "points": 40,
+      "repeatable": false,
+      "description": "L'unité portant cette bannière gagne la règle spéciale Perforant (2)."
+    },
+    {
+      "id": "banniere-du-vent-tourbillonnant",
+      "name": "Bannière du Vent Tourbillonnant",
+      "points": 30,
+      "repeatable": false,
+      "description": "Tout modèle ennemi qui tire sur une unité portant cette bannière subit un modificateur supplémentaire de -1 pour toucher."
+    },
+    {
+      "id": "banniere-de-rage",
+      "name": "Bannière de Rage",
+      "points": 30,
+      "repeatable": false,
+      "description": "Lorsqu'une unité portant cette bannière déclare une charge, elle peut relancer son jet de charge."
+    },
+    {
+      "id": "tapisserie-du-chasseur-de-monstres",
+      "name": "Tapisserie du Chasseur de Monstres",
+      "points": 25,
+      "repeatable": false,
+      "description": "Les unités ennemies ne peuvent pas effectuer d'attaques Piétinement contre une unité portant cette bannière."
+    },
+    {
+      "id": "banniere-de-guerre",
+      "name": "Bannière de Guerre",
+      "points": 25,
+      "repeatable": false,
+      "description": "Lors du calcul du résultat de Combat, une unité portant cette bannière peut compter un bonus supplémentaire de +1 point de résultat de Combat."
+    },
+       {
+      "id": "banniere-incandescente",
+      "name": "Bannière incandescente",
+      "points": 25,
+      "repeatable": false,
+      "description": "Une unité portant la Bannière incadescente gagne la règle spéciale Attaques Enflammées."
+    }
+    ],
+    "Objets enchantés": [
+    {
+      "id": "parchemin-de-retour-de-flamme",
+      "name": "Parchemin de Retour de Flamme",
+      "points": 60,
+      "repeatable": false,
+      "description": "Usage unique. Le porteur peut utiliser ce parchemin à la place d'une tentative de dissipation. Le sort est résolu normalement. Une fois le sort résolu, lancez deux D6. Pour chaque résultat de 4+, le Sorcier ayant lancé le sort perd 1 PV."
+    },
+    {
+      "id": "baguette-de-jais",
+      "name": "Baguette de Jais",
+      "points": 45,
+      "repeatable": false,
+      "description": "Le porteur peut appliquer un modificateur de +1 à n'importe lequel de ses jets de lancement ou de dissipation. Cependant, s'il obtient un double naturel lors d'un jet de lancement ou de dissipation, la Baguette de Jais est détruite et ne peut plus être utilisée."
+    },
+    {
+      "id": "baton-de-quietude",
+      "name": "Bâton de Quiétude",
+      "points": 35,
+      "repeatable": false,
+      "description": "Pendant la sous-phase de Commandement, le porteur peut tenter de libérer son pouvoir en effectuant un test de Commandement. En cas de réussite, tous les sorts Reste en Jeu actuellement actifs sont dissipés, y compris ceux lancés par des modèles alliés."
+    },
+    {
+      "id": "familier-du-domaine",
+      "name": "Familier du Domaine",
+      "points": 30,
+      "repeatable": false,
+      "description": "Le propriétaire d'un Familier du Domaine ne génère pas aléatoirement ses sorts. Il peut choisir les sorts qu'il connaît dans le Domaine choisi, y compris le sort signature de ce Domaine."
+    },
+    {
+      "id": "parchemin-de-perturbation",
+      "name": "Parchemin de Perturbation",
+      "points": 30,
+      "repeatable": false,
+      "description": "Une fois par tour, le porteur peut relancer un jet de dissipation. Tous les dés doivent être relancés, y compris les dés supplémentaires ou les dés à écarter accordés par des règles spéciales ou des objets magiques."
+    },
+    {
+      "id": "tome-de-l-art-des-sorts",
+      "name": "Tome de l'Art des Sorts",
+      "points": 30,
+      "repeatable": false,
+      "description": "Une fois par tour, le porteur peut relancer un jet de lancement. Tous les dés doivent être relancés, y compris les dés supplémentaires ou les dés à écarter accordés par des règles spéciales ou des objets magiques."
+    },
+    {
+      "id": "familier-cabalistique",
+      "name": "Familier Cabalistique",
+      "points": 15,
+      "repeatable": false,
+      "description": "Le propriétaire d'un Familier Cabalistique connaît des sorts provenant de deux Domaines de Magie au lieu d'un seul. Les sorts sont générés séparément pour chaque Domaine et les doublons sont relancés normalement. Le Sorcier peut remplacer un sort généré aléatoirement par le sort signature du même Domaine."
+    },
+    {
+      "id": "baton-de-mise-a-la-terre",
+      "name": "Bâton de Mise à la Terre",
+      "points": 5,
+      "repeatable": false,
+      "description": "Usage unique. Lorsqu'un Sorcier provoque un fiasco en lançant un sort, il peut utiliser le Bâton de Mise à la Terre pour relancer le résultat obtenu sur la table des Fiascos."
+    },
+      {
+      "id": "chapeau-de-sorcier",
+      "name": "Chapeau de Sorcier",
+      "points": 45,
+      "repeatable": false,
+      "description": "Le porteur devient un Sorcier de Niveau 1 et connaît un sort généré aléatoirement dans un Domaine de Magie choisi. Le porteur est également soumis à la règle spéciale Stupidité."
+    },
+    {
+      "id": "paratonnerre-archi",
+      "name": "Paratonnerre Archi",
+      "points": 40,
+      "repeatable": false,
+      "description": "Usage unique. Pendant la sous-phase de Commandement, si le porteur n'est pas engagé au combat, il peut tenter de l'utiliser en effectuant un test de Commandement avec son Commandement non modifié. En cas de réussite, jusqu'à la prochaine sous-phase de Début de Tour, les unités ennemies ne peuvent pas utiliser la règle spéciale Vol (X)."
+    },
+    {
+      "id": "tapis-volant",
+      "name": "Tapis Volant",
+      "points": 40,
+      "repeatable": false,
+      "description": "Réservé aux modèles d'infanterie régulière ou d'infanterie lourde. Le porteur gagne les règles spéciales Vol (8) et Rapide. Le porteur ne peut toutefois pas rejoindre une unité."
+    },
+    {
+      "id": "anneau-rubis-de-ruine",
+      "name": "Anneau Rubis de Ruine",
+      "points": 35,
+      "repeatable": false,
+      "description": "Le porteur peut lancer le sort Boule de Feu du Domaine de la Magie de Bataille comme un sort lié, avec un Niveau de Puissance de 1."
+    },
+    {
+      "id": "potion-de-ferveur",
+      "name": "Potion de Ferveur",
+      "points": 30,
+      "repeatable": false,
+      "description": "Usage unique. Pendant la sous-phase de Commandement, le porteur peut boire la potion. Jusqu'à la fin du tour, le modèle bénéficie d'un modificateur de +D3 à sa caractéristique d'Attaques, jusqu'à un maximum de 10."
+    },
+    {
+      "id": "orbe-de-calme",
+      "name": "Orbe d'Apaisement",
+      "points": 20,
+      "repeatable": false,
+      "description": "Usage unique. Le porteur peut lancer le sort lié suivant avec un Niveau de Puissance de 1 : Malédiction, Valeur de lancement 8+, portée personnelle. Jusqu'à la prochaine sous-phase de Début de Tour, les Sorciers ennemis situés à 15 pouces du lanceur lorsqu'ils tentent de lancer un sort doivent augmenter de 2 la valeur de lancement de ce sort."
+    },
+      {
+        "id": "potion-de-guerison",
+        "name": "Potion de Guérison",
+        "points": 35,
+        "repeatable": true,
+        "description": "Usage unique. Pendant la phase de Commandement, le porteur peut boire la potion et récupérer immédiatement D3 PV perdus."
+      },
+      {
+        "id": "potion-de-force",
+        "name": "Potion de Force",
+        "points": 25,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne +D3 en Force, jusqu'à un maximum de 10."
+      },
+      {
+        "id": "potion-de-robustesse",
+        "name": "Potion de Robustesse",
+        "points": 20,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne +D3 en Endurance, jusqu'à un maximum de 10."
+      },
+      {
+        "id": "potion-de-vitesse",
+        "name": "Potion de Vitesse",
+        "points": 10,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne +D3 en Initiative, jusqu'à un maximum de 10."
+      },
+      {
+        "id": "potion-de-temerite",
+        "name": "Potion de Témérité",
+        "points": 5,
+        "repeatable": true,
+        "description": "Usage unique. Jusqu'à la fin du tour, le porteur gagne la règle spéciale Immunisé à la psychologie."
+      }
+    ],
+    "Objets cabalistiques": [
+      {
+        "id": "parchemin-de-transmogrification",
+        "name": "Parchemin de Transmogrification",
+        "points": 50,
+        "repeatable": true,
+        "description": "Usage unique. Le porteur peut utiliser ce parchemin à la place d'une tentative de dissipation. Si le sort est résolu, le sorcier lance 1D6 et doit obtenir un résultat inférieur ou égal à son Niveau de Sorcellerie ; sinon il est transformé en grenouille."
+      },
+      {
+        "id": "parchemin-de-dissipation",
+        "name": "Parchemin de Dissipation",
+        "points": 20,
+        "repeatable": true,
+        "description": "Usage unique. Lors d'une tentative de dissipation, le sorcier lance un D6 supplémentaire et défausse le résultat le plus bas. Un double 1 sur deux dés ou plus provoque l'état prévu par la règle correspondante."
+      },
+      {
+        "id": "parchemin-de-puissance",
+        "name": "Parchemin de Puissance",
+        "points": 20,
+        "repeatable": true,
+        "description": "Usage unique. Lors d'une tentative de lancement, le sorcier lance un D6 supplémentaire et défausse le résultat le plus bas. Un double 1 sur deux dés ou plus provoque un fiasco."
+      }
+    ]
+  }
+}

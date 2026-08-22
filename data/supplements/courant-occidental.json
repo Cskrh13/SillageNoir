@@ -1,0 +1,549 @@
+{
+  "id": "tour-dargent",
+  "name": "L’Ost de la Tour d’Argent",
+  "renown": "armee-infamie-courant-occidental",
+  "language": "fr",
+  "version": "1.0",
+  "source": "Le Courant Occidental.pdf",
+  "description": "Armée d’Infamie de l’Ost de la Tour d’Argent. Cette liste utilise les Royaumes Hauts Elfes comme armée de référence et applique une composition spécifique ainsi que plusieurs unités, personnages et règles propres à Tour d’Argent.",
+  "armies": [
+    "hauts-elfes"
+  ],
+  "allowedUnits": [
+    "eryndor-vareth",
+    "calion-vareth",
+    "prince",
+    "archmage",
+    "noble",
+    "mage",
+    "elven-spearmen",
+    "elven-archers",
+    "shadow-warriors",
+    "lothern-sea-guard",
+    "elementaires-des-courants",
+    "eagle-claw-bolt-thrower",
+    "leviathan-elementaire",
+    "swordmasters-of-hoeth",
+    "great-eagle",
+    "lothern-skycutter"
+  ],
+  "excludedUnits": [],
+  "restrictions": {
+    "categories": {
+      "Personnages": {
+        "maxPercent": 50,
+        "notes": "Jusqu’à 50 % des points de l’armée peuvent être dépensés en Personnages. 0-1 Prince Haut Elfe ou Archimage par tranche de 1000 points (limite partagée, voir restrictions.units). Nobles et Mages Hauts Elfes disponibles selon les règles de l’armée de référence."
+      },
+      "Unités de Base": {
+        "minPercent": 33,
+        "notes": "Au moins 33 % des points de l’armée doivent être dépensés en unités de Base. Garde Maritime de Lothern : 0-1, uniquement si le Général possède l’Honneur Garde Maritime (voir restrictions.units). Guerriers Fantômes : 0-1, recatégorisés en Base par ce supplément (voir restrictions.units)."
+      },
+      "Unités Spéciales": {
+        "maxPercent": 33,
+        "notes": "Élémentaires des Courants, Garde Maritime de Lothern et Balistes Serre-d’Aigle (0-3, recatégorisées en Spécial par ce supplément) disponibles ici (voir restrictions.units)."
+      },
+      "Unités Rares": {
+        "maxPercent": 33,
+        "notes": "Léviathan Élémentaire, Maîtres des épées de Hoeth (0-1, voir restrictions.units) et Grand Aigle disponibles ici. Cotres Volants de Lothern : 0-2, réservés au Général avec l’Honneur Garde Maritime (à convertir en restrictions.units si besoin, ce bloc n’est pas encore appliqué par le moteur)."
+      },
+      "Mercenaires": {
+        "maxPercent": 0
+      },
+      "Alliés": {
+        "maxPercent": 20,
+        "maxContingents": 1,
+        "sources": [
+          "garnison-de-la-garde-maritime",
+          "bretonnie",
+          "empire"
+        ],
+        "notes": "Un seul contingent allié peut être sélectionné."
+      }
+    },
+    "units": {
+      "eryndor-vareth": {
+        "max": 1
+      },
+      "calion-vareth": {
+        "max": 1
+      },
+      "archmage": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "prince": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "elementaires-des-courants": {
+        "minModels": 3
+      },
+      "leviathan-elementaire": {
+        "max": 1
+      },
+      "swordmasters-of-hoeth": {
+        "maxEntries": 1,
+        "maxEntriesUnlockedBy": [
+          "Général avec l'Honneur Gardien de Saphery",
+          "Général avec l'Honneur Maître du Savoir"
+        ],
+        "categoryOverride": "Unités Rares",
+        "maxPer1000": 1
+      },
+      "shadow-warriors": {
+        "maxEntries": 1,
+        "categoryOverride": "Unités de Base"
+      },
+      "eagle-claw-bolt-thrower": {
+        "maxEntries": 3,
+        "categoryOverride": "Unités Spéciales"
+      },
+      "lothern-sea-guard": {
+          "categoryOverride": "Unités Spéciales"
+      },
+      "lothern-skycutter": {
+        "maxEntries": 2,
+        "conditional": [
+          "Général avec l'Honneur Garde Maritime"
+        ]
+      }
+    },
+    "global": {
+      "battleStandardBearer": {
+        "enabled": true,
+        "max": 1,
+        "eligibleCategory": "Nobles Hauts Elfes",
+        "points": 25,
+        "magicBannerUnlimited": true
+      },
+      "magicItems": {
+        "enabled": true,
+        "source": [
+          "objets-magiques-courants",
+          "royaumes-hauts-elfes",
+          "tour-dargent"
+        ]
+      },
+      "honours": {
+        "restriction": "Les personnages pouvant prendre un Honneur Elfique ne peuvent choisir qu’un des Honneurs autorisés par Tour d’Argent.",
+        "allowed": [
+          "maitre-du-savoir",
+          "gardien-de-saphery",
+          "pur-de-coeur",
+          "garde-maritime",
+          "gardiens-des-courants"
+        ]
+      }
+    },
+    "reclassifications": [
+      {
+        "id": "swordmasters-special-1",
+        "label": "Maîtres des épées de Hoeth en Spécial",
+        "when": "Général avec l'Honneur Gardien de Saphery",
+        "fromCategories": [
+          "Unités Rares"
+        ],
+        "toCategory": "Unités Spéciales",
+        "max": null,
+        "units": [
+          "swordmasters-of-hoeth"
+        ]
+      },
+      {
+        "id": "swordmasters-special-2",
+        "label": "Maîtres des épées de Hoeth en Spécial",
+        "when": "Général avec l'Honneur Maître du Savoir",
+        "fromCategories": [
+          "Unités Rares"
+        ],
+        "toCategory": "Unités Spéciales",
+        "max": null,
+        "units": [
+          "swordmasters-of-hoeth"
+        ]
+      },
+      {
+        "id": "lothern-sea-guard-base",
+        "label": "Garde Maritime de Lothern en Base",
+        "when": "Général avec l'Honneur Garde Maritime",
+        "fromCategories": [
+          "Unités Spéciales"
+        ],
+        "toCategory": "Unités de Base",
+        "max": 1,
+        "units": [
+          "lothern-sea-guard"
+        ]
+      },
+      {
+        "id": "eryndor-base-choice",
+        "label": "Réquisition avisée (Éryndor)",
+        "when": "eryndor-vareth",
+        "fromCategories": [
+          "Unités Spéciales",
+          "Unités Rares"
+        ],
+        "toCategory": "Unités de Base",
+        "max": 1
+      }
+    ],
+    "honours": {
+      "allowed": [
+        "honneur-maitre-du-savoir",
+        "honneur-gardien-de-saphery",
+        "honneur-pur-de-coeur",
+        "honneur-garde-maritime"
+      ]
+    }
+  },
+  "units": [
+    {
+      "id": "eryndor-vareth",
+      "name": "Éryndor Vareth, Maître du Courant",
+      "category": "Personnages",
+      "type": "Infanterie régulière",
+      "unitSize": "1",
+      "baseSize": "25x25 mm",
+      "points": 95,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 2,
+        "I": 4,
+        "A": 1,
+        "Cd": 10
+      },
+      "equipment": [
+        "Arme de base",
+        "Armure légère",
+        "Tome des Archives"
+      ],
+      "options": [
+        {
+          "name": "Coursier Elfique",
+          "points": 14
+        },
+        {
+          "name": "Grand Aigle",
+          "points": 60
+        }
+      ],
+      "rules": [
+        "Réflexes Elfiques",
+        "Valeur des Âges",
+        "Réquisition avisée",
+        "Premier citoyen",
+        "pur de coeur",
+        "Logisticien"
+      ],
+      "specialRules": [
+        {
+          "id": "requisition-avisee",
+          "text": "Éryndor peut inclure une option d’unité spéciale ou rare en tant que choix de Base."
+        },
+        {
+          "id": "premier-citoyen",
+          "text": "Éryndor compte comme un Noble dans les restrictions de personnage. Il ne peut rejoindre qu’une unité prise comme choix de Base et possède l’Honneur Elfique Pur de Cœur."
+        },
+        {
+          "id": "logisticien",
+          "text": "Avant le déploiement, Éryndor peut choisir une unité amie, y compris une unité appartenant à un contingent allié. Cette unité gagne la règle Embusqueurs."
+        },
+        {
+          "id": "tome-des-archives",
+          "text": "Toute unité amie située à 12 pouces ou moins d’Éryndor gagne la règle Vétéran et peut relancer le D3 du mouvement accordé par Suivre le Courant."
+        }
+      ]
+    },
+    {
+      "id": "calion-vareth",
+      "name": "Calion Vareth, Capitaine du Lys d’Azur",
+      "category": "Personnages",
+      "type": "Infanterie régulière",
+      "unitSize": "1",
+      "baseSize": "25x25 mm",
+      "points": 120,
+      "profile": {
+        "M": 5,
+        "CC": 6,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 3,
+        "I": 4,
+        "A": 3,
+        "Cd": 9
+      },
+      "equipment": [
+        "Arme de base",
+        "Lances d’infanterie",
+        "Armure légère",
+        "Bouclier des Vareth",
+        "Arc de guerre"
+      ],
+      "rules": [
+        "Réflexes Elfiques",
+        "Valeur des Âges",
+        "Discipline Navale",
+        "Première citoyenne",
+        "Derrière toi !",
+        "Capitaine avisée"
+      ],
+      "specialRules": [
+        {
+          "id": "premiere-citoyenne",
+          "text": "Calion compte comme un Noble dans les restrictions de personnage et possède l’Honneur Elfique Garde Maritime."
+        },
+        {
+          "id": "derriere-toi",
+          "text": "Une fois par partie, si Calion et Éryndor sont à moins de 3 pouces l’un de l’autre, ils peuvent relancer un jet de sauvegarde raté."
+        },
+        {
+          "id": "capitaine-avisee",
+          "text": "Calion et son unité gagnent Esquiveur. Après avoir remporté un round de corps à corps, Calion et son unité peuvent effectuer un Repli en bon ordre au lieu de suivre ou poursuivre."
+        },
+        {
+          "id": "bouclier-des-vareth",
+          "text": "Le Bouclier des Vareth est un bouclier. Lorsqu'une unité comprenant Calion est la cible d'une charge, après que l'unité qui charge a déterminé sa distance de charge, Calion et l'unité qu'elle a rejointe peuvent effectuer un mouvement de 1D3pas en direction de l'unité qui charge. Effectuez ce mouvement immédiatement avant que l'unité qui charge n'effectue son mouvement de charge. Réduisez le bonus d”initiative de charge de l'unité qui charge du résultat obtenu sur le D3. Le mouvement de Calion et de son unité s'arrête immédiatement si : elles entrent en contact avec une autre unité ou avec un élément de terrain ; poursuivre leur mouvement les amènerait à moins de 1pas d'une unité ennemie. Une unité ne peut pas utiliser le Bouclier des Vareth si son mouvement l'amènerait à moins de 1pas d'une unité ennemie autre que l'unité qui la charge."
+        }
+      ]
+    },
+    {
+      "id": "elementaires-des-courants",
+      "name": "Élémentaires des Courants",
+      "category": "Unités Spéciales",
+      "type": "Cavalerie monstrueuse",
+      "unitSize": "3+",
+      "baseSize": "40x60 mm",
+      "points": 60,
+      "profile": {
+        "M": 6,
+        "CC": 4,
+        "CT": "-",
+        "F": 4,
+        "E": 4,
+        "PV": 4,
+        "I": 3,
+        "A": 3,
+        "Cd": 6
+      },
+      "equipment": [
+        "Arme de base"
+      ],
+      "rules": [
+        "Instable",
+        "Rapide",
+        "Mouvement à couvert",
+        "Ordre dispersé",
+        "Régénération (5+)",
+        "Corps liquide",
+        "Force du courant"
+      ],
+      "specialRules": [
+        {
+          "id": "corps-liquide",
+          "text": "Les attaques de tir visant une unité avec cette règle subissent un malus de -1 au jet de blessure. Ce malus ne s’applique pas aux attaques magiques."
+        },
+        {
+          "id": "force-du-courant",
+          "text": "Les Élémentaires des Courants gagnent +1 en Force lors de leurs attaques de combat pendant un tour où ils ont effectué une charge."
+        }
+      ]
+    },
+    {
+      "id": "leviathan-elementaire",
+      "name": "Léviathan élémentaire",
+      "category": "Unités Rares",
+      "type": "Créature monstrueuse",
+      "unitSize": "1",
+      "baseSize": "50x50 mm",
+      "points": 220,
+      "profile": {
+        "M": 6,
+        "CC": 5,
+        "CT": "-",
+        "F": 6,
+        "E": 5,
+        "PV": 6,
+        "I": 4,
+        "A": 4,
+        "Cd": 6
+      },
+      "equipment": [
+        "Arme de base"
+      ],
+      "rules": [
+        "Instable",
+        "Grande Cible",
+        "Terreur",
+        "Mouvement à couvert",
+        "Régénération (5+)",
+        "Corps liquide",
+        "Vague déferlante",
+        "Courant irrésistible"
+      ],
+      "specialRules": [
+        {
+          "id": "corps-liquide",
+          "text": "Les attaques de tir visant le Léviathan subissent un malus de -1 pour toucher. Ce malus ne s’applique pas aux attaques magiques."
+        },
+        {
+          "id": "vague-deferlante",
+          "text": "Lorsqu’un Léviathan élémentaire effectue une charge, chaque unité ennemie avec laquelle il entre en contact subit D3 touches de Force 5."
+        },
+        {
+          "id": "courant-irresistible",
+          "text": "À la fin de chaque phase de combat, si le Léviathan a causé au moins une blessure non sauvegardée, une unité ennemie de type Nuées, Infanterie régulière, Cavalerie légère ou Char léger avec laquelle il est en contact doit effectuer un test d’Endurance. En cas d’échec, elle est repoussée de D3 pouces directement à l’opposé du Léviathan."
+        }
+      ]
+    }
+  ],
+  "specialRules": [
+    {
+      "id": "heritage-de-saphery",
+      "name": "Héritage de Saphery",
+      "text": "Les personnages d’une Armée de l’Infamie de l’Ost de la Tour d’Argent qui peuvent prendre un Honneur Elfique ne peuvent choisir que Maître du savoir, Gardien de Saphery, Pur de cœur, Garde Maritime ou Gardiens des Courants."
+    },
+    {
+      "id": "gardiens-des-courants",
+      "name": "Gardiens des Courants",
+      "text": "Tout Mage ou Archimage d’une armée de Tour d’Argent peut choisir le Domaine des Brumes au lieu des Domaines de Magie normalement accessibles aux Sorciers des Royaumes Hauts Elfes."
+    },
+    {
+      "id": "vigies-des-phares",
+      "name": "Vigies des Phares",
+      "text": "Les Balistes Serre d’Aigle gagnent la règle spéciale Tir Préparé."
+    },
+    {
+      "id": "tir-prepare",
+      "name": "Tir Préparé",
+      "text": "Une Baliste Serre d’Aigle qui n’a pas bougé durant son tour peut relancer un seul jet pour toucher lors de sa prochaine phase de tir. Après avoir utilisé cette règle, elle ne peut pas en bénéficier lors de sa prochaine phase de tir."
+    },
+    {
+      "id": "lecture-des-courants",
+      "name": "Lecture des Courants",
+      "text": "Les Maîtres des Épées de Hoeth et les Guerriers Fantômes gagnent la règle spéciale Suivre le courant."
+    },
+    {
+      "id": "suivre-le-courant",
+      "name": "Suivre le courant",
+      "text": "Une fois par partie, une unité dotée de cette règle peut, après qu’une unité ennemie située à 12 pouces ou moins a terminé un mouvement, effectuer immédiatement un mouvement de D3 pouces. Ce mouvement ne peut pas se terminer à moins d’1 pouce d’une unité adverse et doit respecter les règles normales de mouvement."
+    }
+  ],
+  "spells": [
+    {
+      "id": "brume-du-courant",
+      "name": "Brume du Courant",
+      "type": "Enchantement",
+      "castingValue": "8+",
+      "range": "12 pouces",
+      "text": "Jusqu’au début de la prochaine phase de magie du lanceur, l’unité ciblée bénéficie de -1 pour être touchée par les attaques de tir et ne peut pas être choisie comme cible d’une charge par une unité située à plus de 12 pouces au moment de la déclaration des charges."
+    }
+  ],
+  "magicItems": [
+    {
+      "id": "lame-du-courant-favorable",
+      "name": "Lame du Courant Favorable",
+      "category": "Armes magiques",
+      "points": 10,
+      "rules": [
+        "Frappe en premier",
+        "Une fois par tour où le porteur a effectué une charge, il peut relancer un seul jet pour toucher effectué avec cette arme."
+      ],
+      "common": true
+    },
+    {
+      "id": "trident-des-phares",
+      "name": "Trident des Phares",
+      "category": "Armes magiques",
+      "points": 60,
+      "rules": [
+        "Arme à deux mains",
+        "Blessures Multiples (2)",
+        "Attaque magique",
+        "Lors de la phase à laquelle le porteur a chargé, il gagne +1 en Capacité de Combat jusqu’à la fin de la phase de combat."
+      ]
+    },
+    {
+      "id": "arc-du-vent-marin",
+      "name": "Arc du Vent Marin",
+      "category": "Armes magiques",
+      "points": 40,
+      "rules": [
+        "Tirs multiples (2)",
+        "Attaque magique",
+        "Si le porteur n’a pas bougé durant ce tour, les tirs gagnent PA -1 supplémentaire et le porteur peut relancer un seul jet pour toucher lors de cette phase de tir."
+      ]
+    },
+    {
+      "id": "armures-des-quais",
+      "name": "Armures des quais",
+      "category": "Armures magiques",
+      "points": 45,
+      "restriction": "Infanterie uniquement",
+      "rules": [
+        "Armure de plate complète",
+        "Lors de la phase de combat à laquelle le porteur a chargé, il gagne +1 en Capacité de Combat."
+      ]
+    },
+    {
+      "id": "cuirasse-des-brumes",
+      "name": "Cuirasse des Brumes",
+      "category": "Armures magiques",
+      "points": 50,
+      "restriction": "Infanterie uniquement",
+      "rules": [
+        "Armure légère",
+        "Régénération (5+)",
+        "Les attaques de tir visant le porteur et l’unité qu’il a rejointe subissent -1 pour toucher",
+        "Ce malus ne s’applique pas aux attaques magiques."
+      ]
+    },
+    {
+      "id": "perle-des-courants",
+      "name": "Perle des Courants",
+      "category": "Talismans",
+      "points": 40,
+      "rules": [
+        "Résistance à la magie (1)",
+        "Une fois par bataille, au début d’une phase de mouvement, le porteur peut utiliser la Perle pour appliquer Tir rapide à ses armes jusqu’à la fin du tour."
+      ]
+    },
+    {
+      "id": "boussole-de-saphery",
+      "name": "Boussole de Saphery",
+      "category": "Talismans",
+      "points": 35,
+      "rules": [
+        "Une fois par partie, le porteur gagne +1 à ses jets de lancement ou de dissipation jusqu’à la phase de conjuration suivante.",
+        "Ce bonus ne peut pas être utilisé lorsqu’il tente de lancer ou dissiper un sort à plus de 18 pouces."
+      ]
+    },
+    {
+      "id": "fanal-du-courant-occidental",
+      "name": "Fanal du Courant Occidental",
+      "category": "Bannières magiques",
+      "points": 80,
+      "rules": [
+        "Les unités amies situées à 12 pouces ou moins peuvent utiliser le Commandement du porteur pour leurs tests de Commandement.",
+        "Une fois par bataille, au début de la phase de mouvement, les unités amies situées à 8 pouces ou moins peuvent effectuer un mouvement de Reformation sans pénalité, puis bouger normalement, mais ne peuvent pas déclarer de charge."
+      ]
+    }
+  ],
+  "generatorNotes": [
+    "L’armée de référence est hauts-elfes.json.",
+    "Les unités génériques des Royaumes Hauts Elfes ne doivent pas être dupliquées dans ce fichier.",
+    "La composition de Tour d’Argent remplace la composition générique des Royaumes Hauts Elfes.",
+    "Les Élémentaires des Courants sont un choix Spécial.",
+    "Le Léviathan élémentaire est un choix Rare.",
+    "Éryndor Vareth et Calion Vareth sont des personnages nommés propres au supplément.",
+    "Le générateur doit pouvoir vérifier les conditions liées aux Honneurs du Général.",
+    "Le générateur doit pouvoir gérer le cas particulier d’Éryndor permettant de sélectionner une unité Spéciale ou Rare comme choix de Base.",
+    "Le générateur doit pouvoir appliquer les restrictions par tranche de 1000 points.",
+    "Le générateur doit pouvoir gérer les personnages nommés qui comptent comme Nobles.",
+    "Les objets magiques spécifiques de Tour d’Argent doivent être proposés uniquement aux figurines disposant normalement d’une option d’objet magique."
+  ]
+}

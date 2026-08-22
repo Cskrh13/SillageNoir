@@ -1,0 +1,373 @@
+{
+  "id": "sillage-noir",
+  "name": "Le Sillage Noir",
+  "language": "fr",
+  "version": "1.0",
+  "source": "Le Sillage Noir.pdf",
+  "description": "Armée d'Infamie de la Flotte du Sillage Noir. Cette liste utilise l'armée générique des Elfes Noirs comme base et applique une composition specific ainsi que des profils et règles propres à la flotte.",
+  "armies": [
+    "elfes-noirs"
+  ],
+  "allowedUnits": [
+    "dark-elf-dreadlord",
+    "supreme-sorceress",
+    "high-beastmaster",
+    "dark-elf-master",
+    "sorceress",
+    "khainite-assassin",
+    "esclaves",
+    "dark-elf-warriors",
+    "repeater-crossbowmen",
+    "black-ark-corsairs",
+    "dark-riders",
+    "executioners",
+    "harpies",
+    "shades",
+    "reaper-bolt-thrower",
+    "cold-one-knights",
+    "cold-one-chariots",
+    "black-guard",
+    "maldris-dravelyth",
+    "moraveth-dravelyth",
+    "kharyx"
+  ],
+  "excludedUnits": [],
+  "restrictions": {
+    "categories": {
+      "Personnages": {
+        "maxPercent": 33,
+        "notes": "0-1 Despote, Sorcière suprême ou Haut Belluaire par tranche de 1000 points. Maître, Sorcière et Assassin Elfes Noirs disponibles."
+      },
+      "Unités de Base": {
+        "minPercent": 33,
+        "notes": "La liste doit comprendre au moins 33 % de sa valeur en points en unités de Base."
+      },
+      "Unités Spéciales": {
+        "maxPercent": 33
+      },
+      "Unités Rares": {
+        "maxPercent": 33
+      },
+      "Mercenaires": {
+        "maxPercent": 0
+      },
+      "Alliés": {
+        "maxPercent": 20,
+        "maxContingents": 1,
+        "notes": "Un seul contingent allié."
+      }
+    },
+    "units": {
+      "dark-elf-dreadlord": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "supreme-sorceress": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "high-beastmaster": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "maldris-dravelyth": {
+        "max": 1
+      },
+      "moraveth-dravelyth": {
+        "max": 1
+      },
+      "esclaves": {
+        "maxPerCharacter": 2,
+        "maxUnitSize": 20
+      },
+      "dark-riders": {
+        "maxPer1000": 1
+      },
+      "reaper-bolt-thrower": {
+        "maxPer1000": 3
+      },
+      "cold-one-knights": {
+        "maxPer1000": 2
+      },
+      "cold-one-chariots": {
+        "maxPer1000": 1
+      },
+      "black-guard": {
+        "maxPer1000": 1
+      },
+      "kharyx": {
+        "max": 1
+      }
+    },
+    "honours": {
+      "allowed": []
+    },
+    "global": {
+      "battleStandardBearer": {
+        "enabled": true,
+        "max": 1,
+        "eligibleCategory": "dark-elf-master",
+        "points": 25,
+        "magicBannerUnlimited": true
+      },
+      "magicItems": {
+        "enabled": true,
+        "source": [
+          "objets-magiques-courants",
+          "elfes-noirs",
+          "sillage-noir"
+        ]
+      }
+    }
+  },
+  "units": [
+    {
+      "id": "khainite-assassin",
+      "name": "Assassin Khainite",
+      "category": "Personnages",
+      "points": 80,
+      "min": 0,
+      "max": 999,
+      "profile": {
+        "M": 5,
+        "CC": 8,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 2,
+        "I": 7,
+        "A": 3,
+        "Cd": 8
+      },
+      "type": "Infanterie régulière (personnage)",
+      "base": "25 x 25 mm",
+      "unitSize": "1",
+      "equipment": [
+        "Arme de base",
+        "Armes de jet"
+      ],
+      "options": [
+        "Arme de base additionnelle +3 pts",
+        "Arme de poing à répétition +5 pts",
+        "Lotus noir +5 pts",
+        "Venin noir +15 pts",
+        "Manbane +15 pts",
+        "Poison des Cales Noires +10 pts",
+        "Venin de la Mer Rouge +15 pts",
+        "Objets magiques jusqu'à 50 pts"
+      ],
+      "specialRules": [
+        "Haine éternelle",
+        "Haine (tous les ennemis)",
+        "Dissimulé",
+        "Immunité à la psychologie",
+        "Meurtrier",
+        "Frappe en premier"
+      ]
+    },
+    {
+      "id": "maldris-dravelyth",
+      "name": "Maldris Dravelyth",
+      "category": "Personnages",
+      "type": "Infanterie régulière",
+      "unitSize": "1",
+      "baseSize": "25x25 mm",
+      "points": 120,
+      "profile": {
+        "M": 5,
+        "CC": 7,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 3,
+        "I": 4,
+        "A": 4,
+        "Cd": 8
+      },
+      "equipment": [
+        "Arme de base",
+        "Armure lourde",
+        "Fouet des Lamentations",
+        "Cape en peau de dragon des mers"
+      ],
+      "options": [
+        {
+          "name": "Coursier Noir",
+          "points": 14,
+           "mountRef": "dark-steed"
+        },
+        {
+          "name": "Sang-Froid",
+          "points": 18,
+           "mountRef": "cold-one-mount"
+        },
+        {
+          "name": "Manticore",
+          "points": 130,
+          "mountRef": "manticore-mount"
+        }
+      ],
+      "rules": [
+        "Haine éternelle",
+        "Haine (Hauts-Elfes)",
+        "Meurtrier",
+        "Frappe en premier",
+        "La cargaison va arriver",
+        "Inspirer la crainte",
+        "Mépris des faibles",
+        "La mort du maître"
+      ]
+    },
+    {
+      "id": "moraveth-dravelyth",
+      "name": "Moraveth Dravelyth",
+      "category": "Personnages",
+      "type": "Infanterie régulière",
+      "unitSize": "1",
+      "baseSize": "25x25 mm",
+      "points": 160,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 3,
+        "I": 5,
+        "A": 3,
+        "Cd": 9
+      },
+      "equipment": [
+        "Arme de base",
+        "Arme de base supplémentaire",
+        "Armure légère"
+      ],
+      "options": [
+        {
+          "name": "Coursier Noir",
+          "points": 14,
+           "mountRef": "dark-steed"
+        },
+        {
+          "name": "Sang-Froid",
+          "points": 18,
+          "mountRef": "cold-one-mount"
+        },
+        {
+          "name": "Pégase Noir",
+          "points": 35,
+           "mountRef": "dark-pegasus"
+        }
+      ],
+      "rules": [
+        "Réflexes Elfiques",
+        "Haine éternelle",
+        "Haine (Hauts-Elfes)",
+        "Bénédiction d'Hekarti",
+        "Domaine de Naggaroth",
+        "Domaine de l'Agonie",
+        "Meurtriers",
+        "Couvent du Sillage Noir",
+        "Sacrifice rituel"
+      ]
+    },
+    {
+      "id": "esclaves",
+      "name": "Esclaves",
+      "category": "Unités de Base",
+      "type": "Infanterie régulière",
+      "unitSize": "5-20",
+      "baseSize": "25x25 mm",
+      "points": 5,
+      "profile": {
+        "M": 4,
+        "CC": 2,
+        "CT": 2,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 2,
+        "A": 1,
+        "Cd": 3
+      },
+      "championProfile": {
+        "name": "Contremaître",
+        "points": 3,
+        "profile": {
+          "M": 4,
+          "CC": 3,
+          "CT": 3,
+          "F": 3,
+          "E": 3,
+          "PV": 1,
+          "I": 2,
+          "A": 1,
+          "Cd": 4
+        }
+      },
+      "equipment": [
+        "Arme de base"
+      ],
+      "options": [
+        {
+          "name": "Boucliers",
+          "pointsPerModel": 1
+        },
+        {
+          "name": "Promouvoir une figurine en Contremaître",
+          "points": 3
+        },
+        {
+          "name": "Fouet barbelé pour le Contremaître",
+          "points": 2
+        }
+      ],
+      "rules": [
+        "Tirailleurs",
+        "Peu coûteux",
+        "Dispersion",
+        "Cibles sacrifiables",
+        "Volonté asservie",
+        "Foule désorganisée"
+      ]
+    },
+    {
+      "id": "kharyx",
+      "name": "Kharyx, Prédateur de la Lune Noire",
+      "category": "Unités Rares",
+      "type": "Béhémoth",
+      "unitSize": "1",
+      "baseSize": "60x100 mm",
+      "points": 250,
+      "profile": {
+        "M": 6,
+        "CC": 5,
+        "CT": "-",
+        "F": 5,
+        "E": 5,
+        "PV": 5,
+        "I": 4,
+        "A": 5,
+        "Cd": 5
+      },
+      "equipment": [
+        "Griffes et crocs"
+      ],
+      "rules": [
+        "Grande cible",
+        "Terreur",
+        "Peau épaisse",
+        "Sauvagerie",
+        "Aura sanguinaire"
+      ]
+    }
+  ],
+  "specialRules": [
+    {
+      "id": "maree-de-sang",
+      "name": "La Marée de Sang",
+      "text": "Lorsque la Marée de Sang atteint 25 %, les unités gagnent Peur du fouet. À 50 %, elles gagnent Mort aux faibles. À 75 %, elles gagnent Tuez-les tous. Les effets sont cumulatifs."
+    }
+  ],
+  "magicItemsSource": "../objets-magiques/sillage-noir.json"
+}

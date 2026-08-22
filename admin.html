@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archives de l'Ancien Monde — Administration</title>
+<style>
+:root{
+  --bg:#15191a; --panel:#20282a; --panel2:#283234; --line:#667476;
+  --paper:#d8cfb4; --paper2:#c2b89c; --ink:#252a29; --muted:#aaa895;
+  --accent:#b7a476; --danger:#a85c55; --ok:#718e73; --blue:#718b96;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#344144 0,#15191a 55%);color:#ddd8c5;font:15px/1.5 Georgia,serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:1550px;margin:auto;padding:20px}
+header{padding:24px 28px;text-align:center;border:1px solid var(--line);background:rgba(20,27,29,.94);box-shadow:0 10px 30px #0008}
+header h1{margin:0;font:38px Georgia,serif;letter-spacing:4px;color:#ddd2b0}
+header p{margin:8px 0 0;color:#aaa895;letter-spacing:2px;font-size:13px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0;padding:12px;background:#202829;border:1px solid #596769;align-items:center}
+.toolbar .spacer{flex:1}
+.btn{border:1px solid #718080;background:#a9a68f;color:#202526;padding:9px 14px}
+.btn:hover{filter:brightness(1.12)}
+.btn.dark{background:#303a3c;color:#ddd8c5}.btn.danger{background:#6e3c39;color:#fff}.btn.ok{background:#4e6853;color:#fff}
+.btn.small{padding:5px 9px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.layout{display:grid;grid-template-columns:270px 1fr;gap:15px}
+.sidebar,.workspace{border:1px solid #596769;background:#202829;box-shadow:0 8px 25px #0005}
+.sidebar{padding:14px;align-self:start}
+.sidebar h3{font-size:12px;letter-spacing:2px;color:#bdb79f;margin:14px 5px 7px;display:flex;justify-content:space-between;align-items:center}
+.sidebar h3 button{font-size:14px;background:none;border:none;color:#bdb79f}
+.navitem{display:flex;justify-content:space-between;gap:8px;width:100%;padding:9px 10px;border:1px solid transparent;background:transparent;color:#d8d2bd;text-align:left;font-size:14px}
+.navitem:hover,.navitem.active{background:#303a3c;border-color:#6a7778}
+.navitem small{color:#8f9a9a}
+.workspace{min-width:0}
+.workspace-head{padding:16px 18px;border-bottom:1px solid #596769;background:#293335}
+.workspace-head h2{margin:0;color:#ded3b1;font-size:23px}.workspace-head p{margin:3px 0;color:#a9aaa0;font-size:13px}
+.tabs{display:flex;flex-wrap:wrap;gap:5px;padding:10px;border-bottom:1px solid #596769;background:#1a2224}
+.tab{padding:8px 12px;background:#303a3c;border:1px solid #566466;color:#d4d0be;font-size:13px}.tab.active{background:#a99b74;color:#202526}
+.content{padding:18px}
+.panel{background:#d0c6a9;color:var(--ink);border:1px solid #6c6b5c;padding:18px;margin-bottom:15px}
+.panel h3{margin-top:0;font-size:19px}.panel h4{margin:10px 0 6px;font-size:15px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.statgrid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
+.statgrid .field label{text-align:center;font-size:11px}
+.statgrid input{text-align:center;padding:7px 3px}
+.field{display:flex;flex-direction:column;gap:5px}.field label{font-weight:bold;font-size:13px}
+.field small.hint{font-weight:normal;color:#5c5a4d}
+input,select,textarea{width:100%;padding:9px;border:1px solid #767260;background:#eee8d2;color:#242827}
+textarea{min-height:90px;font-family:Consolas,monospace;font-size:13px}
+textarea.mono-lg{min-height:150px}
+.cardlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.itemcard{padding:12px;background:#eee7d1;border:1px solid #8a836d;color:#2b302e}
+.itemcard strong{display:block;font-size:16px}.itemcard small{display:block;color:#5c5a4d;margin:3px 0 8px}
+.itemcard .actions{display:flex;gap:5px;flex-wrap:wrap}
+.badge{display:inline-block;padding:3px 7px;margin:2px 2px 0 0;border:1px solid #82765b;background:#d2c7a6;font-size:11px}
+.notice{padding:10px 12px;background:#313b3d;border-left:4px solid var(--accent);margin-bottom:12px;font-size:13px}
+.status{padding:9px 12px;background:#151b1d;border:1px solid #4e5a5c;color:#c9c6b6;font-size:13px}
+pre.preview{white-space:pre-wrap;background:#171d1f;color:#ddd7c3;padding:15px;overflow:auto;max-height:600px;border:1px solid #586466;font-size:12.5px}
+.hidden{display:none!important}
+.searchbar{margin:10px 0}
+.crewrow{border:1px solid #8a836d;background:#e6dec4;padding:10px;margin-bottom:8px}
+.crewrow .rowhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.crewrow .rowhead input{width:auto;flex:1;margin-right:8px}
+.divider{border:none;border-top:1px solid #8a836d;margin:14px 0}
+.editorbox{border:2px solid #6c6b5c;padding:16px;margin-top:12px;background:#e3dabf}
+.editorbox .headline{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.editorbox .headline h4{margin:0;font-size:18px}
+.catbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.grid2,.grid3{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(3,1fr)}.sidebar{order:2}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<h1>Archives de l'Ancien Monde</h1>
+<p>Administration des données</p>
+<nav class="main-nav"><a class="home-link" href="index.html">← Retour aux Archives de l'Ancien Monde</a></nav>
+</header>
+<div class="toolbar">
+<button class="btn" onclick="loadGitHub()">↻ Charger GitHub</button>
+<button class="btn dark" onclick="document.getElementById('fileInput').click()">↑ Importer un fichier</button>
+<input id="fileInput" type="file" accept=".json,application/json" class="hidden">
+<span class="spacer"></span>
+<button class="btn dark" onclick="exportCurrent()">↓ Exporter (JSON)</button>
+</div>
+
+<div id="status" class="status">Prêt. Chargez les données depuis GitHub, ou importez un fichier JSON existant.</div>
+
+<div class="layout">
+<aside class="sidebar">
+<h3>ARMÉES <button title="Nouvelle armée" onclick="newEntity('army')">＋</button></h3>
+<div id="armyNav"></div>
+<h3>SUPPLÉMENTS <button title="Nouveau supplément" onclick="newEntity('supp')">＋</button></h3>
+<div id="suppNav"></div>
+<h3>OBJETS MAGIQUES <button title="Nouveau catalogue" onclick="newEntity('magic')">＋</button></h3>
+<div id="magicNav"></div>
+<h3>HONNEURS ELFIQUES</h3>
+<div id="honourNav"></div>
+</aside>
+
+<section class="workspace">
+<div class="workspace-head">
+<h2 id="title">Administration</h2>
+<p id="subtitle">Sélectionnez une entrée dans le menu de gauche.</p>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+</section>
+</div>
+</div>
+
+<script>
+const OWNER="Cskrh13";
+const REPO="Creations-Warhammer";
+const BRANCH="main";
+// Ces chemins reflètent exactement ceux lus par generator.js (PATHS).
+const REMOTE_PATHS={
+  armies:"data/armees/", supplements:"data/supplements/",
+  magicItems:"data/objets-magiques/", honours:"data/aptitudes/honneurs-elfiques.json"
+};
+const STAT_KEYS=["M","CC","CT","F","E","PV","I","A","Cd"];
+const MAGIC_CATEGORIES=["Armes magiques","Armures magiques","Talismans","Bannières magiques","Objets enchantés","Objets cabalistiques"];
+
+let armies={}, supplements={}, magicCatalogs={}, honours=null;
+let currentType=null, currentId=null, currentTab="general";
+let editingUnitIndex=null, editingMountIndex=null, activeMagicCategory=null;
+
+const $=id=>document.getElementById(id);
+function status(msg,kind=""){ $("status").textContent=msg; $("status").style.borderLeft=kind==="ok"?"4px solid #718e73":kind==="err"?"4px solid #a85c55":"1px solid #4e5a5c"; }
+function slug(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"item";}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+function linesToArr(text){return String(text||"").split("\n").map(x=>x.trim()).filter(Boolean);}
+function arrToLines(arr){return (arr||[]).join("\n");}
+
+function store(type){ return type==="army"?armies:type==="supp"?supplements:type==="magic"?magicCatalogs:null; }
+function data(){ if(currentType==="honour") return honours; const s=store(currentType); return s?s[currentId]:null; }
+
+// ---------------------------------------------------------------- Nav ----
+function renderNav(){
+  $("armyNav").innerHTML=Object.values(armies).map(a=>`<button class="navitem ${currentType==="army"&&currentId===a.id?"active":""}" onclick="selectItem('army','${esc(a.id)}')">${esc(a.name||a.id)}<small>${(a.units||[]).length} unités</small></button>`).join("")||"<small>Aucune armée chargée.</small>";
+  $("suppNav").innerHTML=Object.values(supplements).map(s=>`<button class="navitem ${currentType==="supp"&&currentId===s.id?"active":""}" onclick="selectItem('supp','${esc(s.id)}')">${esc(s.name||s.id)}<small>${(s.units||[]).length} unités</small></button>`).join("")||"<small>Aucun supplément chargé.</small>";
+  $("magicNav").innerHTML=Object.values(magicCatalogs).map(m=>`<button class="navitem ${currentType==="magic"&&currentId===m.id?"active":""}" onclick="selectItem('magic','${esc(m.id)}')">${esc(m.name||m.id)}<small>${Object.values(m.magicItems||{}).reduce((s,a)=>s+(a?.length||0),0)} objets</small></button>`).join("")||"<small>Aucun catalogue chargé.</small>";
+  $("honourNav").innerHTML=`<button class="navitem ${currentType==="honour"?"active":""}" onclick="selectItem('honour','honneurs-elfiques')">${honours?esc(honours.name||"Honneurs Elfiques"):"Non chargé"}<small>${honours?(honours.aptitudes||[]).length+" honneurs":""}</small></button>`;
+}
+
+function selectItem(type,id){
+  currentType=type; currentId=type==="honour"?null:id;
+  currentTab= type==="army"?"general": type==="supp"?"general": type==="magic"?"items": "list";
+  editingUnitIndex=null; editingMountIndex=null; activeMagicCategory=null;
+  renderNav(); render();
+}
+
+// --------------------------------------------------------------- Tabs ----
+function tabsFor(type){
+  if(type==="army") return [["general","Général"],["composition","Composition"],["units","Unités"],["mounts","Montures"],["rules","Règles spéciales"],["preview","Aperçu JSON"]];
+  if(type==="supp") return [["general","Général"],["targets","Armées ciblées"],["restrictions","Restrictions"],["units","Unités propres"],["rules","Règles spéciales"],["preview","Aperçu JSON"]];
+  if(type==="magic") return [["general","Général"],["items","Objets magiques"],["preview","Aperçu JSON"]];
+  if(type==="honour") return [["list","Honneurs"],["preview","Aperçu JSON"]];
+  return [];
+}
+
+function render(){
+  const d=data();
+  if(!currentType||!d){
+    $("title").textContent="Administration"; $("subtitle").textContent="Sélectionnez une entrée dans le menu de gauche.";
+    $("tabs").innerHTML=""; $("content").innerHTML=""; return;
+  }
+  $("title").textContent=d.name||d.id;
+  $("subtitle").textContent={army:"Armée",supp:"Supplément",magic:"Catalogue d'objets magiques",honour:"Catalogue global des Honneurs Elfiques"}[currentType];
+  const tabs=tabsFor(currentType);
+  $("tabs").innerHTML=tabs.map(([id,label])=>`<button class="tab ${currentTab===id?"active":""}" onclick="showTab('${id}')">${esc(label)}</button>`).join("");
+  const c=$("content");
+  if(currentType==="army"){
+    if(currentTab==="general") c.innerHTML=generalForm(d);
+    else if(currentTab==="composition") c.innerHTML=compositionForm(d);
+    else if(currentTab==="units") c.innerHTML=unitsForm(d);
+    else if(currentTab==="mounts") c.innerHTML=mountsForm(d);
+    else if(currentTab==="rules") c.innerHTML=rulesForm(d);
+    else if(currentTab==="preview") c.innerHTML=previewForm(d);
+  } else if(currentType==="supp"){
+    if(currentTab==="general") c.innerHTML=generalForm(d);
+    else if(currentTab==="targets") c.innerHTML=targetsForm(d);
+    else if(currentTab==="restrictions") c.innerHTML=restrictionsForm(d);
+    else if(currentTab==="units") c.innerHTML=unitsForm(d);
+    else if(currentTab==="rules") c.innerHTML=rulesForm(d);
+    else if(currentTab==="preview") c.innerHTML=previewForm(d);
+  } else if(currentType==="magic"){
+    if(currentTab==="general") c.innerHTML=magicGeneralForm(d);
+    else if(currentTab==="items") c.innerHTML=magicItemsForm(d);
+    else if(currentTab==="preview") c.innerHTML=previewForm(d);
+  } else if(currentType==="honour"){
+    if(currentTab==="list") c.innerHTML=honoursForm(d);
+    else if(currentTab==="preview") c.innerHTML=previewForm(d);
+  }
+}
+function showTab(id){ currentTab=id; editingUnitIndex=null; editingMountIndex=null; render(); }
+
+// ------------------------------------------------------------- Général ----
+function generalForm(d){
+  return `<div class="panel"><h3>Informations générales</h3><div class="grid2">
+  <div class="field"><label>ID</label><input id="f_id" value="${esc(d.id)}"></div>
+  <div class="field"><label>Nom</label><input id="f_name" value="${esc(d.name)}"></div>
+  ${currentType==="army"?`
+  <div class="field"><label>Source</label><input id="f_source" value="${esc(d.source||"")}"></div>
+  <div class="field"><label>URL source</label><input id="f_sourceUrl" value="${esc(d.sourceUrl||"")}"></div>
+  `:`
+  <div class="field"><label>Description</label><input id="f_desc" value="${esc(d.description||"")}"></div>
+  <div class="field"><label>Source</label><input id="f_source" value="${esc(d.source||"")}"></div>
+  `}
+  </div><br><button class="btn ok" onclick="applyGeneral()">Appliquer</button></div>`;
+}
+function applyGeneral(){
+  const d=data(), old=d.id;
+  d.id=$("f_id").value.trim(); d.name=$("f_name").value.trim();
+  if(currentType==="army"){ d.source=$("f_source").value.trim(); d.sourceUrl=$("f_sourceUrl").value.trim(); }
+  else { d.description=$("f_desc").value.trim(); d.source=$("f_source").value.trim(); }
+  if(old!==d.id){ const s=store(currentType); delete s[old]; s[d.id]=d; currentId=d.id; }
+  renderNav(); render(); status("Informations générales mises à jour.","ok");
+}
+
+// ------------------------------------------------------------ Composition
+function compositionForm(d){
+  d.composition=d.composition||{categories:{}};
+  const cats=d.composition.categories||(d.composition.categories={});
+  const rows=Object.entries(cats).map(([name,r])=>`
+    <div class="grid3" style="align-items:end;margin-bottom:8px;border-bottom:1px solid #b6ac8d;padding-bottom:8px">
+      <div class="field"><label>Catégorie</label><input value="${esc(name)}" data-catname="${esc(name)}"></div>
+      <div class="field"><label>Min %</label><input type="number" value="${r.minPercent??0}" data-catmin="${esc(name)}"></div>
+      <div class="field"><label>Max % <button class="btn small danger" onclick="removeCategory('${esc(name)}')">Supprimer</button></label><input type="number" value="${r.maxPercent??100}" data-catmax="${esc(name)}"></div>
+    </div>`).join("");
+  return `<div class="panel"><h3>Composition de liste</h3>
+  <div class="notice">Ajoutez une catégorie (ex. « Personnages »), puis fixez ses bornes en % du format de partie.</div>
+  ${rows||"<p>Aucune catégorie définie.</p>"}
+  <button class="btn" onclick="addCategory()">＋ Ajouter une catégorie</button>
+  <br><br><button class="btn ok" onclick="applyComposition()">Appliquer la composition</button></div>`;
+}
+function addCategory(){ const d=data(); const n="Nouvelle catégorie "+(Object.keys(d.composition.categories).length+1); d.composition.categories[n]={minPercent:0,maxPercent:100}; render(); }
+function removeCategory(name){ if(!confirm("Supprimer cette catégorie ?"))return; delete data().composition.categories[name]; render(); }
+function applyComposition(){
+  const d=data(); const newCats={};
+  document.querySelectorAll("[data-catname]").forEach(input=>{
+    const oldName=input.dataset.catname;
+    const name=input.value.trim()||oldName;
+    const min=Number(document.querySelector(`[data-catmin="${CSS.escape(oldName)}"]`).value)||0;
+    const max=Number(document.querySelector(`[data-catmax="${CSS.escape(oldName)}"]`).value)||100;
+    newCats[name]={minPercent:min,maxPercent:max};
+  });
+  d.composition.categories=newCats; render(); status("Composition enregistrée.","ok");
+}
+
+// ------------------------------------------------------------- Cibles ----
+function targetsForm(d){
+  const arr=d.armies||[];
+  return `<div class="panel"><h3>Armées ciblées par ce supplément</h3>
+  <div class="cardlist">${Object.values(armies).map(a=>`<label class="itemcard"><input type="checkbox" ${arr.includes(a.id)?"checked":""} onchange="toggleArmy('${esc(a.id)}',this.checked)"> <strong>${esc(a.name)}</strong><small>${esc(a.id)}</small></label>`).join("")||"<p>Chargez d'abord au moins une armée.</p>"}</div></div>`;
+}
+function toggleArmy(id,on){ const d=data(); d.armies=d.armies||[]; d.armies=on?[...new Set([...d.armies,id])]:d.armies.filter(x=>x!==id); status("Ciblage mis à jour.","ok"); }
+
+// --------------------------------------------------------- Restrictions --
+function restrictionsForm(d){
+  d.restrictions=d.restrictions||{};
+  const r=d.restrictions;
+  return `<div class="panel"><h3>Restrictions du supplément</h3>
+  <div class="notice">Structure libre (recatégorisations, honneurs autorisés, unités exclues, budgets par unité…) : édition en JSON pour garder toute la souplesse du moteur.</div>
+  <div class="field"><label>restrictions.honours (honneurs autorisés/exclus)</label><textarea id="r_honours" class="mono-lg">${esc(JSON.stringify(r.honours||{},null,2))}</textarea></div>
+  <div class="field"><label>restrictions.reclassifications (0-1 unité comptée dans une autre catégorie)</label><textarea id="r_reclass" class="mono-lg">${esc(JSON.stringify(r.reclassifications||[],null,2))}</textarea></div>
+  <div class="field"><label>restrictions.units (budgets/overrides par unité, ex. magicItemsLimit)</label><textarea id="r_units" class="mono-lg">${esc(JSON.stringify(r.units||{},null,2))}</textarea></div>
+  <div class="field"><label>Unités exclues (excludedUnits, une par ligne)</label><textarea id="r_excluded">${esc(arrToLines(d.excludedUnits))}</textarea></div>
+  <br><button class="btn ok" onclick="applyRestrictions()">Appliquer les restrictions</button></div>`;
+}
+function applyRestrictions(){
+  const d=data();
+  try{
+    d.restrictions={
+      honours:JSON.parse($("r_honours").value||"{}"),
+      reclassifications:JSON.parse($("r_reclass").value||"[]"),
+      units:JSON.parse($("r_units").value||"{}")
+    };
+    d.excludedUnits=linesToArr($("r_excluded").value);
+    render(); status("Restrictions enregistrées.","ok");
+  }catch(e){ alert("JSON invalide : "+e.message); }
+}
+
+// -------------------------------------------------------------- Règles --
+function rulesForm(d){
+  const list=d.specialRules||[];
+  return `<div class="panel"><h3>Catalogue des règles spéciales</h3>
+  <div class="notice">Ce catalogue référence les noms de règles utilisables dans les unités (equipment/specialRules restent du texte libre, mais garder ce catalogue à jour aide à la cohérence).</div>
+  <div class="cardlist">${list.map((r,i)=>{
+    const name=typeof r==="string"?r:(r.name||r.id||"");
+    return `<div class="itemcard"><strong>${esc(name)}</strong>
+    <div class="actions"><button class="btn small" onclick="editRule(${i})">Modifier</button><button class="btn small danger" onclick="deleteRule(${i})">Supprimer</button></div></div>`;
+  }).join("")||"<p>Aucune règle référencée.</p>"}</div>
+  <br><button class="btn" onclick="addRule()">＋ Ajouter une règle</button></div>`;
+}
+function addRule(){ const name=prompt("Nom de la règle spéciale :"); if(!name)return; const d=data(); d.specialRules=d.specialRules||[]; d.specialRules.push({id:slug(name),name:name.trim()}); render(); status("Règle ajoutée.","ok"); }
+function editRule(i){ const d=data(); const r=d.specialRules[i]; const cur=typeof r==="string"?r:r.name; const name=prompt("Nom de la règle :",cur); if(!name)return; d.specialRules[i]=typeof r==="string"?name.trim():{...r,name:name.trim()}; render(); }
+function deleteRule(i){ if(!confirm("Supprimer cette règle du catalogue ?"))return; data().specialRules.splice(i,1); render(); }
+
+// -------------------------------------------------------------- Montures
+function mountsForm(d){
+  const mounts=d.mounts||[];
+  if(editingMountIndex!==null) return mountEditor(d,editingMountIndex);
+  return `<div class="panel"><h3>Montures</h3>
+  <div class="cardlist">${mounts.map((m,i)=>`<div class="itemcard"><strong>${esc(m.name)}</strong><small>${esc(m.points||0)} pts · ${esc(m.type||"")}</small>
+  <div class="actions"><button class="btn small" onclick="editingMountIndex=${i};render()">Modifier</button><button class="btn small danger" onclick="deleteMount(${i})">Supprimer</button></div></div>`).join("")||"<p>Aucune monture définie.</p>"}</div>
+  <br><button class="btn" onclick="addMount()">＋ Ajouter une monture</button></div>`;
+}
+function addMount(){ const d=data(); d.mounts=d.mounts||[]; d.mounts.push({id:"nouvelle-monture",name:"Nouvelle monture",points:0,type:"",base:"",profile:{}}); editingMountIndex=d.mounts.length-1; render(); }
+function deleteMount(i){ if(!confirm("Supprimer cette monture ?"))return; data().mounts.splice(i,1); render(); }
+function mountEditor(d,i){
+  const m=d.mounts[i]; m.profile=m.profile||{};
+  return `<div class="editorbox"><div class="headline"><h4>Monture : ${esc(m.name)}</h4><button class="btn small dark" onclick="editingMountIndex=null;render()">← Retour à la liste</button></div>
+  <div class="grid3">
+  <div class="field"><label>Nom</label><input id="m_name" value="${esc(m.name)}"></div>
+  <div class="field"><label>Points</label><input id="m_points" type="number" value="${m.points||0}"></div>
+  <div class="field"><label>Type</label><input id="m_type" value="${esc(m.type||"")}"></div>
+  <div class="field" style="grid-column:1/-1"><label>Base</label><input id="m_base" value="${esc(m.base||"")}"></div>
+  </div>
+  <div class="divider"></div>
+  <h4>Profil de caractéristiques</h4>
+  <div class="statgrid">${STAT_KEYS.map(k=>`<div class="field"><label>${k}</label><input id="m_stat_${k}" value="${esc(m.profile[k]??"")}"></div>`).join("")}</div>
+  <br><button class="btn ok" onclick="applyMount(${i})">Enregistrer la monture</button></div>`;
+}
+function applyMount(i){
+  const d=data(), m=d.mounts[i];
+  m.name=$("m_name").value.trim(); m.id=slug(m.name); m.points=Number($("m_points").value)||0;
+  m.type=$("m_type").value.trim(); m.base=$("m_base").value.trim();
+  m.profile={}; STAT_KEYS.forEach(k=>{ const v=$("m_stat_"+k).value.trim(); if(v!=="") m.profile[k]=isNaN(v)?v:Number(v); });
+  editingMountIndex=null; render(); status("Monture enregistrée.","ok");
+}
+
+// ---------------------------------------------------------------- Unités
+function unitsForm(d){
+  d.units=d.units||[];
+  if(editingUnitIndex!==null) return unitEditor(d,editingUnitIndex);
+  const q=(window.__unitFilter||"").toLowerCase();
+  const filtered=d.units.map((u,i)=>({u,i})).filter(({u})=>!q||String(u.name||"").toLowerCase().includes(q)||String(u.category||"").toLowerCase().includes(q));
+  return `<div class="panel"><h3>${currentType==="army"?"Catalogue des unités":"Unités propres au supplément"}</h3>
+  <div class="searchbar"><input placeholder="Filtrer par nom ou catégorie…" oninput="window.__unitFilter=this.value;render()" value="${esc(window.__unitFilter||"")}"></div>
+  <button class="btn" onclick="addUnit()">＋ Ajouter une unité</button>
+  <div class="cardlist" style="margin-top:12px">${filtered.map(({u,i})=>unitCard(u,i)).join("")||"<p>Aucune unité définie.</p>"}</div></div>`;
+}
+function unitCard(u,i){
+  const stats=STAT_KEYS.filter(k=>u.profile&&u.profile[k]!==undefined).length;
+  return `<div class="itemcard"><strong>${esc(u.name||u.id)}</strong>
+  <small>${esc(u.id)} · ${esc(u.category||"")} · ${u.points!=null?u.points+" pts":"coût ?"}</small>
+  <div>${(u.options||[]).slice(0,3).map(o=>`<span class="badge">${esc(typeof o==="string"?o:o.name)}</span>`).join("")}${(u.options||[]).length>3?`<span class="badge">+${u.options.length-3}</span>`:""}</div>
+  <div class="actions" style="margin-top:8px"><button class="btn small" onclick="editingUnitIndex=${i};render()">Modifier</button><button class="btn small dark" onclick="duplicateUnit(${i})">Dupliquer</button><button class="btn small danger" onclick="deleteUnit(${i})">Supprimer</button></div></div>`;
+}
+function addUnit(){
+  const d=data(); d.units=d.units||[];
+  d.units.push({id:"nouvelle-unite",name:"Nouvelle unité",category:Object.keys((d.composition&&d.composition.categories)||{})[0]||"Unités de Base",points:0,profile:{},type:"",unitSize:"5+",base:"",equipment:[],options:[],specialRules:[]});
+  editingUnitIndex=d.units.length-1; render();
+}
+function duplicateUnit(i){ const d=data(); const copy=JSON.parse(JSON.stringify(d.units[i])); copy.id=copy.id+"-copie"; copy.name=copy.name+" (copie)"; d.units.splice(i+1,0,copy); render(); status("Unité dupliquée.","ok"); }
+function deleteUnit(i){ if(!confirm("Supprimer cette unité ?"))return; data().units.splice(i,1); render(); }
+
+function unitEditor(d,i){
+  const u=d.units[i]; u.profile=u.profile||{}; u.championProfile=u.championProfile||null; u.crewProfiles=u.crewProfiles||[];
+  const catOptions=Object.keys((d.composition&&d.composition.categories)||{});
+  const hasChampion=!!u.championProfile;
+  return `<div class="editorbox"><div class="headline"><h4>Unité : ${esc(u.name)}</h4><button class="btn small dark" onclick="editingUnitIndex=null;render()">← Retour à la liste</button></div>
+
+  <h4>Identité</h4>
+  <div class="grid3">
+  <div class="field"><label>Nom</label><input id="u_name" value="${esc(u.name)}"></div>
+  <div class="field"><label>Catégorie</label>
+    ${catOptions.length?`<select id="u_category">${catOptions.map(c=>`<option value="${esc(c)}" ${u.category===c?"selected":""}>${esc(c)}</option>`).join("")}</select>`
+      :`<input id="u_category" value="${esc(u.category||"")}">`}
+  </div>
+  <div class="field"><label>Points (coût / modèle)</label><input id="u_points" type="number" value="${u.points??0}"></div>
+  <div class="field"><label>Type de troupe</label><input id="u_type" value="${esc(u.type||"")}" placeholder="Infanterie régulière, Machine de guerre…"></div>
+  <div class="field"><label>Effectif (ex. « 5+ », « 1 », « 5-20 »)</label><input id="u_unitSize" value="${esc(u.unitSize||"")}"></div>
+  <div class="field"><label>Socle</label><input id="u_base" value="${esc(u.base||"")}"></div>
+  </div>
+
+  <div class="divider"></div>
+  <h4>Profil de caractéristiques</h4>
+  <div class="statgrid">${STAT_KEYS.map(k=>`<div class="field"><label>${k}</label><input id="u_stat_${k}" value="${esc(u.profile[k]??"")}"></div>`).join("")}</div>
+  <small class="hint">Laissez vide (ou « - ») pour une caractéristique non applicable (machines de guerre, chars…).</small>
+
+  <div class="divider"></div>
+  <h4>Équipement, options, règles spéciales</h4>
+  <div class="notice">Une ligne par entrée. Format libre reconnu automatiquement par le générateur — ex. <code>Vétéran +1 pt/modèle</code>, <code>Porte-étendard +5 pts</code>, <code>Objets magiques jusqu'à 25 pts</code>, <code>Bannière magique jusqu'à 50 pts</code>.</div>
+  <div class="grid3">
+  <div class="field"><label>Équipement natif</label><textarea id="u_equipment" class="mono-lg">${esc(arrToLines(u.equipment))}</textarea></div>
+  <div class="field"><label>Options</label><textarea id="u_options" class="mono-lg">${esc(arrToLines((u.options||[]).map(o=>typeof o==="string"?o:o.name)))}</textarea></div>
+  <div class="field"><label>Règles spéciales natives</label><textarea id="u_rules" class="mono-lg">${esc(arrToLines(u.specialRules||u.rules))}</textarea></div>
+  </div>
+
+  <div class="divider"></div>
+  <h4>Limites explicites (facultatif — sinon déduites automatiquement du texte des options ci-dessus)</h4>
+  <div class="grid3">
+  <div class="field"><label>Budget objets magiques (pts)</label><input id="u_magicItemsLimit" type="number" value="${u.magicItemsLimit??""}" placeholder="auto"></div>
+  <div class="field"><label>Budget bannière magique (pts)</label><input id="u_bannerItemsLimit" type="number" value="${u.bannerItemsLimit??""}" placeholder="auto"></div>
+  <div class="field"><label>Budget arme magique du chef (pts)</label><input id="u_championWeaponLimit" type="number" value="${u.championWeaponLimit??""}" placeholder="auto"></div>
+  </div>
+
+  <div class="divider"></div>
+  <h4>Profil de chef d'unité <label style="font-weight:normal;font-size:13px"><input type="checkbox" id="u_hasChampion" ${hasChampion?"checked":""} onchange="toggleChampionFields(this.checked)"> l'unité a un profil de chef dédié</label></h4>
+  <div id="championFields" class="${hasChampion?"":"hidden"}">
+  <div class="field" style="margin-bottom:8px"><label>Nom du chef (Sentinelle, Maître de la mer…)</label><input id="u_champName" value="${esc(u.championProfile?.name||"")}"></div>
+  <div class="statgrid">${STAT_KEYS.map(k=>`<div class="field"><label>${k}</label><input id="u_champ_${k}" value="${esc(u.championProfile?.[k]??"")}"></div>`).join("")}</div>
+  </div>
+
+  <div class="divider"></div>
+  <h4>Équipage / monture attelée (affiché automatiquement avec la figurine — baliste, char, cotre volant…)</h4>
+  <div id="crewRows">${u.crewProfiles.map((c,ci)=>crewRow(c,ci)).join("")}</div>
+  <button class="btn small" onclick="addCrewRow(${i})">＋ Ajouter un profil d'équipage</button>
+
+  <br><br><button class="btn ok" onclick="applyUnit(${i})">Enregistrer l'unité</button></div>`;
+}
+function toggleChampionFields(on){ $("championFields").classList.toggle("hidden",!on); }
+function crewRow(c,ci){
+  return `<div class="crewrow" data-crewrow="${ci}">
+  <div class="rowhead"><input placeholder="Nom (ex. « Équipage de la Garde Maritime »)" class="crew_name" value="${esc(c.name||"")}">
+  <input placeholder="Nb" type="number" style="width:70px" class="crew_count" value="${c.count??1}">
+  <button class="btn small danger" onclick="removeCrewRow(${ci})">×</button></div>
+  <div class="statgrid">${STAT_KEYS.map(k=>`<input class="crew_stat" data-stat="${k}" placeholder="${k}" value="${esc(c[k]??"")}">`).join("")}</div>
+  </div>`;
+}
+function addCrewRow(i){ const d=data(); d.units[i].crewProfiles=d.units[i].crewProfiles||[]; d.units[i].crewProfiles.push({name:"",count:1}); render(); }
+function removeCrewRow(ci){ $(`[data-crewrow="${ci}"]`).remove(); }
+
+function applyUnit(i){
+  const d=data(), u=d.units[i];
+  u.name=$("u_name").value.trim(); u.id=slug(u.name);
+  u.category=$("u_category").value.trim();
+  u.points=$("u_points").value===""?null:Number($("u_points").value);
+  u.type=$("u_type").value.trim(); u.unitSize=$("u_unitSize").value.trim(); u.base=$("u_base").value.trim();
+  u.profile={}; STAT_KEYS.forEach(k=>{ const v=$("u_stat_"+k).value.trim(); if(v!=="") u.profile[k]=isNaN(v)?v:Number(v); });
+  u.equipment=linesToArr($("u_equipment").value);
+  u.options=linesToArr($("u_options").value);
+  u.specialRules=linesToArr($("u_rules").value);
+  u.magicItemsLimit=$("u_magicItemsLimit").value===""?undefined:Number($("u_magicItemsLimit").value);
+  u.bannerItemsLimit=$("u_bannerItemsLimit").value===""?undefined:Number($("u_bannerItemsLimit").value);
+  u.championWeaponLimit=$("u_championWeaponLimit").value===""?undefined:Number($("u_championWeaponLimit").value);
+  if($("u_hasChampion").checked){
+    const champ={name:$("u_champName").value.trim()};
+    STAT_KEYS.forEach(k=>{ const v=$("u_champ_"+k).value.trim(); if(v!=="") champ[k]=isNaN(v)?v:Number(v); });
+    u.championProfile=champ;
+  } else { u.championProfile=null; }
+  u.crewProfiles=[...document.querySelectorAll("[data-crewrow]")].map(row=>{
+    const c={ name:row.querySelector(".crew_name").value.trim(), count:Number(row.querySelector(".crew_count").value)||1 };
+    row.querySelectorAll(".crew_stat").forEach(inp=>{ const v=inp.value.trim(); if(v!=="") c[inp.dataset.stat]=isNaN(v)?v:Number(v); });
+    return c;
+  }).filter(c=>c.name);
+  editingUnitIndex=null; render(); status("Unité enregistrée.","ok");
+}
+
+// --------------------------------------------------------- Objets magiques
+function magicGeneralForm(d){ return generalForm(d); }
+function magicItemsForm(d){
+  d.magicItems=d.magicItems||{};
+  const cats=[...new Set([...MAGIC_CATEGORIES,...Object.keys(d.magicItems)])];
+  if(!activeMagicCategory) activeMagicCategory=cats[0];
+  const items=d.magicItems[activeMagicCategory]||[];
+  return `<div class="panel"><h3>Objets magiques</h3>
+  <div class="catbar">${cats.map(c=>`<button class="tab ${activeMagicCategory===c?"active":""}" onclick="activeMagicCategory='${esc(c)}';render()">${esc(c)} (${(d.magicItems[c]||[]).length})</button>`).join("")}</div>
+  <div class="cardlist">${items.map((it,i)=>magicItemCard(it,i)).join("")||"<p>Aucun objet dans cette catégorie.</p>"}</div>
+  <br><button class="btn" onclick="addMagicItem()">＋ Ajouter un objet à « ${esc(activeMagicCategory)} »</button></div>`;
+}
+function magicItemCard(it,i){
+  return `<div class="itemcard"><strong>${esc(it.name)}</strong><small>${it.points||0} pts${it.repeatable?" · répétable":""}</small>
+  <p style="font-size:12.5px;margin:4px 0">${esc((it.description||"").slice(0,140))}${(it.description||"").length>140?"…":""}</p>
+  <div class="actions"><button class="btn small" onclick="editMagicItem(${i})">Modifier</button><button class="btn small danger" onclick="deleteMagicItem(${i})">Supprimer</button></div></div>`;
+}
+function addMagicItem(){
+  const d=data(); d.magicItems[activeMagicCategory]=d.magicItems[activeMagicCategory]||[];
+  d.magicItems[activeMagicCategory].push({id:"nouvel-objet",name:"Nouvel objet",points:0,repeatable:false,description:"",restriction:{requires:[]}});
+  editMagicItem(d.magicItems[activeMagicCategory].length-1);
+}
+function editMagicItem(i){
+  const d=data(); const it=d.magicItems[activeMagicCategory][i];
+  const name=prompt("Nom de l'objet :",it.name); if(name===null)return;
+  const points=prompt("Coût en points :",it.points??0); if(points===null)return;
+  const description=prompt("Description / règles :",it.description||""); if(description===null)return;
+  const repeatable=confirm("Cet objet est-il répétable (pris par plusieurs porteurs) ? OK = oui, Annuler = non.");
+  const restrictionRaw=prompt("Restriction (JSON, ex. {\"requires\":[\"wizard\"]} — laisser vide si aucune) :",JSON.stringify(it.restriction||{requires:[]}));
+  let restriction=it.restriction;
+  try{ restriction=restrictionRaw?JSON.parse(restrictionRaw):{requires:[]}; }catch(e){ alert("JSON de restriction invalide, non modifié."); }
+  d.magicItems[activeMagicCategory][i]={...it,id:slug(name),name:name.trim(),points:Number(points)||0,description:description.trim(),repeatable,restriction};
+  render(); status("Objet magique enregistré.","ok");
+}
+function deleteMagicItem(i){ if(!confirm("Supprimer cet objet ?"))return; data().magicItems[activeMagicCategory].splice(i,1); render(); }
+
+// ------------------------------------------------------------- Honneurs --
+function honoursForm(d){
+  const list=d.aptitudes||[];
+  return `<div class="panel"><h3>Honneurs Elfiques</h3>
+  <div class="notice">Catalogue global, indépendant de l'armée — chaque effet est appliqué automatiquement par le moteur du générateur (forbid_mount, grant_option, replace_special_rule, grant_special_rule, stat_modifier, unlock_unit…).</div>
+  <div class="cardlist">${list.map((h,i)=>`<div class="itemcard"><strong>${esc(h.name)}</strong><small>${h.points||0} pts · ${esc(h.restriction||"")}</small>
+  <div class="actions"><button class="btn small" onclick="editHonour(${i})">Modifier (JSON)</button><button class="btn small danger" onclick="deleteHonour(${i})">Supprimer</button></div></div>`).join("")||"<p>Aucun honneur défini.</p>"}</div>
+  <br><button class="btn" onclick="addHonour()">＋ Ajouter un honneur</button></div>`;
+}
+function addHonour(){
+  const name=prompt("Nom de l'Honneur :"); if(!name)return;
+  honours.aptitudes=honours.aptitudes||[];
+  honours.aptitudes.push({id:"honneur-"+slug(name),name:name.trim(),points:0,repeatable:false,restriction:"",source:"",effects:[]});
+  render(); status("Honneur ajouté — complétez ses effets via « Modifier (JSON) ».","ok");
+}
+function editHonour(i){
+  const h=honours.aptitudes[i];
+  const raw=prompt("Honneur complet (JSON — id, name, points, repeatable, restriction, source, effects[]) :",JSON.stringify(h,null,2));
+  if(raw===null)return;
+  try{ honours.aptitudes[i]=JSON.parse(raw); render(); status("Honneur enregistré.","ok"); }
+  catch(e){ alert("JSON invalide : "+e.message); }
+}
+function deleteHonour(i){ if(!confirm("Supprimer cet honneur ?"))return; honours.aptitudes.splice(i,1); render(); }
+
+// -------------------------------------------------------------- Preview --
+function previewForm(d){ return `<div class="panel"><h3>Aperçu du fichier JSON</h3><pre class="preview">${esc(JSON.stringify(d,null,2))}</pre></div>`; }
+
+// ----------------------------------------------------------- Création ----
+function newEntity(type){
+  const name=prompt(type==="army"?"Nom de la nouvelle armée :":type==="supp"?"Nom du nouveau supplément :":"Nom du nouveau catalogue d'objets magiques :");
+  if(!name) return;
+  const id=slug(name);
+  if(type==="army") armies[id]={id,name,language:"fr",version:"1.0",source:"",sourceUrl:"",composition:{categories:{"Personnages":{minPercent:0,maxPercent:50},"Unités de Base":{minPercent:25,maxPercent:100}}},specialRules:[],units:[],mounts:[]};
+  else if(type==="supp") supplements[id]={id,name,description:"",source:"",armies:[],allowedUnits:[],excludedUnits:[],restrictions:{honours:{},reclassifications:[],units:{}},specialRules:[],units:[]};
+  else if(type==="magic") magicCatalogs[id]={id,name,source:"",magicItems:{}};
+  currentType=type; currentId=id; currentTab="general"; renderNav(); render(); status("Nouvelle entrée créée localement — n'oubliez pas de l'exporter.","ok");
+}
+
+// ----------------------------------------------------------- Import/Export
+function exportCurrent(){
+  const d=data(); if(!d) return alert("Sélectionnez d'abord une entrée à exporter.");
+  const clean=JSON.parse(JSON.stringify(d));
+  const blob=new Blob([JSON.stringify(clean,null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=(currentType==="honour"?"honneurs-elfiques":d.id)+".json";
+  a.click(); URL.revokeObjectURL(a.href);
+  const folder={army:REMOTE_PATHS.armies,supp:REMOTE_PATHS.supplements,magic:REMOTE_PATHS.magicItems,honour:""}[currentType];
+  status(`Fichier téléchargé : ${a.download} — à déposer dans ${folder||"data/aptitudes/"} sur le dépôt.`,"ok");
+}
+
+$("fileInput").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const d=JSON.parse(reader.result);
+      if(d.aptitudes){ honours=d; currentType="honour"; currentId=null; }
+      else if(!d.id){ throw Error("ID absent du fichier."); }
+      else if(d.magicItems && !d.units){ magicCatalogs[d.id]=d; currentType="magic"; currentId=d.id; }
+      else if(d.restrictions || d.armies){ supplements[d.id]=d; currentType="supp"; currentId=d.id; }
+      else { armies[d.id]=d; currentType="army"; currentId=d.id; }
+      currentTab="general"; renderNav(); render();
+      status("Fichier importé dans la session (pas encore publié sur GitHub).","ok");
+    }catch(err){ alert("Import impossible : "+err.message); }
+  };
+  reader.readAsText(f); e.target.value="";
+});
+
+async function loadGitHub(){
+  status("Chargement des fichiers depuis GitHub…");
+  try{
+    const repo=`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+    const tree=await fetch(repo).then(r=>{ if(!r.ok) throw Error("GitHub inaccessible"); return r.json(); });
+    const files=tree.tree||[];
+    armies={}; supplements={}; magicCatalogs={}; honours=null;
+    for(const f of files){
+      if(f.type!=="blob"||!f.path.endsWith(".json")) continue;
+      const raw=`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
+      if(f.path.startsWith(REMOTE_PATHS.armies)){
+        const d=await fetch(raw).then(r=>r.json()).catch(()=>null); if(d) armies[d.id||f.path]=d;
+      } else if(f.path.startsWith(REMOTE_PATHS.supplements)){
+        const d=await fetch(raw).then(r=>r.json()).catch(()=>null); if(d) supplements[d.id||f.path]=d;
+      } else if(f.path.startsWith(REMOTE_PATHS.magicItems)){
+        const d=await fetch(raw).then(r=>r.json()).catch(()=>null); if(d) magicCatalogs[d.id||f.path]=d;
+      } else if(f.path===REMOTE_PATHS.honours){
+        honours=await fetch(raw).then(r=>r.json()).catch(()=>null);
+      }
+    }
+    currentType=null; currentId=null; renderNav(); render();
+    status(`${Object.keys(armies).length} armée(s), ${Object.keys(supplements).length} supplément(s), ${Object.keys(magicCatalogs).length} catalogue(s) d'objets magiques${honours?", honneurs elfiques":""} chargés depuis GitHub.`,"ok");
+  }catch(e){ status("Erreur de chargement GitHub : "+e.message,"err"); }
+}
+
+renderNav(); render();
+</script>
+</body>
+</html>
