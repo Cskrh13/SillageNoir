@@ -261,16 +261,41 @@ function normalizeOption(raw, kindOverride) {
   };
 }
 
+// Normalise les accents pour une comparaison de mots-clés fiable (évite les
+// faux négatifs du type "pégase" vs "pegase" recherché sans accent).
+function foldAccents(s) {
+  return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Motifs qui désignent une "fausse monture" : le mot "dragon" (ou autre
+// mot-clé de monture) apparaît dans le nom sans qu'il s'agisse réellement
+// d'une monture — ex. une pièce d'équipement fabriquée à partir d'une
+// créature ("Cape en peau de Dragon des Mers"), pas la créature elle-même
+// montée au combat. Testé avant la détection générique de monture.
+const NON_MOUNT_ITEM_RE = /\b(cape|manteau|peau|cuir|ecaille|écaille|trophee|trophée)\b.*\bdragon/;
+
 function inferOptionKind(name) {
-  const s = String(name).toLocaleLowerCase("fr");
-  if (s.includes("bannière") || s.includes("banniere") || s.includes("étendard") || s.includes("etendard")) return "banner";
-  if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) return "mount";
+  const raw = String(name).toLocaleLowerCase("fr");
+  const s = foldAccents(raw);
+  if (s.includes("banniere") || s.includes("etendard")) return "banner";
+  if (NON_MOUNT_ITEM_RE.test(s)) {
+    // ex. "Cape en peau de Dragon des Mers" : c'est un vêtement, pas une
+    // monture — on laisse la détection continuer (armure/autre) plutôt que
+    // de la classer "mount" à cause du seul mot "dragon".
+  } else if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) {
+    return "mount";
+  }
+  // Chef d'unité (Champion, Contremaître, Sentinelle, Héraut, Vétéran
+  // promu…) : détecté par mot-clé générique, en plus de la règle
+  // positionnelle "juste avant Porte-étendard" appliquée dans
+  // classifyUnitOptions pour les options texte des livres d'armée standard.
+  if (s.includes("champion") || s.includes("contremaitre") || s.includes("promouvoir") || s.includes("sentinelle") || s.includes("heraut") || s.includes("chef d'unite")) return "champion";
   // Bouclier séparé de l'armure : un personnage peut porter les deux à la
   // fois (un seul profil d'armure ET un seul bouclier, chacun via son
   // propre menu déroulant — voir renderCharacterOptions).
   if (s.includes("bouclier")) return "shield";
-  if (s.includes("armure") || s.includes("heaume")) return "armour";
-  if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("épée") || s.includes("epee") || s.includes("arc") || s.includes("arbalète") || s.includes("arbalete") || s.includes("poing")) return "weapon";
+  if (s.includes("armure") || s.includes("heaume") || (s.includes("cape") && s.includes("peau"))) return "armour";
+  if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("epee") || s.includes("arc") || s.includes("arbalete") || s.includes("poing")) return "weapon";
   return "other";
 }
 
@@ -1474,14 +1499,20 @@ function renderStatsTable(entry, unit) {
   // de caractéristiques uniquement si l'unité fournit un profil dédié
   // (championProfile) et que l'option correspondante est cochée.
   const champion = selectedOptionOfKind(entry, unit, "champion");
-  const championProfile = champion ? normalizeProfile(unit.championProfile) : null;
+  // championProfile peut être fourni à plat ({M,CC,...}) ou imbriqué sous
+  // .profile ({name, points, profile:{M,CC,...}}) selon les fichiers de
+  // données — on accepte les deux formats plutôt que de silencieusement
+  // renvoyer null pour le second.
+  const championProfile = champion ? normalizeProfile(unit.championProfile?.profile || unit.championProfile) : null;
+  const championLabel = (champion && unit.championProfile && typeof unit.championProfile === "object" && unit.championProfile.name)
+    ? unit.championProfile.name : champion?.name;
 
   const rows = [`<tr><td class="stat-row-name">${esc(unit.name)}</td>${STAT_KEYS.map(k => `<td>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</td>`).join("")}</tr>`];
 
   // La ligne du chef n'apparaît que si l'option est cochée et qu'un profil
   // dédié existe dans les données.
   if (champion && championProfile) {
-    rows.push(`<tr><td class="stat-row-name">${esc(champion.name)}</td>${STAT_KEYS.map(k => `<td>${esc(championProfile[k] ?? "-")}</td>`).join("")}</tr>`);
+    rows.push(`<tr><td class="stat-row-name">${esc(championLabel)}</td>${STAT_KEYS.map(k => `<td>${esc(championProfile[k] ?? "-")}</td>`).join("")}</tr>`);
   }
 
   // La ligne de la monture n'apparaît que si une monture est sélectionnée.
@@ -1604,7 +1635,22 @@ function allowedHonours() {
   const restr = state.supplement?.restrictions?.honours || {};
   const allowed = Array.isArray(restr.allowed) ? restr.allowed : null;
   const excluded = new Set(Array.isArray(restr.excluded) ? restr.excluded : []);
-  return all.filter(h => (!allowed || allowed.includes(h.id)) && !excluded.has(h.id));
+  const armyId = state.army?.id || null;
+  return all.filter(h => {
+    if (allowed && !allowed.includes(h.id)) return false;
+    if (excluded.has(h.id)) return false;
+    // Un Honneur peut se déclarer réservé à une ou plusieurs armées
+    // (h.armies: ["hauts-elfes"]) ou héréditaire (aucun champ = disponible
+    // partout, comme avant). Un supplément qui liste explicitement ses
+    // honneurs autorisés (restr.allowed) prime toujours sur cette
+    // vérification — elle ne sert de filet de sécurité que par défaut,
+    // pour éviter qu'un supplément sans restriction déclarée n'hérite
+    // silencieusement des Honneurs écrits pour une autre armée.
+    if (!allowed && Array.isArray(h.armies) && h.armies.length && armyId) {
+      if (!h.armies.includes(armyId)) return false;
+    }
+    return true;
+  });
 }
 
 // Identifiants d'objets magiques déjà pris par d'autres entrées de la liste.
@@ -1921,15 +1967,26 @@ function renderHonourSelector(entry, u) {
 // détection générique via isWizardUnit, jamais liée au nom d'un Honneur
 // précis. Le choix est ajouté aux règles spéciales de l'entrée (voir
 // renderNativeRules) et n'affecte jamais le coût en points.
+// Domaines de magie réellement proposables pour cette entrée : ceux
+// déclarés par l'unité elle-même (u.wizard.lores, propres à son armée —
+// ex. Magie Noire/Démonologie pour les Elfes Noirs), avec repli sur la
+// liste générique MAGIC_DOMAINS uniquement si l'unité n'en déclare aucun
+// (Honneur Elfique donnant un niveau de Sorcier sans lores propres, etc.).
+function domainsForUnit(u) {
+  const own = Array.isArray(u?.wizard?.lores) ? u.wizard.lores.filter(Boolean) : [];
+  return own.length ? own : MAGIC_DOMAINS;
+}
+
 function renderMagicDomainSelector(entry, u) {
   if (!isWizardUnit(u, entry)) return "";
   const current = entry.magicDomain || "";
+  const domains = domainsForUnit(u);
   return `<div class="options-box">
     <div class="options-title">Domaine de magie</div>
     <label class="option-select-label">Domaine
       <select data-select-domain="${esc(entry.uid)}">
         <option value="">Choisir…</option>
-        ${MAGIC_DOMAINS.map(d => `<option value="${esc(d)}" ${d===current?"selected":""}>${esc(d)}</option>`).join("")}
+        ${domains.map(d => `<option value="${esc(d)}" ${d===current?"selected":""}>${esc(d)}</option>`).join("")}
       </select>
     </label>
   </div>`;
