@@ -37,23 +37,20 @@
       "Unités de Base": {
         "minPercent": 33,
         "units": {
-          "lanciers-hauts-elfes": {
+          "elven-spearmen": {
             "enabled": true
           },
-          "archers-hauts-elfes": {
+          "elven-archers": {
             "enabled": true
           },
           "guerriers-fantomes": {
             "max": 1
           },
-          "garde-maritime-de-lothern": {
+          "lothern-sea-guard": {
             "max": 1,
-            "condition": {
-              "type": "general_has_honour",
-              "honours": [
-                "garde-maritime"
-              ]
-            }
+            "conditional": [
+              "Général avec l'Honneur Garde Maritime"
+            ]
           }
         },
         "notes": "Au moins 33 % des points de l’armée doivent être dépensés en unités de Base."
@@ -61,7 +58,7 @@
       "Unités Spéciales": {
         "maxPercent": 33,
         "units": {
-          "gardes-maritimes-de-lothern": {
+          "lothern-sea-guard": {
             "enabled": true
           },
           "elementaires-des-courants": {
@@ -69,15 +66,6 @@
           },
           "balistes-serre-daigle": {
             "max": 3
-          },
-          "maitres-des-epees-de-hoeth": {
-            "condition": {
-              "type": "general_has_honour",
-              "honours": [
-                "gardien-de-saphery",
-                "maitre-du-savoir"
-              ]
-            }
           }
         }
       },
