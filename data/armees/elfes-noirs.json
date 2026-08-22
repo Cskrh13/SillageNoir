@@ -478,7 +478,19 @@
         "Réflexes elfiques",
         "Haine (Hauts-Elfes)",
         "Maîtrise martiale"
-      ]
+      ],
+      "championProfile": {
+        "name": "Lordling",
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "repeater-crossbowmen",
@@ -518,7 +530,19 @@
         "Réflexes elfiques",
         "Haine (Hauts-Elfes)",
         "Maîtrise martiale"
-      ]
+      ],
+      "championProfile": {
+        "name": "Lordling",
+        "M": 5,
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      }
     },
     {
       "id": "black-ark-corsairs",
@@ -558,7 +582,19 @@
         "Progression à travers les terrains",
         "Ordre ouvert",
         "Cape de Dragon Marin"
-      ]
+      ],
+      "championProfile": {
+        "name": "Reaver",
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "dark-riders",
@@ -603,7 +639,19 @@
         "Ordre ouvert",
         "Tirailleurs",
         "Rapidité"
-      ]
+      ],
+      "championProfile": {
+        "name": "Héraut",
+        "M": "-",
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "witch-elves",
@@ -645,7 +693,19 @@
         "Meurtrier",
         "Attaques empoisonnées"
       ],
-      "restriction": "0-1 unité si l'armée contient au moins une Hag de Khaine ; elle est alors une unité de Base."
+      "restriction": "0-1 unité si l'armée contient au moins une Hag de Khaine ; elle est alors une unité de Base.",
+      "championProfile": {
+        "name": "Hag",
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "black-guard",
@@ -690,7 +750,19 @@
         "Maîtrise martiale",
         "Tenace"
       ],
-      "restriction": "0-1 unité par Noble Elfe Noir présent dans l'armée."
+      "restriction": "0-1 unité par Noble Elfe Noir présent dans l'armée.",
+      "championProfile": {
+        "name": "Maître de la Tour",
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 9
+      }
     },
     {
       "id": "executioners",
@@ -732,7 +804,19 @@
         "Haine (Hauts-Elfes)",
         "Meurtrier",
         "Vétéran"
-      ]
+      ],
+      "championProfile": {
+        "name": "Maître Draich",
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 4,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 9
+      }
     },
     {
       "id": "shades",
@@ -776,7 +860,19 @@
         "Progression à travers les terrains",
         "Éclaireurs",
         "Tirailleurs"
-      ]
+      ],
+      "championProfile": {
+        "name": "Bloodshade",
+        "M": 5,
+        "CC": 5,
+        "CT": 6,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 1,
+        "Cd": 8
+      }
     },
     {
       "id": "sisters-of-slaughter",
@@ -817,7 +913,19 @@
         "Solitaire",
         "Meurtrières",
         "Ordre ouvert"
-      ]
+      ],
+      "championProfile": {
+        "name": "Hag",
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 6,
+        "A": 3,
+        "Cd": 9
+      }
     },
     {
       "id": "harpies",
@@ -898,7 +1006,19 @@
         "Stupidité",
         "Rapidité"
       ],
-      "restriction": "0-1 unité par tranche de 1 000 points."
+      "restriction": "0-1 unité par tranche de 1 000 points.",
+      "championProfile": {
+        "name": "Chevalier Dread",
+        "M": "-",
+        "CC": 5,
+        "CT": 4,
+        "F": 4,
+        "E": 4,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 9
+      }
     },
     {
       "id": "scourgerunner-chariots",
@@ -972,7 +1092,22 @@
         "Touches d'impact (D6+1)",
         "Stupidité"
       ],
-      "restriction": "0-2 chars par tranche de 1 000 points, combinés avec les Chars à Harpon."
+      "restriction": "0-2 chars par tranche de 1 000 points, combinés avec les Chars à Harpon.",
+      "crewProfiles": [
+        {
+          "name": "Chevalier Charioteer",
+          "count": 2,
+          "M": "-",
+          "CC": 5,
+          "CT": 4,
+          "F": 4,
+          "E": "-",
+          "PV": "-",
+          "I": 5,
+          "A": 1,
+          "Cd": 9
+        }
+      ]
     },
     {
       "id": "war-hydra-special",
@@ -1011,7 +1146,22 @@
         "Piétinement (D3)",
         "Terreur"
       ],
-      "restriction": "0-1 si le Général est un Grand Maître des Bêtes."
+      "restriction": "0-1 si le Général est un Grand Maître des Bêtes.",
+      "crewProfiles": [
+        {
+          "name": "Dompteurs de Bêtes",
+          "count": 2,
+          "M": 6,
+          "CC": 4,
+          "CT": "-",
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": 8
+        }
+      ]
     },
     {
       "id": "kharibdyss-special",
@@ -1048,7 +1198,22 @@
         "Piétinement (D3+1)",
         "Terreur"
       ],
-      "restriction": "0-1 si le Général est un Grand Maître des Bêtes."
+      "restriction": "0-1 si le Général est un Grand Maître des Bêtes.",
+      "crewProfiles": [
+        {
+          "name": "Dompteurs de Bêtes",
+          "count": 2,
+          "M": 6,
+          "CC": 4,
+          "CT": "-",
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": 8
+        }
+      ]
     },
     {
       "id": "doomfire-warlocks",
@@ -1089,7 +1254,19 @@
         "Attaques empoisonnées",
         "Rapidité"
       ],
-      "restriction": "0-1 unité par tranche de 1 000 points."
+      "restriction": "0-1 unité par tranche de 1 000 points.",
+      "championProfile": {
+        "name": "Maître",
+        "M": "-",
+        "CC": 4,
+        "CT": 4,
+        "F": 4,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "bloodwrack-shrine",
@@ -1129,6 +1306,21 @@
         "Attaques empoisonnées",
         "Regard pétrifiant",
         "Terreur"
+      ],
+      "crewProfiles": [
+        {
+          "name": "Gardien du Sanctuaire",
+          "count": 2,
+          "M": "-",
+          "CC": 4,
+          "CT": 4,
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 5,
+          "A": 1,
+          "Cd": 8
+        }
       ]
     },
     {
@@ -1167,6 +1359,21 @@
         "Régénération (5+)",
         "Piétinement (D3)",
         "Terreur"
+      ],
+      "crewProfiles": [
+        {
+          "name": "Dompteurs de Bêtes",
+          "count": 2,
+          "M": 6,
+          "CC": 4,
+          "CT": "-",
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": 8
+        }
       ]
     },
     {
@@ -1203,6 +1410,21 @@
         "Maîtres des monstres",
         "Piétinement (D3+1)",
         "Terreur"
+      ],
+      "crewProfiles": [
+        {
+          "name": "Dompteurs de Bêtes",
+          "count": 2,
+          "M": 6,
+          "CC": 4,
+          "CT": "-",
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": 8
+        }
       ]
     },
     {
@@ -1275,7 +1497,22 @@
         "Haine (Hauts-Elfes)",
         "Tirailleurs"
       ],
-      "restriction": "0-2 par tranche de 1 000 points."
+      "restriction": "0-2 par tranche de 1 000 points.",
+      "crewProfiles": [
+        {
+          "name": "Équipage Elfe Noir",
+          "count": 1,
+          "M": 5,
+          "CC": 4,
+          "CT": 4,
+          "F": 3,
+          "E": 3,
+          "PV": 2,
+          "I": 4,
+          "A": 2,
+          "Cd": 8
+        }
+      ]
     },
     {
       "id": "cauldron-of-blood",
@@ -1315,7 +1552,22 @@
         "Attaques empoisonnées",
         "Terreur"
       ],
-      "restriction": "Uniquement comme monture d'une Hag de Khaine ; 0-1 par tranche de 1 000 points."
+      "restriction": "Uniquement comme monture d'une Hag de Khaine ; 0-1 par tranche de 1 000 points.",
+      "crewProfiles": [
+        {
+          "name": "Équipage de Furies",
+          "count": 2,
+          "M": "-",
+          "CC": 4,
+          "CT": 4,
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 5,
+          "A": 1,
+          "Cd": 9
+        }
+      ]
     }
   ],
   "mounts": [
