@@ -156,7 +156,11 @@
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
         "Cape en peau de Dragon des Mers +4 pts",
-        "Monture selon la liste des montures",
+      "Coursier Noir +14 pts",
+      "Sang-Froid +18 pts",
+      "Char à Sang-Froid +125 pts",
+      "Manticore +130 pts",
+      "Dragon Noir +280 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
@@ -193,21 +197,24 @@
         "Armure légère"
       ],
       "options": [
-        "Arme de base additionnelle +3 pts",
-        "Arme lourde +4 pts",
-        "Hallebarde +3 pts",
-        "Lance si monté +4 pts",
-        "Arbalète à répétition +6 pts",
-        "Arme de poing à répétition +5 pts",
-        "Paire d'armes de poing à répétition +10 pts",
-        "Bouclier +2 pts",
-        "Armure lourde +3 pts",
-        "Armure intégrale +6 pts",
-        "Cape en peau de Dragon des Mers +4 pts",
-        "Monture selon la liste des montures",
-        "Grande Bannière +25 pts",
-        "Objets magiques jusqu'à 50 pts"
-      ],
+  "Arme de base additionnelle +3 pts",
+  "Arme lourde +4 pts",
+  "Hallebarde +3 pts",
+  "Lance si monté +4 pts",
+  "Arbalète à répétition +6 pts",
+  "Arme de poing à répétition +5 pts",
+  "Paire d'armes de poing à répétition +10 pts",
+  "Bouclier +2 pts",
+  "Armure lourde +3 pts",
+  "Armure intégrale +6 pts",
+  "Cape en peau de Dragon des Mers +4 pts",
+  "Coursier Noir +14 pts",
+  "Sang-Froid +18 pts",
+  "Char à Sang-Froid +125 pts",
+  "Manticore +130 pts",
+  "Grande Bannière +25 pts",
+  "Objets magiques jusqu'à 50 pts"
+],
       "specialRules": [
         "Réflexes elfiques",
         "Haine éternelle",
@@ -241,10 +248,13 @@
         "Arme de base"
       ],
       "options": [
-        "Niveau 4 +30 pts",
-        "Monture selon la liste",
-        "Objets magiques jusqu'à 100 pts"
-      ],
+  "Niveau 4 +30 pts",
+  "Coursier Noir +14 pts",
+  "Sang-Froid +18 pts",
+  "Pégase Noir +35 pts",
+  "Dragon Noir +280 pts",
+  "Objets magiques jusqu'à 100 pts"
+]
       "specialRules": [
         "Réflexes elfiques",
         "Haine éternelle",
@@ -290,10 +300,12 @@
         "Arme de base"
       ],
       "options": [
-        "Niveau 2 +30 pts",
-        "Monture selon la liste",
-        "Objets magiques jusqu'à 50 pts"
-      ],
+  "Niveau 2 +30 pts",
+  "Coursier Noir +14 pts",
+  "Sang-Froid +18 pts",
+  "Pégase Noir +35 pts",
+  "Objets magiques jusqu'à 50 pts"
+]
       "specialRules": [
         "Réflexes elfiques",
         "Haine éternelle",
@@ -340,15 +352,16 @@
         "Fouet",
         "Armure légère"
       ],
-      "options": [
-        "Lance de cavalerie +2 pts",
-        "Arbalète à répétition +6 pts",
-        "Bouclier +2 pts",
-        "Armure lourde +3 pts",
-        "Monture obligatoire : Char à harpon ou Manticore",
-        "Cape en peau de Dragon des Mers +4 pts",
-        "Objets magiques jusqu'à 75 pts"
-      ],
+     "options": [
+  "Lance de cavalerie +2 pts",
+  "Arbalète à répétition +6 pts",
+  "Bouclier +2 pts",
+  "Armure lourde +3 pts",
+  "Char à Harpon +85 pts",
+  "Manticore +130 pts",
+  "Cape en peau de Dragon des Mers +4 pts",
+  "Objets magiques jusqu'à 75 pts"
+]
       "specialRules": [
         "Réflexes elfiques",
         "Haine éternelle",
@@ -383,12 +396,12 @@
         "Deux armes de base"
       ],
       "options": [
-        "Don de Khaine : Cri de guerre +15 pts",
-        "Rune de Khaine +10 pts",
-        "Breuvage de sorcière +20 pts",
-        "Chaudron de Sang comme monture",
-        "Objets magiques jusqu'à 75 pts"
-      ],
+  "Don de Khaine : Cri de guerre +15 pts",
+  "Rune de Khaine +10 pts",
+  "Breuvage de sorcière +20 pts",
+  "Chaudron de Sang +150 pts",
+  "Objets magiques jusqu'à 75 pts"
+]
       "specialRules": [
         "Haine éternelle",
         "Frénésie",
