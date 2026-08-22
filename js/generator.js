@@ -324,74 +324,187 @@ function normalizeTextList(raw) {
 
 function normalizeUnit(u, fallbackId = "", mounts = []) {
   if (!u || typeof u !== "object") return null;
+
   const points = u.points ?? u.cost ?? u.cout;
-  const { options, magicItemsLimit, bannerItemsLimit, championWeaponLimit } = classifyUnitOptions(u.options, mounts);
+
+  const {
+    options,
+    magicItemsLimit,
+    bannerItemsLimit,
+    championWeaponLimit
+  } = classifyUnitOptions(u.options, mounts);
 
   // Règles spéciales optionnelles / honneurs (choisissables), distinctes des
   // règles spéciales natives (fixes, toujours actives).
-  const ruleOptionsRaw = u.ruleOptions ?? u.optionsRegles ?? u.optionalRules
-    ?? u.honours ?? u.honor ?? u.honneurs ?? [];
+  const ruleOptionsRaw =
+    u.ruleOptions ??
+    u.optionsRegles ??
+    u.optionalRules ??
+    u.honours ??
+    u.honor ??
+    u.honneurs ??
+    [];
+
   const ruleOptions = Array.isArray(ruleOptionsRaw)
-    ? ruleOptionsRaw.map(o => normalizeOption(o, "rule")).filter(Boolean)
+    ? ruleOptionsRaw
+        .map(o => normalizeOption(o, "rule"))
+        .filter(Boolean)
     : [];
 
   let minSize = u.minSize != null ? Number(u.minSize) : null;
   let maxSize = u.maxSize != null ? Number(u.maxSize) : null;
+
   const size = String(u.unitSize ?? "").trim();
+
   if (minSize == null && size) {
     const range = size.match(/(\d+)\s*[-–]\s*(\d+)/);
     const plus = size.match(/(\d+)\s*\+/);
     const single = size.match(/^\d+$/);
-    if (range) { minSize = Number(range[1]); maxSize = Number(range[2]); }
-    else if (plus) { minSize = Number(plus[1]); maxSize = Infinity; }
-    else if (single) { minSize = Number(single[0]); maxSize = Number(single[0]); }
+
+    if (range) {
+      minSize = Number(range[1]);
+      maxSize = Number(range[2]);
+    } else if (plus) {
+      minSize = Number(plus[1]);
+      maxSize = Infinity;
+    } else if (single) {
+      minSize = Number(single[0]);
+      maxSize = Number(single[0]);
+    }
   }
 
   const unitId = String(u.id || fallbackId);
 
-  // Guerriers Fantômes : options de règles spéciales à coût par modèle,
-  // codées ici plutôt que dans les données d'armée (voir
-  // SHADOW_WARRIORS_RULE_OPTIONS).
+  // Guerriers Fantômes : options de règles spéciales à coût par modèle.
   const finalRuleOptions = unitId === "shadow-warriors"
-    ? [...ruleOptions, ...SHADOW_WARRIORS_RULE_OPTIONS.map(o => normalizeOption(o, "rule")).filter(Boolean)]
+    ? [
+        ...ruleOptions,
+        ...SHADOW_WARRIORS_RULE_OPTIONS
+          .map(o => normalizeOption(o, "rule"))
+          .filter(Boolean)
+      ]
     : ruleOptions;
 
-  // Profils d'équipage / monture attelée, affichés directement avec la
-  // figurine principale (baliste, chars, cotres volants…), sans case à
-  // cocher : voir renderStatsTable.
+  // Profils d'équipage / monture attelée.
   const crewProfiles = Array.isArray(u.crewProfiles)
-    ? u.crewProfiles.map(c => ({ ...c, profile: normalizeProfile(c) })).filter(c => c.name)
+    ? u.crewProfiles
+        .map(c => ({
+          ...c,
+          profile: normalizeProfile(c)
+        }))
+        .filter(c => c.name)
     : [];
+
+  // ------------------------------------------------------------
+  // MAGIE / SORCIER
+  // ------------------------------------------------------------
+  // On conserve explicitement la structure wizard du JSON.
+  // Elle contient notamment :
+  //   wizard.level
+  //   wizard.upgradeLevel2
+  //   wizard.upgradeLevel3
+  //   wizard.upgradeLevel4
+  //   wizard.lores
+  //
+  // Les domaines sont nettoyés afin que domainsForUnit() puisse
+  // travailler directement dessus.
+  const wizard = u.wizard && typeof u.wizard === "object"
+    ? {
+        ...u.wizard,
+
+        level: u.wizard.level != null
+          ? Number(u.wizard.level)
+          : null,
+
+        upgradeLevel2: u.wizard.upgradeLevel2 != null
+          ? Number(u.wizard.upgradeLevel2)
+          : null,
+
+        upgradeLevel3: u.wizard.upgradeLevel3 != null
+          ? Number(u.wizard.upgradeLevel3)
+          : null,
+
+        upgradeLevel4: u.wizard.upgradeLevel4 != null
+          ? Number(u.wizard.upgradeLevel4)
+          : null,
+
+        lores: Array.isArray(u.wizard.lores)
+          ? u.wizard.lores
+              .map(lore => String(lore).trim())
+              .filter(Boolean)
+          : []
+      }
+    : null;
 
   return {
     ...u,
+
     id: unitId,
     name: u.name || u.nom || "Unité sans nom",
     category: u.category || u.categorie || "Autres",
-    points: points == null || points === "" ? null : Number(points),
+
+    points:
+      points == null || points === ""
+        ? null
+        : Number(points),
+
     options,
     ruleOptions: finalRuleOptions,
+
     crewProfiles,
-    rules: normalizeTextList(u.rules ?? u.regles ?? u.specialRules),
-    equipment: normalizeTextList(u.equipment ?? u.equipement ?? u.equipementNatif ?? u.equipementDeBase),
+
+    rules: normalizeTextList(
+      u.rules ??
+      u.regles ??
+      u.specialRules
+    ),
+
+    equipment: normalizeTextList(
+      u.equipment ??
+      u.equipement ??
+      u.equipementNatif ??
+      u.equipementDeBase
+    ),
+
     profile: u.profile || u.profil || null,
-    // Profil supplémentaire du chef d'unité (Sentinelle, Gardien, Héraut…),
-    // affiché comme une ligne de caractéristiques additionnelle lorsque
-    // l'option "champion" est cochée — alimenté plus tard dans les JSON.
-    championProfile: u.championProfile || u.profilChef || null,
-    // Budgets d'objets magiques : valeur numérique dérivée automatiquement
-    // des phrases « Objets magiques jusqu'à X pts » / « Bannière magique
-    // jusqu'à X pts » / « Arme magique jusqu'à X pts » présentes dans les
-    // options brutes, ou surchargée explicitement par le JSON (u.xxxLimit).
-    magicItemsLimit: u.magicItemsLimit != null ? Number(u.magicItemsLimit) : magicItemsLimit,
-    bannerItemsLimit: u.bannerItemsLimit != null ? Number(u.bannerItemsLimit) : bannerItemsLimit,
-    championWeaponLimit: u.championWeaponLimit != null ? Number(u.championWeaponLimit) : championWeaponLimit,
+
+    // ----------------------------------------------------------
+    // SORCIER / DOMAINES DE MAGIE
+    // ----------------------------------------------------------
+    wizard,
+
+    // Profil supplémentaire du chef d'unité.
+    championProfile:
+      u.championProfile ||
+      u.profilChef ||
+      null,
+
+    // Budgets d'objets magiques.
+    magicItemsLimit:
+      u.magicItemsLimit != null
+        ? Number(u.magicItemsLimit)
+        : magicItemsLimit,
+
+    bannerItemsLimit:
+      u.bannerItemsLimit != null
+        ? Number(u.bannerItemsLimit)
+        : bannerItemsLimit,
+
+    championWeaponLimit:
+      u.championWeaponLimit != null
+        ? Number(u.championWeaponLimit)
+        : championWeaponLimit,
+
     source: u.source || "armée",
+
     unitSize: u.unitSize || "",
+
     minSize,
     maxSize,
+
     minEntries: u.minEntries ?? null,
     maxEntries: u.maxEntries ?? null,
+
     min: u.min ?? 0,
     max: u.max ?? Infinity
   };
