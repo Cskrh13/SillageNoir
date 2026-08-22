@@ -74,7 +74,7 @@
     },
     {
       "id": "sea-dragon-cloak",
-      "name": "Cape de Dragon Marin",
+      "name": "Cape en peau de Dragon des Mers",
       "text": "Améliore de 1 la sauvegarde d'armure contre les tirs non magiques, jusqu'à 2+."
     },
     {
@@ -155,8 +155,8 @@
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
         "Monture selon la liste des montures",
-        "Cape de Dragon Marin +4 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
@@ -203,8 +203,9 @@
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
         "Monture selon la liste des montures",
-        "Cape de Dragon Marin +4 pts",
+        "Grande Bannière +25 pts",
         "Objets magiques jusqu'à 50 pts"
       ],
       "specialRules": [
@@ -345,7 +346,7 @@
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Monture obligatoire : Char à harpon ou Manticore",
-        "Cape de Dragon Marin +4 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
         "Objets magiques jusqu'à 75 pts"
       ],
       "specialRules": [
@@ -557,7 +558,7 @@
         "Haine (Hauts-Elfes)",
         "Progression à travers les terrains",
         "Ordre ouvert",
-        "Cape de Dragon Marin"
+        "Cape en peau de Dragon des Mers"
       ]
     },
     {
@@ -944,7 +945,7 @@
         "Haine (Hauts-Elfes)",
         "Touches d'impact (D6)",
         "Ordre ouvert",
-        "Cape de Dragon Marin",
+        "Cape en peau de Dragon des Mers",
         "Rapidité"
       ],
       "weapon": "Harpon ravageur : 24\", F6, PA -3, Encombrant, Blessures multiples (D3), Ponderous",
