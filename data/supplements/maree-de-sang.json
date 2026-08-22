@@ -102,14 +102,17 @@
     "global": {
       "battleStandardBearer": {
         "enabled": true,
-        "restriction": "Un seul Maître Elfe Noir de l'armée peut devenir Porteur de la Grande Bannière pour +25 points.",
-        "magicBanner": "Le Porteur de la Grande Bannière peut prendre une seule bannière magique sans limite de points en plus de son allocation normale."
+         "max": 1,
+           "eligibleCategory": "Nobles Hauts Elfes",
+         "points": 25,
+       "magicBannerUnlimited": true
       },
       "magicItems": {
         "enabled": true,
         "source": [
           "objets magiques Courants",
-          "objets magiques de l'armée légendaire Elfes Noirs"
+          "Elfes-Noirs",
+          "Maree-de-sang"
         ]
       }
     }
