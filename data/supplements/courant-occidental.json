@@ -204,7 +204,7 @@
       "type": "Infanterie régulière",
       "unitSize": "1",
       "baseSize": "25x25 mm",
-      "points": 140,
+      "points": 95,
       "profile": {
         "M": 5,
         "CC": 4,
@@ -214,7 +214,7 @@
         "PV": 2,
         "I": 4,
         "A": 1,
-        "Cd": 9
+        "Cd": 10
       },
       "equipment": [
         "Arme de base",
@@ -236,6 +236,7 @@
         "Valeur des Âges",
         "Réquisition avisée",
         "Premier citoyen",
+        "pur de coeur",
         "Logisticien"
       ],
       "specialRules": [
@@ -306,7 +307,7 @@
         },
         {
           "id": "bouclier-des-vareth",
-          "text": "Calion et l’unité qu’elle a rejointe gagnent la règle Contre-Charge."
+          "text": "Le Bouclier des Vareth est un bouclier. Lorsqu'une unité comprenant Calion est la cible d'une charge, après que l'unité qui charge a déterminé sa distance de charge, Calion et l'unité qu'elle a rejointe peuvent effectuer un mouvement de 1D3pas en direction de l'unité qui charge. Effectuez ce mouvement immédiatement avant que l'unité qui charge n'effectue son mouvement de charge. Réduisez le bonus d”initiative de charge de l'unité qui charge du résultat obtenu sur le D3. Le mouvement de Calion et de son unité s'arrête immédiatement si : elles entrent en contact avec une autre unité ou avec un élément de terrain ; poursuivre leur mouvement les amènerait à moins de 1pas d'une unité ennemie. Une unité ne peut pas utiliser le Bouclier des Vareth si son mouvement l'amènerait à moins de 1pas d'une unité ennemie autre que l'unité qui la charge."
         }
       ]
     },
