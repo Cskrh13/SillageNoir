@@ -74,7 +74,7 @@
     },
     {
       "id": "sea-dragon-cloak",
-      "name": "Cape en Peau de Dragon des Mers",
+      "name": "Cape de Dragon Marin",
       "text": "Améliore de 1 la sauvegarde d'armure contre les tirs non magiques, jusqu'à 2+."
     },
     {
@@ -155,12 +155,8 @@
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
-        "Coursier Noir +14 pts",
-        "Sang-Froid +18 pts",
-        "Char à Sang froid +125 pts",
-        "Manticore +130 pts",
-        "Dragon Noir +280 pts",
-        "Cape en peau de Dragon des Mers +4 pts",
+        "Monture selon la liste des montures",
+        "Cape de Dragon Marin +4 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
@@ -207,11 +203,8 @@
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
-        "Coursier Noir +14 pts",
-        "Sang-Froid +18 pts",
-        "Char à Sang-Froid +125 pts",
-        "Manticore +130 pts",
-        "Cape en Peau de Dragon des Mers +4 pts",
+        "Monture selon la liste des montures",
+        "Cape de Dragon Marin +4 pts",
         "Objets magiques jusqu'à 50 pts"
       ],
       "specialRules": [
@@ -248,10 +241,7 @@
       ],
       "options": [
         "Niveau 4 +30 pts",
-        "Coursier Noir +14 pts",
-        "Sang-Froid +18 pts",
-        "Pégase Noir +35 pts",
-        "Dragon Noir +280 pts",
+        "Monture selon la liste",
         "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
@@ -300,9 +290,7 @@
       ],
       "options": [
         "Niveau 2 +30 pts",
-        "Coursier Noir +14 pts",
-        "Sang-Froid +18 pts",
-        "Pégase Noir +35 pts",
+        "Monture selon la liste",
         "Objets magiques jusqu'à 50 pts"
       ],
       "specialRules": [
@@ -356,8 +344,8 @@
         "Arbalète à répétition +6 pts",
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
-        "Monture obligatoire : Char Fléau-Coureur ou Manticore",
-        "Cape en peau de Dragon des Mers +4 pts",
+        "Monture obligatoire : Char à harpon ou Manticore",
+        "Cape de Dragon Marin +4 pts",
         "Objets magiques jusqu'à 75 pts"
       ],
       "specialRules": [
@@ -371,7 +359,7 @@
     },
     {
       "id": "death-hag",
-      "name": "Matriarche de Khaine",
+      "name": "Hag de Khaine",
       "category": "Personnages",
       "points": 70,
       "min": 0,
@@ -397,7 +385,7 @@
         "Don de Khaine : Cri de guerre +15 pts",
         "Rune de Khaine +10 pts",
         "Breuvage de sorcière +20 pts",
-        "Chaudron de Sang comme monture +150",
+        "Chaudron de Sang comme monture",
         "Objets magiques jusqu'à 75 pts"
       ],
       "specialRules": [
@@ -490,19 +478,7 @@
         "Réflexes elfiques",
         "Haine (Hauts-Elfes)",
         "Maîtrise martiale"
-      ],
-      "championProfile": {
-        "name": "Lordling",
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 2,
-        "Cd": 8
-      }
+      ]
     },
     {
       "id": "repeater-crossbowmen",
@@ -542,19 +518,7 @@
         "Réflexes elfiques",
         "Haine (Hauts-Elfes)",
         "Maîtrise martiale"
-      ],
-      "championProfile": {
-        "name": "Lordling",
-        "M": 5,
-        "CC": 4,
-        "CT": 5,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 1,
-        "Cd": 8
-      }
+      ]
     },
     {
       "id": "black-ark-corsairs",
@@ -579,7 +543,7 @@
       "unitSize": "10+",
       "equipment": [
         "Armes de base",
-        "Armure légère"        
+        "Armure légère"
       ],
       "options": [
         "Armes de base additionnelles gratuites ou armes de poing à répétition gratuites",
@@ -593,20 +557,8 @@
         "Haine (Hauts-Elfes)",
         "Progression à travers les terrains",
         "Ordre ouvert",
-        "Cape en peau de Dragon des Mers"
-      ],
-      "championProfile": {
-        "name": "Reaver",
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 2,
-        "Cd": 8
-      }
+        "Cape de Dragon Marin"
+      ]
     },
     {
       "id": "dark-riders",
@@ -651,19 +603,7 @@
         "Ordre ouvert",
         "Tirailleurs",
         "Rapidité"
-      ],
-      "championProfile": {
-        "name": "Héraut",
-        "M": "-",
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 2,
-        "Cd": 8
-      }
+      ]
     },
     {
       "id": "witch-elves",
@@ -705,19 +645,7 @@
         "Meurtrier",
         "Attaques empoisonnées"
       ],
-      "restriction": "0-1 unité si l'armée contient au moins une Hag de Khaine ; elle est alors une unité de Base.",
-      "championProfile": {
-        "name": "Hag",
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 2,
-        "Cd": 8
-      }
+      "restriction": "0-1 unité si l'armée contient au moins une Hag de Khaine ; elle est alors une unité de Base."
     },
     {
       "id": "black-guard",
@@ -762,19 +690,7 @@
         "Maîtrise martiale",
         "Tenace"
       ],
-      "restriction": "0-1 unité par Noble Elfe Noir présent dans l'armée.",
-      "championProfile": {
-        "name": "Maître de la Tour",
-        "M": 5,
-        "CC": 5,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 2,
-        "Cd": 9
-      }
+      "restriction": "0-1 unité par Noble Elfe Noir présent dans l'armée."
     },
     {
       "id": "executioners",
@@ -816,19 +732,7 @@
         "Haine (Hauts-Elfes)",
         "Meurtrier",
         "Vétéran"
-      ],
-      "championProfile": {
-        "name": "Maître Draich",
-        "M": 5,
-        "CC": 5,
-        "CT": 4,
-        "F": 4,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 2,
-        "Cd": 9
-      }
+      ]
     },
     {
       "id": "shades",
@@ -872,19 +776,7 @@
         "Progression à travers les terrains",
         "Éclaireurs",
         "Tirailleurs"
-      ],
-      "championProfile": {
-        "name": "Bloodshade",
-        "M": 5,
-        "CC": 5,
-        "CT": 6,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 1,
-        "Cd": 8
-      }
+      ]
     },
     {
       "id": "sisters-of-slaughter",
@@ -925,19 +817,7 @@
         "Solitaire",
         "Meurtrières",
         "Ordre ouvert"
-      ],
-      "championProfile": {
-        "name": "Hag",
-        "M": 5,
-        "CC": 5,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 6,
-        "A": 3,
-        "Cd": 9
-      }
+      ]
     },
     {
       "id": "harpies",
@@ -1064,7 +944,7 @@
         "Haine (Hauts-Elfes)",
         "Touches d'impact (D6)",
         "Ordre ouvert",
-        "Cape en Peau de Dragon des Mers",
+        "Cape de Dragon Marin",
         "Rapidité"
       ],
       "weapon": "Harpon ravageur : 24\", F6, PA -3, Encombrant, Blessures multiples (D3), Ponderous",
@@ -1179,7 +1059,7 @@
       "restriction": "0-1 si le Général est un Grand Maître des Bêtes.",
       "crewProfiles": [
         {
-          "name": "Dompteurs de Bêtes",
+          "name": "Maîtres des Bêtes",
           "count": 2,
           "M": 6,
           "CC": 4,
@@ -1231,7 +1111,7 @@
       "restriction": "0-1 si le Général est un Grand Maître des Bêtes.",
       "crewProfiles": [
         {
-          "name": "Dompteurs de Bêtes",
+          "name": "Maîtres des Bêtes",
           "count": 2,
           "M": 6,
           "CC": 4,
@@ -1284,19 +1164,7 @@
         "Attaques empoisonnées",
         "Rapidité"
       ],
-      "restriction": "0-1 unité par tranche de 1 000 points.",
-      "championProfile": {
-        "name": "Maître",
-        "M": "-",
-        "CC": 4,
-        "CT": 4,
-        "F": 4,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 2,
-        "Cd": 8
-      }
+      "restriction": "0-1 unité par tranche de 1 000 points."
     },
     {
       "id": "bloodwrack-shrine",
@@ -1339,7 +1207,7 @@
       ],
       "crewProfiles": [
         {
-          "name": "Gardien du Sanctuaire",
+          "name": "Gardiennes du Sanctuaire",
           "count": 2,
           "M": "-",
           "CC": 4,
@@ -1392,7 +1260,7 @@
       ],
       "crewProfiles": [
         {
-          "name": "Dompteurs de Bêtes",
+          "name": "Maîtres des Bêtes",
           "count": 2,
           "M": 6,
           "CC": 4,
@@ -1443,7 +1311,7 @@
       ],
       "crewProfiles": [
         {
-          "name": "Dompteurs de Bêtes",
+          "name": "Maîtres des Bêtes",
           "count": 2,
           "M": 6,
           "CC": 4,
@@ -1531,7 +1399,7 @@
       "crewProfiles": [
         {
           "name": "Équipage Elfe Noir",
-          "count": 1,
+          "count": 2,
           "M": 5,
           "CC": 4,
           "CT": 4,
@@ -1585,7 +1453,7 @@
       "restriction": "Uniquement comme monture d'une Hag de Khaine ; 0-1 par tranche de 1 000 points.",
       "crewProfiles": [
         {
-          "name": "Équipage de Furies",
+          "name": "Équipage Furies",
           "count": 2,
           "M": "-",
           "CC": 4,
