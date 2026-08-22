@@ -128,7 +128,7 @@
         "PV": 3,
         "I": 4,
         "A": 4,
-        "Cd": 8
+        "Cd": 10
       },
       "equipment": [
         "Arme de base",
@@ -195,7 +195,7 @@
           "points": 18
         },
         {
-          "name": "Pégase Noir",
+          "name": "Pegase-Noir",
           "points": 35
         }
       ],
