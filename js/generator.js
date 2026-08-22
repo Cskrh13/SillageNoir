@@ -128,10 +128,22 @@ function renownMatches(id, entry, u) {
   const current = entry?.renown || u?.renown || state.army?.renown || state.supplement?.renown || null;
   return current != null && String(current) === String(id);
 }
+// Les Bannières magiques du fichier commun (data/objets-magiques/communs.json)
+// ne sont pas réservées au Porteur de la Grande Bannière : n'importe quelle
+// unité disposant d'un Porte-étendard peut les choisir via son propre
+// sélecteur de bannière (voir renderBannerItemsSelector). Seules les
+// bannières magiques spécifiques à une armée/un supplément restent, par
+// défaut, réservées à la Grande Bannière — sauf restriction explicite dans
+// les données.
+function isCommonSourceItem(item) {
+  return /commun/i.test(String(item?.sourceLabel || ""));
+}
 function isItemAllowedForEntry(item, entry, u) {
   const explicit = item?.restriction?.requires;
+  const isCommonBanner = item?.categoryKey === "magic_standard" && isCommonSourceItem(item);
   const requires = Array.isArray(explicit) ? explicit
-    : (explicit != null ? [explicit] : (CATEGORY_DEFAULT_REQUIRES[item?.categoryKey] || []));
+    : (explicit != null ? [explicit]
+      : (isCommonBanner ? [] : (CATEGORY_DEFAULT_REQUIRES[item?.categoryKey] || [])));
   if (item?.restriction?.override === "no-wizard-required") return true;
   return requires.every(req => {
     if (req === "wizard") return isWizardUnit(u, entry);
@@ -2481,29 +2493,55 @@ function exportJSON() {
 }
 
 function exportTXT() {
+  const name = $("nameInput").value.trim() || "Ma liste";
+  const total = getTotal();
+  const width = 64;
+  const rule = "═".repeat(width);
+  const thin = "─".repeat(width);
+
   const lines = [
-    $("nameInput").value.trim() || "Ma liste",
-    `${state.supplement?.name || ""} · ${state.army?.name || ""}`,
-    `Format : ${state.pointsLimit} points`,
-    `Total : ${getTotal()} points`,
+    rule,
+    center(name, width),
+    center(`${state.supplement?.name || ""} · ${state.army?.name || ""}`, width),
+    rule,
+    "",
+    `  Format : ${state.pointsLimit} points`,
+    `  Total  : ${total} points  (${Math.round((total/Math.max(1,state.pointsLimit))*100)}%)`,
     ""
   ];
+
   const groups = {};
   state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[entryEffectiveCategory(item, u)] ||= []).push({u,item}); });
+
   sortByCategory(Object.entries(groups)).forEach(([cat,arr]) => {
-    lines.push(cat.toUpperCase());
-    lines.push("-".repeat(cat.length));
+    const catTotal = arr.reduce((s,{item})=>s+entryPoints(item),0);
+    const label = `${cat.toUpperCase()} — ${catTotal} pts`;
+    lines.push(label);
+    lines.push(thin);
     arr.forEach(({u,item},i) => {
       const pool = effectivePool(item, u);
       const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
       opts.push(...magicItemsLabel(item));
       if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
-      lines.push(`${i+1}. ${item.qty} figurine${item.qty>1?"s":""} — ${u.name}${opts.length?" — "+opts.join(", "):""} — ${entryPoints(item)} pts`);
+      const head = `  ${i+1}. ${item.qty}× ${u.name}`;
+      const pts = `${entryPoints(item)} pts`;
+      const pad = Math.max(1, width - head.length - pts.length);
+      lines.push(head + " ".repeat(pad) + pts);
+      if (opts.length) lines.push(`       ${opts.join(", ")}`);
     });
     lines.push("");
   });
-  download(`${slug($("nameInput").value || "ma-liste")}.txt`, lines.join("\n"), "text/plain;charset=utf-8");
+
+  lines.push(rule);
+  download(`${slug(name)}.txt`, lines.join("\n"), "text/plain;charset=utf-8");
   setStatus("Liste exportée en TXT.", "ok");
+}
+
+function center(s, width) {
+  s = String(s || "");
+  if (s.length >= width) return s;
+  const left = Math.floor((width - s.length) / 2);
+  return " ".repeat(left) + s;
 }
 
 function download(name, content, type) {
@@ -2514,21 +2552,88 @@ function download(name, content, type) {
 }
 
 function printList() {
-  const ordered = state.list
-    .map(item => ({ item, u: getUnit(item.id) }))
-    .filter(x => x.u)
-    .sort((a,b) => categoryRank(entryEffectiveCategory(a.item, a.u)) - categoryRank(entryEffectiveCategory(b.item, b.u)));
-  const rows = ordered.map(({item,u},index) => {
-    const pool = effectivePool(item, u);
-    const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
-    opts.push(...magicItemsLabel(item));
-    if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
-    const optText=opts.join(", ");
-    return `<tr><td>${index+1}</td><td>${esc(entryEffectiveCategory(item, u))}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
+  const groups = {};
+  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[entryEffectiveCategory(item, u)] ||= []).push({u,item}); });
+  const total = getTotal();
+  const limit = state.pointsLimit;
+  const pct = Math.min(100, Math.round((total/Math.max(1,limit))*100));
+  const listName = $("nameInput").value.trim() || "Ma liste";
+
+  let counter = 0;
+  const sections = sortByCategory(Object.entries(groups)).map(([cat,arr]) => {
+    const rows = arr.map(({u,item}) => {
+      counter++;
+      const pool = effectivePool(item, u);
+      const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
+      opts.push(...magicItemsLabel(item));
+      if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
+      const optHtml = opts.length ? `<div class="opts">${opts.map(o=>`<span class="tag">${esc(o)}</span>`).join("")}</div>` : "";
+      return `<tr>
+        <td class="num">${counter}</td>
+        <td class="unit"><div class="unit-name">${esc(u.name)}</div>${optHtml}</td>
+        <td class="qty">${item.qty}</td>
+        <td class="pts">${entryPoints(item)}</td>
+      </tr>`;
+    }).join("");
+    const catTotal = arr.reduce((s,{item})=>s+entryPoints(item),0);
+    return `<section class="cat-block">
+      <h2>${esc(cat)} <span class="cat-total">${catTotal} pts</span></h2>
+      <table>
+        <thead><tr><th class="num">#</th><th>Unité &amp; options</th><th class="qty">Eff.</th><th class="pts">Pts</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </section>`;
   }).join("");
+
   const w=window.open("","_blank");
   if(!w) return setStatus("La fenêtre d'impression a été bloquée.", "error");
-  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc($("nameInput").value||"Ma liste")}</title><style>body{font-family:Georgia,serif;margin:40px;color:#222}h1{font-size:28px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #aaa;padding:7px;text-align:left}.total{font-size:20px;margin:15px 0}</style></head><body><h1>${esc($("nameInput").value||"Ma liste")}</h1><p>${esc(state.supplement?.name||"")} · ${esc(state.army?.name||"")}</p><div class="total">${getTotal()} / ${state.pointsLimit} points</div><table><thead><tr><th>#</th><th>Catégorie</th><th>Unité</th><th>Effectif</th><th>Options</th><th>Points</th></tr></thead><tbody>${rows}</tbody></table><script>window.print()<\/script></body></html>`);
+  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc(listName)}</title>
+<style>
+  :root{ --ink:#1f2430; --muted:#6b7280; --line:#e2e2e5; --accent:#7a1f2b; --accent-soft:#f4e9ea; }
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;margin:0;padding:36px 44px;color:var(--ink);background:#fff}
+  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--accent);padding-bottom:14px;margin-bottom:6px}
+  h1{font-size:26px;margin:0;letter-spacing:.3px}
+  .subtitle{color:var(--muted);font-size:13px;margin-top:4px}
+  .points-box{text-align:right}
+  .points-box .big{font-size:24px;font-weight:700;color:var(--accent)}
+  .points-box .lim{font-size:13px;color:var(--muted)}
+  .bar{height:6px;border-radius:3px;background:var(--accent-soft);margin:14px 0 24px;overflow:hidden}
+  .bar-fill{height:100%;background:var(--accent);width:${pct}%}
+  .cat-block{margin-bottom:22px;break-inside:avoid}
+  .cat-block h2{font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:6px;margin:0 0 6px;display:flex;justify-content:space-between}
+  .cat-total{color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
+  table{border-collapse:collapse;width:100%}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}
+  td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}
+  tr:last-child td{border-bottom:none}
+  .num{width:28px;color:var(--muted);text-align:center}
+  .qty{width:50px;text-align:center}
+  .pts{width:60px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  .unit-name{font-weight:600}
+  .opts{margin-top:3px}
+  .tag{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:1px 8px;font-size:11.5px;margin:2px 4px 0 0}
+  footer{margin-top:28px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;display:flex;justify-content:space-between}
+  @media print{ body{padding:16px 22px} .cat-block{break-inside:avoid} }
+</style></head><body>
+<header>
+  <div>
+    <h1>${esc(listName)}</h1>
+    <div class="subtitle">${esc(state.supplement?.name||"")} · ${esc(state.army?.name||"")}</div>
+  </div>
+  <div class="points-box">
+    <div class="big">${total} pts</div>
+    <div class="lim">sur ${limit} pts (${pct}%)</div>
+  </div>
+</header>
+<div class="bar"><div class="bar-fill"></div></div>
+${sections}
+<footer>
+  <span>${esc(listName)}</span>
+  <span>Généré le ${new Date().toLocaleDateString("fr-FR")}</span>
+</footer>
+<script>window.print()<\/script>
+</body></html>`);
   w.document.close();
 }
 
