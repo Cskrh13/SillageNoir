@@ -17,7 +17,9 @@
         .supplement-emblem{position:absolute;top:0;right:0;width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--line);box-shadow:0 2px 6px #0007;background:#141a1b;display:none}
         .supplement-emblem.visible{display:block}
         @media(max-width:760px){.supplement-emblem{width:28px;height:28px}}button{border:1px solid #657275;background:#b7b39d;color:#202728;padding:9px 13px;cursor:pointer;font:13px "IM Fell English SC";letter-spacing:1px;text-transform:uppercase}button:hover:not(:disabled){filter:brightness(1.1)}button:disabled{opacity:.45;cursor:not-allowed}.toolbar button{min-height:42px}.status{margin-top:10px;padding:9px 13px;background:rgba(27,35,37,.94);color:#d8d1b8;border:1px solid var(--line);font-size:13px}.status.error{color:#f0c4bc;border-color:#8d514b}.status.ok{color:#cbd9c4;border-color:#718e73}
-        .workspace{display:grid;grid-template-columns:minmax(300px,1fr) minmax(480px,1.45fr) 350px;gap:14px;margin-top:14px;align-items:start}.panel{background:linear-gradient(rgba(210,202,174,.98),rgba(181,176,151,.98));border:1px solid #5d625d;box-shadow:0 6px 18px #0006;overflow:hidden}.panel.dark{background:rgba(27,35,37,.97);color:#ddd5bc;border-color:var(--line)}.panel-title{padding:14px 16px;background:rgba(27,35,37,.94);color:#ded4b7;font:17px "IM Fell English SC";letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--line)}.panel-body{padding:14px}
+        .workspace{display:grid;grid-template-columns:minmax(300px,1fr) minmax(480px,1.45fr) 350px;gap:14px;margin-top:14px;align-items:start}.panel{background:linear-gradient(rgba(210,202,174,.98),rgba(181,176,151,.98));border:1px solid #5d625d;box-shadow:0 6px 18px #0006;overflow:hidden}.panel.dark{background:rgba(27,35,37,.97);color:#ddd5bc;border-color:var(--line)}.panel-title{padding:14px 16px;background:rgba(27,35,37,.94);color:#ded4b7;font:17px "IM Fell English SC";letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}.panel-body{padding:14px}
+        .list-emblem{width:28px;height:28px;border-radius:50%;object-fit:cover;border:1px solid var(--line);box-shadow:0 2px 6px #0007;background:#141a1b;flex:0 0 auto;display:none}
+        .list-emblem.visible{display:block}
         .filters{display:grid;grid-template-columns:1.5fr 1fr;gap:8px;margin-bottom:12px}.filters input,.filters select{width:100%;padding:8px;border:1px solid #88806b;background:#eee8d2;color:#252a29}.group-head{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;margin-top:8px;color:#51402b;background:rgba(190,170,125,.15);border-bottom:1px solid rgba(90,75,50,.22);font:14px "IM Fell English SC";letter-spacing:.8px;text-transform:uppercase}.unit-card{display:grid;grid-template-columns:1fr auto;gap:10px;padding:11px 10px;border-bottom:1px solid rgba(80,70,50,.18)}.unit-card:hover{background:rgba(222,212,183,.45)}.unit-card.disabled{opacity:.55}.unit-main{min-width:0}.unit-main strong{display:block}.unit-main small{display:block;color:#6b6658;font-size:12px}.unit-main em{display:block;color:#625b4b;font-size:11px;font-style:normal;margin-top:2px}.unit-points{float:right;margin-left:8px;font-weight:600;font-size:13px}.add-btn{
           align-self:center;
           min-width:92px;
@@ -131,7 +133,7 @@
             </section>
 
             <section class="panel">
-                <div class="panel-title">Ma liste · unités indépendantes</div>
+                <div class="panel-title"><img id="listEmblem" class="list-emblem" alt="">Ma liste · <span id="listSubtitle">Unités indépendantes</span></div>
                 <div class="panel-body">
                     <div id="armyList"></div>
                     <div id="listEmpty" class="empty">Ajoutez une unité depuis le catalogue.
@@ -186,27 +188,44 @@
     </div>
     <script src="js/generator.js"></script>
     <script>
-    // Petit emblème à côté du sélecteur de supplément — totalement autonome,
-    // ne dépend d'aucune fonction interne de generator.js. Ajouter un
-    // supplément ici (id → chemin d'image) suffit à lui donner son emblème.
+    // Emblème + nom d'armée du supplément — totalement autonome, ne dépend
+    // d'aucune fonction interne de generator.js. Pour ajouter un supplément :
+    // une ligne dans EMBLEMS (icône) et une dans ARMY_NAMES (nom affiché
+    // avant "Unités indépendantes" dans le panneau "Ma liste").
     (function () {
       var EMBLEMS = {
         "courant-occidental": "images/EmblemeCourantOcc.png",
         "maree-de-sang": "images/EmblemeSillageNoir.png"
       };
+      var ARMY_NAMES = {
+        "courant-occidental": "Ost de Tour d'Argent",
+        "maree-de-sang": "Flotte du Sillage Noir"
+      };
       var select = document.getElementById("supplementSelect");
-      var img = document.getElementById("supplementEmblem");
-      if (!select || !img) return;
+      var catalogueImg = document.getElementById("supplementEmblem");
+      var listImg = document.getElementById("listEmblem");
+      var listSubtitle = document.getElementById("listSubtitle");
+      if (!select) return;
 
       function update() {
-        var src = EMBLEMS[select.value];
-        if (src) {
-          img.src = src;
-          img.alt = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : "";
-          img.classList.add("visible");
-        } else {
-          img.classList.remove("visible");
-          img.removeAttribute("src");
+        var id = select.value;
+        var src = EMBLEMS[id];
+        var label = select.options[select.selectedIndex] ? select.options[select.selectedIndex].text : "";
+
+        [catalogueImg, listImg].forEach(function (img) {
+          if (!img) return;
+          if (src) {
+            img.src = src;
+            img.alt = label;
+            img.classList.add("visible");
+          } else {
+            img.classList.remove("visible");
+            img.removeAttribute("src");
+          }
+        });
+
+        if (listSubtitle) {
+          listSubtitle.textContent = ARMY_NAMES[id] || "Unités indépendantes";
         }
       }
 
