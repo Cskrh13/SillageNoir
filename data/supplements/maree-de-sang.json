@@ -104,6 +104,10 @@
           "objets magiques de l'armée légendaire Elfes Noirs"
         ]
       }
+    },
+    "honours": {
+      "allowed": [],
+      "note": "Les Honneurs Elfiques (Honneurs de Saphery, etc.) sont une mécanique propre aux Hauts-Elfes : aucun n'est disponible pour une armée d'Elfes Noirs. allowed:[] bloque tout le catalogue pour ce supplément."
     }
   },
   "units": [
