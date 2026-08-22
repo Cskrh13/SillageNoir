@@ -1,7 +1,6 @@
 {
   "id": "sillage-noir",
   "name": "Le Sillage Noir",
-  "renown": "armee-infamie-sillage-noir",
   "language": "fr",
   "version": "1.0",
   "source": "Le Sillage Noir.pdf",
@@ -55,30 +54,27 @@
       "Alliés": {
         "maxPercent": 20,
         "maxContingents": 1,
-        "notes": "Un seul contingent allié (20 % max — non compté automatiquement par le générateur, à vérifier manuellement)."
+        "notes": "Un seul contingent allié."
       }
     },
     "units": {
-      "dark-elf-dreadlord": { "group": "commandCharactersPer1000", "maxPer1000": 1 },
-      "supreme-sorceress": { "group": "commandCharactersPer1000", "maxPer1000": 1 },
-      "high-beastmaster": { "group": "commandCharactersPer1000", "maxPer1000": 1 },
       "esclaves": {
         "maxPerCharacter": 2,
         "maxUnitSize": 20
       },
-      "dark-riders": {
+      "cavaliers-noirs": {
         "maxPer1000": 1
       },
-      "reaper-bolt-thrower": {
+      "balistes-faucheuses": {
         "max": 3
       },
-      "cold-one-knights": {
+      "chevaliers-sur-sang-froid": {
         "maxPer1000": 1
       },
-      "cold-one-chariots": {
+      "char-a-sang-froid": {
         "maxPer1000": 1
       },
-      "black-guard": {
+      "garde-noire-de-naggarond": {
         "maxPer1000": 1
       },
       "maldris-dravelyth": {
@@ -105,12 +101,64 @@
         ]
       }
     },
-    "honours": {
-      "allowed": [],
-      "note": "Les Honneurs Elfiques (Honneurs de Saphery, etc.) sont une mécanique propre aux Hauts-Elfes : aucun n'est disponible pour une armée d'Elfes Noirs. allowed:[] bloque tout le catalogue pour ce supplément."
+    "groups": {
+      "commandCharactersPer1000": {
+        "label": "Despote / Sorcière suprême / Haut Belluaire",
+        "unitIds": [
+          "dark-elf-dreadlord",
+          "supreme-sorceress",
+          "high-beastmaster"
+        ],
+        "maxPer1000": 1,
+        "mode": "combined"
+      }
     }
   },
   "units": [
+    {
+      "id": "khainite-assassin",
+      "name": "Assassin Khainite",
+      "category": "Personnages",
+      "points": 80,
+      "min": 0,
+      "max": 999,
+      "profile": {
+        "M": 5,
+        "CC": 8,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 2,
+        "I": 7,
+        "A": 3,
+        "Cd": 8
+      },
+      "type": "Infanterie régulière (personnage)",
+      "base": "25 x 25 mm",
+      "unitSize": "1",
+      "equipment": [
+        "Arme de base",
+        "Armes de jet"
+      ],
+      "options": [
+        "Arme de base additionnelle +3 pts",
+        "Arme de poing à répétition +5 pts",
+        "Lotus noir +5 pts",
+        "Venin noir +15 pts",
+        "Manbane +15 pts",
+        "Poison des Cales Noires +10 pts",
+        "Venin de la Mer Rouge +15 pts",
+        "Objets magiques jusqu'à 50 pts"
+      ],
+      "specialRules": [
+        "Haine éternelle",
+        "Haine (tous les ennemis)",
+        "Dissimulé",
+        "Immunité à la psychologie",
+        "Meurtrier",
+        "Frappe en premier"
+      ]
+    },
     {
       "id": "maldris-dravelyth",
       "name": "Maldris Dravelyth",
@@ -128,7 +176,7 @@
         "PV": 3,
         "I": 4,
         "A": 4,
-        "Cd": 10
+        "Cd": 8
       },
       "equipment": [
         "Arme de base",
@@ -195,7 +243,7 @@
           "points": 18
         },
         {
-          "name": "Pegase-Noir",
+          "name": "Pégase Noir",
           "points": 35
         }
       ],
@@ -272,53 +320,6 @@
       ]
     },
     {
-      "id": "khainite-assassin",
-      "name": "Assassin Khainite",
-      "category": "Personnages",
-      "points": 80,
-      "min": 0,
-      "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 8,
-        "CT": 7,
-        "F": 4,
-        "E": 3,
-        "PV": 2,
-        "I": 7,
-        "A": 3,
-        "Cd": 8
-      },
-      "type": "Infanterie régulière (personnage)",
-      "base": "25 x 25 mm",
-      "unitSize": "1",
-      "equipment": [
-        "Arme de base",
-        "Armes de jet"
-      ],
-      "options": [
-        "Arme de base additionnelle +3 pts",
-        "Arme de poing à répétition +5 pts",
-        "Lotus noir +5 pts",
-        "Venin noir +15 pts",
-        "Manbane +15 pts",
-        "Poison des Cales Noires +10 pts",
-        "Venin de la Mer Rouge +15 pts",
-        "Objets magiques jusqu'à 50 pts"
-      ],
-      "specialRules": [
-        "Haine éternelle",
-        "Haine (tous les ennemis)",
-        "Dissimulé",
-        "Immunité à la psychologie",
-        "Meurtrier",
-        "Frappe en premier"
-      ],
-      "generatorNotes": [
-        "Fiche surchargée pour Le Sillage Noir : identique à l'Assassin Khainite générique, avec deux options de poison propres à ce supplément ajoutées (Poison des Cales Noires +10 pts, Venin de la Mer Rouge +15 pts)."
-      ]
-    },
-    {
       "id": "kharyx",
       "name": "Kharyx, Prédateur de la Lune Noire",
       "category": "Unités Rares",
@@ -387,7 +388,7 @@
       "maxPercent": 20,
       "maxContingents": 1,
       "sources": [
-        "Liste de composition d'armée de l'infamie Loup de mer",
+        "Liste de composition d’armée de l’infamie Loup de mer",
         "Nains du Chaos",
         "Comtes Vampires",
         "Armée de légende Elfes Noirs",
@@ -397,12 +398,15 @@
   ],
   "generatorNotes": [
     "Correction V1.1 : les identifiants de allowedUnits correspondent désormais exactement aux identifiants de elfes-noirs.json.",
-    "Correction V1.2 : les clés de restrictions.units utilisaient encore d'anciens identifiants français (cavaliers-noirs, balistes-faucheuses, chevaliers-sur-sang-froid, char-a-sang-froid, garde-noire-de-naggarond) qui ne correspondaient à aucune unité de allowedUnits ; elles ont été renommées avec les vrais ids (dark-riders, reaper-bolt-thrower, cold-one-knights, cold-one-chariots, black-guard) pour que les maxPer1000/max s'appliquent réellement.",
-    "Correction V1.2 : le plafond combiné 0-1 Despote/Sorcière suprême/Haut Belluaire par tranche de 1000 points est désormais exprimé avec la convention native du générateur (restrictions.units[id].group + maxPer1000), au lieu d'un bloc restrictions.groups non lu par le moteur.",
     "La liste utilise l'armée générique des Elfes Noirs comme base ; seules les unités autorisées par cette liste et les profils spécifiques du Sillage Noir sont disponibles.",
-    "La restriction Esclaves est 0-2 unités par personnage ; chaque unité contient 5 à 20 figurines.",
-    "maxContingents (Alliés) et le détail du Porteur de la Grande Bannière (battleStandardBearer) restent informatifs : le générateur ne compte pas encore les contingents alliés automatiquement, à vérifier manuellement.",
-    "Correction V1.3 : la clé 'champion' de l'unité Esclaves a été renommée en 'championProfile' (seule clé lue par le moteur pour afficher le profil du chef d'unité).",
-    "Correction V1.3 : l'Assassin Khainite est désormais surchargé dans ce supplément (même fiche que la version générique elfes-noirs) pour ajouter deux options propres au Sillage Noir : Poison des Cales Noires (+10 pts) et Venin de la Mer Rouge (+15 pts), au lieu d'objets magiques."
-  ]
+    "Les identifiants de l'ancien fichier (despote, sorciere-supreme, etc.) ne correspondaient pas aux IDs réels de l'armée de référence.",
+    "La restriction 0-1 Despote/Sorcière suprême/Haut Belluaire par tranche de 1000 est collective.",
+    "La restriction Esclaves est 0-2 unités par personnage ; chaque unité contient 5 à 20 figurines."
+  ],
+  "selection": {
+    "mode": "restricted-reference-army",
+    "referenceArmy": "elfes-noirs",
+    "allowedUnits": "whitelist",
+    "excludedUnits": "blacklist"
+  }
 }
