@@ -268,6 +268,11 @@ function normalizeOption(raw, kindOverride) {
 function inferOptionKind(name) {
   const s = String(name).toLocaleLowerCase("fr");
   if (s.includes("bannière") || s.includes("banniere") || s.includes("étendard") || s.includes("etendard")) return "banner";
+  // Une cape/manteau (ex. "Cape de Dragon Marin") n'est pas une monture,
+  // même si son nom contient un mot-clé de monture ("dragon", etc.) : on
+  // l'exclut avant le test des montures, plutôt que de coder ce cas
+  // particulier en dur.
+  if (s.includes("cape") || s.includes("manteau")) return "other";
   if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) return "mount";
   // Bouclier séparé de l'armure : un personnage peut porter les deux à la
   // fois (un seul profil d'armure ET un seul bouclier, chacun via son
