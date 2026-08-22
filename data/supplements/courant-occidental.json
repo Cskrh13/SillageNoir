@@ -36,61 +36,15 @@
       },
       "Unités de Base": {
         "minPercent": 33,
-        "units": {
-          "elven-spearmen": {
-            "enabled": true
-          },
-          "elven-archers": {
-            "enabled": true
-          },
-          "guerriers-fantomes": {
-            "max": 1
-          },
-          "lothern-sea-guard": {
-            "max": 1,
-            "conditional": [
-              "Général avec l'Honneur Garde Maritime"
-            ]
-          }
-        },
-        "notes": "Au moins 33 % des points de l’armée doivent être dépensés en unités de Base."
+        "notes": "Au moins 33 % des points de l’armée doivent être dépensés en unités de Base. Garde Maritime de Lothern : 0-1, uniquement si le Général possède l’Honneur Garde Maritime (voir restrictions.units). Guerriers Fantômes : 0-1, recatégorisés en Base par ce supplément (voir restrictions.units)."
       },
       "Unités Spéciales": {
         "maxPercent": 33,
-        "units": {
-          "lothern-sea-guard": {
-            "enabled": true
-          },
-          "elementaires-des-courants": {
-            "enabled": true
-          },
-          "balistes-serre-daigle": {
-            "max": 3
-          }
-        }
+        "notes": "Élémentaires des Courants et Balistes Serre-d’Aigle (0-3, recatégorisées en Spécial par ce supplément) disponibles ici (voir restrictions.units)."
       },
       "Unités Rares": {
         "maxPercent": 33,
-        "units": {
-          "leviathan-elementaire": {
-            "enabled": true
-          },
-          "maitres-des-epees-de-hoeth": {
-            "maxPer1000": 1
-          },
-          "grand-aigle": {
-            "enabled": true
-          },
-          "cotres-volants-de-lothern": {
-            "max": 2,
-            "condition": {
-              "type": "general_has_honour",
-              "honours": [
-                "garde-maritime"
-              ]
-            }
-          }
-        }
+        "notes": "Léviathan Élémentaire, Maîtres des épées de Hoeth (0-1, voir restrictions.units) et Grand Aigle disponibles ici. Cotres Volants de Lothern : 0-2, réservés au Général avec l’Honneur Garde Maritime (à convertir en restrictions.units si besoin, ce bloc n’est pas encore appliqué par le moteur)."
       },
       "Mercenaires": {
         "maxPercent": 0
@@ -137,12 +91,19 @@
         "maxPer1000": 1
       },
       "shadow-warriors": {
-        "maxEntries": 1
+        "maxEntries": 1,
+        "categoryOverride": "Unités de Base"
       },
       "eagle-claw-bolt-thrower": {
-        "maxEntries": 3
+        "maxEntries": 3,
+        "categoryOverride": "Unités Spéciales"
       },
-      "lothern-sea-guard": {},
+      "lothern-sea-guard": {
+        "maxEntries": 1,
+        "conditional": [
+          "Général avec l'Honneur Garde Maritime"
+        ]
+      },
       "lothern-skycutter": {
         "maxEntries": 2,
         "conditional": [
