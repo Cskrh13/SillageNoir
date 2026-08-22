@@ -1,6 +1,5 @@
 {
   "id": "courant-occidental",
-  "renown": "armee-infamie-courant-occidental"
   "name": "Objets magiques de Tour d'Argent",
   "source": "Le Courant Occidental — Tour d'Argent",
   "magicItems": {
@@ -114,7 +113,7 @@
         "restriction": {
           "requires": [
             {
-              "renown": "armee-infamie-tour-dargent"
+              "renown": "armee-infamie-courant-occidental"
             }
           ]
         }
@@ -128,7 +127,7 @@
         "restriction": {
           "requires": [
             {
-              "renown": "armee-infamie-tour-dargent"
+              "renown": "armee-infamie-courant-occidental"
             }
           ],
           "override": "no-wizard-required"
@@ -158,7 +157,7 @@
           "requires": [
             "wizard",
             {
-              "renown": "armee-infamie-tour-dargent"
+              "renown": "armee-infamie-courant-occidental"
             }
           ]
         }
