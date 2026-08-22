@@ -155,7 +155,11 @@
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
-        "Monture selon la liste des montures",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Pégase Noir +35 pts",
+        "Manticore +130 pts",
+        "Dragon Noir +280 pts",
         "Cape de Dragon Marin +4 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
@@ -203,7 +207,10 @@
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
-        "Monture selon la liste des montures",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Pégase Noir +35 pts",
+        "Manticore +130 pts",
         "Cape de Dragon Marin +4 pts",
         "Objets magiques jusqu'à 50 pts"
       ],
@@ -241,7 +248,10 @@
       ],
       "options": [
         "Niveau 4 +30 pts",
-        "Monture selon la liste",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Pégase Noir +35 pts",
+        "Manticore +130 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
@@ -290,7 +300,9 @@
       ],
       "options": [
         "Niveau 2 +30 pts",
-        "Monture selon la liste",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Pégase Noir +35 pts",
         "Objets magiques jusqu'à 50 pts"
       ],
       "specialRules": [
