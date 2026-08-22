@@ -319,11 +319,6 @@ function normalizeUnit(u, fallbackId = "", mounts = []) {
     ? [...ruleOptions, ...SHADOW_WARRIORS_RULE_OPTIONS.map(o => normalizeOption(o, "rule")).filter(Boolean)]
     : ruleOptions;
 
-  // Cotre Volant de Lothern : nouvelle option d'arme "Baliste Œil-d'Aigle".
-  const finalOptions = unitId === "lothern-skycutter"
-    ? [...options, normalizeOption(SKYCUTTER_EAGLE_EYE_OPTION, SKYCUTTER_EAGLE_EYE_OPTION.kind)].filter(Boolean)
-    : options;
-
   // Profils d'équipage / monture attelée, affichés directement avec la
   // figurine principale (baliste, chars, cotres volants…), sans case à
   // cocher : voir renderStatsTable.
@@ -337,7 +332,7 @@ function normalizeUnit(u, fallbackId = "", mounts = []) {
     name: u.name || u.nom || "Unité sans nom",
     category: u.category || u.categorie || "Autres",
     points: points == null || points === "" ? null : Number(points),
-    options: finalOptions,
+    options,
     ruleOptions: finalRuleOptions,
     crewProfiles,
     rules: normalizeTextList(u.rules ?? u.regles ?? u.specialRules),
@@ -1313,9 +1308,6 @@ const SHADOW_WARRIORS_RULE_OPTIONS = [
   { id: "regle-guerriers-fantomes-escorteur-de-char", name: "Escorteur de char", points: 0, pointsPerModel: 1, kind: "rule" },
   { id: "regle-guerriers-fantomes-fuite-feinte", name: "Fuite feinte", points: 0, pointsPerModel: 1, kind: "rule" }
 ];
-
-// --- Nouvelle option d'arme pour le Cotre Volant de Lothern. -------------
-const SKYCUTTER_EAGLE_EYE_OPTION = { id: "opt-baliste-oeil-d-aigle", name: "Baliste Œil-d'Aigle", points: 25, pointsPerModel: 0, kind: "weapon" };
 
 function normalizeProfile(profile) {
   if (!profile || typeof profile !== "object") return null;
