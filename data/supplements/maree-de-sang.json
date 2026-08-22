@@ -99,6 +99,9 @@
         "max": 1
       }
     },
+    "honours": {
+      "allowed": []
+    },
     "global": {
       "battleStandardBearer": {
         "enabled": true,
