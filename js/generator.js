@@ -946,7 +946,15 @@ function maxEntriesForUnit(u) {
       return Math.min(m,Math.floor(state.pointsLimit/1000)*Number(rule.maxPer1000));
     },Infinity);
     const currentGroup=groupRules.reduce((n,[id])=>n+getEntriesForUnit(id).length,0);
-    max=Math.min(max,Math.max(0,groupMax-currentGroup));
+    const currentOwn=getEntriesForUnit(u.id).length;
+    // Le plafond renvoyé par maxEntriesForUnit est comparé, chez l'appelant
+    // (canAdd), au nombre d'exemplaires déjà pris de CETTE unité (currentOwn),
+    // pas du groupe entier : il faut donc convertir "places restantes dans le
+    // groupe" en plafond absolu pour cette unité, en y rajoutant ce qu'elle a
+    // déjà elle-même — sinon les exemplaires d'une autre unité du même groupe
+    // se soustraient deux fois et le plafond tombe à zéro trop tôt.
+    const remaining=Math.max(0,groupMax-currentGroup);
+    max=Math.min(max,currentOwn+remaining);
   }
 
   // Le nombre d'exemplaires qu'on peut AJOUTER pour cette unité n'est pas
