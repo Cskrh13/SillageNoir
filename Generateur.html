@@ -97,8 +97,7 @@
                 <label for="supplementSelect">Supplément</label>
                 <select id="supplementSelect">
                     <option>Chargement…</option>
-                </select>
-                <img id="supplementEmblem" class="supplement-emblem" alt="">
+                </select>                
             </div>
             <div class="field" id="armyField">
                 <label for="armySelect">Armée de référence</label>
@@ -119,6 +118,7 @@
         <main class="workspace">
             <section class="panel">
                 <div class="panel-title">Unités disponibles</div>
+                <img id="supplementEmblem" class="supplement-emblem" alt="">
                 <div class="panel-body">
                     <div class="filters">
                         <input id="searchInput" placeholder="Rechercher une unité…">
@@ -192,7 +192,7 @@
     (function () {
       var EMBLEMS = {
         "courant-occidental": "images/EmblemeCourantOcc.png",
-        "sillage-noir": "images/EmblemeSillageNoir.png"
+        "maree-de-sang": "images/EmblemeSillageNoir.png"
       };
       var select = document.getElementById("supplementSelect");
       var img = document.getElementById("supplementEmblem");
