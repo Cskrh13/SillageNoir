@@ -232,7 +232,10 @@ function normalizeOption(raw, kindOverride) {
     return {
       id: "opt-" + slug(name),
       name,
-      points: Number.isFinite(points) ? points : 0,
+      // Un même nombre ne peut représenter QUE l'un ou l'autre : un coût
+      // "+1 pt/modèle" n'a pas de coût fixe distinct de 0 (sans quoi il
+      // s'affichait doublé : "+1 pts + 1 pts/mod.").
+      points: perModel ? 0 : (Number.isFinite(points) ? points : 0),
       pointsPerModel: perModel ? points : 0,
       kind: kindOverride || inferOptionKind(name),
       maxPoints: limitMatch ? Number(limitMatch[1]) : null,
@@ -2131,6 +2134,18 @@ function renderInfo() {
 }
 
 function render() {
+  // Une recatégorisation (ex. "compter comme choix de Base" via la
+  // Réquisition avisée d'Éryndor) n'a de sens que tant que sa condition
+  // reste vraie. Si elle ne l'est plus (le personnage qui l'accorde a été
+  // retiré de la liste, par exemple), on la lève automatiquement : l'entrée
+  // redevient simplement une unité normale de sa catégorie native, plutôt
+  // que de rester bloquée sur une recatégorisation invalide.
+  state.list.forEach(entry => {
+    if (!entry.reclassified) return;
+    const rule = findReclassificationRule(entry.reclassified);
+    const u = getUnit(entry.id);
+    if (!rule || !ruleAppliesToUnit(rule, u) || !conditionMet(rule.when)) entry.reclassified = null;
+  });
   renderCategories();
   renderAvailable();
   renderList();
