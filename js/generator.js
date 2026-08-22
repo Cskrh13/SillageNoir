@@ -274,10 +274,22 @@ function foldAccents(s) {
 // montée au combat. Testé avant la détection générique de monture.
 const NON_MOUNT_ITEM_RE = /\b(cape|manteau|peau|cuir|ecaille|écaille|trophee|trophée)\b.*\bdragon/;
 
+// Poisons de l'Assassin Khainite (et tout autre personnage à qui un
+// supplément proposerait un choix de poison) : un seul poison peut être
+// appliqué à la fois — ce n'est pas une liste d'options cumulables comme
+// les armes. Détectés par nom plutôt que par mot-clé générique, car seul
+// "Poison des Cales Noires" contient littéralement le mot "poison".
+const KNOWN_POISON_NAMES = ["lotus noir", "venin noir", "manbane", "poison des cales noires", "venin de la mer rouge"];
+function isKnownPoisonName(name) {
+  const s = foldAccents(String(name).toLocaleLowerCase("fr"));
+  return KNOWN_POISON_NAMES.some(p => s.includes(foldAccents(p)));
+}
+
 function inferOptionKind(name) {
   const raw = String(name).toLocaleLowerCase("fr");
   const s = foldAccents(raw);
   if (s.includes("banniere") || s.includes("etendard")) return "banner";
+  if (isKnownPoisonName(name)) return "poison";
   if (NON_MOUNT_ITEM_RE.test(s)) {
     // ex. "Cape en peau de Dragon des Mers" : c'est un vêtement, pas une
     // monture — on laisse la détection continuer (armure/autre) plutôt que
@@ -1595,7 +1607,7 @@ function renderNativeRules(entry, unit) {
 }
 
 function optionGroups(entry, u) {
-  const result = { banner:[], mount:[], weapon:[], armour:[], shield:[], champion:[], standard:[], musician:[], other:[] };
+  const result = { banner:[], mount:[], weapon:[], armour:[], shield:[], champion:[], standard:[], musician:[], poison:[], other:[] };
   effectiveOptions(entry, u).forEach(o => (result[o.kind] || result.other).push(o));
   // Un Mage ou un Archimage (ou tout personnage devenu Sorcier via un
   // Honneur Elfique) ne peut pas porter d'armure ou de bouclier mondain —
@@ -1700,7 +1712,7 @@ function renderCharacterOptions(entry, u) {
   const groups = optionGroups(entry, u);
   const label = u.category === "Personnages" ? "Options de personnage" : "Options de l'unité";
   const commandOptions = [...groups.champion, ...groups.standard, ...groups.musician];
-  const hasAny = commandOptions.length || groups.banner.length || groups.weapon.length || groups.armour.length || groups.shield.length || groups.other.length;
+  const hasAny = commandOptions.length || groups.banner.length || groups.weapon.length || groups.armour.length || groups.shield.length || groups.poison.length || groups.other.length;
   if (!hasAny) return "";
 
   let html = `<div class="options-box"><div class="options-title">${esc(label)}</div>`;
@@ -1731,8 +1743,8 @@ function renderCharacterOptions(entry, u) {
   // un objet magique équivalent (Armures magiques) est déjà choisi pour
   // cette entrée, il remplace l'option de personnage correspondante : le
   // menu n'est alors plus proposé.
-  const labels = { banner:"Bannière / étendard", armour:"Armure", shield:"Bouclier" };
-  ["banner","armour","shield"].forEach(kind => {
+  const labels = { banner:"Bannière / étendard", armour:"Armure", shield:"Bouclier", poison:"Poison" };
+  ["banner","armour","shield","poison"].forEach(kind => {
     const arr = groups[kind];
     const magicOverride = (kind === "armour" || kind === "shield") ? selectedMagicArmourOfKind(entry, kind) : null;
     if (magicOverride) {
