@@ -1019,6 +1019,7 @@
         "Rapidité"
       ],
       "restriction": "0-1 unité par tranche de 1 000 points.",
+      "mountRef": "cold-one-mount",
       "championProfile": {
         "name": "Chevalier Dread",
         "M": "-",
@@ -1067,7 +1068,23 @@
         "Rapidité"
       ],
       "weapon": "Harpon ravageur : 24\", F6, PA -3, Encombrant, Blessures multiples (D3), Ponderous",
-      "restriction": "0-2 chars par tranche de 1 000 points, combinés avec les Chars à Sang-Froid."
+      "restriction": "0-2 chars par tranche de 1 000 points, combinés avec les Chars à Sang-Froid.",
+      "mountRef": { "id": "dark-steed", "count": 2 },
+      "crewProfiles": [
+        {
+          "name": "Équipage Maître des Bêtes",
+          "count": 2,
+          "M": "-",
+          "CC": 4,
+          "CT": 4,
+          "F": 3,
+          "E": "-",
+          "PV": "-",
+          "I": 4,
+          "A": 1,
+          "Cd": 8
+        }
+      ]
     },
     {
       "id": "cold-one-chariots",
@@ -1105,6 +1122,7 @@
         "Stupidité"
       ],
       "restriction": "0-2 chars par tranche de 1 000 points, combinés avec les Chars à Harpon.",
+      "mountRef": { "id": "cold-one-mount", "count": 2 },
       "crewProfiles": [
         {
           "name": "Chevalier Charioteer",
