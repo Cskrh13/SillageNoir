@@ -19,7 +19,17 @@
         "name": "Arc du Vent Marin",
         "points": 40,
         "repeatable": false,
-        "description": "Portée 30\", Force -, PA -1. Si le porteur n'a pas bougé durant ce tour, les tirs effectués avec l'Arc du Vent Marin gagnent PA -1 supplémentaire et le porteur peut relancer un seul jet pour toucher lors de cette phase de tir.",
+        "description": "Portée 30\", Force -, PA -1, avec la règle spéciales Tirs multiples (2), Attaque magique. Si le porteur n'a pas bougé durant ce tour, les tirs effectués avec l'Arc du Vent Marin gagnent PA -1 supplémentaire et le porteur peut relancer un seul jet pour toucher lors de cette phase de tir.",
+        "restriction": {
+          "requires": []
+        }
+      }
+        {
+        "id": "trident-des-phares",
+        "name": "Trident des Phares",
+        "points": 60,
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force +2, PA -1, avec la règle spéciale Arme à deux mains, Blessures Multiples(2), Attaque magique. Lors de la phase à laquelle il a été chargé, le porteur gagne +1 en Capacité de Combat jusqu'à la fin de la phase de combat."",
         "restriction": {
           "requires": []
         }
