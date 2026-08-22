@@ -103,7 +103,7 @@
       "battleStandardBearer": {
         "enabled": true,
          "max": 1,
-           "eligibleCategory": "Nobles Hauts Elfes",
+           "eligibleCategory": "dark-elf-master",
          "points": 25,
        "magicBannerUnlimited": true
       },
