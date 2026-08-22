@@ -40,7 +40,7 @@
       },
       "Unités Spéciales": {
         "maxPercent": 33,
-        "notes": "Élémentaires des Courants et Balistes Serre-d’Aigle (0-3, recatégorisées en Spécial par ce supplément) disponibles ici (voir restrictions.units)."
+        "notes": "Élémentaires des Courants, Garde Maritime de Lothern et Balistes Serre-d’Aigle (0-3, recatégorisées en Spécial par ce supplément) disponibles ici (voir restrictions.units)."
       },
       "Unités Rares": {
         "maxPercent": 33,
@@ -99,10 +99,7 @@
         "categoryOverride": "Unités Spéciales"
       },
       "lothern-sea-guard": {
-        "maxEntries": 1,
-        "conditional": [
-          "Général avec l'Honneur Garde Maritime"
-        ]
+          "categoryOverride": "Unités Spéciales"
       },
       "lothern-skycutter": {
         "maxEntries": 2,
