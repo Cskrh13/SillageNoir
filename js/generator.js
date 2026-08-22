@@ -310,14 +310,36 @@ function normalizeUnit(u, fallbackId = "", mounts = []) {
     else if (single) { minSize = Number(single[0]); maxSize = Number(single[0]); }
   }
 
+  const unitId = String(u.id || fallbackId);
+
+  // Guerriers Fantômes : options de règles spéciales à coût par modèle,
+  // codées ici plutôt que dans les données d'armée (voir
+  // SHADOW_WARRIORS_RULE_OPTIONS).
+  const finalRuleOptions = unitId === "shadow-warriors"
+    ? [...ruleOptions, ...SHADOW_WARRIORS_RULE_OPTIONS.map(o => normalizeOption(o, "rule")).filter(Boolean)]
+    : ruleOptions;
+
+  // Cotre Volant de Lothern : nouvelle option d'arme "Baliste Œil-d'Aigle".
+  const finalOptions = unitId === "lothern-skycutter"
+    ? [...options, normalizeOption(SKYCUTTER_EAGLE_EYE_OPTION, SKYCUTTER_EAGLE_EYE_OPTION.kind)].filter(Boolean)
+    : options;
+
+  // Profils d'équipage / monture attelée, affichés directement avec la
+  // figurine principale (baliste, chars, cotres volants…), sans case à
+  // cocher : voir renderStatsTable.
+  const crewProfiles = Array.isArray(u.crewProfiles)
+    ? u.crewProfiles.map(c => ({ ...c, profile: normalizeProfile(c) })).filter(c => c.name)
+    : [];
+
   return {
     ...u,
-    id: String(u.id || fallbackId),
+    id: unitId,
     name: u.name || u.nom || "Unité sans nom",
     category: u.category || u.categorie || "Autres",
     points: points == null || points === "" ? null : Number(points),
-    options,
-    ruleOptions,
+    options: finalOptions,
+    ruleOptions: finalRuleOptions,
+    crewProfiles,
     rules: normalizeTextList(u.rules ?? u.regles ?? u.specialRules),
     equipment: normalizeTextList(u.equipment ?? u.equipement ?? u.equipementNatif ?? u.equipementDeBase),
     profile: u.profile || u.profil || null,
@@ -664,6 +686,11 @@ function effectivePool(entry, u) {
 // effets de l'Honneur Elfique choisi.
 function effectiveRules(entry, u) {
   let rules = [...(u?.rules || [])];
+  // Option "Vétéran" (Lanciers / Archers / Gardes Maritimes) : remplace la
+  // règle spéciale native "Valeur des âges" par "Vétéran" quand cochée.
+  if (u && VETERAN_LIMITED_UNITS.includes(u.id) && (entry?.options || []).includes(VETERAN_OPTION_ID)) {
+    rules = rules.map(r => matchesPattern(r, "Valeur des âges") ? "Vétéran" : r);
+  }
   const effects = honourEffectsList(entry);
   effects.filter(e => e.type === "replace_special_rule").forEach(e => {
     rules = rules.map(r => matchesPattern(r, e.from) ? e.to : r);
@@ -1167,6 +1194,16 @@ function setOption(uidValue, optionId, checked) {
   const entry = findEntry(uidValue);
   if (!entry) return;
   entry.options ||= [];
+  // Option "Vétéran" : refuse la coche au-delà de 0-1 par tranche de 1000
+  // points pour l'unité concernée (voir VETERAN_LIMITED_UNITS).
+  if (checked && optionId === VETERAN_OPTION_ID) {
+    const u = getUnit(entry.id);
+    if (u && VETERAN_LIMITED_UNITS.includes(u.id) && veteranSlotsLeft(u.id, entry.uid) <= 0) {
+      setStatus(`${u.name} : l'option Vétéran est limitée à ${veteranSlotsMax()} unité${veteranSlotsMax() > 1 ? "s" : ""} pour ce format de partie.`, "error");
+      render();
+      return;
+    }
+  }
   if (checked && !entry.options.includes(optionId)) entry.options.push(optionId);
   if (!checked) {
     entry.options = entry.options.filter(x => x !== optionId);
@@ -1241,6 +1278,44 @@ function setHonour(uidValue, honourId) {
 
 
 const STAT_KEYS = ["M","CC","CT","F","E","PV","I","A","Cd"];
+
+// --- Option "Vétéran" (remplace Valeur des âges) : limitée à 0-1 par unité
+// concernée et par tranche de 1000 points de la partie, indépendamment pour
+// les Lanciers, les Archers et les Gardes Maritimes (un pool de créneaux
+// séparé par unité, pas partagé entre les trois). ------------------------
+const VETERAN_OPTION_ID = "opt-veteran";
+const VETERAN_LIMITED_UNITS = ["elven-spearmen", "elven-archers", "lothern-sea-guard"];
+
+function veteranSlotsMax() {
+  return Math.max(1, Math.ceil(Number(state.pointsLimit || 0) / 1000));
+}
+function veteranCount(unitId, excludeUid = null) {
+  return state.list.filter(e => e.uid !== excludeUid && e.id === unitId && (e.options || []).includes(VETERAN_OPTION_ID)).length;
+}
+function veteranSlotsLeft(unitId, excludeUid = null) {
+  if (!VETERAN_LIMITED_UNITS.includes(unitId)) return Infinity;
+  return Math.max(0, veteranSlotsMax() - veteranCount(unitId, excludeUid));
+}
+
+// --- Budgets d'objets magiques réservés au chef d'unité (Maître Maritime /
+// Maître des lames), distincts du budget normal de l'unité (ces unités n'en
+// proposent pas) : disponibles uniquement si l'option de chef est cochée. --
+const CHAMPION_MAGIC_ITEM_BUDGETS = {
+  "lothern-sea-guard": 25,   // Maître de la mer (Maître Maritime)
+  "swordmasters-of-hoeth": 50 // Maître des lames
+};
+
+// --- Options de règles spéciales propres aux Guerriers Fantômes (0-1 unité
+// dans la liste de composition) : coût par modèle, ajoutées ici plutôt que
+// dans les données d'armée. -------------------------------------------
+const SHADOW_WARRIORS_RULE_OPTIONS = [
+  { id: "regle-guerriers-fantomes-embusquer", name: "Embusquer", points: 0, pointsPerModel: 1, kind: "rule" },
+  { id: "regle-guerriers-fantomes-escorteur-de-char", name: "Escorteur de char", points: 0, pointsPerModel: 1, kind: "rule" },
+  { id: "regle-guerriers-fantomes-fuite-feinte", name: "Fuite feinte", points: 0, pointsPerModel: 1, kind: "rule" }
+];
+
+// --- Nouvelle option d'arme pour le Cotre Volant de Lothern. -------------
+const SKYCUTTER_EAGLE_EYE_OPTION = { id: "opt-baliste-oeil-d-aigle", name: "Baliste Œil-d'Aigle", points: 25, pointsPerModel: 0, kind: "weapon" };
 
 function normalizeProfile(profile) {
   if (!profile || typeof profile !== "object") return null;
@@ -1407,6 +1482,14 @@ function renderStatsTable(entry, unit) {
   if (mount) {
     rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
   }
+
+  // Profils d'équipage / monture attelée fournis directement par l'unité
+  // (baliste, chars, cotres volants…) : toujours affichés avec la figurine
+  // principale, sans case à cocher — voir normalizeUnit (u.crewProfiles).
+  (unit.crewProfiles || []).forEach(c => {
+    const label = c.count && Number(c.count) > 1 ? `${c.name} (x${c.count})` : c.name;
+    rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${esc(c.profile?.[k] ?? c[k] ?? "-")}</td>`).join("")}</tr>`);
+  });
 
   return `<div class="profile-block">
     <div class="profile-title">Caractéristiques</div>
@@ -1596,6 +1679,14 @@ function renderCharacterOptions(entry, u) {
     html += `<div class="check-options"><div class="check-options-title">Autres options</div>`;
     html += groups.other.map(o => {
       const checked = entry.options.includes(o.id);
+      // Option "Vétéran" (Lanciers / Archers / Gardes Maritimes) : limitée à
+      // 0-1 unité par tranche de 1000 points — voir VETERAN_LIMITED_UNITS.
+      if (o.id === VETERAN_OPTION_ID && VETERAN_LIMITED_UNITS.includes(u.id)) {
+        const slotsLeft = veteranSlotsLeft(u.id, entry.uid);
+        const disabled = !checked && slotsLeft <= 0;
+        const slotsText = ` — ${slotsLeft + (checked?1:0)}/${veteranSlotsMax()} disponible${veteranSlotsMax()>1?"s":""}`;
+        return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""} ${disabled?"disabled":""}><span>${esc(o.name)}${optionPrice(o)}${esc(slotsText)}</span></label>`;
+      }
       return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""}><span>${esc(o.name)}${optionPrice(o)}</span></label>`;
     }).join("");
     html += `</div>`;
@@ -1722,6 +1813,19 @@ function renderChampionWeaponSelector(entry, u) {
   const champion = selectedOptionOfKind(entry, u, "champion");
   if (!champion) return "";
   return renderBudgetItemSelector(entry, u, { limit, category: "Armes magiques", title: "Arme magique du chef" });
+}
+
+// Budget d'objets magiques réservé au chef d'unité (Maître Maritime de la
+// Garde Maritime de Lothern : 25 pts, Maître des lames des Maîtres des
+// épées de Hoeth : 50 pts) — voir CHAMPION_MAGIC_ITEM_BUDGETS. Distinct du
+// budget normal de l'unité (ces unités n'en proposent pas), et disponible
+// uniquement si l'option de chef est cochée.
+function renderChampionMagicItemsSelector(entry, u) {
+  const limit = CHAMPION_MAGIC_ITEM_BUDGETS[u?.id];
+  if (limit == null) return "";
+  const champion = selectedOptionOfKind(entry, u, "champion");
+  if (!champion) return "";
+  return renderBudgetItemSelector(entry, u, { limit, category: null, title: `Objets magiques du ${champion.name}`, excludeCategory: "Bannières magiques" });
 }
 
 // Options de règles spéciales (règles optionnelles / honneurs proposés par
@@ -1871,8 +1975,21 @@ function validate() {
       if (weaponCost > weaponLimit) errors.push(`${u.name} : arme magique du chef au-dessus de la limite de ${formatPoints(weaponLimit)}.`);
     }
 
+    const championMagicLimit = CHAMPION_MAGIC_ITEM_BUDGETS[u.id];
+    if (championMagicLimit != null && selectedOptionOfKind(item, u, "champion")) {
+      const championMagicCost = magicCost(item) - categoryMagicCost(item, "Bannières magiques");
+      if (championMagicCost > championMagicLimit) errors.push(`${u.name} : objets magiques du chef au-dessus de la limite de ${formatPoints(championMagicLimit)}.`);
+    }
+
     if (item.honour && !allowedHonours().some(h => h.id === item.honour)) {
       errors.push(`${u.name} : l'honneur elfique choisi n'est plus autorisé par ce supplément.`);
+    }
+
+    if (VETERAN_LIMITED_UNITS.includes(u.id) && (item.options || []).includes(VETERAN_OPTION_ID)) {
+      const max = veteranSlotsMax();
+      if (veteranCount(u.id) > max) {
+        errors.push(`${u.name} : l'option Vétéran est prise par plus d'unités que la limite de ${max} pour ce format de partie.`);
+      }
     }
 
     // Une monture imposée par l'Honneur Elfique choisi (restrict_mount avec
@@ -2123,6 +2240,7 @@ function renderList() {
           ${renderGrandBannerItemSelector(item, unit)}
           ${renderBannerItemsSelector(item, unit)}
           ${renderChampionWeaponSelector(item, unit)}
+          ${renderChampionMagicItemsSelector(item, unit)}
           ${renderRuleOptions(item, unit)}
           `}
         </article>`;
