@@ -1043,9 +1043,44 @@ function canAdd(u, silent=false) {
   return true;
 }
 
-function addUnit(id) {
+// Vérifie qu'une entrée peut être ajoutée DIRECTEMENT comme "compte comme
+// choix de <rule.toCategory>", depuis une carte de catalogue générée par une
+// règle de recatégorisation active (voir renderAvailable). Reprend les
+// mêmes vérifications de base que canAdd() (coût renseigné, plafond propre
+// à l'unité — partagé avec ses éventuelles cartes normales, puisque compté
+// par id, pas par catégorie), mais teste le quota de points de la
+// catégorie CIBLE de la règle plutôt que la catégorie native de l'unité, et
+// vérifie en plus le budget partagé de la règle elle-même
+// (reclassificationSlotsLeft). N'affecte jamais canAdd()/addUnit(id) sans
+// règle : fonction strictement additive.
+function canAddAsReclassified(u, rule) {
+  if (!u || !rule) return false;
+  if (u.points == null || Number.isNaN(u.points)) return false;
+  const currentEntries = getEntriesForUnit(u.id).length;
+  const max = maxEntriesForUnit(u);
+  if (currentEntries >= max) return false;
+  if (reclassificationSlotsLeft(rule) <= 0) return false;
+  const category = rule.toCategory;
+  const categoryRule = compositionRules()[category] || {};
+  if (categoryRule.maxPercent != null) {
+    const cap = state.pointsLimit * Number(categoryRule.maxPercent) / 100;
+    const projected = getCategoryTotal(category) + Number(u.points || 0) * entryModelMin(u);
+    if (projected > cap + 1e-9) return false;
+  }
+  return true;
+}
+
+// `reclassifyRuleId` (optionnel) : quand fourni depuis une carte de
+// catalogue générée par une règle de recatégorisation (voir renderAvailable),
+// l'entrée créée est directement marquée `reclassified`, donc immédiatement
+// comptée dans la catégorie cible — sans avoir à déplier la fiche ni cocher
+// la case manuellement. Tous les appels existants (sans second argument)
+// sont inchangés.
+function addUnit(id, reclassifyRuleId = null) {
   const u = getUnit(id);
-  if (!isAllowed(u) || !canAdd(u)) return;
+  const rule = reclassifyRuleId ? findReclassificationRule(reclassifyRuleId) : null;
+  if (!isAllowed(u)) return;
+  if (rule ? !canAddAsReclassified(u, rule) : !canAdd(u)) return;
   state.list.push({
     uid: uid(),
     id,
@@ -1055,7 +1090,7 @@ function addUnit(id) {
     honour: null,
     // Choix "compte comme un choix de Base/Spécial/…" via une règle de
     // recatégorisation (ex. Éryndor Vareth) — voir reclassificationRules().
-    reclassified: null,
+    reclassified: rule ? rule.id : null,
     // La fiche complète n'est chargée que si l'entrée est développée ; par
     // défaut, seuls le nom et le coût total sont affichés dans "Ma liste".
     expanded: false
@@ -1917,33 +1952,76 @@ function renderAvailable() {
   // gauche — une unité qu'on ne peut pas ajouter (coût manquant, non
   // autorisée par le supplément, maximum atteint…) n'y apparaît plus.
   const units = filteredUnits().filter(u => u.points != null && isAllowed(u) && canAdd(u, true));
-  if (!units.length) {
+
+  // groups[categorie] contient des cartes ; chaque carte est soit normale
+  // ({u, rule:null}), soit une carte "supplémentaire" générée par une règle
+  // de recatégorisation active (ex. Éryndor Vareth, Honneur Garde
+  // Maritime) : {u, rule}. Une même unité peut donc apparaître deux fois,
+  // dans deux catégories différentes, sans être dupliquée dans les données
+  // JSON — la carte normale ci-dessous n'est jamais modifiée par ce qui suit.
+  const groups = {};
+  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push({ u, rule: null }));
+
+  // Cartes additionnelles : dérivées uniquement de restrictions.reclassifications
+  // (déjà utilisées pour la case "Compter comme choix de..." dans "Ma
+  // liste") — aucune nouvelle donnée à saisir dans le JSON. On reprend
+  // l'ensemble filtré/autorisé (pas seulement `units`, qui exclut déjà les
+  // unités au maximum : le plafond pertinent ici est celui de la règle, pas
+  // celui de l'unité) pour ne pas manquer une unité déjà à son maximum de
+  // cartes normales mais encore éligible via la règle.
+  filteredUnits().filter(u => u.points != null && isAllowed(u)).forEach(u => {
+    activeReclassificationRulesFor(u).forEach(rule => {
+      if (canAddAsReclassified(u, rule)) {
+        (groups[rule.toCategory] ||= []).push({ u, rule });
+      }
+    });
+  });
+
+  if (!Object.values(groups).some(arr => arr.length)) {
     container.innerHTML = `<div class="empty">Aucune unité disponible ne correspond aux critères.</div>`;
     return;
   }
 
-  const groups = {};
-  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push(u));
-
   container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
     <section class="unit-group">
       <div class="group-head"><span>${esc(cat)}</span><span>${arr.length}</span></div>
-      ${arr.map(u => {
-        const entries = getEntriesForUnit(u.id).length;
-        const max = maxEntriesForUnit(u);
-        const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
+      ${arr.map(({ u, rule }) => {
+        if (!rule) {
+          // Carte normale : comportement strictement inchangé.
+          const entries = getEntriesForUnit(u.id).length;
+          const max = maxEntriesForUnit(u);
+          const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
+          return `<article class="unit-card">
+            <div class="unit-main">
+              <strong>${esc(u.name)}</strong>
+              <span class="unit-points">${formatPoints(u.points)} / figurine</span>
+              <small>${esc(limitText)}</small>
+            </div>
+            <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
+          </article>`;
+        }
+        // Carte "supplémentaire" issue d'une règle de recatégorisation :
+        // le budget affiché (used/max) est celui de la règle, PARTAGÉ entre
+        // toutes les unités qui l'utilisent (ex. 0-1 au total pour Éryndor,
+        // toutes unités Spéciales/Rares confondues) — pas un compteur par
+        // unité.
+        const used = reclassifiedCount(rule.id);
+        const limitText = Number.isFinite(rule.max)
+          ? `${used}/${rule.max} choix "${rule.toCategory}"${rule.label ? ` — ${rule.label}` : ""} (budget partagé)`
+          : `choix "${rule.toCategory}" illimité${rule.label ? ` — ${rule.label}` : ""}`;
         return `<article class="unit-card">
           <div class="unit-main">
             <strong>${esc(u.name)}</strong>
             <span class="unit-points">${formatPoints(u.points)} / figurine</span>
             <small>${esc(limitText)}</small>
           </div>
-          <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
+          <button class="add-btn" data-add-reclassified="${esc(u.id)}" data-rule-id="${esc(rule.id)}">＋ Ajouter en ${esc(rule.toCategory)}</button>
         </article>`;
       }).join("")}
     </section>`).join("");
 
   container.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addUnit(b.dataset.add));
+  container.querySelectorAll("[data-add-reclassified]").forEach(b => b.onclick = () => addUnit(b.dataset.addReclassified, b.dataset.ruleId));
 }
 
 // --- Général de l'armée -----------------------------------------------
