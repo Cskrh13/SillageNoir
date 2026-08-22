@@ -132,6 +132,14 @@
           "Général avec l'Honneur Gardien de Saphery",
           "Général avec l'Honneur Maître du Savoir"
         ]
+      },
+      "archmage": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "prince": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
       }
     },
     "global": {
