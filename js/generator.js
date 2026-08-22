@@ -863,7 +863,13 @@ function ruleAppliesToUnit(rule, u) {
   if (!rule || !u) return false;
   const from = Array.isArray(rule.fromCategories) ? rule.fromCategories
     : (rule.fromCategory ? [rule.fromCategory] : []);
-  return from.includes(u.category);
+  if (!from.includes(u.category)) return false;
+  // `units` (optionnel) restreint la règle à une liste précise d'unités
+  // (ex. seuls les Maîtres des épées de Hoeth) plutôt qu'à toute la
+  // catégorie d'origine — sans quoi n'importe quelle autre unité Rare
+  // deviendrait éligible par la même case à cocher.
+  if (Array.isArray(rule.units) && rule.units.length && !rule.units.includes(u.id)) return false;
+  return true;
 }
 function activeReclassificationRulesFor(u) {
   if (!u) return [];
@@ -904,7 +910,16 @@ function maxEntriesForUnit(u) {
   let max = Infinity;
 
   if (u.maxEntries != null) max = Math.min(max, Number(u.maxEntries));
-  if (r.maxEntries != null) max = Math.min(max, Number(r.maxEntries));
+  if (r.maxEntries != null) {
+    // Un plafond (0-1, 0-2…) peut être levé par une condition déclarée dans
+    // les données (ex. "Général avec l'Honneur Gardien de Saphery"). Pas de
+    // cas particulier codé en dur : n'importe quelle restriction d'unité
+    // peut porter ce champ.
+    const conditions = r.maxEntriesUnlockedBy == null ? []
+      : (Array.isArray(r.maxEntriesUnlockedBy) ? r.maxEntriesUnlockedBy : [r.maxEntriesUnlockedBy]);
+    const lifted = conditions.some(c => conditionMet(c));
+    if (!lifted) max = Math.min(max, Number(r.maxEntries));
+  }
   if (r.max != null && (u.category === "Personnages" || u.minSize === 1)) max = Math.min(max, Number(r.max));
 
   if (r.maxPer1000 != null) {
