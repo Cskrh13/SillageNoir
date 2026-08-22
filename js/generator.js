@@ -1773,7 +1773,7 @@ function setMagicDomain(uidValue, value) {
 }
 
 function optionPrice(o) {
-  const flat = Number(o.points || 0);
+  const flat = 0;
   const per = Number(o.pointsPerModel || 0);
   if (!flat && !per) return "";
   if (per && flat) return ` (+${flat} pts + ${per} pts/mod.)`;
