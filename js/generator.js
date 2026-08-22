@@ -125,25 +125,13 @@ function renownMatches(id, entry, u) {
   // fiches d'unité : on refuse par défaut (échec fermé) plutôt que de
   // proposer un objet à un porteur qui n'y a peut-être pas droit. À adapter
   // dès qu'un champ dédié (ex. state.army.renown / entry.renown) existera.
-  const current = entry?.renown || u?.renown || state.army?.renown || state.supplement?.renown || null;
+  const current = entry?.renown || u?.renown || state.army?.renown || null;
   return current != null && String(current) === String(id);
-}
-// Les Bannières magiques du fichier commun (data/objets-magiques/communs.json)
-// ne sont pas réservées au Porteur de la Grande Bannière : n'importe quelle
-// unité disposant d'un Porte-étendard peut les choisir via son propre
-// sélecteur de bannière (voir renderBannerItemsSelector). Seules les
-// bannières magiques spécifiques à une armée/un supplément restent, par
-// défaut, réservées à la Grande Bannière — sauf restriction explicite dans
-// les données.
-function isCommonSourceItem(item) {
-  return /commun/i.test(String(item?.sourceLabel || ""));
 }
 function isItemAllowedForEntry(item, entry, u) {
   const explicit = item?.restriction?.requires;
-  const isCommonBanner = item?.categoryKey === "magic_standard" && isCommonSourceItem(item);
   const requires = Array.isArray(explicit) ? explicit
-    : (explicit != null ? [explicit]
-      : (isCommonBanner ? [] : (CATEGORY_DEFAULT_REQUIRES[item?.categoryKey] || [])));
+    : (explicit != null ? [explicit] : (CATEGORY_DEFAULT_REQUIRES[item?.categoryKey] || []));
   if (item?.restriction?.override === "no-wizard-required") return true;
   return requires.every(req => {
     if (req === "wizard") return isWizardUnit(u, entry);
@@ -153,6 +141,10 @@ function isItemAllowedForEntry(item, entry, u) {
       return allowed.some(t => unitTroopType(u).includes(t));
     }
     if (req && typeof req === "object" && req.renown) return renownMatches(req.renown, entry, u);
+    if (req && typeof req === "object" && req.unitId) {
+      const ids = Array.isArray(req.unitId) ? req.unitId : [req.unitId];
+      return ids.includes(u?.id);
+    }
     return true;
   });
 }
@@ -322,31 +314,14 @@ function normalizeUnit(u, fallbackId = "", mounts = []) {
     else if (single) { minSize = Number(single[0]); maxSize = Number(single[0]); }
   }
 
-  const unitId = String(u.id || fallbackId);
-
-  // Guerriers Fantômes : options de règles spéciales à coût par modèle,
-  // codées ici plutôt que dans les données d'armée (voir
-  // SHADOW_WARRIORS_RULE_OPTIONS).
-  const finalRuleOptions = unitId === "shadow-warriors"
-    ? [...ruleOptions, ...SHADOW_WARRIORS_RULE_OPTIONS.map(o => normalizeOption(o, "rule")).filter(Boolean)]
-    : ruleOptions;
-
-  // Profils d'équipage / monture attelée, affichés directement avec la
-  // figurine principale (baliste, chars, cotres volants…), sans case à
-  // cocher : voir renderStatsTable.
-  const crewProfiles = Array.isArray(u.crewProfiles)
-    ? u.crewProfiles.map(c => ({ ...c, profile: normalizeProfile(c) })).filter(c => c.name)
-    : [];
-
   return {
     ...u,
-    id: unitId,
+    id: String(u.id || fallbackId),
     name: u.name || u.nom || "Unité sans nom",
     category: u.category || u.categorie || "Autres",
     points: points == null || points === "" ? null : Number(points),
     options,
-    ruleOptions: finalRuleOptions,
-    crewProfiles,
+    ruleOptions,
     rules: normalizeTextList(u.rules ?? u.regles ?? u.specialRules),
     equipment: normalizeTextList(u.equipment ?? u.equipement ?? u.equipementNatif ?? u.equipementDeBase),
     profile: u.profile || u.profil || null,
@@ -693,11 +668,6 @@ function effectivePool(entry, u) {
 // effets de l'Honneur Elfique choisi.
 function effectiveRules(entry, u) {
   let rules = [...(u?.rules || [])];
-  // Option "Vétéran" (Lanciers / Archers / Gardes Maritimes) : remplace la
-  // règle spéciale native "Valeur des âges" par "Vétéran" quand cochée.
-  if (u && VETERAN_LIMITED_UNITS.includes(u.id) && (entry?.options || []).includes(VETERAN_OPTION_ID)) {
-    rules = rules.map(r => matchesPattern(r, "Valeur des âges") ? "Vétéran" : r);
-  }
   const effects = honourEffectsList(entry);
   effects.filter(e => e.type === "replace_special_rule").forEach(e => {
     rules = rules.map(r => matchesPattern(r, e.from) ? e.to : r);
@@ -980,15 +950,7 @@ function maxEntriesForUnit(u) {
       return Math.min(m,Math.floor(state.pointsLimit/1000)*Number(rule.maxPer1000));
     },Infinity);
     const currentGroup=groupRules.reduce((n,[id])=>n+getEntriesForUnit(id).length,0);
-    const currentOwn=getEntriesForUnit(u.id).length;
-    // Le plafond renvoyé par maxEntriesForUnit est comparé, chez l'appelant
-    // (canAdd), au nombre d'exemplaires déjà pris de CETTE unité (currentOwn),
-    // pas du groupe entier : il faut donc convertir "places restantes dans le
-    // groupe" en plafond absolu pour cette unité, en y rajoutant ce qu'elle a
-    // déjà elle-même — sinon les exemplaires d'une autre unité du même groupe
-    // se soustraient deux fois et le plafond tombe à zéro trop tôt.
-    const remaining=Math.max(0,groupMax-currentGroup);
-    max=Math.min(max,currentOwn+remaining);
+    max=Math.min(max,Math.max(0,groupMax-currentGroup));
   }
 
   // Le nombre d'exemplaires qu'on peut AJOUTER pour cette unité n'est pas
@@ -1077,44 +1039,9 @@ function canAdd(u, silent=false) {
   return true;
 }
 
-// Vérifie qu'une entrée peut être ajoutée DIRECTEMENT comme "compte comme
-// choix de <rule.toCategory>", depuis une carte de catalogue générée par une
-// règle de recatégorisation active (voir renderAvailable). Reprend les
-// mêmes vérifications de base que canAdd() (coût renseigné, plafond propre
-// à l'unité — partagé avec ses éventuelles cartes normales, puisque compté
-// par id, pas par catégorie), mais teste le quota de points de la
-// catégorie CIBLE de la règle plutôt que la catégorie native de l'unité, et
-// vérifie en plus le budget partagé de la règle elle-même
-// (reclassificationSlotsLeft). N'affecte jamais canAdd()/addUnit(id) sans
-// règle : fonction strictement additive.
-function canAddAsReclassified(u, rule) {
-  if (!u || !rule) return false;
-  if (u.points == null || Number.isNaN(u.points)) return false;
-  const currentEntries = getEntriesForUnit(u.id).length;
-  const max = maxEntriesForUnit(u);
-  if (currentEntries >= max) return false;
-  if (reclassificationSlotsLeft(rule) <= 0) return false;
-  const category = rule.toCategory;
-  const categoryRule = compositionRules()[category] || {};
-  if (categoryRule.maxPercent != null) {
-    const cap = state.pointsLimit * Number(categoryRule.maxPercent) / 100;
-    const projected = getCategoryTotal(category) + Number(u.points || 0) * entryModelMin(u);
-    if (projected > cap + 1e-9) return false;
-  }
-  return true;
-}
-
-// `reclassifyRuleId` (optionnel) : quand fourni depuis une carte de
-// catalogue générée par une règle de recatégorisation (voir renderAvailable),
-// l'entrée créée est directement marquée `reclassified`, donc immédiatement
-// comptée dans la catégorie cible — sans avoir à déplier la fiche ni cocher
-// la case manuellement. Tous les appels existants (sans second argument)
-// sont inchangés.
-function addUnit(id, reclassifyRuleId = null) {
+function addUnit(id) {
   const u = getUnit(id);
-  const rule = reclassifyRuleId ? findReclassificationRule(reclassifyRuleId) : null;
-  if (!isAllowed(u)) return;
-  if (rule ? !canAddAsReclassified(u, rule) : !canAdd(u)) return;
+  if (!isAllowed(u) || !canAdd(u)) return;
   state.list.push({
     uid: uid(),
     id,
@@ -1124,7 +1051,7 @@ function addUnit(id, reclassifyRuleId = null) {
     honour: null,
     // Choix "compte comme un choix de Base/Spécial/…" via une règle de
     // recatégorisation (ex. Éryndor Vareth) — voir reclassificationRules().
-    reclassified: rule ? rule.id : null,
+    reclassified: null,
     // La fiche complète n'est chargée que si l'entrée est développée ; par
     // défaut, seuls le nom et le coût total sont affichés dans "Ma liste".
     expanded: false
@@ -1201,16 +1128,6 @@ function setOption(uidValue, optionId, checked) {
   const entry = findEntry(uidValue);
   if (!entry) return;
   entry.options ||= [];
-  // Option "Vétéran" : refuse la coche au-delà de 0-1 par tranche de 1000
-  // points pour l'unité concernée (voir VETERAN_LIMITED_UNITS).
-  if (checked && optionId === VETERAN_OPTION_ID) {
-    const u = getUnit(entry.id);
-    if (u && VETERAN_LIMITED_UNITS.includes(u.id) && veteranSlotsLeft(u.id, entry.uid) <= 0) {
-      setStatus(`${u.name} : l'option Vétéran est limitée à ${veteranSlotsMax()} unité${veteranSlotsMax() > 1 ? "s" : ""} pour ce format de partie.`, "error");
-      render();
-      return;
-    }
-  }
   if (checked && !entry.options.includes(optionId)) entry.options.push(optionId);
   if (!checked) {
     entry.options = entry.options.filter(x => x !== optionId);
@@ -1285,41 +1202,6 @@ function setHonour(uidValue, honourId) {
 
 
 const STAT_KEYS = ["M","CC","CT","F","E","PV","I","A","Cd"];
-
-// --- Option "Vétéran" (remplace Valeur des âges) : limitée à 0-1 par unité
-// concernée et par tranche de 1000 points de la partie, indépendamment pour
-// les Lanciers, les Archers et les Gardes Maritimes (un pool de créneaux
-// séparé par unité, pas partagé entre les trois). ------------------------
-const VETERAN_OPTION_ID = "opt-veteran";
-const VETERAN_LIMITED_UNITS = ["elven-spearmen", "elven-archers", "lothern-sea-guard"];
-
-function veteranSlotsMax() {
-  return Math.max(1, Math.ceil(Number(state.pointsLimit || 0) / 1000));
-}
-function veteranCount(unitId, excludeUid = null) {
-  return state.list.filter(e => e.uid !== excludeUid && e.id === unitId && (e.options || []).includes(VETERAN_OPTION_ID)).length;
-}
-function veteranSlotsLeft(unitId, excludeUid = null) {
-  if (!VETERAN_LIMITED_UNITS.includes(unitId)) return Infinity;
-  return Math.max(0, veteranSlotsMax() - veteranCount(unitId, excludeUid));
-}
-
-// --- Budgets d'objets magiques réservés au chef d'unité (Maître Maritime /
-// Maître des lames), distincts du budget normal de l'unité (ces unités n'en
-// proposent pas) : disponibles uniquement si l'option de chef est cochée. --
-const CHAMPION_MAGIC_ITEM_BUDGETS = {
-  "lothern-sea-guard": 25,   // Maître de la mer (Maître Maritime)
-  "swordmasters-of-hoeth": 50 // Maître des lames
-};
-
-// --- Options de règles spéciales propres aux Guerriers Fantômes (0-1 unité
-// dans la liste de composition) : coût par modèle, ajoutées ici plutôt que
-// dans les données d'armée. -------------------------------------------
-const SHADOW_WARRIORS_RULE_OPTIONS = [
-  { id: "regle-guerriers-fantomes-embusquer", name: "Embusquer", points: 0, pointsPerModel: 1, kind: "rule" },
-  { id: "regle-guerriers-fantomes-escorteur-de-char", name: "Escorteur de char", points: 0, pointsPerModel: 1, kind: "rule" },
-  { id: "regle-guerriers-fantomes-fuite-feinte", name: "Fuite feinte", points: 0, pointsPerModel: 1, kind: "rule" }
-];
 
 function normalizeProfile(profile) {
   if (!profile || typeof profile !== "object") return null;
@@ -1486,14 +1368,6 @@ function renderStatsTable(entry, unit) {
   if (mount) {
     rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
   }
-
-  // Profils d'équipage / monture attelée fournis directement par l'unité
-  // (baliste, chars, cotres volants…) : toujours affichés avec la figurine
-  // principale, sans case à cocher — voir normalizeUnit (u.crewProfiles).
-  (unit.crewProfiles || []).forEach(c => {
-    const label = c.count && Number(c.count) > 1 ? `${c.name} (x${c.count})` : c.name;
-    rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${esc(c.profile?.[k] ?? c[k] ?? "-")}</td>`).join("")}</tr>`);
-  });
 
   return `<div class="profile-block">
     <div class="profile-title">Caractéristiques</div>
@@ -1683,14 +1557,6 @@ function renderCharacterOptions(entry, u) {
     html += `<div class="check-options"><div class="check-options-title">Autres options</div>`;
     html += groups.other.map(o => {
       const checked = entry.options.includes(o.id);
-      // Option "Vétéran" (Lanciers / Archers / Gardes Maritimes) : limitée à
-      // 0-1 unité par tranche de 1000 points — voir VETERAN_LIMITED_UNITS.
-      if (o.id === VETERAN_OPTION_ID && VETERAN_LIMITED_UNITS.includes(u.id)) {
-        const slotsLeft = veteranSlotsLeft(u.id, entry.uid);
-        const disabled = !checked && slotsLeft <= 0;
-        const slotsText = ` — ${slotsLeft + (checked?1:0)}/${veteranSlotsMax()} disponible${veteranSlotsMax()>1?"s":""}`;
-        return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""} ${disabled?"disabled":""}><span>${esc(o.name)}${optionPrice(o)}${esc(slotsText)}</span></label>`;
-      }
       return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""}><span>${esc(o.name)}${optionPrice(o)}</span></label>`;
     }).join("");
     html += `</div>`;
@@ -1817,19 +1683,6 @@ function renderChampionWeaponSelector(entry, u) {
   const champion = selectedOptionOfKind(entry, u, "champion");
   if (!champion) return "";
   return renderBudgetItemSelector(entry, u, { limit, category: "Armes magiques", title: "Arme magique du chef" });
-}
-
-// Budget d'objets magiques réservé au chef d'unité (Maître Maritime de la
-// Garde Maritime de Lothern : 25 pts, Maître des lames des Maîtres des
-// épées de Hoeth : 50 pts) — voir CHAMPION_MAGIC_ITEM_BUDGETS. Distinct du
-// budget normal de l'unité (ces unités n'en proposent pas), et disponible
-// uniquement si l'option de chef est cochée.
-function renderChampionMagicItemsSelector(entry, u) {
-  const limit = CHAMPION_MAGIC_ITEM_BUDGETS[u?.id];
-  if (limit == null) return "";
-  const champion = selectedOptionOfKind(entry, u, "champion");
-  if (!champion) return "";
-  return renderBudgetItemSelector(entry, u, { limit, category: null, title: `Objets magiques du ${champion.name}`, excludeCategory: "Bannières magiques" });
 }
 
 // Options de règles spéciales (règles optionnelles / honneurs proposés par
@@ -1979,21 +1832,8 @@ function validate() {
       if (weaponCost > weaponLimit) errors.push(`${u.name} : arme magique du chef au-dessus de la limite de ${formatPoints(weaponLimit)}.`);
     }
 
-    const championMagicLimit = CHAMPION_MAGIC_ITEM_BUDGETS[u.id];
-    if (championMagicLimit != null && selectedOptionOfKind(item, u, "champion")) {
-      const championMagicCost = magicCost(item) - categoryMagicCost(item, "Bannières magiques");
-      if (championMagicCost > championMagicLimit) errors.push(`${u.name} : objets magiques du chef au-dessus de la limite de ${formatPoints(championMagicLimit)}.`);
-    }
-
     if (item.honour && !allowedHonours().some(h => h.id === item.honour)) {
       errors.push(`${u.name} : l'honneur elfique choisi n'est plus autorisé par ce supplément.`);
-    }
-
-    if (VETERAN_LIMITED_UNITS.includes(u.id) && (item.options || []).includes(VETERAN_OPTION_ID)) {
-      const max = veteranSlotsMax();
-      if (veteranCount(u.id) > max) {
-        errors.push(`${u.name} : l'option Vétéran est prise par plus d'unités que la limite de ${max} pour ce format de partie.`);
-      }
     }
 
     // Une monture imposée par l'Honneur Elfique choisi (restrict_mount avec
@@ -2073,77 +1913,33 @@ function renderAvailable() {
   // gauche — une unité qu'on ne peut pas ajouter (coût manquant, non
   // autorisée par le supplément, maximum atteint…) n'y apparaît plus.
   const units = filteredUnits().filter(u => u.points != null && isAllowed(u) && canAdd(u, true));
-
-  // groups[categorie] contient des cartes ; chaque carte est soit normale
-  // ({u, rule:null}), soit une carte "supplémentaire" générée par une règle
-  // de recatégorisation active (ex. Éryndor Vareth, Honneur Garde
-  // Maritime) : {u, rule}. Une même unité peut donc apparaître deux fois,
-  // dans deux catégories différentes, sans être dupliquée dans les données
-  // JSON — la carte normale ci-dessous n'est jamais modifiée par ce qui suit.
-  const groups = {};
-  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push({ u, rule: null }));
-
-  // Cartes additionnelles : dérivées uniquement de restrictions.reclassifications
-  // (déjà utilisées pour la case "Compter comme choix de..." dans "Ma
-  // liste") — aucune nouvelle donnée à saisir dans le JSON. On reprend
-  // l'ensemble filtré/autorisé (pas seulement `units`, qui exclut déjà les
-  // unités au maximum : le plafond pertinent ici est celui de la règle, pas
-  // celui de l'unité) pour ne pas manquer une unité déjà à son maximum de
-  // cartes normales mais encore éligible via la règle.
-  filteredUnits().filter(u => u.points != null && isAllowed(u)).forEach(u => {
-    activeReclassificationRulesFor(u).forEach(rule => {
-      if (canAddAsReclassified(u, rule)) {
-        (groups[rule.toCategory] ||= []).push({ u, rule });
-      }
-    });
-  });
-
-  if (!Object.values(groups).some(arr => arr.length)) {
+  if (!units.length) {
     container.innerHTML = `<div class="empty">Aucune unité disponible ne correspond aux critères.</div>`;
     return;
   }
 
+  const groups = {};
+  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push(u));
+
   container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
     <section class="unit-group">
       <div class="group-head"><span>${esc(cat)}</span><span>${arr.length}</span></div>
-      ${arr.map(({ u, rule }) => {
-        if (!rule) {
-          // Carte normale : comportement strictement inchangé.
-          const entries = getEntriesForUnit(u.id).length;
-          const max = maxEntriesForUnit(u);
-          const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
-          return `<article class="unit-card">
-            <div class="unit-main">
-              <strong>${esc(u.name)}</strong>
-              <span class="unit-points">${formatPoints(u.points)} / figurine</span>
-              <small>${esc(limitText)}</small>
-            </div>
-            <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
-          </article>`;
-        }
-        // Carte "supplémentaire" issue d'une règle de recatégorisation :
-        // le budget affiché (used/max) est celui de la règle, PARTAGÉ entre
-        // toutes les unités qui l'utilisent (ex. 0-1 au total pour Éryndor,
-        // toutes unités Spéciales/Rares confondues) — pas un compteur par
-        // unité. Affichage volontairement minimal (nom + bouton) ; le détail
-        // (points, budget partagé, règle d'origine) reste consultable via le
-        // titre (info-bulle) du bouton plutôt qu'affiché en permanence.
-        const used = reclassifiedCount(rule.id);
-        const limitText = Number.isFinite(rule.max)
-          ? `${used}/${rule.max} choix "${rule.toCategory}"${rule.label ? ` — ${rule.label}` : ""} (budget partagé)`
-          : `choix "${rule.toCategory}" illimité${rule.label ? ` — ${rule.label}` : ""}`;
+      ${arr.map(u => {
+        const entries = getEntriesForUnit(u.id).length;
+        const max = maxEntriesForUnit(u);
+        const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
         return `<article class="unit-card">
           <div class="unit-main">
             <strong>${esc(u.name)}</strong>
+            <span class="unit-points">${formatPoints(u.points)} / figurine</span>
+            <small>${esc(limitText)}</small>
           </div>
-          <button class="add-btn" data-add-reclassified="${esc(u.id)}" data-rule-id="${esc(rule.id)}" title="${esc(`${formatPoints(u.points)} / figurine — ${limitText}`)}">＋ Ajouter</button>
+          <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
         </article>`;
       }).join("")}
-
     </section>`).join("");
 
   container.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addUnit(b.dataset.add));
-  container.querySelectorAll("[data-add-reclassified]").forEach(b => b.onclick = () => addUnit(b.dataset.addReclassified, b.dataset.ruleId));
 }
 
 // --- Général de l'armée -----------------------------------------------
@@ -2244,7 +2040,6 @@ function renderList() {
           ${renderGrandBannerItemSelector(item, unit)}
           ${renderBannerItemsSelector(item, unit)}
           ${renderChampionWeaponSelector(item, unit)}
-          ${renderChampionMagicItemsSelector(item, unit)}
           ${renderRuleOptions(item, unit)}
           `}
         </article>`;
@@ -2493,55 +2288,29 @@ function exportJSON() {
 }
 
 function exportTXT() {
-  const name = $("nameInput").value.trim() || "Ma liste";
-  const total = getTotal();
-  const width = 64;
-  const rule = "═".repeat(width);
-  const thin = "─".repeat(width);
-
   const lines = [
-    rule,
-    center(name, width),
-    center(`${state.supplement?.name || ""} · ${state.army?.name || ""}`, width),
-    rule,
-    "",
-    `  Format : ${state.pointsLimit} points`,
-    `  Total  : ${total} points  (${Math.round((total/Math.max(1,state.pointsLimit))*100)}%)`,
+    $("nameInput").value.trim() || "Ma liste",
+    `${state.supplement?.name || ""} · ${state.army?.name || ""}`,
+    `Format : ${state.pointsLimit} points`,
+    `Total : ${getTotal()} points`,
     ""
   ];
-
   const groups = {};
   state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[entryEffectiveCategory(item, u)] ||= []).push({u,item}); });
-
   sortByCategory(Object.entries(groups)).forEach(([cat,arr]) => {
-    const catTotal = arr.reduce((s,{item})=>s+entryPoints(item),0);
-    const label = `${cat.toUpperCase()} — ${catTotal} pts`;
-    lines.push(label);
-    lines.push(thin);
+    lines.push(cat.toUpperCase());
+    lines.push("-".repeat(cat.length));
     arr.forEach(({u,item},i) => {
       const pool = effectivePool(item, u);
       const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
       opts.push(...magicItemsLabel(item));
       if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
-      const head = `  ${i+1}. ${item.qty}× ${u.name}`;
-      const pts = `${entryPoints(item)} pts`;
-      const pad = Math.max(1, width - head.length - pts.length);
-      lines.push(head + " ".repeat(pad) + pts);
-      if (opts.length) lines.push(`       ${opts.join(", ")}`);
+      lines.push(`${i+1}. ${item.qty} figurine${item.qty>1?"s":""} — ${u.name}${opts.length?" — "+opts.join(", "):""} — ${entryPoints(item)} pts`);
     });
     lines.push("");
   });
-
-  lines.push(rule);
-  download(`${slug(name)}.txt`, lines.join("\n"), "text/plain;charset=utf-8");
+  download(`${slug($("nameInput").value || "ma-liste")}.txt`, lines.join("\n"), "text/plain;charset=utf-8");
   setStatus("Liste exportée en TXT.", "ok");
-}
-
-function center(s, width) {
-  s = String(s || "");
-  if (s.length >= width) return s;
-  const left = Math.floor((width - s.length) / 2);
-  return " ".repeat(left) + s;
 }
 
 function download(name, content, type) {
@@ -2552,88 +2321,21 @@ function download(name, content, type) {
 }
 
 function printList() {
-  const groups = {};
-  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[entryEffectiveCategory(item, u)] ||= []).push({u,item}); });
-  const total = getTotal();
-  const limit = state.pointsLimit;
-  const pct = Math.min(100, Math.round((total/Math.max(1,limit))*100));
-  const listName = $("nameInput").value.trim() || "Ma liste";
-
-  let counter = 0;
-  const sections = sortByCategory(Object.entries(groups)).map(([cat,arr]) => {
-    const rows = arr.map(({u,item}) => {
-      counter++;
-      const pool = effectivePool(item, u);
-      const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
-      opts.push(...magicItemsLabel(item));
-      if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
-      const optHtml = opts.length ? `<div class="opts">${opts.map(o=>`<span class="tag">${esc(o)}</span>`).join("")}</div>` : "";
-      return `<tr>
-        <td class="num">${counter}</td>
-        <td class="unit"><div class="unit-name">${esc(u.name)}</div>${optHtml}</td>
-        <td class="qty">${item.qty}</td>
-        <td class="pts">${entryPoints(item)}</td>
-      </tr>`;
-    }).join("");
-    const catTotal = arr.reduce((s,{item})=>s+entryPoints(item),0);
-    return `<section class="cat-block">
-      <h2>${esc(cat)} <span class="cat-total">${catTotal} pts</span></h2>
-      <table>
-        <thead><tr><th class="num">#</th><th>Unité &amp; options</th><th class="qty">Eff.</th><th class="pts">Pts</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </section>`;
+  const ordered = state.list
+    .map(item => ({ item, u: getUnit(item.id) }))
+    .filter(x => x.u)
+    .sort((a,b) => categoryRank(entryEffectiveCategory(a.item, a.u)) - categoryRank(entryEffectiveCategory(b.item, b.u)));
+  const rows = ordered.map(({item,u},index) => {
+    const pool = effectivePool(item, u);
+    const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
+    opts.push(...magicItemsLabel(item));
+    if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
+    const optText=opts.join(", ");
+    return `<tr><td>${index+1}</td><td>${esc(entryEffectiveCategory(item, u))}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
   }).join("");
-
   const w=window.open("","_blank");
   if(!w) return setStatus("La fenêtre d'impression a été bloquée.", "error");
-  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc(listName)}</title>
-<style>
-  :root{ --ink:#1f2430; --muted:#6b7280; --line:#e2e2e5; --accent:#7a1f2b; --accent-soft:#f4e9ea; }
-  *{box-sizing:border-box}
-  body{font-family:"Segoe UI",Helvetica,Arial,sans-serif;margin:0;padding:36px 44px;color:var(--ink);background:#fff}
-  header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid var(--accent);padding-bottom:14px;margin-bottom:6px}
-  h1{font-size:26px;margin:0;letter-spacing:.3px}
-  .subtitle{color:var(--muted);font-size:13px;margin-top:4px}
-  .points-box{text-align:right}
-  .points-box .big{font-size:24px;font-weight:700;color:var(--accent)}
-  .points-box .lim{font-size:13px;color:var(--muted)}
-  .bar{height:6px;border-radius:3px;background:var(--accent-soft);margin:14px 0 24px;overflow:hidden}
-  .bar-fill{height:100%;background:var(--accent);width:${pct}%}
-  .cat-block{margin-bottom:22px;break-inside:avoid}
-  .cat-block h2{font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:6px;margin:0 0 6px;display:flex;justify-content:space-between}
-  .cat-total{color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0}
-  table{border-collapse:collapse;width:100%}
-  th{font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}
-  td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13.5px}
-  tr:last-child td{border-bottom:none}
-  .num{width:28px;color:var(--muted);text-align:center}
-  .qty{width:50px;text-align:center}
-  .pts{width:60px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-  .unit-name{font-weight:600}
-  .opts{margin-top:3px}
-  .tag{display:inline-block;background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:1px 8px;font-size:11.5px;margin:2px 4px 0 0}
-  footer{margin-top:28px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:11px;display:flex;justify-content:space-between}
-  @media print{ body{padding:16px 22px} .cat-block{break-inside:avoid} }
-</style></head><body>
-<header>
-  <div>
-    <h1>${esc(listName)}</h1>
-    <div class="subtitle">${esc(state.supplement?.name||"")} · ${esc(state.army?.name||"")}</div>
-  </div>
-  <div class="points-box">
-    <div class="big">${total} pts</div>
-    <div class="lim">sur ${limit} pts (${pct}%)</div>
-  </div>
-</header>
-<div class="bar"><div class="bar-fill"></div></div>
-${sections}
-<footer>
-  <span>${esc(listName)}</span>
-  <span>Généré le ${new Date().toLocaleDateString("fr-FR")}</span>
-</footer>
-<script>window.print()<\/script>
-</body></html>`);
+  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc($("nameInput").value||"Ma liste")}</title><style>body{font-family:Georgia,serif;margin:40px;color:#222}h1{font-size:28px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #aaa;padding:7px;text-align:left}.total{font-size:20px;margin:15px 0}</style></head><body><h1>${esc($("nameInput").value||"Ma liste")}</h1><p>${esc(state.supplement?.name||"")} · ${esc(state.army?.name||"")}</p><div class="total">${getTotal()} / ${state.pointsLimit} points</div><table><thead><tr><th>#</th><th>Catégorie</th><th>Unité</th><th>Effectif</th><th>Options</th><th>Points</th></tr></thead><tbody>${rows}</tbody></table><script>window.print()<\/script></body></html>`);
   w.document.close();
 }
 
