@@ -207,56 +207,6 @@
           ]
         }
       }
-    ],
-    "Poisons": [
-      {
-        "id": "lotus-noir",
-        "name": "Lotus Noir",
-        "points": 5,
-        "repeatable": false,
-        "description": "Pour chaque blessure non sauvegardée infligée par ce personnage, les personnages ennemis subissent un malus de -1 à leur caractéristique de Commandement jusqu'à la fin de la partie.",
-        "restriction": {
-          "requires": [
-            {
-              "unitId": [
-                "khainite-assassin"
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "id": "venin-noir",
-        "name": "Venin Noir",
-        "points": 15,
-        "repeatable": false,
-        "description": "Ce personnage gagne la règle spéciale Coup Fatal.",
-        "restriction": {
-          "requires": [
-            {
-              "unitId": [
-                "khainite-assassin"
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "id": "manbane",
-        "name": "Manbane",
-        "points": 15,
-        "repeatable": false,
-        "description": "Lorsque ce personnage effectue un jet pour Blesser, un résultat de 4+ est toujours un succès, quelle que soit l'Endurance de la cible.",
-        "restriction": {
-          "requires": [
-            {
-              "unitId": [
-                "khainite-assassin"
-              ]
-            }
-          ]
-        }
-      }
     ]
   }
 }
