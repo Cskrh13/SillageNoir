@@ -31,13 +31,14 @@
     "categories": {
       "Personnages": {
         "maxPercent": 50,
-        "characters": {
-          "prince-haut-elfe": {
-            "maxPer1000": 1
-          },
-          "archimage": {
-            "maxPer1000": 1
-          }
+        "archmage": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "prince": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      }
         },
         "notes": "Jusqu’à 50 % des points de l’armée peuvent être dépensés en Personnages. 0-1 Prince Haut Elfe ou Archimage par tranche de 1000 points. Nobles et Mages Hauts Elfes disponibles selon les règles de l’armée de référence."
       },
@@ -145,14 +146,6 @@
           "Général avec l'Honneur Maître du Savoir"
         ],
         "categoryOverride": "Unités Rares",
-        "maxPer1000": 1
-      },
-      "archmage": {
-        "group": "lord-archmage-or-prince",
-        "maxPer1000": 1
-      },
-      "prince": {
-        "group": "lord-archmage-or-prince",
         "maxPer1000": 1
       },
       "shadow-warriors": {
