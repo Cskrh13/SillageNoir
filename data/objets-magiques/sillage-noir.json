@@ -1,3 +1,135 @@
 {
-  "magicItems": {}
+  "id": "sillage-noir",
+  "name": "Objets magiques de l'armée légendaire Elfes Noirs — Le Sillage Noir",
+  "source": "La Marée de Sang.pdf, p. 18-20",
+  "magicItems": {
+    "Armes magiques": [
+      {
+        "id": "fouet-de-lultime-lecon",
+        "name": "Le Fouet de l'Ultime Leçon",
+        "points": 45,
+        "repeatable": true,
+        "description": "Objet magique extrêmement courant. Arme de corps à corps, PA -, avec la règle spéciale Attaques Multiples (2). À la fin de chaque phase de Combat durant laquelle le porteur a infligé au moins une blessure non sauvegardée avec cette arme, vous pouvez retirer comme perte une figurine d'une unité d'Esclaves amie située à 6\" ou moins. Si vous le faites, choisissez une autre unité amie à 12\" ou moins : jusqu'au début de votre prochain tour, elle gagne Frappe en Premier.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "lames-jumelles-de-lagonie",
+        "name": "Les Lames Jumelles de l'Agonie",
+        "points": 40,
+        "repeatable": false,
+        "description": "Arme de corps à corps, PA -1, avec la règle spéciale Attaques Multiples (2). Chaque blessure non sauvegardée infligée par ces lames fait perdre 1 point de Commandement à sa victime jusqu'à la prochaine phase de Combat.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "arbalete-du-dernier-souffle",
+        "name": "Arbalète du Dernier Souffle",
+        "points": 30,
+        "repeatable": false,
+        "description": "Arme de tir, Portée 24\", Force 5, PA -1, avec les règles spéciales Arme Perforante (1) et Tir Multiple (3). Si le porteur bénéficie de la règle spéciale Tir dans la Mêlée, les tirs supplémentaires générés par cette arme y sont également soumis.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Armures magiques": [
+      {
+        "id": "armure-des-mille-captifs",
+        "name": "Armure des Mille Captifs",
+        "points": 50,
+        "repeatable": false,
+        "description": "Une fois par tour, lorsqu'une blessure est allouée au porteur, vous pouvez choisir une unité d'Esclaves amie située à 6\" ou moins et retirer immédiatement une figurine de cette unité comme perte : la blessure sur le porteur est alors ignorée (la perte compte cependant dans le résultat de combat).",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "heaume-du-bourreau",
+        "name": "Heaume du Bourreau",
+        "points": 15,
+        "repeatable": false,
+        "description": "Réservé aux figurines dont le type de troupe est Infanterie ou Cavalerie. Ajoute +1 à la sauvegarde d'armure du porteur. Les attaques de Force 4 ou moins subissent un malus de -1 pour blesser le porteur.",
+        "restriction": {
+          "requires": [
+            { "troopType": ["Infanterie", "Cavalerie"] }
+          ]
+        }
+      }
+    ],
+    "Talismans": [
+      {
+        "id": "talisman-des-chaines-noires",
+        "name": "Talisman des Chaînes Noires",
+        "points": 20,
+        "repeatable": true,
+        "description": "Objet magique extrêmement courant. Réservé aux personnages d'une Armée d'Infamie de la Flotte du Sillage Noir. Une seule utilisation. Au début d'une phase de Combat, le porteur peut choisir une unité d'Esclaves amie située à 6\" ou moins : jusqu'à la fin de la phase, cette unité ne peut pas effectuer de Céder du Terrain.",
+        "restriction": {
+          "requires": [
+            { "renown": "armee-infamie-sillage-noir" }
+          ]
+        }
+      },
+      {
+        "id": "opale-du-dernier-souffle",
+        "name": "Opale du Dernier Souffle",
+        "points": 35,
+        "repeatable": false,
+        "description": "Une seule utilisation. Lorsqu'une unité amie située à 12\" ou moins du porteur est entièrement détruite, le porteur peut utiliser ce talisman et choisir une unité ennemie située à 12\" ou moins de lui. Jusqu'à la fin du tour, cette unité ne peut pas bénéficier de la Présence Charismatique ni utiliser le Commandement d'un personnage.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Bannières magiques": [
+      {
+        "id": "banniere-du-sillage-sanglant",
+        "name": "Bannière du Sillage Sanglant",
+        "points": 40,
+        "repeatable": false,
+        "description": "Réservée aux personnages d'une Armée d'Infamie de la Flotte du Sillage Noir. Une seule fois par bataille, l'unité portant cette bannière peut l'activer au début de sa phase de Combat. Jusqu'à la fin du tour, chaque fois qu'une figurine de cette unité est retirée comme perte au combat, lancez 1D6 : sur un 6, ajoutez 20 points à la Marée de Sang.",
+        "restriction": {
+          "requires": [
+            { "renown": "armee-infamie-sillage-noir" }
+          ]
+        }
+      },
+      {
+        "id": "banniere-du-sang-consacre",
+        "name": "Bannière du Sang Consacré",
+        "points": 50,
+        "repeatable": false,
+        "description": "L'unité portant cette bannière gagne Résistance à la Magie (1). Une seule utilisation par bataille : au début d'une phase de Magie, le porteur peut dévoiler la bannière. Jusqu'à la fin de la phase, le porteur et toute unité amie située à 6\" ou moins peuvent ajouter +1 à leurs jets de dissipation.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Objets enchantés": [
+      {
+        "id": "chaines-du-bourreau",
+        "name": "Chaînes du Bourreau",
+        "points": 20,
+        "repeatable": true,
+        "description": "Objet magique extrêmement courant. Une seule utilisation par bataille. Au début d'une phase de Combat, le porteur peut désigner une unité ennemie en contact socle à socle avec lui : jusqu'à la fin de la phase, cette unité ne peut pas choisir de Céder le Terrain.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "oeil-de-la-lune-noire",
+        "name": "Œil de la Lune Noire",
+        "points": 25,
+        "repeatable": false,
+        "description": "Une seule utilisation par bataille. Après qu'une unité ennemie située à 12\" ou moins du porteur a réussi un test de Commandement, le porteur peut utiliser l'Œil : l'unité doit immédiatement relancer ce test de Commandement, le second résultat devant être conservé.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Objets cabalistiques": [
+      {
+        "id": "voile-de-la-veuve-noire",
+        "name": "Voile de la Veuve Noire",
+        "points": 25,
+        "repeatable": false,
+        "description": "Une seule utilisation par bataille. Au début d'une phase de Combat, le porteur peut déployer le Voile. S'il est accompagné d'une unité d'Esclaves, les attaques ennemies qui le ciblent doivent être réparties entre le porteur et l'unité avant les jets pour toucher, comme si les Esclaves s'interposaient devant lui : sur un résultat de 4+, l'attaque est allouée au porteur, sinon à l'unité.",
+        "restriction": { "requires": ["wizard"] }
+      },
+      {
+        "id": "codex-des-mille-lamentations",
+        "name": "Codex des Mille Lamentations",
+        "points": 50,
+        "repeatable": false,
+        "description": "Une fois par phase de Magie, lorsqu'il lance un sort, le porteur peut retirer 1D3 figurines d'Esclaves d'une unité qu'il a rejointe : il peut alors lancer 1D6 supplémentaire pour son jet de lancement et conserver les deux résultats les plus élevés.",
+        "restriction": { "requires": ["wizard"] }
+      }
+    ]
+  }
 }
