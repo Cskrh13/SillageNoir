@@ -1302,7 +1302,9 @@
         "3 membres d'équipage de la Garde Maritime",
         "Roc à plumes véloces"
       ],
-      "options": [],
+      "options": [
+        "Baliste Œil-d'Aigle +25 pts"
+      ],
       "specialRules": [
         "Ordre serré"
       ],
