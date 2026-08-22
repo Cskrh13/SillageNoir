@@ -7,30 +7,12 @@
   "description": "Données françaises de l'armée générique des Elfes Noirs pour le créateur de listes. Les suppléments peuvent réutiliser cette base et appliquer leurs propres restrictions.",
   "composition": {
     "categories": {
-      "Personnages": {
-        "minPercent": 0,
-        "maxPercent": 50
-      },
-      "Unités de Base": {
-        "minPercent": 25,
-        "maxPercent": 100
-      },
-      "Unités Spéciales": {
-        "minPercent": 0,
-        "maxPercent": 50
-      },
-      "Unités Rares": {
-        "minPercent": 0,
-        "maxPercent": 25
-      },
-      "Mercenaires": {
-        "minPercent": 0,
-        "maxPercent": 20
-      },
-      "Alliés": {
-        "minPercent": 0,
-        "maxPercent": 25
-      }
+      "Personnages": { "minPercent": 0, "maxPercent": 50 },
+      "Unités de Base": { "minPercent": 25, "maxPercent": 100 },
+      "Unités Spéciales": { "minPercent": 0, "maxPercent": 50 },
+      "Unités Rares": { "minPercent": 0, "maxPercent": 25 },
+      "Mercenaires": { "minPercent": 0, "maxPercent": 20 },
+      "Alliés": { "minPercent": 0, "maxPercent": 25 }
     },
     "notes": [
       "Personnages : jusqu'à 50 % des points.",
@@ -42,81 +24,21 @@
     ]
   },
   "specialRules": [
-    {
-      "id": "cleaving-blow",
-      "name": "Coup de taille",
-      "text": "Sur un 6 naturel pour blesser au corps à corps, certaines cibles d'infanterie ou de cavalerie perdent leurs sauvegardes d'armure et de Régénération."
-    },
-    {
-      "id": "elven-reflexes",
-      "name": "Réflexes elfiques",
-      "text": "+1 Initiative lors du premier round de chaque combat, sans l'appliquer à la monture."
-    },
-    {
-      "id": "eternal-hatred",
-      "name": "Haine éternelle",
-      "text": "Contre les Hauts-Elfes, la Haine s'applique à chaque round de corps à corps."
-    },
-    {
-      "id": "hekarti-blessing",
-      "name": "Bénédiction d'Hekarti",
-      "text": "Une fois par partie, permet de relancer un test de lancement raté."
-    },
-    {
-      "id": "martial-prowess",
-      "name": "Maîtrise martiale",
-      "text": "Les unités concernées peuvent effectuer des attaques de soutien sur leurs flancs et leur arrière."
-    },
-    {
-      "id": "murderous",
-      "name": "Meurtrier",
-      "text": "Avec une seule arme de base non magique au corps à corps, relance les 1 naturels pour blesser."
-    },
-    {
-      "id": "sea-dragon-cloak",
-      "name": "Cape en peau de Dragon des Mers",
-      "text": "Améliore de 1 la sauvegarde d'armure contre les tirs non magiques, jusqu'à 2+."
-    },
-    {
-      "id": "goad-beast",
-      "name": "Exciter la bête",
-      "text": "Un Grand Maître des Bêtes peut donner +D3 Attaques à un monstre ami à portée de Commandement, jusqu'à 10."
-    },
-    {
-      "id": "hidden",
-      "name": "Dissimulé",
-      "text": "L'Assassin peut commencer caché dans une unité d'infanterie amie de Force d'Unité suffisante et se révéler pendant la partie."
-    },
-    {
-      "id": "dance-of-death",
-      "name": "Danse de mort",
-      "text": "Une unité de Sœurs du Massacre qui réussit une charge réduit temporairement le bonus de rang maximal de sa cible."
-    },
-    {
-      "id": "cursed-coven",
-      "name": "Coven maudit",
-      "text": "Les Conjurateurs de Feu Maudit connaissent un sort lié de Magie Noire ou de Démonologie."
-    },
-    {
-      "id": "dark-runes",
-      "name": "Runes sombres",
-      "text": "Sauvegarde invulnérable de 5+ contre les blessures causées par des attaques ennemies non magiques."
-    },
-    {
-      "id": "wilful-beast",
-      "name": "Bête indocile",
-      "text": "Une Manticore montée doit tester son Commandement au début du tour ; en cas d'échec, elle gagne Frénésie jusqu'au prochain début de tour."
-    },
-    {
-      "id": "stony-stare",
-      "name": "Regard pétrifiant",
-      "text": "Les ennemis au contact doivent tester leur Initiative au début de chaque phase de Combat ; en cas d'échec, ils subissent D3 touches de Force 2 sans sauvegarde d'armure."
-    },
-    {
-      "id": "abyssal-howl",
-      "name": "Hurlement abyssal",
-      "text": "Les unités ennemies à 6 pouces subissent -1 Commandement, non cumulatif."
-    }
+    { "id": "cleaving-blow", "name": "Coup de taille", "text": "Sur un 6 naturel pour blesser au corps à corps, certaines cibles d'infanterie ou de cavalerie perdent leurs sauvegardes d'armure et de Régénération." },
+    { "id": "elven-reflexes", "name": "Réflexes elfiques", "text": "+1 Initiative lors du premier round de chaque combat, sans l'appliquer à la monture." },
+    { "id": "eternal-hatred", "name": "Haine éternelle", "text": "Contre les Hauts-Elfes, la Haine s'applique à chaque round de corps à corps." },
+    { "id": "hekarti-blessing", "name": "Bénédiction d'Hekarti", "text": "Une fois par partie, permet de relancer un test de lancement raté." },
+    { "id": "martial-prowess", "name": "Maîtrise martiale", "text": "Les unités concernées peuvent effectuer des attaques de soutien sur leurs flancs et leur arrière." },
+    { "id": "murderous", "name": "Meurtrier", "text": "Avec une seule arme de base non magique au corps à corps, relance les 1 naturels pour blesser." },
+    { "id": "sea-dragon-cloak", "name": "Cape en peau de Dragon des Mers", "text": "Améliore de 1 la sauvegarde d'armure contre les tirs non magiques, jusqu'à 2+." },
+    { "id": "goad-beast", "name": "Exciter la bête", "text": "Un Grand Maître des Bêtes peut donner +D3 Attaques à un monstre ami à portée de Commandement, jusqu'à 10." },
+    { "id": "hidden", "name": "Dissimulé", "text": "L'Assassin peut commencer caché dans une unité d'infanterie amie de Force d'Unité suffisante et se révéler pendant la partie." },
+    { "id": "dance-of-death", "name": "Danse de mort", "text": "Une unité de Sœurs du Massacre qui réussit une charge réduit temporairement le bonus de rang maximal de sa cible." },
+    { "id": "cursed-coven", "name": "Coven maudit", "text": "Les Conjurateurs de Feu Maudit connaissent un sort lié de Magie Noire ou de Démonologie." },
+    { "id": "dark-runes", "name": "Runes sombres", "text": "Sauvegarde invulnérable de 5+ contre les blessures causées par des attaques ennemies non magiques." },
+    { "id": "wilful-beast", "name": "Bête indocile", "text": "Une Manticore montée doit tester son Commandement au début du tour ; en cas d'échec, elle gagne Frénésie jusqu'au prochain début de tour." },
+    { "id": "stony-stare", "name": "Regard pétrifiant", "text": "Les ennemis au contact doivent tester leur Initiative au début de chaque phase de Combat ; en cas d'échec, ils subissent D3 touches de Force 2 sans sauvegarde d'armure." },
+    { "id": "abyssal-howl", "name": "Hurlement abyssal", "text": "Les unités ennemies à 6 pouces subissent -1 Commandement, non cumulatif." }
   ],
   "units": [
     {
@@ -126,24 +48,11 @@
       "points": 130,
       "min": 0,
       "max": 1,
-      "profile": {
-        "M": 5,
-        "CC": 7,
-        "CT": 7,
-        "F": 4,
-        "E": 3,
-        "PV": 3,
-        "I": 6,
-        "A": 4,
-        "Cd": 10
-      },
+      "profile": { "M": 5, "CC": 7, "CT": 7, "F": 4, "E": 3, "PV": 3, "I": 6, "A": 4, "Cd": 10 },
       "type": "Infanterie régulière (personnage)",
       "base": "25 x 25 mm",
       "unitSize": "1",
-      "equipment": [
-        "Arme de base",
-        "Armure légère"
-      ],
+      "equipment": ["Arme de base", "Armure légère"],
       "options": [
         "Arme de base additionnelle +3 pts",
         "Arme lourde +4 pts",
@@ -156,20 +65,14 @@
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
         "Cape en peau de Dragon des Mers +4 pts",
-      "Coursier Noir +14 pts",
-      "Sang-Froid +18 pts",
-      "Char à Sang-Froid +125 pts",
-      "Manticore +130 pts",
-      "Dragon Noir +280 pts",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Char à Sang-Froid +125 pts",
+        "Manticore +130 pts",
+        "Dragon Noir +280 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine éternelle",
-        "Haine (Hauts-Elfes)",
-        "Meurtrier",
-        "Frappe en premier"
-      ]
+      "specialRules": ["Réflexes elfiques", "Haine éternelle", "Haine (Hauts-Elfes)", "Meurtrier", "Frappe en premier"]
     },
     {
       "id": "dark-elf-master",
@@ -178,50 +81,31 @@
       "points": 70,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 6,
-        "CT": 6,
-        "F": 4,
-        "E": 3,
-        "PV": 2,
-        "I": 5,
-        "A": 3,
-        "Cd": 9
-      },
+      "profile": { "M": 5, "CC": 6, "CT": 6, "F": 4, "E": 3, "PV": 2, "I": 5, "A": 3, "Cd": 9 },
       "type": "Infanterie régulière (personnage)",
       "base": "25 x 25 mm",
       "unitSize": "1",
-      "equipment": [
-        "Arme de base",
-        "Armure légère"
-      ],
+      "equipment": ["Arme de base", "Armure légère"],
       "options": [
-  "Arme de base additionnelle +3 pts",
-  "Arme lourde +4 pts",
-  "Hallebarde +3 pts",
-  "Lance si monté +4 pts",
-  "Arbalète à répétition +6 pts",
-  "Arme de poing à répétition +5 pts",
-  "Paire d'armes de poing à répétition +10 pts",
-  "Bouclier +2 pts",
-  "Armure lourde +3 pts",
-  "Armure intégrale +6 pts",
-  "Cape en peau de Dragon des Mers +4 pts",
-  "Coursier Noir +14 pts",
-  "Sang-Froid +18 pts",
-  "Char à Sang-Froid +125 pts",
-  "Manticore +130 pts",
-  "Grande Bannière +25 pts",
-  "Objets magiques jusqu'à 50 pts"
-],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine éternelle",
-        "Haine (Hauts-Elfes)",
-        "Meurtrier",
-        "Frappe en premier"
-      ]
+        "Arme de base additionnelle +3 pts",
+        "Arme lourde +4 pts",
+        "Hallebarde +3 pts",
+        "Lance si monté +4 pts",
+        "Arbalète à répétition +6 pts",
+        "Arme de poing à répétition +5 pts",
+        "Paire d'armes de poing à répétition +10 pts",
+        "Bouclier +2 pts",
+        "Armure lourde +3 pts",
+        "Armure intégrale +6 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Char à Sang-Froid +125 pts",
+        "Manticore +130 pts",
+        "Grande Bannière +25 pts",
+        "Objets magiques jusqu'à 50 pts"
+      ],
+      "specialRules": ["Réflexes elfiques", "Haine éternelle", "Haine (Hauts-Elfes)", "Meurtrier", "Frappe en premier"]
     },
     {
       "id": "supreme-sorceress",
@@ -230,49 +114,24 @@
       "points": 150,
       "min": 0,
       "max": 1,
-      "profile": {
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 3,
-        "I": 5,
-        "A": 2,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 3, "I": 5, "A": 2, "Cd": 8 },
       "type": "Infanterie régulière (personnage)",
       "base": "25 x 25 mm",
       "unitSize": "1",
-      "equipment": [
-        "Arme de base"
-      ],
+      "equipment": ["Arme de base"],
       "options": [
-  "Niveau 4 +30 pts",
-  "Coursier Noir +14 pts",
-  "Sang-Froid +18 pts",
-  "Pégase Noir +35 pts",
-  "Dragon Noir +280 pts",
-  "Objets magiques jusqu'à 100 pts"
-],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine éternelle",
-        "Haine (Hauts-Elfes)",
-        "Bénédiction d'Hekarti",
-        "Domaine de Naggaroth",
-        "Meurtrier"
+        "Niveau 4 +30 pts",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Pégase Noir +35 pts",
+        "Dragon Noir +280 pts",
+        "Objets magiques jusqu'à 100 pts"
       ],
+      "specialRules": ["Réflexes elfiques", "Haine éternelle", "Haine (Hauts-Elfes)", "Bénédiction d'Hekarti", "Domaine de Naggaroth", "Meurtrier"],
       "wizard": {
         "level": 3,
         "upgradeLevel4": 30,
-        "lores": [
-          "Magie de Bataille",
-          "Démonologie",
-          "Magie Noire",
-          "Élémentalisme",
-          "Illusion"
-        ]
+        "lores": ["Magie de Bataille", "Démonologie", "Magie Noire", "Élémentalisme", "Illusion"]
       }
     },
     {
@@ -282,48 +141,23 @@
       "points": 75,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 2,
-        "I": 4,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 2, "I": 4, "A": 1, "Cd": 8 },
       "type": "Infanterie régulière (personnage)",
       "base": "25 x 25 mm",
       "unitSize": "1",
-      "equipment": [
-        "Arme de base"
-      ],
+      "equipment": ["Arme de base"],
       "options": [
-  "Niveau 2 +30 pts",
-  "Coursier Noir +14 pts",
-  "Sang-Froid +18 pts",
-  "Pégase Noir +35 pts",
-  "Objets magiques jusqu'à 50 pts"
-],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine éternelle",
-        "Haine (Hauts-Elfes)",
-        "Bénédiction d'Hekarti",
-        "Domaine de Naggaroth",
-        "Meurtrier"
+        "Niveau 2 +30 pts",
+        "Coursier Noir +14 pts",
+        "Sang-Froid +18 pts",
+        "Pégase Noir +35 pts",
+        "Objets magiques jusqu'à 50 pts"
       ],
+      "specialRules": ["Réflexes elfiques", "Haine éternelle", "Haine (Hauts-Elfes)", "Bénédiction d'Hekarti", "Domaine de Naggaroth", "Meurtrier"],
       "wizard": {
         "level": 1,
         "upgradeLevel2": 30,
-        "lores": [
-          "Magie de Bataille",
-          "Démonologie",
-          "Magie Noire",
-          "Élémentalisme",
-          "Illusion"
-        ]
+        "lores": ["Magie de Bataille", "Démonologie", "Magie Noire", "Élémentalisme", "Illusion"]
       }
     },
     {
@@ -333,43 +167,22 @@
       "points": 75,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": "-",
-        "CC": 7,
-        "CT": 7,
-        "F": 4,
-        "E": 3,
-        "PV": 3,
-        "I": 5,
-        "A": 3,
-        "Cd": 9
-      },
+      "profile": { "M": "-", "CC": 7, "CT": 7, "F": 4, "E": 3, "PV": 3, "I": 5, "A": 3, "Cd": 9 },
       "type": "Infanterie régulière (personnage)",
       "base": "Selon la monture",
       "unitSize": "1",
-      "equipment": [
-        "Arme de base",
-        "Fouet",
-        "Armure légère"
+      "equipment": ["Arme de base", "Fouet", "Armure légère"],
+      "options": [
+        "Lance de cavalerie +2 pts",
+        "Arbalète à répétition +6 pts",
+        "Bouclier +2 pts",
+        "Armure lourde +3 pts",
+        "Char à Harpon +85 pts",
+        "Manticore +130 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
+        "Objets magiques jusqu'à 75 pts"
       ],
-     "options": [
-  "Lance de cavalerie +2 pts",
-  "Arbalète à répétition +6 pts",
-  "Bouclier +2 pts",
-  "Armure lourde +3 pts",
-  "Char à Harpon +85 pts",
-  "Manticore +130 pts",
-  "Cape en peau de Dragon des Mers +4 pts",
-  "Objets magiques jusqu'à 75 pts"
-],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine éternelle",
-        "Haine (Hauts-Elfes)",
-        "Exciter la bête",
-        "Meurtrier",
-        "Frappe en premier"
-      ]
+      "specialRules": ["Réflexes elfiques", "Haine éternelle", "Haine (Hauts-Elfes)", "Exciter la bête", "Meurtrier", "Frappe en premier"]
     },
     {
       "id": "death-hag",
@@ -378,39 +191,19 @@
       "points": 70,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 6,
-        "CT": 6,
-        "F": 4,
-        "E": 3,
-        "PV": 2,
-        "I": 7,
-        "A": 3,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 6, "CT": 6, "F": 4, "E": 3, "PV": 2, "I": 7, "A": 3, "Cd": 8 },
       "type": "Infanterie régulière (personnage)",
       "base": "25 x 25 mm",
       "unitSize": "1",
-      "equipment": [
-        "Deux armes de base"
-      ],
+      "equipment": ["Deux armes de base"],
       "options": [
-  "Don de Khaine : Cri de guerre +15 pts",
-  "Rune de Khaine +10 pts",
-  "Breuvage de sorcière +20 pts",
-  "Chaudron de Sang +150 pts",
-  "Objets magiques jusqu'à 75 pts"
-],
-      "specialRules": [
-        "Haine éternelle",
-        "Frénésie",
-        "Haine (tous les ennemis)",
-        "Solitaire",
-        "Meurtrier",
-        "Attaques empoisonnées",
-        "Frappe en premier"
-      ]
+        "Don de Khaine : Cri de guerre +15 pts",
+        "Rune de Khaine +10 pts",
+        "Breuvage de sorcière +20 pts",
+        "Chaudron de Sang +150 pts",
+        "Objets magiques jusqu'à 75 pts"
+      ],
+      "specialRules": ["Haine éternelle", "Frénésie", "Haine (tous les ennemis)", "Solitaire", "Meurtrier", "Attaques empoisonnées", "Frappe en premier"]
     },
     {
       "id": "khainite-assassin",
@@ -419,24 +212,11 @@
       "points": 80,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 8,
-        "CT": 7,
-        "F": 4,
-        "E": 3,
-        "PV": 2,
-        "I": 7,
-        "A": 3,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 8, "CT": 7, "F": 4, "E": 3, "PV": 2, "I": 7, "A": 3, "Cd": 8 },
       "type": "Infanterie régulière (personnage)",
       "base": "25 x 25 mm",
       "unitSize": "1",
-      "equipment": [
-        "Arme de base",
-        "Armes de jet"
-      ],
+      "equipment": ["Arme de base", "Armes de jet"],
       "options": [
         "Arme de base additionnelle +3 pts",
         "Arme de poing à répétition +5 pts",
@@ -445,14 +225,7 @@
         "Manbane +15 pts",
         "Objets magiques jusqu'à 50 pts"
       ],
-      "specialRules": [
-        "Haine éternelle",
-        "Haine (tous les ennemis)",
-        "Dissimulé",
-        "Immunité à la psychologie",
-        "Meurtrier",
-        "Frappe en premier"
-      ]
+      "specialRules": ["Haine éternelle", "Haine (tous les ennemis)", "Dissimulé", "Immunité à la psychologie", "Meurtrier", "Frappe en premier"]
     },
     {
       "id": "dark-elf-warriors",
@@ -461,25 +234,11 @@
       "points": 8,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 1, "I": 4, "A": 1, "Cd": 8 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "10+",
-      "equipment": [
-        "Armes de base",
-        "Armure légère",
-        "Boucliers"
-      ],
+      "equipment": ["Armes de base", "Armure légère", "Boucliers"],
       "options": [
         "Champion +5 pts",
         "Porte-étendard +5 pts",
@@ -488,11 +247,7 @@
         "Vétérans +1 pt/modèle (0-1/1000)",
         "Bannière magique jusqu'à 50 pts (0-1/1000)"
       ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine (Hauts-Elfes)",
-        "Maîtrise martiale"
-      ]
+      "specialRules": ["Réflexes elfiques", "Haine (Hauts-Elfes)", "Maîtrise martiale"]
     },
     {
       "id": "repeater-crossbowmen",
@@ -501,25 +256,11 @@
       "points": 11,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 1, "I": 4, "A": 1, "Cd": 8 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "10+",
-      "equipment": [
-        "Armes de base",
-        "Arbalètes à répétition",
-        "Armure légère"
-      ],
+      "equipment": ["Armes de base", "Arbalètes à répétition", "Armure légère"],
       "options": [
         "Champion +5 pts",
         "Porte-étendard +5 pts",
@@ -528,11 +269,7 @@
         "Vétérans +1 pt/modèle (0-1/1000)",
         "Bannière magique jusqu'à 50 pts (0-1/1000)"
       ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine (Hauts-Elfes)",
-        "Maîtrise martiale"
-      ]
+      "specialRules": ["Réflexes elfiques", "Haine (Hauts-Elfes)", "Maîtrise martiale"]
     },
     {
       "id": "black-ark-corsairs",
@@ -541,24 +278,11 @@
       "points": 11,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 1, "I": 4, "A": 1, "Cd": 8 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "10+",
-      "equipment": [
-        "Armes de base",
-        "Armure légère"
-      ],
+      "equipment": ["Armes de base", "Armure légère"],
       "options": [
         "Armes de base additionnelles gratuites ou armes de poing à répétition gratuites",
         "Reaver +6 pts",
@@ -566,13 +290,7 @@
         "Musicien +6 pts",
         "Bannière magique jusqu'à 50 pts"
       ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine (Hauts-Elfes)",
-        "Progression à travers les terrains",
-        "Ordre ouvert",
-        "Cape en peau de Dragon des Mers"
-      ]
+      "specialRules": ["Réflexes elfiques", "Haine (Hauts-Elfes)", "Progression à travers les terrains", "Ordre ouvert", "Cape en peau de Dragon des Mers"]
     },
     {
       "id": "dark-riders",
@@ -581,26 +299,11 @@
       "points": 16,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": "-",
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 4,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": "-", "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 1, "I": 4, "A": 1, "Cd": 8 },
       "type": "Cavalerie légère",
       "base": "30 x 60 mm",
       "unitSize": "5+",
-      "equipment": [
-        "Armes de base",
-        "Lances de cavalerie",
-        "Armure légère",
-        "Coursiers Noirs"
-      ],
+      "equipment": ["Armes de base", "Lances de cavalerie", "Armure légère", "Coursiers Noirs"],
       "options": [
         "Arbalètes à répétition +2 pts/modèle",
         "Boucliers +1 pt/modèle",
@@ -610,14 +313,7 @@
         "Feu et fuite +1 pt/modèle (0-1/1000)",
         "Éclaireurs +1 pt/modèle (0-1/1000)"
       ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Cavalerie légère",
-        "Haine (Hauts-Elfes)",
-        "Ordre ouvert",
-        "Tirailleurs",
-        "Rapidité"
-      ]
+      "specialRules": ["Réflexes elfiques", "Cavalerie légère", "Haine (Hauts-Elfes)", "Ordre ouvert", "Tirailleurs", "Rapidité"]
     },
     {
       "id": "witch-elves",
@@ -626,39 +322,18 @@
       "points": 11,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 4,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 1, "I": 5, "A": 1, "Cd": 8 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "10+",
-      "equipment": [
-        "Deux armes de base"
-      ],
+      "equipment": ["Deux armes de base"],
       "options": [
         "Hag +7 pts",
         "Porte-étendard +7 pts",
         "Musicien +7 pts",
         "Bannière magique jusqu'à 50 pts"
       ],
-      "specialRules": [
-        "Ordre serré",
-        "Réflexes elfiques",
-        "Frénésie",
-        "Haine (Hauts-Elfes)",
-        "Horde",
-        "Solitaire",
-        "Meurtrier",
-        "Attaques empoisonnées"
-      ],
+      "specialRules": ["Ordre serré", "Réflexes elfiques", "Frénésie", "Haine (Hauts-Elfes)", "Horde", "Solitaire", "Meurtrier", "Attaques empoisonnées"],
       "restriction": "0-1 unité si l'armée contient au moins une Hag de Khaine ; elle est alors une unité de Base."
     },
     {
@@ -668,25 +343,11 @@
       "points": 15,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 5,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 1,
-        "Cd": 9
-      },
+      "profile": { "M": 5, "CC": 5, "CT": 4, "F": 3, "E": 3, "PV": 1, "I": 5, "A": 1, "Cd": 9 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "10+",
-      "equipment": [
-        "Armes de base",
-        "Hallebardes sinistres",
-        "Armure intégrale"
-      ],
+      "equipment": ["Armes de base", "Hallebardes sinistres", "Armure intégrale"],
       "options": [
         "Maître de la Tour +7 pts",
         "Porte-étendard +7 pts",
@@ -695,15 +356,7 @@
         "Bannière magique jusqu'à 100 pts",
         "Maître de la Tour : objets magiques jusqu'à 50 pts"
       ],
-      "specialRules": [
-        "Ordre serré",
-        "Réflexes elfiques",
-        "Haine éternelle",
-        "Haine (Hauts-Elfes)",
-        "Immunité à la psychologie",
-        "Maîtrise martiale",
-        "Tenace"
-      ],
+      "specialRules": ["Ordre serré", "Réflexes elfiques", "Haine éternelle", "Haine (Hauts-Elfes)", "Immunité à la psychologie", "Maîtrise martiale", "Tenace"],
       "restriction": "0-1 unité par Noble Elfe Noir présent dans l'armée."
     },
     {
@@ -713,25 +366,11 @@
       "points": 15,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 5,
-        "CT": 4,
-        "F": 4,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 1,
-        "Cd": 9
-      },
+      "profile": { "M": 5, "CC": 5, "CT": 4, "F": 4, "E": 3, "PV": 1, "I": 5, "A": 1, "Cd": 9 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "10+",
-      "equipment": [
-        "Armes de base",
-        "Grandes épées de Har Ganeth",
-        "Armure lourde"
-      ],
+      "equipment": ["Armes de base", "Grandes épées de Har Ganeth", "Armure lourde"],
       "options": [
         "Maître Draich +6 pts",
         "Porte-étendard +6 pts",
@@ -740,13 +379,7 @@
         "Bannière magique jusqu'à 50 pts",
         "Maître Draich : objets magiques jusqu'à 25 pts"
       ],
-      "specialRules": [
-        "Ordre serré",
-        "Réflexes elfiques",
-        "Haine (Hauts-Elfes)",
-        "Meurtrier",
-        "Vétéran"
-      ]
+      "specialRules": ["Ordre serré", "Réflexes elfiques", "Haine (Hauts-Elfes)", "Meurtrier", "Vétéran"]
     },
     {
       "id": "shades",
@@ -755,24 +388,11 @@
       "points": 15,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 5,
-        "CT": 5,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": 5, "CC": 5, "CT": 5, "F": 3, "E": 3, "PV": 1, "I": 5, "A": 1, "Cd": 8 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "5+",
-      "equipment": [
-        "Armes de base",
-        "Arbalètes à répétition"
-      ],
+      "equipment": ["Armes de base", "Arbalètes à répétition"],
       "options": [
         "Armes de base additionnelles +1 pt/modèle",
         "Armes lourdes +2 pts/modèle",
@@ -783,14 +403,7 @@
         "Coureurs de chars +1 pt/modèle (0-1)",
         "Vétérans +1 pt/modèle (0-1)"
       ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Évasifs",
-        "Haine (Hauts-Elfes)",
-        "Progression à travers les terrains",
-        "Éclaireurs",
-        "Tirailleurs"
-      ]
+      "specialRules": ["Réflexes elfiques", "Évasifs", "Haine (Hauts-Elfes)", "Progression à travers les terrains", "Éclaireurs", "Tirailleurs"]
     },
     {
       "id": "sisters-of-slaughter",
@@ -799,39 +412,18 @@
       "points": 17,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 5,
-        "CT": 4,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 6,
-        "A": 2,
-        "Cd": 9
-      },
+      "profile": { "M": 5, "CC": 5, "CT": 4, "F": 3, "E": 3, "PV": 1, "I": 6, "A": 2, "Cd": 9 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "10+",
-      "equipment": [
-        "Armes de base",
-        "Fouet et bouclier"
-      ],
+      "equipment": ["Armes de base", "Fouet et bouclier"],
       "options": [
         "Hag +7 pts",
         "Porte-étendard +7 pts",
         "Musicien +7 pts",
         "Bannière magique jusqu'à 50 pts"
       ],
-      "specialRules": [
-        "Danse de mort",
-        "Réflexes elfiques",
-        "Haine (Hauts-Elfes)",
-        "Impétueuses",
-        "Solitaire",
-        "Meurtrières",
-        "Ordre ouvert"
-      ]
+      "specialRules": ["Danse de mort", "Réflexes elfiques", "Haine (Hauts-Elfes)", "Impétueuses", "Solitaire", "Meurtrières", "Ordre ouvert"]
     },
     {
       "id": "harpies",
@@ -840,30 +432,12 @@
       "points": 11,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 5,
-        "CC": 3,
-        "CT": 0,
-        "F": 3,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 2,
-        "Cd": 6
-      },
+      "profile": { "M": 5, "CC": 3, "CT": 0, "F": 3, "E": 3, "PV": 1, "I": 5, "A": 2, "Cd": 6 },
       "type": "Infanterie régulière",
       "base": "25 x 25 mm",
       "unitSize": "5+",
-      "equipment": [
-        "Serres (armes de base)"
-      ],
-      "specialRules": [
-        "Vol (10)",
-        "Progression à travers les terrains",
-        "Éclaireurs",
-        "Tirailleurs",
-        "Rapidité"
-      ]
+      "equipment": ["Serres (armes de base)"],
+      "specialRules": ["Vol (10)", "Progression à travers les terrains", "Éclaireurs", "Tirailleurs", "Rapidité"]
     },
     {
       "id": "cold-one-knights",
@@ -872,27 +446,11 @@
       "points": 31,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": "-",
-        "CC": 4,
-        "CT": 4,
-        "F": 4,
-        "E": 4,
-        "PV": 1,
-        "I": 5,
-        "A": 1,
-        "Cd": 9
-      },
+      "profile": { "M": "-", "CC": 4, "CT": 4, "F": 4, "E": 4, "PV": 1, "I": 5, "A": 1, "Cd": 9 },
       "type": "Cavalerie lourde",
       "base": "30 x 60 mm",
       "unitSize": "5+",
-      "equipment": [
-        "Armes de base",
-        "Lances",
-        "Armure lourde",
-        "Boucliers",
-        "Sang-Froids"
-      ],
+      "equipment": ["Armes de base", "Lances", "Armure lourde", "Boucliers", "Sang-Froids"],
       "options": [
         "Chevalier Dread +7 pts",
         "Porte-étendard +7 pts",
@@ -901,31 +459,10 @@
         "Armure intégrale +4 pts/modèle",
         "Chevalier Dread : objets magiques jusqu'à 50 pts"
       ],
-      "specialRules": [
-        "Armure perforante (1, Sang-Froid)",
-        "Peau écailleuse (1)",
-        "Ordre serré",
-        "Réflexes elfiques",
-        "Peur",
-        "Première charge",
-        "Haine (Hauts-Elfes)",
-        "Stupidité",
-        "Rapidité"
-      ],
+      "specialRules": ["Armure perforante (1, Sang-Froid)", "Peau écailleuse (1)", "Ordre serré", "Réflexes elfiques", "Peur", "Première charge", "Haine (Hauts-Elfes)", "Stupidité", "Rapidité"],
       "restriction": "0-1 unité par tranche de 1 000 points.",
       "mountRef": "cold-one-mount",
-      "championProfile": {
-        "name": "Chevalier Dread",
-        "M": "-",
-        "CC": 5,
-        "CT": 4,
-        "F": 4,
-        "E": 4,
-        "PV": 1,
-        "I": 5,
-        "A": 2,
-        "Cd": 9
-      }
+      "championProfile": { "name": "Chevalier Dread", "M": "-", "CC": 5, "CT": 4, "F": 4, "E": 4, "PV": 1, "I": 5, "A": 2, "Cd": 9 }
     },
     {
       "id": "scourgerunner-chariots",
@@ -934,50 +471,17 @@
       "points": 85,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": "-",
-        "CC": "-",
-        "CT": "-",
-        "F": 4,
-        "E": 4,
-        "PV": 4,
-        "I": "-",
-        "A": "-",
-        "Cd": "-"
-      },
+      "profile": { "M": "-", "CC": "-", "CT": "-", "F": 4, "E": 4, "PV": 4, "I": "-", "A": "-", "Cd": "-" },
       "type": "Char léger",
       "base": "50 x 100 mm",
       "unitSize": "1-3",
-      "equipment": [
-        "Harpon ravageur",
-        "Équipage Maître des Bêtes x2",
-        "Coursiers Noirs x2"
-      ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine (Hauts-Elfes)",
-        "Touches d'impact (D6)",
-        "Ordre ouvert",
-        "Cape en peau de Dragon des Mers",
-        "Rapidité"
-      ],
+      "equipment": ["Harpon ravageur", "Équipage Maître des Bêtes x2", "Coursiers Noirs x2"],
+      "specialRules": ["Réflexes elfiques", "Haine (Hauts-Elfes)", "Touches d'impact (D6)", "Ordre ouvert", "Cape en peau de Dragon des Mers", "Rapidité"],
       "weapon": "Harpon ravageur : 24\", F6, PA -3, Encombrant, Blessures multiples (D3), Ponderous",
       "restriction": "0-2 chars par tranche de 1 000 points, combinés avec les Chars à Sang-Froid.",
       "mountRef": { "id": "dark-steed", "count": 2 },
       "crewProfiles": [
-        {
-          "name": "Équipage Maître des Bêtes",
-          "count": 2,
-          "M": "-",
-          "CC": 4,
-          "CT": 4,
-          "F": 3,
-          "E": "-",
-          "PV": "-",
-          "I": 4,
-          "A": 1,
-          "Cd": 8
-        }
+        { "name": "Équipage Maître des Bêtes", "count": 2, "M": "-", "CC": 4, "CT": 4, "F": 3, "E": "-", "PV": "-", "I": 4, "A": 1, "Cd": 8 }
       ]
     },
     {
@@ -987,50 +491,16 @@
       "points": 125,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": "-",
-        "CC": "-",
-        "CT": "-",
-        "F": 5,
-        "E": 5,
-        "PV": 4,
-        "I": "-",
-        "A": "-",
-        "Cd": "-"
-      },
+      "profile": { "M": "-", "CC": "-", "CT": "-", "F": 5, "E": 5, "PV": 4, "I": "-", "A": "-", "Cd": "-" },
       "type": "Char lourd",
       "base": "50 x 100 mm",
       "unitSize": "1",
-      "equipment": [
-        "Équipage Chevalier x2",
-        "Sang-Froids x2"
-      ],
-      "specialRules": [
-        "Armure perforante (1, Sang-Froid)",
-        "Ordre serré",
-        "Réflexes elfiques",
-        "Peur",
-        "Première charge",
-        "Haine (Hauts-Elfes)",
-        "Touches d'impact (D6+1)",
-        "Stupidité"
-      ],
+      "equipment": ["Équipage Chevalier x2", "Sang-Froids x2"],
+      "specialRules": ["Armure perforante (1, Sang-Froid)", "Ordre serré", "Réflexes elfiques", "Peur", "Première charge", "Haine (Hauts-Elfes)", "Touches d'impact (D6+1)", "Stupidité"],
       "restriction": "0-2 chars par tranche de 1 000 points, combinés avec les Chars à Harpon.",
       "mountRef": { "id": "cold-one-mount", "count": 2 },
       "crewProfiles": [
-        {
-          "name": "Chevalier Charioteer",
-          "count": 2,
-          "M": "-",
-          "CC": 5,
-          "CT": 4,
-          "F": 4,
-          "E": "-",
-          "PV": "-",
-          "I": 5,
-          "A": 1,
-          "Cd": 9
-        }
+        { "name": "Chevalier Charioteer", "count": 2, "M": "-", "CC": 5, "CT": 4, "F": 4, "E": "-", "PV": "-", "I": 5, "A": 1, "Cd": 9 }
       ]
     },
     {
@@ -1040,51 +510,15 @@
       "points": 200,
       "min": 0,
       "max": 1,
-      "profile": {
-        "M": 6,
-        "CC": 4,
-        "CT": 0,
-        "F": 5,
-        "E": 5,
-        "PV": 5,
-        "I": 3,
-        "A": 2,
-        "Cd": 6
-      },
+      "profile": { "M": 6, "CC": 4, "CT": 0, "F": 5, "E": 5, "PV": 5, "I": 3, "A": 2, "Cd": 6 },
       "type": "Béhémoth",
       "base": "60 x 100 mm",
       "unitSize": "1",
-      "equipment": [
-        "Serres vicieuses",
-        "Mâchoires dentelées",
-        "Souffle ardent",
-        "Maîtres des Bêtes x2"
-      ],
-      "specialRules": [
-        "Ordre serré",
-        "Attaques supplémentaires (+PV restants)",
-        "Immunité à la psychologie",
-        "Grande cible",
-        "Maîtres des monstres",
-        "Régénération (5+)",
-        "Piétinement (D3)",
-        "Terreur"
-      ],
+      "equipment": ["Serres vicieuses", "Mâchoires dentelées", "Souffle ardent", "Maîtres des Bêtes x2"],
+      "specialRules": ["Ordre serré", "Attaques supplémentaires (+PV restants)", "Immunité à la psychologie", "Grande cible", "Maîtres des monstres", "Régénération (5+)", "Piétinement (D3)", "Terreur"],
       "restriction": "0-1 si le Général est un Grand Maître des Bêtes.",
       "crewProfiles": [
-        {
-          "name": "Maîtres des Bêtes",
-          "count": 2,
-          "M": 6,
-          "CC": 4,
-          "CT": "-",
-          "F": 3,
-          "E": "-",
-          "PV": "-",
-          "I": 4,
-          "A": 1,
-          "Cd": 8
-        }
+        { "name": "Maîtres des Bêtes", "count": 2, "M": 6, "CC": 4, "CT": "-", "F": 3, "E": "-", "PV": "-", "I": 4, "A": 1, "Cd": 8 }
       ]
     },
     {
@@ -1094,49 +528,15 @@
       "points": 195,
       "min": 0,
       "max": 1,
-      "profile": {
-        "M": 6,
-        "CC": 5,
-        "CT": 0,
-        "F": 7,
-        "E": 5,
-        "PV": 5,
-        "I": 3,
-        "A": 5,
-        "Cd": 6
-      },
+      "profile": { "M": 6, "CC": 5, "CT": 0, "F": 7, "E": 5, "PV": 5, "I": 3, "A": 5, "Cd": 6 },
       "type": "Béhémoth",
       "base": "60 x 100 mm",
       "unitSize": "1",
-      "equipment": [
-        "Gueule cavernale",
-        "Tentacules grouillants",
-        "Maîtres des Bêtes x2"
-      ],
-      "specialRules": [
-        "Hurlement abyssal",
-        "Ordre serré",
-        "Immunité à la psychologie",
-        "Grande cible",
-        "Maîtres des monstres",
-        "Piétinement (D3+1)",
-        "Terreur"
-      ],
+      "equipment": ["Gueule cavernale", "Tentacules grouillants", "Maîtres des Bêtes x2"],
+      "specialRules": ["Hurlement abyssal", "Ordre serré", "Immunité à la psychologie", "Grande cible", "Maîtres des monstres", "Piétinement (D3+1)", "Terreur"],
       "restriction": "0-1 si le Général est un Grand Maître des Bêtes.",
       "crewProfiles": [
-        {
-          "name": "Maîtres des Bêtes",
-          "count": 2,
-          "M": 6,
-          "CC": 4,
-          "CT": "-",
-          "F": 3,
-          "E": "-",
-          "PV": "-",
-          "I": 4,
-          "A": 1,
-          "Cd": 8
-        }
+        { "name": "Maîtres des Bêtes", "count": 2, "M": 6, "CC": 4, "CT": "-", "F": 3, "E": "-", "PV": "-", "I": 4, "A": 1, "Cd": 8 }
       ]
     },
     {
@@ -1146,38 +546,13 @@
       "points": 22,
       "min": 0,
       "max": 1,
-      "profile": {
-        "M": "-",
-        "CC": 4,
-        "CT": 4,
-        "F": 4,
-        "E": 3,
-        "PV": 1,
-        "I": 5,
-        "A": 1,
-        "Cd": 8
-      },
+      "profile": { "M": "-", "CC": 4, "CT": 4, "F": 4, "E": 3, "PV": 1, "I": 5, "A": 1, "Cd": 8 },
       "type": "Cavalerie légère",
       "base": "30 x 60 mm",
       "unitSize": "5+",
-      "equipment": [
-        "Armes de base",
-        "Coursiers Noirs"
-      ],
-      "options": [
-        "Maître +6 pts",
-        "Maître : objets magiques jusqu'à 25 pts"
-      ],
-      "specialRules": [
-        "Coven maudit",
-        "Runes sombres",
-        "Réflexes elfiques",
-        "Cavalerie légère",
-        "Haine (Hauts-Elfes)",
-        "Ordre ouvert",
-        "Attaques empoisonnées",
-        "Rapidité"
-      ],
+      "equipment": ["Armes de base", "Coursiers Noirs"],
+      "options": ["Maître +6 pts", "Maître : objets magiques jusqu'à 25 pts"],
+      "specialRules": ["Coven maudit", "Runes sombres", "Réflexes elfiques", "Cavalerie légère", "Haine (Hauts-Elfes)", "Ordre ouvert", "Attaques empoisonnées", "Rapidité"],
       "restriction": "0-1 unité par tranche de 1 000 points."
     },
     {
@@ -1187,52 +562,14 @@
       "points": 175,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 2,
-        "CC": "-",
-        "CT": "-",
-        "F": 5,
-        "E": 5,
-        "PV": 5,
-        "I": "-",
-        "A": "-",
-        "Cd": "-"
-      },
+      "profile": { "M": 2, "CC": "-", "CT": "-", "F": 5, "E": 5, "PV": 5, "I": "-", "A": "-", "Cd": "-" },
       "type": "Char lourd",
       "base": "60 x 100 mm",
       "unitSize": "1",
-      "equipment": [
-        "Gardiennes du sanctuaire x2",
-        "Méduse Bloodwrack"
-      ],
-      "specialRules": [
-        "Ordre serré",
-        "Traîné",
-        "Réflexes elfiques",
-        "Frénésie",
-        "Haine (Hauts-Elfes)",
-        "Touches d'impact (D6+1)",
-        "Grande cible",
-        "Résistance magique (-1)",
-        "Meurtrier",
-        "Attaques empoisonnées",
-        "Regard pétrifiant",
-        "Terreur"
-      ],
+      "equipment": ["Gardiennes du sanctuaire x2", "Méduse Bloodwrack"],
+      "specialRules": ["Ordre serré", "Traîné", "Réflexes elfiques", "Frénésie", "Haine (Hauts-Elfes)", "Touches d'impact (D6+1)", "Grande cible", "Résistance magique (-1)", "Meurtrier", "Attaques empoisonnées", "Regard pétrifiant", "Terreur"],
       "crewProfiles": [
-        {
-          "name": "Gardiennes du Sanctuaire",
-          "count": 2,
-          "M": "-",
-          "CC": 4,
-          "CT": 4,
-          "F": 3,
-          "E": "-",
-          "PV": "-",
-          "I": 5,
-          "A": 1,
-          "Cd": 8
-        }
+        { "name": "Gardiennes du Sanctuaire", "count": 2, "M": "-", "CC": 4, "CT": 4, "F": 3, "E": "-", "PV": "-", "I": 5, "A": 1, "Cd": 8 }
       ]
     },
     {
@@ -1242,50 +579,14 @@
       "points": 200,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 6,
-        "CC": 4,
-        "CT": 0,
-        "F": 5,
-        "E": 5,
-        "PV": 5,
-        "I": 3,
-        "A": 2,
-        "Cd": 6
-      },
+      "profile": { "M": 6, "CC": 4, "CT": 0, "F": 5, "E": 5, "PV": 5, "I": 3, "A": 2, "Cd": 6 },
       "type": "Béhémoth",
       "base": "60 x 100 mm",
       "unitSize": "1",
-      "equipment": [
-        "Serres vicieuses",
-        "Mâchoires dentelées",
-        "Souffle ardent",
-        "Maîtres des Bêtes x2"
-      ],
-      "specialRules": [
-        "Ordre serré",
-        "Attaques supplémentaires (+PV restants)",
-        "Immunité à la psychologie",
-        "Grande cible",
-        "Maîtres des monstres",
-        "Régénération (5+)",
-        "Piétinement (D3)",
-        "Terreur"
-      ],
+      "equipment": ["Serres vicieuses", "Mâchoires dentelées", "Souffle ardent", "Maîtres des Bêtes x2"],
+      "specialRules": ["Ordre serré", "Attaques supplémentaires (+PV restants)", "Immunité à la psychologie", "Grande cible", "Maîtres des monstres", "Régénération (5+)", "Piétinement (D3)", "Terreur"],
       "crewProfiles": [
-        {
-          "name": "Maîtres des Bêtes",
-          "count": 2,
-          "M": 6,
-          "CC": 4,
-          "CT": "-",
-          "F": 3,
-          "E": "-",
-          "PV": "-",
-          "I": 4,
-          "A": 1,
-          "Cd": 8
-        }
+        { "name": "Maîtres des Bêtes", "count": 2, "M": 6, "CC": 4, "CT": "-", "F": 3, "E": "-", "PV": "-", "I": 4, "A": 1, "Cd": 8 }
       ]
     },
     {
@@ -1295,48 +596,14 @@
       "points": 195,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 6,
-        "CC": 5,
-        "CT": 0,
-        "F": 7,
-        "E": 5,
-        "PV": 5,
-        "I": 3,
-        "A": 5,
-        "Cd": 6
-      },
+      "profile": { "M": 6, "CC": 5, "CT": 0, "F": 7, "E": 5, "PV": 5, "I": 3, "A": 5, "Cd": 6 },
       "type": "Béhémoth",
       "base": "60 x 100 mm",
       "unitSize": "1",
-      "equipment": [
-        "Gueule cavernale",
-        "Tentacules grouillants",
-        "Maîtres des Bêtes x2"
-      ],
-      "specialRules": [
-        "Hurlement abyssal",
-        "Ordre serré",
-        "Immunité à la psychologie",
-        "Grande cible",
-        "Maîtres des monstres",
-        "Piétinement (D3+1)",
-        "Terreur"
-      ],
+      "equipment": ["Gueule cavernale", "Tentacules grouillants", "Maîtres des Bêtes x2"],
+      "specialRules": ["Hurlement abyssal", "Ordre serré", "Immunité à la psychologie", "Grande cible", "Maîtres des monstres", "Piétinement (D3+1)", "Terreur"],
       "crewProfiles": [
-        {
-          "name": "Maîtres des Bêtes",
-          "count": 2,
-          "M": 6,
-          "CC": 4,
-          "CT": "-",
-          "F": 3,
-          "E": "-",
-          "PV": "-",
-          "I": 4,
-          "A": 1,
-          "Cd": 8
-        }
+        { "name": "Maîtres des Bêtes", "count": 2, "M": 6, "CC": 4, "CT": "-", "F": 3, "E": "-", "PV": "-", "I": 4, "A": 1, "Cd": 8 }
       ]
     },
     {
@@ -1346,36 +613,12 @@
       "points": 85,
       "min": 0,
       "max": 999,
-      "profile": {
-        "M": 7,
-        "CC": 5,
-        "CT": 5,
-        "F": 4,
-        "E": 4,
-        "PV": 4,
-        "I": 5,
-        "A": 3,
-        "Cd": 7
-      },
+      "profile": { "M": 7, "CC": 5, "CT": 5, "F": 4, "E": 4, "PV": 4, "I": 5, "A": 3, "Cd": 7 },
       "type": "Créature monstrueuse",
       "base": "40 x 40 mm",
       "unitSize": "1",
-      "equipment": [
-        "Arme de base",
-        "Regard pétrifiant",
-        "Armure légère"
-      ],
-      "specialRules": [
-        "Ordre serré",
-        "Réflexes elfiques",
-        "Peur",
-        "Frénésie",
-        "Haine (Hauts-Elfes)",
-        "Résistance magique (-1)",
-        "Meurtrier",
-        "Attaques empoisonnées",
-        "Regard pétrifiant"
-      ]
+      "equipment": ["Arme de base", "Regard pétrifiant", "Armure légère"],
+      "specialRules": ["Ordre serré", "Réflexes elfiques", "Peur", "Frénésie", "Haine (Hauts-Elfes)", "Résistance magique (-1)", "Meurtrier", "Attaques empoisonnées", "Regard pétrifiant"]
     },
     {
       "id": "reaper-bolt-thrower",
@@ -1384,46 +627,15 @@
       "points": 80,
       "min": 0,
       "max": 2,
-      "profile": {
-        "M": "-",
-        "CC": "-",
-        "CT": "-",
-        "F": "-",
-        "E": 6,
-        "PV": 2,
-        "I": "-",
-        "A": "-",
-        "Cd": "-"
-      },
+      "profile": { "M": "-", "CC": "-", "CT": "-", "F": "-", "E": 6, "PV": 2, "I": "-", "A": "-", "Cd": "-" },
       "type": "Machine de guerre",
       "base": "50 x 50 mm",
       "unitSize": "1",
-      "equipment": [
-        "Baliste à répétition",
-        "Équipage Elfe Noir x2",
-        "Armes de base",
-        "Armure légère"
-      ],
-      "specialRules": [
-        "Réflexes elfiques",
-        "Haine (Hauts-Elfes)",
-        "Tirailleurs"
-      ],
+      "equipment": ["Baliste à répétition", "Équipage Elfe Noir x2", "Armes de base", "Armure légère"],
+      "specialRules": ["Réflexes elfiques", "Haine (Hauts-Elfes)", "Tirailleurs"],
       "restriction": "0-2 par tranche de 1 000 points.",
       "crewProfiles": [
-        {
-          "name": "Équipage Elfe Noir",
-          "count": 2,
-          "M": 5,
-          "CC": 4,
-          "CT": 4,
-          "F": 3,
-          "E": 3,
-          "PV": 2,
-          "I": 4,
-          "A": 2,
-          "Cd": 8
-        }
+        { "name": "Équipage Elfe Noir", "count": 2, "M": 5, "CC": 4, "CT": 4, "F": 3, "E": 3, "PV": 2, "I": 4, "A": 2, "Cd": 8 }
       ]
     },
     {
@@ -1433,223 +645,36 @@
       "points": 150,
       "min": 0,
       "max": 1,
-      "profile": {
-        "M": 2,
-        "CC": "-",
-        "CT": "-",
-        "F": 5,
-        "E": 5,
-        "PV": 5,
-        "I": "-",
-        "A": "-",
-        "Cd": "-"
-      },
+      "profile": { "M": 2, "CC": "-", "CT": "-", "F": 5, "E": 5, "PV": 5, "I": "-", "A": "-", "Cd": "-" },
       "type": "Char lourd / monture de personnage",
       "base": "60 x 100 mm",
       "unitSize": "1",
-      "equipment": [
-        "Équipage Furies x2",
-        "Deux armes de base"
-      ],
-      "specialRules": [
-        "Ordre serré",
-        "Traîné",
-        "Réflexes elfiques",
-        "Frénésie",
-        "Haine (Hauts-Elfes)",
-        "Touches d'impact (D6+1)",
-        "Grande cible",
-        "Résistance magique (-1)",
-        "Meurtrier",
-        "Attaques empoisonnées",
-        "Terreur"
-      ],
+      "equipment": ["Équipage Furies x2", "Deux armes de base"],
+      "specialRules": ["Ordre serré", "Traîné", "Réflexes elfiques", "Frénésie", "Haine (Hauts-Elfes)", "Touches d'impact (D6+1)", "Grande cible", "Résistance magique (-1)", "Meurtrier", "Attaques empoisonnées", "Terreur"],
       "restriction": "Uniquement comme monture d'une Hag de Khaine ; 0-1 par tranche de 1 000 points.",
       "crewProfiles": [
-        {
-          "name": "Équipage Furies",
-          "count": 2,
-          "M": "-",
-          "CC": 4,
-          "CT": 4,
-          "F": 3,
-          "E": "-",
-          "PV": "-",
-          "I": 5,
-          "A": 1,
-          "Cd": 9
-        }
+        { "name": "Équipage Furies", "count": 2, "M": "-", "CC": 4, "CT": 4, "F": 3, "E": "-", "PV": "-", "I": 5, "A": 1, "Cd": 9 }
       ]
     }
   ],
   "mounts": [
-    {
-      "id": "dark-steed",
-      "name": "Coursier Noir",
-      "points": 14,
-      "profile": {
-        "M": 9,
-        "CC": 3,
-        "CT": "-",
-        "F": 3,
-        "E": "-",
-        "PV": "-",
-        "I": 4,
-        "A": 1,
-        "Cd": "-"
-      },
-      "specialRules": [
-        "Cavalerie légère",
-        "Rapidité"
-      ]
-    },
-    {
-      "id": "cold-one-mount",
-      "name": "Sang-Froid",
-      "points": 18,
-      "profile": {
-        "M": 7,
-        "CC": 3,
-        "CT": "-",
-        "F": 4,
-        "E": "-",
-        "PV": "-",
-        "I": 2,
-        "A": 2,
-        "Cd": "-"
-      },
-      "specialRules": [
-        "Armure perforante (1)",
-        "Peau écailleuse (1)",
-        "Peur",
-        "Première charge",
-        "Stupidité",
-        "Rapidité"
-      ]
-    },
-    {
-      "id": "dark-pegasus",
-      "name": "Pégase Noir",
-      "points": 35,
-      "profile": {
-        "M": 8,
-        "CC": 3,
-        "CT": "-",
-        "F": 4,
-        "E": "-",
-        "PV": "+1",
-        "I": 4,
-        "A": 3,
-        "Cd": "-"
-      },
-      "specialRules": [
-        "Armure perforante (1)",
-        "Contre-charge",
-        "Première charge",
-        "Vol (10)",
-        "Rapidité"
-      ]
-    },
-    {
-      "id": "manticore-mount",
-      "name": "Manticore",
-      "points": 130,
-      "profile": {
-        "M": 6,
-        "CC": 5,
-        "CT": "-",
-        "F": 5,
-        "E": "+1",
-        "PV": "+4",
-        "I": 5,
-        "A": 4,
-        "Cd": "-"
-      },
-      "specialRules": [
-        "Ordre serré",
-        "Vol (9)",
-        "Grande cible",
-        "Piétinement (D3)",
-        "Rapidité",
-        "Terreur",
-        "Bête indocile"
-      ],
-      "options": [
-        "Queue venimeuse +15 pts"
-      ]
-    },
-    {
-      "id": "black-dragon",
-      "name": "Dragon Noir",
-      "points": 280,
-      "profile": {
-        "M": 6,
-        "CC": 6,
-        "CT": "-",
-        "F": 7,
-        "E": "+3",
-        "PV": "+6",
-        "I": 4,
-        "A": 6,
-        "Cd": "-"
-      },
-      "specialRules": [
-        "Ordre serré",
-        "Vol (10)",
-        "Haine (Hauts-Elfes)",
-        "Grande cible",
-        "Piétinement (D6)",
-        "Rapidité",
-        "Terreur"
-      ]
-    },
-    {
-      "id": "scourgerunner-mount",
-      "name": "Char à Harpon",
-      "points": 85,
-      "specialRules": [
-        "Voir l'entrée Chars à Harpon"
-      ]
-    },
-    {
-      "id": "cold-one-chariot-mount",
-      "name": "Char à Sang-Froid",
-      "points": 125,
-      "specialRules": [
-        "Voir l'entrée Chars à Sang-Froid"
-      ]
-    },
-    {
-      "id": "cauldron-mount",
-      "name": "Chaudron de Sang",
-      "points": 150,
-      "specialRules": [
-        "Uniquement pour une Hag de Khaine"
-      ]
-    }
+    { "id": "dark-steed", "name": "Coursier Noir", "points": 14, "profile": { "M": 9, "CC": 3, "CT": "-", "F": 3, "E": "-", "PV": "-", "I": 4, "A": 1, "Cd": "-" }, "specialRules": ["Cavalerie légère", "Rapidité"] },
+    { "id": "cold-one-mount", "name": "Sang-Froid", "points": 18, "profile": { "M": 7, "CC": 3, "CT": "-", "F": 4, "E": "-", "PV": "-", "I": 2, "A": 2, "Cd": "-" }, "specialRules": ["Armure perforante (1)", "Peau écailleuse (1)", "Peur", "Première charge", "Stupidité", "Rapidité"] },
+    { "id": "dark-pegasus", "name": "Pégase Noir", "points": 35, "profile": { "M": 8, "CC": 3, "CT": "-", "F": 4, "E": "-", "PV": "+1", "I": 4, "A": 3, "Cd": "-" }, "specialRules": ["Armure perforante (1)", "Contre-charge", "Première charge", "Vol (10)", "Rapidité"] },
+    { "id": "manticore-mount", "name": "Manticore", "points": 130, "profile": { "M": 6, "CC": 5, "CT": "-", "F": 5, "E": "+1", "PV": "+4", "I": 5, "A": 4, "Cd": "-" }, "specialRules": ["Ordre serré", "Vol (9)", "Grande cible", "Piétinement (D3)", "Rapidité", "Terreur", "Bête indocile"], "options": ["Queue venimeuse +15 pts"] },
+    { "id": "black-dragon", "name": "Dragon Noir", "points": 280, "profile": { "M": 6, "CC": 6, "CT": "-", "F": 7, "E": "+3", "PV": "+6", "I": 4, "A": 6, "Cd": "-" }, "specialRules": ["Ordre serré", "Vol (10)", "Haine (Hauts-Elfes)", "Grande cible", "Piétinement (D6)", "Rapidité", "Terreur"] },
+    { "id": "scourgerunner-mount", "name": "Char à Harpon", "points": 85, "specialRules": ["Voir l'entrée Chars à Harpon"] },
+    { "id": "cold-one-chariot-mount", "name": "Char à Sang-Froid", "points": 125, "specialRules": ["Voir l'entrée Chars à Sang-Froid"] },
+    { "id": "cauldron-mount", "name": "Chaudron de Sang", "points": 150, "specialRules": ["Uniquement pour une Hag de Khaine"] }
   ],
   "lores": {
     "Domaine de Naggaroth": [
-      {
-        "name": "Mot de Malédiction",
-        "type": "Maléfice",
-        "castingValue": "9+",
-        "range": "12\""
-      },
-      {
-        "name": "Horreur Noire",
-        "type": "Vortex magique",
-        "castingValue": "9+",
-        "range": "18\""
-      }
+      { "name": "Mot de Malédiction", "type": "Maléfice", "castingValue": "9+", "range": "12\"" },
+      { "name": "Horreur Noire", "type": "Vortex magique", "castingValue": "9+", "range": "18\"" }
     ]
   },
   "allies": [
-    {
-      "army": "Guerriers du Chaos",
-      "relationship": "Malaisés",
-      "maxPercent": 25
-    }
+    { "army": "Guerriers du Chaos", "relationship": "Malaisés", "maxPercent": 25 }
   ],
   "generatorNotes": [
     "Le générateur actuel utilise points, min et max pour les restrictions directes.",
