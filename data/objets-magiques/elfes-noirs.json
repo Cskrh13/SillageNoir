@@ -1,3 +1,167 @@
 {
-  "magicItems": {}
+  "id": "elfes-noirs",
+  "name": "Objets magiques des Elfes Noirs",
+  "source": "tow.whfb.app — Dark Elves Magic Items",
+  "magicItems": {
+    "Armes magiques": [
+      {
+        "id": "hache-du-bourreau",
+        "name": "Hache du Bourreau",
+        "points": 70,
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force du porteur, PA -2. Lors d'un jet pour blesser effectué avec cette arme, un résultat de 2+ est toujours un succès, quelle que soit l'Endurance de la cible.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "epee-de-la-ruine",
+        "name": "Épée de la Ruine",
+        "points": 65,
+        "repeatable": false,
+        "description": "Arme de corps à corps, Force du porteur, PA *. Aucune sauvegarde d'armure, de Ward ni de Régénération n'est autorisée contre les blessures causées par cette arme.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "preneuse-de-vies",
+        "name": "Preneuse de Vies",
+        "points": 35,
+        "repeatable": false,
+        "description": "Arme de tir, Portée 24\", Force 3, PA -1.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "fouet-de-lagonie",
+        "name": "Fouet de l'Agonie",
+        "points": 30,
+        "repeatable": false,
+        "description": "Réservé aux Grands Maîtres des Bêtes. Arme de corps à corps, Force du porteur +1, PA -1. Toute figurine ennemie subissant une ou plusieurs blessures non sauvegardées causées par cette arme subit un malus de -1 en Endurance (minimum 1) jusqu'à la fin de la partie.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Armures magiques": [
+      {
+        "id": "bouclier-de-ghrond",
+        "name": "Bouclier de Ghrond",
+        "points": 40,
+        "repeatable": false,
+        "description": "Ce bouclier orné d'un visage démoniaque absorbe la force des coups ennemis. Compte comme un bouclier. Toutes les attaques dirigées contre le porteur subissent un malus de -1 en Force (minimum 1).",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "armure-de-sang",
+        "name": "Armure de Sang",
+        "points": 30,
+        "repeatable": false,
+        "description": "Réservée aux figurines dont le type de troupe est Infanterie ou Cavalerie. Confère une valeur de sauvegarde d'armure de 5+. Pour chaque blessure non sauvegardée infligée par le porteur, cette valeur s'améliore de 1, jusqu'à un maximum de 2+.",
+        "restriction": {
+          "requires": [
+            { "troopType": ["Infanterie", "Cavalerie"] }
+          ]
+        }
+      }
+    ],
+    "Talismans": [
+      {
+        "id": "pendentif-de-khaeleth",
+        "name": "Pendentif de Khaeleth",
+        "points": 40,
+        "repeatable": false,
+        "description": "La protection offerte par ce pendentif s'adapte à la puissance de l'attaque subie. Le porteur gagne une sauvegarde invulnérable de 5+ contre les blessures causées par une attaque de Force 4 ou moins, et de 4+ contre une attaque de Force 5 ou plus.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "perle-de-morne-infini",
+        "name": "Perle de Morne Infini",
+        "points": 15,
+        "repeatable": false,
+        "description": "Le porteur et l'unité qu'il a rejointe gagnent la règle spéciale Immunité à la Psychologie.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Bannières magiques": [
+      {
+        "id": "banniere-de-nagarythe",
+        "name": "Bannière de Nagarythe",
+        "points": 65,
+        "repeatable": false,
+        "description": "L'unité portant cette bannière gagne la règle spéciale Obstiné. De plus, elle peut ajouter +1 supplémentaire à son résultat de combat.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "etendard-du-massacre",
+        "name": "Étendard du Massacre",
+        "points": 40,
+        "repeatable": false,
+        "description": "Lors d'un tour où l'unité portant cet étendard a chargé, elle peut ajouter +D3 supplémentaire à son résultat de combat.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "banniere-de-har-ganeth",
+        "name": "Bannière de Har Ganeth",
+        "points": 25,
+        "repeatable": false,
+        "description": "L'unité portant cette bannière améliore de 1 la Perforation d'Armure (PA) de ses armes de corps à corps.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "banniere-sang-froid",
+        "name": "Bannière Sang-Froid",
+        "points": 20,
+        "repeatable": false,
+        "description": "Usage unique. Lors de tout test de Commandement effectué par l'unité (y compris un test de Débandade), elle peut lancer un dé supplémentaire et écarter le résultat le plus élevé.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Objets enchantés": [
+      {
+        "id": "oeuf-de-dragon-noir",
+        "name": "Œuf de Dragon Noir",
+        "points": 35,
+        "repeatable": false,
+        "description": "Usage unique. Lors de la phase de Commandement, le porteur peut consommer l'œuf. Jusqu'à la fin du tour, il obtient une caractéristique d'Endurance de 6 (non améliorable au-delà) et gagne un souffle toxique.",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "croc-de-lhydre",
+        "name": "Croc de l'Hydre",
+        "points": 30,
+        "repeatable": false,
+        "description": "Arme de tir, Portée 9\", Force du porteur, PA -3. Cette arme peut cibler une figurine précise au sein de l'unité visée (porte-étendard, champion ou personnage).",
+        "restriction": { "requires": [] }
+      },
+      {
+        "id": "oeil-directeur",
+        "name": "L'Œil Directeur",
+        "points": 25,
+        "repeatable": false,
+        "description": "Usage unique. Le porteur et l'unité qu'il a rejointe peuvent relancer les jets pour toucher ratés lors de la phase de Tir.",
+        "restriction": { "requires": [] }
+      }
+    ],
+    "Objets cabalistiques": [
+      {
+        "id": "baton-noir",
+        "name": "Bâton Noir",
+        "points": 55,
+        "repeatable": false,
+        "description": "Talisman des Grandes Maîtresses du Couvent des Sorcières. Lorsque le porteur tente de lancer un sort, il peut lancer un dé supplémentaire pour son jet de lancement et écarter le résultat le plus faible. Cependant, si un double 1 apparaît parmi deux des dés lancés, le sort subit une Incantation Ratée.",
+        "restriction": { "requires": ["wizard"] }
+      },
+      {
+        "id": "tome-de-furion",
+        "name": "Tome de Furion",
+        "points": 15,
+        "repeatable": false,
+        "description": "Le porteur connaît un sort supplémentaire (choisi de la façon habituelle) par rapport à ce qui est normal pour son niveau de Sorcier.",
+        "restriction": { "requires": ["wizard"] }
+      },
+      {
+        "id": "familier-focalisateur",
+        "name": "Familier Focalisateur",
+        "points": 10,
+        "repeatable": false,
+        "description": "Objet extrêmement courant (disponible à toutes les armées de Sorciers). Usage unique. Le porteur peut l'utiliser lorsqu'il tente de lancer un sort : il place un marqueur à 12\" de lui, et la portée ainsi que les effets du sort sont mesurés depuis ce marqueur plutôt que depuis le porteur.",
+        "restriction": { "requires": ["wizard"] }
+      }
+    ]
+  }
 }
