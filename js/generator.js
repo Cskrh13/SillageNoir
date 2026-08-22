@@ -1208,6 +1208,20 @@ function setHonour(uidValue, honourId) {
 
 const STAT_KEYS = ["M","CC","CT","F","E","PV","I","A","Cd"];
 
+// Retrouve une monture native déclarée au niveau armée/supplément (tableau
+// "mounts"), à partir de son id — utilisée par mountRef (voir plus bas),
+// distinct de matchMountProfile qui, lui, matche par nom depuis une option
+// de personnage.
+function findMountById(id) {
+  if (!id) return null;
+  const pools = [state.army?.mounts, state.supplement?.mounts];
+  for (const pool of pools) {
+    const found = (pool || []).find(m => m.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
 function normalizeProfile(profile) {
   if (!profile || typeof profile !== "object") return null;
   const out = {};
@@ -1374,6 +1388,32 @@ function renderStatsTable(entry, unit) {
     rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
   }
 
+  // Monture(s) native(s) de l'unité entière (chevaliers, chars…) — pas une
+  // option de personnage : toujours affichée si l'unité déclare mountRef.
+  // Format accepté : "id-de-monture" ou { id, count }.
+  const mountRefRaw = unit.mountRef;
+  const mountRefs = Array.isArray(mountRefRaw) ? mountRefRaw : (mountRefRaw ? [mountRefRaw] : []);
+  let nativeMountMissing = false;
+  mountRefs.forEach(ref => {
+    const refId = typeof ref === "object" ? ref.id : ref;
+    const count = typeof ref === "object" && ref.count ? Number(ref.count) : null;
+    const native = findMountById(refId);
+    if (!native) { nativeMountMissing = true; return; }
+    const label = count && count > 1 ? `${native.name} x${count}` : native.name;
+    const np = normalizeProfile(native.profile) || {};
+    rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${esc(np[k] ?? "-")}</td>`).join("")}</tr>`);
+  });
+
+  // Servants / équipage propres à l'unité (Baliste Faucheuse, Chaudron de
+  // Sang…), déclarés dans crewProfiles — toujours affichés, indépendamment
+  // de toute option.
+  const crew = Array.isArray(unit.crewProfiles) ? unit.crewProfiles : [];
+  crew.forEach(c => {
+    const cp = normalizeProfile(c) || {};
+    const label = c.count && Number(c.count) > 1 ? `${c.name || "Équipage"} x${c.count}` : (c.name || "Équipage");
+    rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${esc(cp[k] ?? "-")}</td>`).join("")}</tr>`);
+  });
+
   return `<div class="profile-block">
     <div class="profile-title">Caractéristiques</div>
     <table class="stat-table">
@@ -1381,6 +1421,7 @@ function renderStatsTable(entry, unit) {
       <tbody>${rows.join("")}</tbody>
     </table>
     ${mount && !mountProfile ? `<div class="profile-missing">Profil de monture non renseigné dans les données.</div>` : ""}
+    ${nativeMountMissing ? `<div class="profile-missing">Profil de monture native non renseigné dans les données (mountRef introuvable).</div>` : ""}
   </div>`;
 }
 
