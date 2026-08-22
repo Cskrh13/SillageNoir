@@ -2004,7 +2004,9 @@ function renderAvailable() {
         // le budget affiché (used/max) est celui de la règle, PARTAGÉ entre
         // toutes les unités qui l'utilisent (ex. 0-1 au total pour Éryndor,
         // toutes unités Spéciales/Rares confondues) — pas un compteur par
-        // unité.
+        // unité. Affichage volontairement minimal (nom + bouton) ; le détail
+        // (points, budget partagé, règle d'origine) reste consultable via le
+        // titre (info-bulle) du bouton plutôt qu'affiché en permanence.
         const used = reclassifiedCount(rule.id);
         const limitText = Number.isFinite(rule.max)
           ? `${used}/${rule.max} choix "${rule.toCategory}"${rule.label ? ` — ${rule.label}` : ""} (budget partagé)`
@@ -2012,12 +2014,11 @@ function renderAvailable() {
         return `<article class="unit-card">
           <div class="unit-main">
             <strong>${esc(u.name)}</strong>
-            <span class="unit-points">${formatPoints(u.points)} / figurine</span>
-            <small>${esc(limitText)}</small>
           </div>
-          <button class="add-btn" data-add-reclassified="${esc(u.id)}" data-rule-id="${esc(rule.id)}">＋ Ajouter en ${esc(rule.toCategory)}</button>
+          <button class="add-btn" data-add-reclassified="${esc(u.id)}" data-rule-id="${esc(rule.id)}" title="${esc(`${formatPoints(u.points)} / figurine — ${limitText}`)}">＋ Ajouter</button>
         </article>`;
       }).join("")}
+
     </section>`).join("");
 
   container.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addUnit(b.dataset.add));
