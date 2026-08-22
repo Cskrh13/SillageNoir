@@ -125,7 +125,7 @@ function renownMatches(id, entry, u) {
   // fiches d'unité : on refuse par défaut (échec fermé) plutôt que de
   // proposer un objet à un porteur qui n'y a peut-être pas droit. À adapter
   // dès qu'un champ dédié (ex. state.army.renown / entry.renown) existera.
-  const current = entry?.renown || u?.renown || state.army?.renown || null;
+  const current = entry?.renown || u?.renown || state.army?.renown || state.supplement?.renown || null;
   return current != null && String(current) === String(id);
 }
 function isItemAllowedForEntry(item, entry, u) {
@@ -141,10 +141,6 @@ function isItemAllowedForEntry(item, entry, u) {
       return allowed.some(t => unitTroopType(u).includes(t));
     }
     if (req && typeof req === "object" && req.renown) return renownMatches(req.renown, entry, u);
-    if (req && typeof req === "object" && req.unitId) {
-      const ids = Array.isArray(req.unitId) ? req.unitId : [req.unitId];
-      return ids.includes(u?.id);
-    }
     return true;
   });
 }
@@ -268,11 +264,6 @@ function normalizeOption(raw, kindOverride) {
 function inferOptionKind(name) {
   const s = String(name).toLocaleLowerCase("fr");
   if (s.includes("bannière") || s.includes("banniere") || s.includes("étendard") || s.includes("etendard")) return "banner";
-  // Une cape/manteau (ex. "Cape de Dragon Marin") n'est pas une monture,
-  // même si son nom contient un mot-clé de monture ("dragon", etc.) : on
-  // l'exclut avant le test des montures, plutôt que de coder ce cas
-  // particulier en dur.
-  if (s.includes("cape") || s.includes("manteau")) return "other";
   if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) return "mount";
   // Bouclier séparé de l'armure : un personnage peut porter les deux à la
   // fois (un seul profil d'armure ET un seul bouclier, chacun via son
@@ -319,14 +310,31 @@ function normalizeUnit(u, fallbackId = "", mounts = []) {
     else if (single) { minSize = Number(single[0]); maxSize = Number(single[0]); }
   }
 
+  const unitId = String(u.id || fallbackId);
+
+  // Guerriers Fantômes : options de règles spéciales à coût par modèle,
+  // codées ici plutôt que dans les données d'armée (voir
+  // SHADOW_WARRIORS_RULE_OPTIONS).
+  const finalRuleOptions = unitId === "shadow-warriors"
+    ? [...ruleOptions, ...SHADOW_WARRIORS_RULE_OPTIONS.map(o => normalizeOption(o, "rule")).filter(Boolean)]
+    : ruleOptions;
+
+  // Profils d'équipage / monture attelée, affichés directement avec la
+  // figurine principale (baliste, chars, cotres volants…), sans case à
+  // cocher : voir renderStatsTable.
+  const crewProfiles = Array.isArray(u.crewProfiles)
+    ? u.crewProfiles.map(c => ({ ...c, profile: normalizeProfile(c) })).filter(c => c.name)
+    : [];
+
   return {
     ...u,
-    id: String(u.id || fallbackId),
+    id: unitId,
     name: u.name || u.nom || "Unité sans nom",
     category: u.category || u.categorie || "Autres",
     points: points == null || points === "" ? null : Number(points),
     options,
-    ruleOptions,
+    ruleOptions: finalRuleOptions,
+    crewProfiles,
     rules: normalizeTextList(u.rules ?? u.regles ?? u.specialRules),
     equipment: normalizeTextList(u.equipment ?? u.equipement ?? u.equipementNatif ?? u.equipementDeBase),
     profile: u.profile || u.profil || null,
@@ -673,6 +681,11 @@ function effectivePool(entry, u) {
 // effets de l'Honneur Elfique choisi.
 function effectiveRules(entry, u) {
   let rules = [...(u?.rules || [])];
+  // Option "Vétéran" (Lanciers / Archers / Gardes Maritimes) : remplace la
+  // règle spéciale native "Valeur des âges" par "Vétéran" quand cochée.
+  if (u && VETERAN_LIMITED_UNITS.includes(u.id) && (entry?.options || []).includes(VETERAN_OPTION_ID)) {
+    rules = rules.map(r => matchesPattern(r, "Valeur des âges") ? "Vétéran" : r);
+  }
   const effects = honourEffectsList(entry);
   effects.filter(e => e.type === "replace_special_rule").forEach(e => {
     rules = rules.map(r => matchesPattern(r, e.from) ? e.to : r);
@@ -955,7 +968,15 @@ function maxEntriesForUnit(u) {
       return Math.min(m,Math.floor(state.pointsLimit/1000)*Number(rule.maxPer1000));
     },Infinity);
     const currentGroup=groupRules.reduce((n,[id])=>n+getEntriesForUnit(id).length,0);
-    max=Math.min(max,Math.max(0,groupMax-currentGroup));
+    const currentOwn=getEntriesForUnit(u.id).length;
+    // Le plafond renvoyé par maxEntriesForUnit est comparé, chez l'appelant
+    // (canAdd), au nombre d'exemplaires déjà pris de CETTE unité (currentOwn),
+    // pas du groupe entier : il faut donc convertir "places restantes dans le
+    // groupe" en plafond absolu pour cette unité, en y rajoutant ce qu'elle a
+    // déjà elle-même — sinon les exemplaires d'une autre unité du même groupe
+    // se soustraient deux fois et le plafond tombe à zéro trop tôt.
+    const remaining=Math.max(0,groupMax-currentGroup);
+    max=Math.min(max,currentOwn+remaining);
   }
 
   // Le nombre d'exemplaires qu'on peut AJOUTER pour cette unité n'est pas
@@ -1044,9 +1065,44 @@ function canAdd(u, silent=false) {
   return true;
 }
 
-function addUnit(id) {
+// Vérifie qu'une entrée peut être ajoutée DIRECTEMENT comme "compte comme
+// choix de <rule.toCategory>", depuis une carte de catalogue générée par une
+// règle de recatégorisation active (voir renderAvailable). Reprend les
+// mêmes vérifications de base que canAdd() (coût renseigné, plafond propre
+// à l'unité — partagé avec ses éventuelles cartes normales, puisque compté
+// par id, pas par catégorie), mais teste le quota de points de la
+// catégorie CIBLE de la règle plutôt que la catégorie native de l'unité, et
+// vérifie en plus le budget partagé de la règle elle-même
+// (reclassificationSlotsLeft). N'affecte jamais canAdd()/addUnit(id) sans
+// règle : fonction strictement additive.
+function canAddAsReclassified(u, rule) {
+  if (!u || !rule) return false;
+  if (u.points == null || Number.isNaN(u.points)) return false;
+  const currentEntries = getEntriesForUnit(u.id).length;
+  const max = maxEntriesForUnit(u);
+  if (currentEntries >= max) return false;
+  if (reclassificationSlotsLeft(rule) <= 0) return false;
+  const category = rule.toCategory;
+  const categoryRule = compositionRules()[category] || {};
+  if (categoryRule.maxPercent != null) {
+    const cap = state.pointsLimit * Number(categoryRule.maxPercent) / 100;
+    const projected = getCategoryTotal(category) + Number(u.points || 0) * entryModelMin(u);
+    if (projected > cap + 1e-9) return false;
+  }
+  return true;
+}
+
+// `reclassifyRuleId` (optionnel) : quand fourni depuis une carte de
+// catalogue générée par une règle de recatégorisation (voir renderAvailable),
+// l'entrée créée est directement marquée `reclassified`, donc immédiatement
+// comptée dans la catégorie cible — sans avoir à déplier la fiche ni cocher
+// la case manuellement. Tous les appels existants (sans second argument)
+// sont inchangés.
+function addUnit(id, reclassifyRuleId = null) {
   const u = getUnit(id);
-  if (!isAllowed(u) || !canAdd(u)) return;
+  const rule = reclassifyRuleId ? findReclassificationRule(reclassifyRuleId) : null;
+  if (!isAllowed(u)) return;
+  if (rule ? !canAddAsReclassified(u, rule) : !canAdd(u)) return;
   state.list.push({
     uid: uid(),
     id,
@@ -1056,7 +1112,7 @@ function addUnit(id) {
     honour: null,
     // Choix "compte comme un choix de Base/Spécial/…" via une règle de
     // recatégorisation (ex. Éryndor Vareth) — voir reclassificationRules().
-    reclassified: null,
+    reclassified: rule ? rule.id : null,
     // La fiche complète n'est chargée que si l'entrée est développée ; par
     // défaut, seuls le nom et le coût total sont affichés dans "Ma liste".
     expanded: false
@@ -1133,6 +1189,16 @@ function setOption(uidValue, optionId, checked) {
   const entry = findEntry(uidValue);
   if (!entry) return;
   entry.options ||= [];
+  // Option "Vétéran" : refuse la coche au-delà de 0-1 par tranche de 1000
+  // points pour l'unité concernée (voir VETERAN_LIMITED_UNITS).
+  if (checked && optionId === VETERAN_OPTION_ID) {
+    const u = getUnit(entry.id);
+    if (u && VETERAN_LIMITED_UNITS.includes(u.id) && veteranSlotsLeft(u.id, entry.uid) <= 0) {
+      setStatus(`${u.name} : l'option Vétéran est limitée à ${veteranSlotsMax()} unité${veteranSlotsMax() > 1 ? "s" : ""} pour ce format de partie.`, "error");
+      render();
+      return;
+    }
+  }
   if (checked && !entry.options.includes(optionId)) entry.options.push(optionId);
   if (!checked) {
     entry.options = entry.options.filter(x => x !== optionId);
@@ -1208,19 +1274,40 @@ function setHonour(uidValue, honourId) {
 
 const STAT_KEYS = ["M","CC","CT","F","E","PV","I","A","Cd"];
 
-// Retrouve une monture native déclarée au niveau armée/supplément (tableau
-// "mounts"), à partir de son id — utilisée par mountRef (voir plus bas),
-// distinct de matchMountProfile qui, lui, matche par nom depuis une option
-// de personnage.
-function findMountById(id) {
-  if (!id) return null;
-  const pools = [state.army?.mounts, state.supplement?.mounts];
-  for (const pool of pools) {
-    const found = (pool || []).find(m => m.id === id);
-    if (found) return found;
-  }
-  return null;
+// --- Option "Vétéran" (remplace Valeur des âges) : limitée à 0-1 par unité
+// concernée et par tranche de 1000 points de la partie, indépendamment pour
+// les Lanciers, les Archers et les Gardes Maritimes (un pool de créneaux
+// séparé par unité, pas partagé entre les trois). ------------------------
+const VETERAN_OPTION_ID = "opt-veteran";
+const VETERAN_LIMITED_UNITS = ["elven-spearmen", "elven-archers", "lothern-sea-guard"];
+
+function veteranSlotsMax() {
+  return Math.max(1, Math.ceil(Number(state.pointsLimit || 0) / 1000));
 }
+function veteranCount(unitId, excludeUid = null) {
+  return state.list.filter(e => e.uid !== excludeUid && e.id === unitId && (e.options || []).includes(VETERAN_OPTION_ID)).length;
+}
+function veteranSlotsLeft(unitId, excludeUid = null) {
+  if (!VETERAN_LIMITED_UNITS.includes(unitId)) return Infinity;
+  return Math.max(0, veteranSlotsMax() - veteranCount(unitId, excludeUid));
+}
+
+// --- Budgets d'objets magiques réservés au chef d'unité (Maître Maritime /
+// Maître des lames), distincts du budget normal de l'unité (ces unités n'en
+// proposent pas) : disponibles uniquement si l'option de chef est cochée. --
+const CHAMPION_MAGIC_ITEM_BUDGETS = {
+  "lothern-sea-guard": 25,   // Maître de la mer (Maître Maritime)
+  "swordmasters-of-hoeth": 50 // Maître des lames
+};
+
+// --- Options de règles spéciales propres aux Guerriers Fantômes (0-1 unité
+// dans la liste de composition) : coût par modèle, ajoutées ici plutôt que
+// dans les données d'armée. -------------------------------------------
+const SHADOW_WARRIORS_RULE_OPTIONS = [
+  { id: "regle-guerriers-fantomes-embusquer", name: "Embusquer", points: 0, pointsPerModel: 1, kind: "rule" },
+  { id: "regle-guerriers-fantomes-escorteur-de-char", name: "Escorteur de char", points: 0, pointsPerModel: 1, kind: "rule" },
+  { id: "regle-guerriers-fantomes-fuite-feinte", name: "Fuite feinte", points: 0, pointsPerModel: 1, kind: "rule" }
+];
 
 function normalizeProfile(profile) {
   if (!profile || typeof profile !== "object") return null;
@@ -1352,6 +1439,20 @@ function effectiveProfile(entry, unit) {
   return {profile: result, modifiers: mods};
 }
 
+// Retrouve une monture native déclarée au niveau armée/supplément (tableau
+// "mounts"), à partir de son id — utilisée par mountRef (unité entière :
+// chevaliers, chars…), distinct de matchMountProfile qui matche par nom
+// depuis une option de personnage.
+function findMountById(id) {
+  if (!id) return null;
+  const pools = [state.army?.mounts, state.supplement?.mounts];
+  for (const pool of pools) {
+    const found = (pool || []).find(m => m.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
 function statDisplay(value, modifier) {
   const mod = numericStat(modifier);
   if (!mod) return esc(value ?? "—");
@@ -1388,6 +1489,14 @@ function renderStatsTable(entry, unit) {
     rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
   }
 
+  // Profils d'équipage / monture attelée fournis directement par l'unité
+  // (baliste, chars, cotres volants…) : toujours affichés avec la figurine
+  // principale, sans case à cocher — voir normalizeUnit (u.crewProfiles).
+  (unit.crewProfiles || []).forEach(c => {
+    const label = c.count && Number(c.count) > 1 ? `${c.name} (x${c.count})` : c.name;
+    rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${esc(c.profile?.[k] ?? c[k] ?? "-")}</td>`).join("")}</tr>`);
+  });
+
   // Monture(s) native(s) de l'unité entière (chevaliers, chars…) — pas une
   // option de personnage : toujours affichée si l'unité déclare mountRef.
   // Format accepté : "id-de-monture" ou { id, count }.
@@ -1399,19 +1508,9 @@ function renderStatsTable(entry, unit) {
     const count = typeof ref === "object" && ref.count ? Number(ref.count) : null;
     const native = findMountById(refId);
     if (!native) { nativeMountMissing = true; return; }
-    const label = count && count > 1 ? `${native.name} x${count}` : native.name;
+    const label = count && count > 1 ? `${native.name} (x${count})` : native.name;
     const np = normalizeProfile(native.profile) || {};
     rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${esc(np[k] ?? "-")}</td>`).join("")}</tr>`);
-  });
-
-  // Servants / équipage propres à l'unité (Baliste Faucheuse, Chaudron de
-  // Sang…), déclarés dans crewProfiles — toujours affichés, indépendamment
-  // de toute option.
-  const crew = Array.isArray(unit.crewProfiles) ? unit.crewProfiles : [];
-  crew.forEach(c => {
-    const cp = normalizeProfile(c) || {};
-    const label = c.count && Number(c.count) > 1 ? `${c.name || "Équipage"} x${c.count}` : (c.name || "Équipage");
-    rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${esc(cp[k] ?? "-")}</td>`).join("")}</tr>`);
   });
 
   return `<div class="profile-block">
@@ -1603,6 +1702,14 @@ function renderCharacterOptions(entry, u) {
     html += `<div class="check-options"><div class="check-options-title">Autres options</div>`;
     html += groups.other.map(o => {
       const checked = entry.options.includes(o.id);
+      // Option "Vétéran" (Lanciers / Archers / Gardes Maritimes) : limitée à
+      // 0-1 unité par tranche de 1000 points — voir VETERAN_LIMITED_UNITS.
+      if (o.id === VETERAN_OPTION_ID && VETERAN_LIMITED_UNITS.includes(u.id)) {
+        const slotsLeft = veteranSlotsLeft(u.id, entry.uid);
+        const disabled = !checked && slotsLeft <= 0;
+        const slotsText = ` — ${slotsLeft + (checked?1:0)}/${veteranSlotsMax()} disponible${veteranSlotsMax()>1?"s":""}`;
+        return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""} ${disabled?"disabled":""}><span>${esc(o.name)}${optionPrice(o)}${esc(slotsText)}</span></label>`;
+      }
       return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""}><span>${esc(o.name)}${optionPrice(o)}</span></label>`;
     }).join("");
     html += `</div>`;
@@ -1729,6 +1836,19 @@ function renderChampionWeaponSelector(entry, u) {
   const champion = selectedOptionOfKind(entry, u, "champion");
   if (!champion) return "";
   return renderBudgetItemSelector(entry, u, { limit, category: "Armes magiques", title: "Arme magique du chef" });
+}
+
+// Budget d'objets magiques réservé au chef d'unité (Maître Maritime de la
+// Garde Maritime de Lothern : 25 pts, Maître des lames des Maîtres des
+// épées de Hoeth : 50 pts) — voir CHAMPION_MAGIC_ITEM_BUDGETS. Distinct du
+// budget normal de l'unité (ces unités n'en proposent pas), et disponible
+// uniquement si l'option de chef est cochée.
+function renderChampionMagicItemsSelector(entry, u) {
+  const limit = CHAMPION_MAGIC_ITEM_BUDGETS[u?.id];
+  if (limit == null) return "";
+  const champion = selectedOptionOfKind(entry, u, "champion");
+  if (!champion) return "";
+  return renderBudgetItemSelector(entry, u, { limit, category: null, title: `Objets magiques du ${champion.name}`, excludeCategory: "Bannières magiques" });
 }
 
 // Options de règles spéciales (règles optionnelles / honneurs proposés par
@@ -1878,8 +1998,21 @@ function validate() {
       if (weaponCost > weaponLimit) errors.push(`${u.name} : arme magique du chef au-dessus de la limite de ${formatPoints(weaponLimit)}.`);
     }
 
+    const championMagicLimit = CHAMPION_MAGIC_ITEM_BUDGETS[u.id];
+    if (championMagicLimit != null && selectedOptionOfKind(item, u, "champion")) {
+      const championMagicCost = magicCost(item) - categoryMagicCost(item, "Bannières magiques");
+      if (championMagicCost > championMagicLimit) errors.push(`${u.name} : objets magiques du chef au-dessus de la limite de ${formatPoints(championMagicLimit)}.`);
+    }
+
     if (item.honour && !allowedHonours().some(h => h.id === item.honour)) {
       errors.push(`${u.name} : l'honneur elfique choisi n'est plus autorisé par ce supplément.`);
+    }
+
+    if (VETERAN_LIMITED_UNITS.includes(u.id) && (item.options || []).includes(VETERAN_OPTION_ID)) {
+      const max = veteranSlotsMax();
+      if (veteranCount(u.id) > max) {
+        errors.push(`${u.name} : l'option Vétéran est prise par plus d'unités que la limite de ${max} pour ce format de partie.`);
+      }
     }
 
     // Une monture imposée par l'Honneur Elfique choisi (restrict_mount avec
@@ -1959,33 +2092,77 @@ function renderAvailable() {
   // gauche — une unité qu'on ne peut pas ajouter (coût manquant, non
   // autorisée par le supplément, maximum atteint…) n'y apparaît plus.
   const units = filteredUnits().filter(u => u.points != null && isAllowed(u) && canAdd(u, true));
-  if (!units.length) {
+
+  // groups[categorie] contient des cartes ; chaque carte est soit normale
+  // ({u, rule:null}), soit une carte "supplémentaire" générée par une règle
+  // de recatégorisation active (ex. Éryndor Vareth, Honneur Garde
+  // Maritime) : {u, rule}. Une même unité peut donc apparaître deux fois,
+  // dans deux catégories différentes, sans être dupliquée dans les données
+  // JSON — la carte normale ci-dessous n'est jamais modifiée par ce qui suit.
+  const groups = {};
+  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push({ u, rule: null }));
+
+  // Cartes additionnelles : dérivées uniquement de restrictions.reclassifications
+  // (déjà utilisées pour la case "Compter comme choix de..." dans "Ma
+  // liste") — aucune nouvelle donnée à saisir dans le JSON. On reprend
+  // l'ensemble filtré/autorisé (pas seulement `units`, qui exclut déjà les
+  // unités au maximum : le plafond pertinent ici est celui de la règle, pas
+  // celui de l'unité) pour ne pas manquer une unité déjà à son maximum de
+  // cartes normales mais encore éligible via la règle.
+  filteredUnits().filter(u => u.points != null && isAllowed(u)).forEach(u => {
+    activeReclassificationRulesFor(u).forEach(rule => {
+      if (canAddAsReclassified(u, rule)) {
+        (groups[rule.toCategory] ||= []).push({ u, rule });
+      }
+    });
+  });
+
+  if (!Object.values(groups).some(arr => arr.length)) {
     container.innerHTML = `<div class="empty">Aucune unité disponible ne correspond aux critères.</div>`;
     return;
   }
 
-  const groups = {};
-  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push(u));
-
   container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
     <section class="unit-group">
       <div class="group-head"><span>${esc(cat)}</span><span>${arr.length}</span></div>
-      ${arr.map(u => {
-        const entries = getEntriesForUnit(u.id).length;
-        const max = maxEntriesForUnit(u);
-        const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
+      ${arr.map(({ u, rule }) => {
+        if (!rule) {
+          // Carte normale : comportement strictement inchangé.
+          const entries = getEntriesForUnit(u.id).length;
+          const max = maxEntriesForUnit(u);
+          const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
+          return `<article class="unit-card">
+            <div class="unit-main">
+              <strong>${esc(u.name)}</strong>
+              <span class="unit-points">${formatPoints(u.points)} / figurine</span>
+              <small>${esc(limitText)}</small>
+            </div>
+            <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
+          </article>`;
+        }
+        // Carte "supplémentaire" issue d'une règle de recatégorisation :
+        // le budget affiché (used/max) est celui de la règle, PARTAGÉ entre
+        // toutes les unités qui l'utilisent (ex. 0-1 au total pour Éryndor,
+        // toutes unités Spéciales/Rares confondues) — pas un compteur par
+        // unité. Affichage volontairement minimal (nom + bouton) ; le détail
+        // (points, budget partagé, règle d'origine) reste consultable via le
+        // titre (info-bulle) du bouton plutôt qu'affiché en permanence.
+        const used = reclassifiedCount(rule.id);
+        const limitText = Number.isFinite(rule.max)
+          ? `${used}/${rule.max} choix "${rule.toCategory}"${rule.label ? ` — ${rule.label}` : ""} (budget partagé)`
+          : `choix "${rule.toCategory}" illimité${rule.label ? ` — ${rule.label}` : ""}`;
         return `<article class="unit-card">
           <div class="unit-main">
             <strong>${esc(u.name)}</strong>
-            <span class="unit-points">${formatPoints(u.points)} / figurine</span>
-            <small>${esc(limitText)}</small>
           </div>
-          <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
+          <button class="add-btn" data-add-reclassified="${esc(u.id)}" data-rule-id="${esc(rule.id)}" title="${esc(`${formatPoints(u.points)} / figurine — ${limitText}`)}">＋ Ajouter</button>
         </article>`;
       }).join("")}
+
     </section>`).join("");
 
   container.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addUnit(b.dataset.add));
+  container.querySelectorAll("[data-add-reclassified]").forEach(b => b.onclick = () => addUnit(b.dataset.addReclassified, b.dataset.ruleId));
 }
 
 // --- Général de l'armée -----------------------------------------------
@@ -2086,6 +2263,7 @@ function renderList() {
           ${renderGrandBannerItemSelector(item, unit)}
           ${renderBannerItemsSelector(item, unit)}
           ${renderChampionWeaponSelector(item, unit)}
+          ${renderChampionMagicItemsSelector(item, unit)}
           ${renderRuleOptions(item, unit)}
           `}
         </article>`;
