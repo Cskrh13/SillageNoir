@@ -235,8 +235,27 @@
         "units": [
           "lothern-sea-guard"
         ]
+      },
+      {
+        "id": "eryndor-base-choice",
+        "label": "Réquisition avisée (Éryndor)",
+        "when": "eryndor-vareth",
+        "fromCategories": [
+          "Unités Spéciales",
+          "Unités Rares"
+        ],
+        "toCategory": "Unités de Base",
+        "max": 1
       }
-    ]
+    ],
+    "honours": {
+      "allowed": [
+        "honneur-maitre-du-savoir",
+        "honneur-gardien-de-saphery",
+        "honneur-pur-de-coeur",
+        "honneur-garde-maritime"
+      ]
+    }
   },
   "units": [
     {
