@@ -74,7 +74,7 @@
     },
     {
       "id": "sea-dragon-cloak",
-      "name": "Cape de Dragon Marin",
+      "name": "Cape en Peau de Dragon des Mers",
       "text": "Améliore de 1 la sauvegarde d'armure contre les tirs non magiques, jusqu'à 2+."
     },
     {
@@ -157,10 +157,10 @@
         "Armure intégrale +6 pts",
         "Coursier Noir +14 pts",
         "Sang-Froid +18 pts",
-        "Pégase Noir +35 pts",
+        "Char à Sang froid +125 pts",
         "Manticore +130 pts",
         "Dragon Noir +280 pts",
-        "Cape de Dragon Marin +4 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
@@ -209,9 +209,9 @@
         "Armure intégrale +6 pts",
         "Coursier Noir +14 pts",
         "Sang-Froid +18 pts",
-        "Pégase Noir +35 pts",
+        "Char à Sang-Froid +125 pts",
         "Manticore +130 pts",
-        "Cape de Dragon Marin +4 pts",
+        "Cape en Peau de Dragon des Mers +4 pts",
         "Objets magiques jusqu'à 50 pts"
       ],
       "specialRules": [
@@ -251,7 +251,7 @@
         "Coursier Noir +14 pts",
         "Sang-Froid +18 pts",
         "Pégase Noir +35 pts",
-        "Manticore +130 pts",
+        "Dragon Noir +280 pts",
         "Objets magiques jusqu'à 100 pts"
       ],
       "specialRules": [
@@ -356,8 +356,8 @@
         "Arbalète à répétition +6 pts",
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
-        "Monture obligatoire : Char à harpon ou Manticore",
-        "Cape de Dragon Marin +4 pts",
+        "Monture obligatoire : Char Fléau-Coureur ou Manticore",
+        "Cape en peau de Dragon des Mers +4 pts",
         "Objets magiques jusqu'à 75 pts"
       ],
       "specialRules": [
@@ -371,7 +371,7 @@
     },
     {
       "id": "death-hag",
-      "name": "Hag de Khaine",
+      "name": "Matriarche de Khaine",
       "category": "Personnages",
       "points": 70,
       "min": 0,
@@ -397,7 +397,7 @@
         "Don de Khaine : Cri de guerre +15 pts",
         "Rune de Khaine +10 pts",
         "Breuvage de sorcière +20 pts",
-        "Chaudron de Sang comme monture",
+        "Chaudron de Sang comme monture +150",
         "Objets magiques jusqu'à 75 pts"
       ],
       "specialRules": [
@@ -579,7 +579,7 @@
       "unitSize": "10+",
       "equipment": [
         "Armes de base",
-        "Armure légère"
+        "Armure légère"        
       ],
       "options": [
         "Armes de base additionnelles gratuites ou armes de poing à répétition gratuites",
@@ -593,7 +593,7 @@
         "Haine (Hauts-Elfes)",
         "Progression à travers les terrains",
         "Ordre ouvert",
-        "Cape de Dragon Marin"
+        "Cape en peau de Dragon des Mers"
       ],
       "championProfile": {
         "name": "Reaver",
@@ -1063,7 +1063,7 @@
         "Haine (Hauts-Elfes)",
         "Touches d'impact (D6)",
         "Ordre ouvert",
-        "Cape de Dragon Marin",
+        "Cape en Peau de Dragon des Mers",
         "Rapidité"
       ],
       "weapon": "Harpon ravageur : 24\", F6, PA -3, Encombrant, Blessures multiples (D3), Ponderous",
