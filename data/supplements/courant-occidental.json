@@ -1,6 +1,7 @@
 {
   "id": "tour-dargent",
   "name": "L’Ost de la Tour d’Argent",
+  "renown": "armee-infamie-courant-occidental",
   "language": "fr",
   "version": "1.0",
   "source": "Le Courant Occidental.pdf",
@@ -31,16 +32,7 @@
     "categories": {
       "Personnages": {
         "maxPercent": 50,
-        "archmage": {
-        "group": "lord-archmage-or-prince",
-        "maxPer1000": 1
-      },
-      "prince": {
-        "group": "lord-archmage-or-prince",
-        "maxPer1000": 1
-      }
-        },
-        "notes": "Jusqu’à 50 % des points de l’armée peuvent être dépensés en Personnages. 0-1 Prince Haut Elfe ou Archimage par tranche de 1000 points. Nobles et Mages Hauts Elfes disponibles selon les règles de l’armée de référence."
+        "notes": "Jusqu’à 50 % des points de l’armée peuvent être dépensés en Personnages. 0-1 Prince Haut Elfe ou Archimage par tranche de 1000 points (limite partagée, voir restrictions.units). Nobles et Mages Hauts Elfes disponibles selon les règles de l’armée de référence."
       },
       "Unités de Base": {
         "minPercent": 33,
@@ -132,6 +124,14 @@
       },
       "calion-vareth": {
         "max": 1
+      },
+      "archmage": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "prince": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
       },
       "elementaires-des-courants": {
         "minModels": 3
