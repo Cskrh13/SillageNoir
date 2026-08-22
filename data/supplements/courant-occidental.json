@@ -11,8 +11,20 @@
   "allowedUnits": [
     "eryndor-vareth",
     "calion-vareth",
+    "prince",
+    "archmage",
+    "noble",
+    "mage",
+    "elven-spearmen",
+    "elven-archers",
+    "shadow-warriors",
+    "lothern-sea-guard",
     "elementaires-des-courants",
-    "leviathan-elementaire"
+    "eagle-claw-bolt-thrower",
+    "leviathan-elementaire",
+    "swordmasters-of-hoeth",
+    "great-eagle",
+    "lothern-skycutter"
   ],
   "excludedUnits": [],
   "restrictions": {
@@ -131,7 +143,9 @@
         "maxEntriesUnlockedBy": [
           "Général avec l'Honneur Gardien de Saphery",
           "Général avec l'Honneur Maître du Savoir"
-        ]
+        ],
+        "categoryOverride": "Unités Rares",
+        "maxPer1000": 1
       },
       "archmage": {
         "group": "lord-archmage-or-prince",
@@ -140,6 +154,19 @@
       "prince": {
         "group": "lord-archmage-or-prince",
         "maxPer1000": 1
+      },
+      "shadow-warriors": {
+        "maxEntries": 1
+      },
+      "eagle-claw-bolt-thrower": {
+        "maxEntries": 3
+      },
+      "lothern-sea-guard": {},
+      "lothern-skycutter": {
+        "maxEntries": 2,
+        "conditional": [
+          "Général avec l'Honneur Garde Maritime"
+        ]
       }
     },
     "global": {
@@ -194,6 +221,19 @@
         "max": null,
         "units": [
           "swordmasters-of-hoeth"
+        ]
+      },
+      {
+        "id": "lothern-sea-guard-base",
+        "label": "Garde Maritime de Lothern en Base",
+        "when": "Général avec l'Honneur Garde Maritime",
+        "fromCategories": [
+          "Unités Spéciales"
+        ],
+        "toCategory": "Unités de Base",
+        "max": 1,
+        "units": [
+          "lothern-sea-guard"
         ]
       }
     ]
