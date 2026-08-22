@@ -4,7 +4,7 @@
   "language": "fr",
   "version": "1.0",
   "source": "Le Sillage Noir.pdf",
-  "description": "Armée d'Infamie de la Flotte du Sillage Noir. Cette liste utilise l'armée générique des Elfes Noirs comme base et applique une composition spécifique ainsi que des profils et règles propres à la flotte.",
+  "description": "Armée d'Infamie de la Flotte du Sillage Noir. Cette liste utilise l'armée générique des Elfes Noirs comme base et applique une composition specific ainsi que des profils et règles propres à la flotte.",
   "armies": [
     "elfes-noirs"
   ],
@@ -56,50 +56,49 @@
         "maxContingents": 1,
         "notes": "Un seul contingent allié."
       }
-    }
-     },
- "units": {
-  "dark-elf-dreadlord": {
-    "group": "lord-archmage-or-prince",
-    "maxPer1000": 1
-  },
-  "supreme-sorceress": {
-    "group": "lord-archmage-or-prince",
-    "maxPer1000": 1
-  },
-  "high-beastmaster": {
-    "group": "lord-archmage-or-prince",
-    "maxPer1000": 1
-  },
-  "maldris-dravelyth": {
-    "max": 1
-  },
-  "moraveth-dravelyth": {
-    "max": 1
-  },
-  "esclaves": {
-    "maxPerCharacter": 2,
-    "maxUnitSize": 20
-  },
-  "dark-riders": {
-    "maxPer1000": 1
-  },
-  "reaper-bolt-thrower": {
-    "maxPer1000": 3
-  },
-  "cold-one-knights": {
-    "maxPer1000": 2
-  },
-  "cold-one-chariots": {
-    "maxPer1000": 1
-  },
-  "black-guard": {
-    "maxPer1000": 1
-  },
-  "kharyx": {
-    "max": 1
-  }
-}
+    },
+    "units": {
+      "dark-elf-dreadlord": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "supreme-sorceress": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "high-beastmaster": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "maldris-dravelyth": {
+        "max": 1
+      },
+      "moraveth-dravelyth": {
+        "max": 1
+      },
+      "esclaves": {
+        "maxPerCharacter": 2,
+        "maxUnitSize": 20
+      },
+      "dark-riders": {
+        "maxPer1000": 1
+      },
+      "reaper-bolt-thrower": {
+        "maxPer1000": 3
+      },
+      "cold-one-knights": {
+        "maxPer1000": 2
+      },
+      "cold-one-chariots": {
+        "maxPer1000": 1
+      },
+      "black-guard": {
+        "maxPer1000": 1
+      },
+      "kharyx": {
+        "max": 1
+      }
+    },
     "global": {
       "battleStandardBearer": {
         "enabled": true,
@@ -113,8 +112,8 @@
           "objets magiques de l'armée légendaire Elfes Noirs"
         ]
       }
-    },
-   
+    }
+  },
   "units": [
     {
       "id": "khainite-assassin",
@@ -355,59 +354,7 @@
     {
       "id": "maree-de-sang",
       "name": "La Marée de Sang",
-      "text": "Lorsque la Marée de Sang atteint 25 %, les unités gagnent Peur du fouet. À 50 %, elles gagnent Mort aux faibles. À 75 %, elles gagnent Tuez-les tous. Les effets sont cumulatifs et persistent jusqu'à la fin de la bataille."
-    },
-    {
-      "id": "volée-de-traits",
-      "name": "Volée de traits",
-      "text": "Les Arbalétriers, Corsaires, Ombres, Balistes Faucheuses et personnages équipés d'une arme de tir gagnent Tir dans la mêlée."
-    },
-    {
-      "id": "magie-des-souffrances",
-      "name": "Magie des Souffrances",
-      "text": "Les Sorcières suprêmes et les Sorcières de la Flotte du Sillage Noir peuvent utiliser le Domaine de l'Agonie."
-    },
-    {
-      "id": "peur-du-fouet",
-      "name": "Peur du fouet",
-      "text": "Les unités ayant cette règle peuvent relancer les tests de Fuite. Le second résultat doit être conservé."
-    },
-    {
-      "id": "mort-aux-faibles",
-      "name": "Mort aux faibles",
-      "text": "Les unités ayant cette règle ajoutent +1 à leur résultat de combat."
-    },
-    {
-      "id": "tuez-les-tous",
-      "name": "Tuez-les tous !",
-      "text": "Une unité ayant cette règle peut relancer un jet de Charge ou de Poursuite, puis ajoute +1 au résultat obtenu. Le second résultat doit être conservé."
+      "text": "Lorsque la Marée de Sang atteint 25 %, les unités gagnent Peur du fouet. À 50 %, elles gagnent Mort aux faibles. À 75 %, elles gagnent Tuez-les tous. Les effets sont cumulatifs."
     }
-  ],
-  "allies": [
-    {
-      "name": "Contingent allié",
-      "maxPercent": 20,
-      "maxContingents": 1,
-      "sources": [
-        "Liste de composition d’armée de l’infamie Loup de mer",
-        "Nains du Chaos",
-        "Comtes Vampires",
-        "Armée de légende Elfes Noirs",
-        "La Flotte du Sillage Noir"
-      ]
-    }
-  ],
-  "generatorNotes": [
-    "Correction V1.1 : les identifiants de allowedUnits correspondent désormais exactement aux identifiants de elfes-noirs.json.",
-    "La liste utilise l'armée générique des Elfes Noirs comme base ; seules les unités autorisées par cette liste et les profils spécifiques du Sillage Noir sont disponibles.",
-    "Les identifiants de l'ancien fichier (despote, sorciere-supreme, etc.) ne correspondaient pas aux IDs réels de l'armée de référence.",
-    "La restriction 0-1 Despote/Sorcière suprême/Haut Belluaire par tranche de 1000 est collective.",
-    "La restriction Esclaves est 0-2 unités par personnage ; chaque unité contient 5 à 20 figurines."
-  ],
-  "selection": {
-    "mode": "restricted-reference-army",
-    "referenceArmy": "elfes-noirs",
-    "allowedUnits": "whitelist",
-    "excludedUnits": "blacklist"
-  }
+  ]
 }
