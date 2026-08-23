@@ -319,8 +319,8 @@ function inferOptionKind(name) {
   // fois (un seul profil d'armure ET un seul bouclier, chacun via son
   // propre menu déroulant — voir renderCharacterOptions).
   if (s.includes("bouclier")) return "shield";
-  if (s.includes("armure") || s.includes("heaume") || (s.includes("cape") && s.includes("peau"))) return "armour";
-  if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("epee") || s.includes("arc") || s.includes("arbalete") || s.includes("poing") || s.includes("fouet")) return "weapon";
+  if (s.includes("armure") || s.includes("heaume")) return "armour";
+  if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("epee") || s.includes("arc") || s.includes("arbalete") || s.includes("poing") || s.includes("fouet") || (s.includes("cape") && s.includes("peau"))) return "weapon";
   return "other";
 }
 
