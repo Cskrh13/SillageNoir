@@ -2742,12 +2742,12 @@ function printList() {
   const ruleNames = (state.supplement?.specialRules || [])
     .map(r => typeof r === "string" ? r : (r?.name || r?.id || ""))
     .filter(Boolean);
-  const infoParts = [
-    `Supplément : ${state.supplement?.description || state.supplement?.name || ""}`,
+  const infoLine1 = `Supplément : ${state.supplement?.description || state.supplement?.name || ""}`;
+  const infoLine2 = [
     `Armée : ${armyName}`,
     state.supplement?.source || "",
     ...ruleNames
-  ].filter(Boolean);
+  ].filter(Boolean).join(", ");
 
   const ordered = state.list.map(item => ({ item, u: getUnit(item.id) })).filter(x => x.u);
   const groups = {};
@@ -2782,7 +2782,7 @@ function printList() {
       <p class="print-army">${esc(armyName)}</p>
       <p class="print-credit">Liste d'armée générée à l'aide de ${esc(generatedUrl)}</p>
     </div>
-    <div class="print-info">${infoParts.map(esc).join(", ")}</div>
+    <div class="print-info">${esc(infoLine1)}<br>${esc(infoLine2)}</div>
     ${bodyHTML || `<p class="muted">Aucune unité dans cette liste.</p>`}
   `;
 
