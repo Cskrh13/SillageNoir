@@ -2113,7 +2113,7 @@
              ACTUALITÉ
              ================================================= -->
 
-                    <section class="hero">
+                    <section class="hero" id="bloc-hero-actualite">
 
                         <div class="hero-content">
 
@@ -2260,7 +2260,7 @@
         </h2>
 
 
-                    <section class="grid">
+                    <section class="grid" id="cartes-references-grid">
 
                         <article class="card" id="carte-maree-de-sang">
 
@@ -2678,6 +2678,101 @@
     <script src="https://widgets.sociablekit.com/instagram-feed/widget.js" defer></script>
 
 
+
+<script>
+/* =========================================================================
+   Chargement dynamique des cartes de suppléments depuis GitHub.
+   Lit le champ "presentation" de chaque data/supplements/*.json
+   (rempli via l'onglet "Présentation (site)" de admin.html) et
+   reconstruit automatiquement les cartes de la section
+   "Cartes de références" — plus besoin de modifier index.html à la main.
+   En cas d'échec (GitHub inaccessible), les cartes déjà présentes
+   dans le HTML restent affichées telles quelles.
+   ========================================================================= */
+(function(){
+  const OWNER="Cskrh13", REPO="Creations-Warhammer", BRANCH="main";
+  const SUPP_PATH="data/supplements/";
+
+  function esc(s){ return String(s??"").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+
+  function cardHTML(d){
+    const p = d.presentation || {};
+    const desc = p.accroche || p.contenu || "Description à venir.";
+    let boutonHTML;
+    if (p.statut === "disponible" && p.lien) {
+      boutonHTML = `<a class="button" href="${esc(p.lien)}" target="_blank" rel="noopener noreferrer">Télécharger</a>`;
+    } else if (p.statut === "archive") {
+      boutonHTML = `<a class="button disabled" href="#">Archivé</a>`;
+    } else {
+      boutonHTML = `<a class="button disabled" href="#">Bientôt disponible</a>`;
+    }
+    const slug = (d.id || d.name || "supplement").toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    return `<article class="card" id="carte-${esc(slug)}">
+      <h3>${esc(d.name || d.id)}</h3>
+      ${p.image ? `<img src="${esc(p.image)}" alt="Cartes de références pour ${esc(d.name || d.id)}" class="card-carte-image">` : ""}
+      <p>${esc(desc)}</p>
+      ${boutonHTML}
+    </article>`;
+  }
+
+  async function chargerBlocHero(){
+    const section = document.getElementById("bloc-hero-actualite");
+    if (!section) return;
+    try {
+      const raw = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/data/page-accueil.json`;
+      const page = await fetch(raw).then(r => r.ok ? r.json() : null).catch(() => null);
+      const hero = page && page.blocs && page.blocs.find(b => b.type === "hero");
+      if (!hero) return; // pas encore configuré -> on garde le bloc statique existant
+
+      const contenu = section.querySelector(".hero-content");
+      if (!contenu) return;
+      contenu.innerHTML = `
+        <h2>${esc(hero.titre || "Actualité")}</h2>
+        <div class="separator"></div>
+        <p>
+          ${hero.sousTitre ? `<strong>${esc(hero.sousTitre)}</strong><br>` : ""}
+          ${esc(hero.texte || "")}
+        </p>
+        ${hero.lien ? `<a class="button" href="${esc(hero.lien)}" target="_blank" rel="noopener noreferrer">${esc(hero.boutonLabel || "Télécharger")}</a>` : ""}
+      `;
+    } catch (e) {
+      console.warn("Chargement dynamique du bloc Actualité impossible, affichage statique conservé.", e);
+    }
+  }
+
+  async function chargerCartes(){
+    const grid = document.getElementById("cartes-references-grid");
+    if (!grid) return;
+    try {
+      const treeUrl = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
+      const tree = await fetch(treeUrl).then(r => { if(!r.ok) throw new Error("GitHub inaccessible"); return r.json(); });
+      const files = (tree.tree || []).filter(f => f.type === "blob" && f.path.startsWith(SUPP_PATH) && f.path.endsWith(".json"));
+      if (!files.length) return; // pas de données trouvées -> on garde les cartes statiques existantes
+
+      const supplements = [];
+      for (const f of files) {
+        const raw = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
+        const d = await fetch(raw).then(r => r.ok ? r.json() : null).catch(() => null);
+        if (d) supplements.push(d);
+      }
+      if (!supplements.length) return;
+
+      // Ne remplace le contenu statique que si au moins un supplément a une présentation renseignée
+      const auMoinsUnePresentation = supplements.some(d => d.presentation && Object.keys(d.presentation).length);
+      if (!auMoinsUnePresentation) return;
+
+      grid.innerHTML = supplements.map(cardHTML).join("\n");
+    } catch (e) {
+      // GitHub inaccessible ou erreur réseau : on laisse les cartes déjà écrites dans le HTML.
+      console.warn("Chargement dynamique des cartes impossible, affichage des cartes statiques.", e);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => { chargerBlocHero(); chargerCartes(); });
+})();
+</script>
 </body>
 
 </html>
