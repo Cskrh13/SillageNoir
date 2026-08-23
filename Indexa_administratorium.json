@@ -2,6 +2,7 @@
   "id": "Indexa_administratorium",
   "titre": "Indexa_administratorium",
   "description": "Page d'administration du réseau",
+  "format": "site",
   "style": {
     "policeTitres": "'Vollkorn', Georgia, serif",
     "tailleTitres": 15,

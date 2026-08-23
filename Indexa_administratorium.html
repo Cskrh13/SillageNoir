@@ -21,6 +21,8 @@
     --couleur-texte: #3a352a;
     --couleur-titres: #252a29;
     --couleur-accent: #1b2325;
+    --page-width: 900px;
+    --page-height: auto;
 }
 * { box-sizing: border-box; }
 body {
@@ -32,8 +34,8 @@ body {
     font-family: "Vollkorn", Georgia, serif;
 }
 .page-wrap {
-    width: calc(100% - 40px);
-    max-width: 900px;
+    width: min(calc(100% - 40px), var(--page-width));
+    max-width: var(--page-width);
     margin: 35px auto;
     display: flex;
     flex-direction: column;
@@ -222,7 +224,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
  * Les données de la page sont embarquées dans PAGE_DATA.
  * Aucun chargement de atelier-redaction.html ou de BLOC_TYPES externe.
  */
-const PAGE_DATA = {"id":"Indexa_administratorium","titre":"Indexa_administratorium","description":"Page d'administration du réseau","style":{"policeTitres":"'Vollkorn', Georgia, serif","tailleTitres":15,"policeTexte":"'Vollkorn', Georgia, serif","tailleTexte":12,"couleurTexte":"#3a352a","couleurTitres":"#252a29","couleurAccent":"#1b2325"},"blocs":[{"type":"hero","titre":"Indexa administratorium","sousTitre":"","texte":"\u003cbr\u003e","lien":"","boutonLabel":"Télécharger"},{"type":"carrousel","slides":[{"nom":"Administration des unités","description":"\u003cbr\u003e","image":"https://i.ibb.co/jvZj8LjW/Administration-Des-Unit-s.png","lien":"https://cskrh13.github.io/SillageNoir/admin.html","statut":"disponible"},{"nom":"Administration des pages","description":"","image":"https://i.ibb.co/5gp23D7D/Administration-des-pages-1.png","lien":"atelier-redaction.html","statut":"disponible"},{"nom":"Carte du réseau","description":"","image":"https://i.ibb.co/PGWz5gtx/Carte-Du-Reseau-1.png","lien":"https://cskrh13.github.io/SillageNoir/architecture-3d.html","statut":"disponible"}]},{"type":"pied-de-page","texte":"Archives de l'Ancien Monde - fichier central","liens":[]}]};
+const FORMATS_PAGE_EXPORT = {
+    site:{width:900,height:null}, large:{width:1200,height:null}, wide:{width:1400,height:null},
+    "16-9":{width:1280,height:720}, "full-hd":{width:1920,height:1080}, mobile:{width:390,height:844},
+    a4:{width:794,height:1123}, "a4-landscape":{width:1123,height:794},
+    a5:{width:559,height:794}, "a5-landscape":{width:794,height:559},
+    square:{width:1080,height:1080}, "9-16":{width:1080,height:1920}
+};
+const PAGE_DATA = {"id":"Indexa_administratorium","titre":"Indexa_administratorium","description":"Page d'administration du réseau","format":"site","style":{"policeTitres":"'Vollkorn', Georgia, serif","tailleTitres":15,"policeTexte":"'Vollkorn', Georgia, serif","tailleTexte":12,"couleurTexte":"#3a352a","couleurTitres":"#252a29","couleurAccent":"#1b2325"},"blocs":[{"type":"hero","titre":"Indexa administratorium","sousTitre":"","texte":"\u003cbr\u003e","lien":"","boutonLabel":"Télécharger"},{"type":"carrousel","slides":[{"nom":"Administration des unités","description":"\u003cbr\u003e","image":"https://i.ibb.co/jvZj8LjW/Administration-Des-Unit-s.png","lien":"https://cskrh13.github.io/SillageNoir/admin.html","statut":"disponible"},{"nom":"Administration des pages","description":"","image":"https://i.ibb.co/5gp23D7D/Administration-des-pages-1.png","lien":"atelier-redaction.html","statut":"disponible"},{"nom":"Carte du réseau","description":"","image":"https://i.ibb.co/PGWz5gtx/Carte-Du-Reseau-1.png","lien":"https://cskrh13.github.io/SillageNoir/architecture-3d.html","statut":"disponible"}]},{"type":"pied-de-page","texte":"Archives de l'Ancien Monde - fichier central","liens":[]}]};
 
 function escHTML(value) {
     return String(value ?? "").replace(/[&<>"']/g, function(ch) {
