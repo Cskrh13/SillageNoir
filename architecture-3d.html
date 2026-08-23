@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartographe d'Architecture — Archives de l'Ancien Monde</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --fond: #0d1112;
+    --bleu-noir: #1b2325;
+    --bleu-ardoise: #2d393d;
+    --parchemin: #c8bd9d;
+    --parchemin-clair: #ded4b7;
+    --texte-clair: #d8d1b8;
+    --argent: #91a6aa;
+    --ligne: rgba(125,139,140,.5);
+    --or: #b7975c;
+    --rouge-sceau: #7a3b34;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+    margin: 0;
+    background: radial-gradient(ellipse at 50% -10%, #1c2426 0%, var(--fond) 60%);
+    color: var(--texte-clair);
+    font-family: "Vollkorn", Georgia, serif;
+    overflow: hidden;
+}
+
+/* -------- En-tête -------- */
+header {
+    position: relative; z-index: 5;
+    padding: 22px 28px 16px; text-align: center;
+    background: linear-gradient(rgba(13,17,18,.92), rgba(13,17,18,.75) 70%, transparent);
+    border-bottom: 1px solid var(--ligne);
+}
+header h1 {
+    margin: 0; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal;
+    font-size: clamp(22px, 3.4vw, 34px); letter-spacing: 4px; color: var(--parchemin-clair);
+}
+header p { margin: 8px 0 0; color: var(--argent); letter-spacing: 1.5px; font-size: 12.5px; }
+
+/* -------- Barre de saisie -------- */
+.bar {
+    position: relative; z-index: 5;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: center;
+    padding: 14px 20px; background: rgba(27,35,37,.82); border-bottom: 1px solid var(--ligne);
+}
+.bar input[type="text"], .bar input[type="password"] {
+    padding: 10px 12px; border: 1px solid #4a5658; background: #12181a; color: var(--texte-clair);
+    font-family: "Vollkorn", Georgia, serif; font-size: 14px; min-width: 260px; flex: 2;
+}
+.bar input#tokenInput { flex: 1; min-width: 180px; }
+.bar input::placeholder { color: #6c7c7f; }
+.bar button {
+    padding: 10px 18px; border: 1px solid #596365; background: var(--bleu-noir); color: var(--texte-clair);
+    font-family: "IM Fell English SC", Georgia, serif; letter-spacing: .5px; font-size: 14px; cursor: pointer;
+}
+.bar button:hover { background: var(--bleu-ardoise); }
+.bar button:disabled { opacity: .4; cursor: not-allowed; }
+.bar .adv-toggle { font-size: 12px; color: var(--argent); cursor: pointer; text-decoration: underline; letter-spacing: .5px; user-select: none; }
+.bar .adv { display: none; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; width: 100%; }
+.bar .adv.open { display: flex; }
+.bar .adv label { font-size: 12px; color: var(--argent); display: flex; align-items: center; gap: 6px; }
+
+.status {
+    position: relative; z-index: 5; text-align: center; font-size: 12.5px; color: var(--argent);
+    padding: 6px 12px; min-height: 18px;
+}
+.status.err { color: #d99b8f; }
+
+/* -------- Zone du graphe -------- */
+#graphZone { position: absolute; inset: 0; top: 0; }
+.empty-state {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 10px; text-align: center; color: var(--argent); pointer-events: none;
+    padding: 40px;
+}
+.empty-state .sceau {
+    font-family: "IM Fell English SC", Georgia, serif; font-size: 42px; letter-spacing: 6px; color: #3c4d50;
+}
+.empty-state p { max-width: 440px; font-size: 14px; line-height: 1.6; margin: 0; }
+
+/* -------- Légende -------- */
+.legend {
+    position: absolute; left: 18px; bottom: 18px; z-index: 6;
+    background: rgba(19,25,27,.88); border: 1px solid var(--ligne); padding: 14px 16px;
+    font-size: 12.5px; max-width: 210px; display: none;
+}
+.legend.visible { display: block; }
+.legend h4 { margin: 0 0 8px; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; color: var(--parchemin-clair); font-size: 13px; }
+.legend .row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.legend .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend .line { width: 16px; height: 0; border-top: 2px solid; flex-shrink: 0; }
+.legend .line.dashed { border-top-style: dashed; }
+
+/* -------- Panneau fiche fichier -------- */
+.filecard {
+    position: absolute; right: 18px; top: 18px; z-index: 6; width: 280px;
+    background: rgba(19,25,27,.92); border: 1px solid var(--ligne); padding: 16px 18px;
+    display: none;
+}
+.filecard.visible { display: block; }
+.filecard .close { position: absolute; top: 8px; right: 10px; cursor: pointer; color: var(--argent); font-size: 14px; }
+.filecard h4 { margin: 0 22px 4px 0; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; font-size: 15px; color: var(--parchemin-clair); word-break: break-all; }
+.filecard .path { font-size: 11px; color: var(--argent); margin-bottom: 10px; word-break: break-all; }
+.filecard .stat { font-size: 12.5px; margin: 4px 0; color: var(--texte-clair); }
+.filecard .stat b { color: var(--or); }
+.filecard a.open-gh { display: inline-block; margin-top: 10px; font-size: 12px; color: var(--or); text-decoration: none; border-bottom: 1px solid var(--or); }
+.filecard a.open-gh:hover { color: var(--parchemin-clair); }
+
+/* -------- Recherche flottante -------- */
+.search-float {
+    position: absolute; left: 18px; top: 18px; z-index: 6; display: none;
+}
+.search-float.visible { display: block; }
+.search-float input {
+    padding: 8px 12px; border: 1px solid var(--ligne); background: rgba(19,25,27,.88); color: var(--texte-clair);
+    font-family: "Vollkorn", Georgia, serif; font-size: 13px; width: 220px;
+}
+
+/* -------- Chargement -------- */
+.loader { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 14px; z-index: 7; background: rgba(13,17,18,.55); }
+.loader.visible { display: flex; }
+.loader .ring { width: 46px; height: 46px; border: 2px solid #3c4d50; border-top-color: var(--or); border-radius: 50%; animation: tourner 1s linear infinite; }
+@keyframes tourner { to { transform: rotate(360deg); } }
+.loader p { color: var(--argent); font-size: 13px; letter-spacing: .5px; }
+
+@media(max-width: 720px) {
+    .bar input[type="text"], .bar input[type="password"] { min-width: 0; width: 100%; }
+    .filecard { left: 12px; right: 12px; width: auto; top: auto; bottom: 12px; }
+    .legend { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Cartographe d'Architecture</h1>
+    <p>Dépôt GitHub → graphe relationnel en 3D des fichiers et de leurs liens</p>
+</header>
+
+<div class="bar">
+    <input type="text" id="repoInput" placeholder="https://github.com/utilisateur/depot ou utilisateur/depot/tree/branche">
+    <button id="btnCartographier">Cartographier</button>
+    <span class="adv-toggle" id="advToggle">options avancées</span>
+    <div class="adv" id="advPanel">
+        <label>Jeton GitHub (optionnel, dépôts privés / limite de requêtes)
+            <input type="password" id="tokenInput" placeholder="ghp_...">
+        </label>
+        <label><input type="checkbox" id="deepScan" checked> analyser le contenu des fichiers (liens réels)</label>
+    </div>
+</div>
+<div class="status" id="statusLine"></div>
+
+<div id="graphZone">
+    <div class="empty-state" id="emptyState">
+        <div class="sceau">⁂</div>
+        <p>Indiquez un dépôt public ci-dessus (par exemple <em>Cskrh13/SillageNoir</em>) puis cliquez sur « Cartographier ». Chaque dossier et fichier devient un point du graphe ; les liens pâles suivent l'arborescence, les liens dorés suivent les références réelles trouvées dans le code (balises <code>&lt;a&gt;</code>, <code>&lt;script&gt;</code>, <code>import</code>, <code>require</code>, <code>url()</code>…).</p>
+    </div>
+</div>
+
+<div class="loader" id="loader"><div class="ring"></div><p id="loaderText">Lecture du dépôt…</p></div>
+
+<div class="legend" id="legend">
+    <h4>Légende</h4>
+    <div class="row"><span class="dot" style="background:#8a7a52"></span> Dossier</div>
+    <div class="row"><span class="dot" style="background:#c97b4a"></span> HTML</div>
+    <div class="row"><span class="dot" style="background:#e0c14b"></span> JavaScript</div>
+    <div class="row"><span class="dot" style="background:#5c9c8f"></span> CSS</div>
+    <div class="row"><span class="dot" style="background:#6b8fc9"></span> JSON / données</div>
+    <div class="row"><span class="dot" style="background:#a5a99f"></span> Image / média</div>
+    <div class="row"><span class="dot" style="background:#7d7565"></span> Autre</div>
+    <div class="row" style="margin-top:8px;"><span class="line" style="border-color:#455457"></span> Arborescence (dossier → contenu)</div>
+    <div class="row"><span class="line" style="border-color:#d9a441"></span> Référence réelle (lien / import)</div>
+</div>
+
+<div class="search-float" id="searchFloat">
+    <input type="text" id="searchInput" placeholder="Filtrer un fichier ou dossier…">
+</div>
+
+<div class="filecard" id="filecard">
+    <span class="close" id="filecardClose">✕</span>
+    <h4 id="fcName">—</h4>
+    <div class="path" id="fcPath">—</div>
+    <div class="stat">Type : <b id="fcType">—</b></div>
+    <div class="stat">Références sortantes : <b id="fcOut">0</b></div>
+    <div class="stat">Références entrantes : <b id="fcIn">0</b></div>
+    <a class="open-gh" id="fcOpen" href="#" target="_blank" rel="noopener">Ouvrir sur GitHub ↗</a>
+</div>
+
+<script src="https://unpkg.com/3d-force-graph@1"></script>
+<script>
+const $ = id => document.getElementById(id);
+
+/* =========================================================
+   ÉTAT
+   ========================================================= */
+let Graph = null;
+let currentOwner = "", currentRepo = "", currentBranch = "";
+let nodesById = {};
+
+/* =========================================================
+   UI — options avancées
+   ========================================================= */
+$("advToggle").addEventListener("click", () => {
+    $("advPanel").classList.toggle("open");
+});
+
+/* =========================================================
+   PARSING DE L'URL GITHUB
+   ========================================================= */
+function parserEntreeDepot(txt){
+    txt = txt.trim();
+    txt = txt.replace(/^https?:\/\/(www\.)?github\.com\//i, "").replace(/\/$/, "");
+    const parts = txt.split("/").filter(Boolean);
+    if(parts.length < 2) return null;
+    const owner = parts[0], repo = parts[1].replace(/\.git$/, "");
+    let branch = null;
+    const treeIdx = parts.indexOf("tree");
+    if(treeIdx !== -1 && parts[treeIdx+1]) branch = parts.slice(treeIdx+1).join("/");
+    return { owner, repo, branch };
+}
+
+function ghHeaders(){
+    const token = $("tokenInput").value.trim();
+    const h = { "Accept": "application/vnd.github+json" };
+    if(token) h["Authorization"] = "Bearer " + token;
+    return h;
+}
+
+function status(msg, isErr){
+    const el = $("statusLine");
+    el.textContent = msg || "";
+    el.classList.toggle("err", !!isErr);
+}
+
+/* =========================================================
+   RÉCUPÉRATION DE L'ARBORESCENCE
+   ========================================================= */
+async function recupererBranchePrincipale(owner, repo){
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers: ghHeaders() });
+    if(!r.ok) throw new Error(`Dépôt introuvable ou privé (HTTP ${r.status}).`);
+    const d = await r.json();
+    return d.default_branch;
+}
+
+async function recupererArbre(owner, repo, branch){
+    const r = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`, { headers: ghHeaders() });
+    if(!r.ok){
+        if(r.status === 403) throw new Error("Limite de requêtes GitHub atteinte — renseignez un jeton dans les options avancées.");
+        throw new Error(`Impossible de lire l'arborescence (HTTP ${r.status}).`);
+    }
+    const d = await r.json();
+    if(d.truncated) status("Attention : le dépôt est très volumineux, l'arborescence a été tronquée par GitHub.", true);
+    return (d.tree || []).filter(e => e.type === "blob" || e.type === "tree");
+}
+
+/* =========================================================
+   CLASSIFICATION DES FICHIERS
+   ========================================================= */
+function typeDeFichier(path){
+    const ext = (path.split(".").pop() || "").toLowerCase();
+    if(["html","htm"].includes(ext)) return "html";
+    if(["js","mjs","cjs","jsx","ts","tsx"].includes(ext)) return "js";
+    if(["css","scss","less"].includes(ext)) return "css";
+    if(["json","yml","yaml","xml"].includes(ext)) return "data";
+    if(["png","jpg","jpeg","gif","svg","webp","ico"].includes(ext)) return "media";
+    return "autre";
+}
+const COULEUR_TYPE = { dossier:"#8a7a52", html:"#c97b4a", js:"#e0c14b", css:"#5c9c8f", data:"#6b8fc9", media:"#a5a99f", autre:"#7d7565" };
+const ANALYSABLE = new Set(["html","js","css"]);
+const TAILLE_MAX_ANALYSE = 250000; // octets
+
+/* =========================================================
+   CONSTRUCTION DES NŒUDS + LIENS D'ARBORESCENCE
+   ========================================================= */
+function construireStructure(entries){
+    const nodes = [], links = [];
+    const byPath = {};
+
+    // nœud racine
+    nodes.push({ id: "", nom: "(racine)", type: "dossier", path: "" });
+    byPath[""] = true;
+
+    for(const e of entries){
+        const isDir = e.type === "tree";
+        const nom = e.path.split("/").pop();
+        const type = isDir ? "dossier" : typeDeFichier(e.path);
+        nodes.push({ id: e.path, nom, type, path: e.path, size: e.size||0, sha: e.sha });
+        byPath[e.path] = true;
+    }
+
+    for(const n of nodes){
+        if(n.id === "") continue;
+        const parent = n.id.includes("/") ? n.id.slice(0, n.id.lastIndexOf("/")) : "";
+        links.push({ source: parent, target: n.id, kind: "arbo" });
+    }
+    return { nodes, links, byPath };
+}
+
+/* =========================================================
+   ANALYSE DU CONTENU (liens réels entre fichiers)
+   ========================================================= */
+function resoudreChemin(basePath, ref){
+    if(!ref) return null;
+    ref = ref.split("#")[0].split("?")[0].trim();
+    if(!ref || ref.startsWith("http://") || ref.startsWith("https://") || ref.startsWith("//") || ref.startsWith("data:") || ref.startsWith("mailto:")) return null;
+    const baseDir = basePath.includes("/") ? basePath.slice(0, basePath.lastIndexOf("/")) : "";
+    const segs = (ref.startsWith("/") ? [] : baseDir.split("/").filter(Boolean));
+    for(const part of ref.split("/")){
+        if(part === "" || part === ".") continue;
+        if(part === "..") segs.pop();
+        else segs.push(part);
+    }
+    return segs.join("/");
+}
+
+function extraireReferences(contenu, type){
+    const refs = [];
+    const reHref = /(?:href|src)\s*=\s*["']([^"']+)["']/gi;
+    const reImport = /import\s+(?:[^'"]*?from\s+)?["']([^"']+)["']|require\(\s*["']([^"']+)["']\s*\)/gi;
+    const reUrl = /url\(\s*["']?([^"')]+)["']?\s*\)/gi;
+    let m;
+    if(type === "html"){
+        while((m = reHref.exec(contenu))) refs.push(m[1]);
+    }
+    if(type === "js"){
+        while((m = reImport.exec(contenu))) refs.push(m[1] || m[2]);
+    }
+    if(type === "css"){
+        while((m = reUrl.exec(contenu))) refs.push(m[1]);
+    }
+    return refs;
+}
+
+async function analyserFichier(owner, repo, branch, node, byPath){
+    const url = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${node.path}`;
+    try{
+        const r = await fetch(url);
+        if(!r.ok) return [];
+        const texte = await r.text();
+        const refsBrutes = extraireReferences(texte, node.type);
+        const liens = [];
+        for(const ref of refsBrutes){
+            let cible = resoudreChemin(node.path, ref);
+            if(cible == null) continue;
+            if(byPath[cible]){ liens.push(cible); continue; }
+            // essai avec index.html si la référence pointe vers un dossier
+            const withIndex = (cible ? cible + "/" : "") + "index.html";
+            if(byPath[withIndex]){ liens.push(withIndex); continue; }
+        }
+        return liens;
+    }catch(e){ return []; }
+}
+
+async function analyserToutLeDepot(owner, repo, branch, nodes, byPath){
+    const cibles = nodes.filter(n => ANALYSABLE.has(n.type) && (n.size||0) < TAILLE_MAX_ANALYSE);
+    const liensReels = [];
+    const CONCURRENCE = 8;
+    let index = 0, traites = 0;
+    async function suivant(){
+        while(index < cibles.length){
+            const n = cibles[index++];
+            const cibles2 = await analyserFichier(owner, repo, branch, n, byPath);
+            for(const c of cibles2) liensReels.push({ source: n.path, target: c, kind: "ref" });
+            traites++;
+            if(traites % 5 === 0 || traites === cibles.length){
+                $("loaderText").textContent = `Analyse du code : ${traites} / ${cibles.length} fichiers…`;
+            }
+        }
+    }
+    const pool = Array.from({length: Math.min(CONCURRENCE, cibles.length)}, suivant);
+    await Promise.all(pool);
+    return liensReels;
+}
+
+/* =========================================================
+   RENDU DU GRAPHE 3D
+   ========================================================= */
+function tailleNoeud(n, links){
+    const deg = links.filter(l => l.source === n.id || l.target === n.id || (l.source && l.source.id === n.id) || (l.target && l.target.id === n.id)).length;
+    if(n.type === "dossier") return 3.2 + Math.min(deg, 20) * 0.28;
+    return 2 + Math.min(deg, 20) * 0.35;
+}
+
+function construireGraphe(nodes, links){
+    nodesById = {};
+    nodes.forEach(n => nodesById[n.id] = n);
+    nodes.forEach(n => n.val = tailleNoeud(n, links));
+
+    const gData = { nodes, links };
+
+    $("graphZone").innerHTML = "";
+    Graph = ForceGraph3D()($("graphZone"))
+        .backgroundColor("rgba(0,0,0,0)")
+        .graphData(gData)
+        .nodeLabel(n => `${n.path || "(racine)"}`)
+        .nodeColor(n => COULEUR_TYPE[n.type] || "#7d7565")
+        .nodeOpacity(0.95)
+        .linkColor(l => l.kind === "ref" ? "#d9a441" : "#455457")
+        .linkOpacity(l => l.kind === "ref" ? 0.85 : 0.35)
+        .linkWidth(l => l.kind === "ref" ? 1.4 : 0.6)
+        .linkDirectionalArrowLength(l => l.kind === "ref" ? 3.5 : 0)
+        .linkDirectionalArrowRelPos(1)
+        .linkCurvature(l => l.kind === "ref" ? 0.15 : 0)
+        .nodeThreeObjectExtend(false)
+        .onNodeClick(n => { afficherFiche(n, links); centrerSur(n); })
+        .onBackgroundClick(() => masquerFiche());
+
+    Graph.d3Force("charge").strength(-55);
+    $("legend").classList.add("visible");
+    $("searchFloat").classList.add("visible");
+}
+
+function centrerSur(n){
+    const dist = 90;
+    const distRatio = 1 + dist/Math.hypot(n.x||1, n.y||1, n.z||1);
+    Graph.cameraPosition(
+        { x: (n.x||0.1)*distRatio, y: (n.y||0.1)*distRatio, z: (n.z||0.1)*distRatio },
+        n, 800
+    );
+}
+
+function afficherFiche(n, links){
+    const out = links.filter(l => (l.source.id||l.source) === n.id).length;
+    const inn = links.filter(l => (l.target.id||l.target) === n.id).length;
+    $("fcName").textContent = n.nom;
+    $("fcPath").textContent = n.path || "(racine du dépôt)";
+    $("fcType").textContent = n.type;
+    $("fcOut").textContent = out;
+    $("fcIn").textContent = inn;
+    const ghUrl = n.type === "dossier"
+        ? `https://github.com/${currentOwner}/${currentRepo}/tree/${currentBranch}/${n.path}`
+        : `https://github.com/${currentOwner}/${currentRepo}/blob/${currentBranch}/${n.path}`;
+    $("fcOpen").href = ghUrl;
+    $("filecard").classList.add("visible");
+}
+function masquerFiche(){ $("filecard").classList.remove("visible"); }
+$("filecardClose").addEventListener("click", masquerFiche);
+
+/* -------- Recherche / filtre -------- */
+$("searchInput").addEventListener("input", e => {
+    const q = e.target.value.trim().toLowerCase();
+    if(!Graph) return;
+    Graph.nodeColor(n => {
+        if(!q) return COULEUR_TYPE[n.type] || "#7d7565";
+        return (n.path||"").toLowerCase().includes(q) ? "#ffffff" : "#2a3234";
+    });
+});
+
+/* =========================================================
+   ORCHESTRATION
+   ========================================================= */
+async function cartographier(){
+    const info = parserEntreeDepot($("repoInput").value);
+    if(!info){ status("Format non reconnu. Exemple : https://github.com/utilisateur/depot", true); return; }
+
+    $("btnCartographier").disabled = true;
+    $("loader").classList.add("visible");
+    $("emptyState").style.display = "none";
+    $("loaderText").textContent = "Lecture du dépôt…";
+    status("");
+
+    try{
+        currentOwner = info.owner; currentRepo = info.repo;
+        currentBranch = info.branch || await recupererBranchePrincipale(info.owner, info.repo);
+
+        $("loaderText").textContent = "Récupération de l'arborescence…";
+        const entries = await recupererArbre(currentOwner, currentRepo, currentBranch);
+        if(!entries.length) throw new Error("Ce dépôt semble vide.");
+
+        const { nodes, links, byPath } = construireStructure(entries);
+
+        let liensReels = [];
+        if($("deepScan").checked){
+            liensReels = await analyserToutLeDepot(currentOwner, currentRepo, currentBranch, nodes, byPath);
+        }
+
+        const tousLesLiens = links.concat(liensReels);
+        construireGraphe(nodes, tousLesLiens);
+        status(`${nodes.length-1} éléments · ${links.length} liens d'arborescence · ${liensReels.length} références détectées dans le code — ${currentOwner}/${currentRepo}@${currentBranch}`);
+    }catch(err){
+        $("emptyState").style.display = "flex";
+        status(err.message || "Une erreur est survenue.", true);
+    }finally{
+        $("loader").classList.remove("visible");
+        $("btnCartographier").disabled = false;
+    }
+}
+
+$("btnCartographier").addEventListener("click", cartographier);
+$("repoInput").addEventListener("keydown", e => { if(e.key === "Enter") cartographier(); });
+</script>
+</body>
+</html>
