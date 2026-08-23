@@ -80,9 +80,14 @@ function grandBannerBearerUid() {
   const found = state.list.find(item => { const u = getUnit(item.id); return u && isGrandBannerBearer(item, u); });
   return found ? found.uid : null;
 }
-// Seul un Noble peut porter la Grande Bannière — détecté sur le nom de
-// l'unité, comme les autres correspondances de texte du moteur.
+// Éligibilité au port de la Grande Bannière : réservée aux Nobles (Hauts-
+// Elfes) et, de la même façon, aux Maîtres Elfes Noirs. Détectée en
+// priorité via un drapeau explicite dans les données (u.grandBannerEligible
+// — voir data/armees/elfes-noirs.json, dark-elf-master), avec repli sur la
+// détection par nom ("Noble") pour rester compatible avec les livres
+// d'armée qui n'ont pas encore ce drapeau. Aucun id codé en dur ici.
 function isNobleUnit(u) {
+  if (u?.grandBannerEligible === true) return true;
   return String(u?.name || u?.id || "").toLocaleLowerCase("fr").includes("noble");
 }
 
@@ -2165,7 +2170,7 @@ function validate() {
   const grandBannerBearers = state.list.filter(item => { const u = getUnit(item.id); return u && isGrandBannerBearer(item, u); });
   if (grandBannerBearers.length > 1) errors.push("Un seul personnage peut porter la Grande Bannière.");
   const nonNobleBearer = grandBannerBearers.find(item => !isNobleUnit(getUnit(item.id)));
-  if (nonNobleBearer) errors.push(`${getUnit(nonNobleBearer.id)?.name || "Ce personnage"} : seul un Noble peut porter la Grande Bannière.`);
+  if (nonNobleBearer) errors.push(`${getUnit(nonNobleBearer.id)?.name || "Ce personnage"} : ce type de personnage n'est pas éligible au port de la Grande Bannière.`);
 
   const global = state.supplement?.restrictions?.global || {};
   if (global.minPoints != null && total < Number(global.minPoints)) errors.push(`Minimum de ${global.minPoints} points requis.`);
