@@ -207,11 +207,13 @@
         },
         {
           "name": "Cape en peau de Dragon des Mers",
-          "points": 4
+          "points": 4,
+          "kind": "other"
         },
         {
           "name": "Bouclier",
-          "points": 2
+          "points": 2,
+          "kind": "other"
         }
       ],
       "rules": [
