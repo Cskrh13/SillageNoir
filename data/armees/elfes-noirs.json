@@ -1620,12 +1620,37 @@
     },
     {
       "id": "cold-one-chariot-mount",
-      "name": "Char à Sang-Froid",
-      "points": 125,
-      "specialRules": [
-        "Voir l'entrée Chars à Sang-Froid"
-      ]
+    "name": "Char à Sang-Froid",
+    "points": 125,
+    "profile": {
+      "M": "-",
+      "CC": "-",
+      "CT": "-",
+      "F": 5,
+      "E": 5,
+      "PV": 4,
+      "I": "-",
+      "A": "-",
+      "Cd": "-"
     },
+    "equipment": [
+      "Sang-Froids x2"
+    ],
+    "specialRules": [
+      "Armure perforante (1, Sang-Froid)",
+      "Ordre serré",
+      "Réflexes elfiques",
+      "Peur",
+      "Première charge",
+      "Haine (Hauts-Elfes)",
+      "Touches d'impact (D6+1)",
+      "Stupidité"
+    ],
+    "mountRef": {
+      "id": "cold-one-mount",
+      "count": 2
+    }
+  },
     {
       "id": "cauldron-mount",
       "name": "Chaudron de Sang",
