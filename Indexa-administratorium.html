@@ -140,6 +140,210 @@ h1{
     text-transform:uppercase;
     white-space:nowrap;
 }
+    .indexa-nav{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+
+    margin:0 auto 24px;
+    padding:14px 20px;
+
+    background:rgba(231,222,199,.96);
+    border:1px solid rgba(72,59,42,.42);
+    box-shadow:0 4px 14px rgba(45,35,24,.16);
+}
+
+/* Double filet décoratif */
+
+.indexa-nav::before,
+.indexa-nav::after{
+    content:"";
+    position:absolute;
+    left:18px;
+    right:18px;
+    height:1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(138,120,89,.7),
+            transparent
+        );
+}
+
+.indexa-nav::before{
+    top:6px;
+}
+
+.indexa-nav::after{
+    bottom:6px;
+}
+
+
+/* ---------------------------------------------------------
+   MARQUE
+--------------------------------------------------------- */
+
+.indexa-nav-brand{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+
+    text-decoration:none;
+    color:#292824;
+
+    white-space:nowrap;
+}
+
+.indexa-nav-kicker{
+    font-family:"Cinzel",Georgia,serif;
+    font-size:8px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+
+    color:#8a7859;
+}
+
+.indexa-nav-title{
+    font-family:"IM Fell English SC",Georgia,serif;
+    font-size:20px;
+    letter-spacing:1px;
+}
+
+
+/* ---------------------------------------------------------
+   LIENS
+--------------------------------------------------------- */
+
+.indexa-nav-links{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    flex-wrap:wrap;
+
+    gap:5px;
+}
+
+.indexa-nav-links a{
+    display:inline-flex;
+    align-items:center;
+
+    padding:7px 10px;
+
+    font-family:"Cinzel",Georgia,serif;
+    font-size:9px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+
+    color:#554936;
+    text-decoration:none;
+
+    border:1px solid transparent;
+
+    transition:
+        background .18s ease,
+        border-color .18s ease,
+        color .18s ease;
+}
+
+.indexa-nav-links a:hover{
+    background:rgba(214,201,170,.65);
+    border-color:rgba(138,120,89,.45);
+}
+
+
+/* ---------------------------------------------------------
+   SÉPARATEUR
+--------------------------------------------------------- */
+
+.indexa-nav-separator{
+    width:1px;
+    height:22px;
+
+    margin:0 5px;
+
+    background:rgba(72,59,42,.35);
+}
+
+
+/* ---------------------------------------------------------
+   PASSERELLE VERS LE SITE PUBLIC
+--------------------------------------------------------- */
+
+.indexa-nav-public{
+    background:#202827 !important;
+
+    color:#e9dfc5 !important;
+
+    border-color:#76664d !important;
+
+    box-shadow:0 2px 5px rgba(0,0,0,.12);
+}
+
+.indexa-nav-public:hover{
+    background:#3a3933 !important;
+}
+
+
+/* ---------------------------------------------------------
+   PAGE ACTIVE
+--------------------------------------------------------- */
+
+.indexa-nav-links a.active{
+    background:#d6c9aa;
+    border-color:#8a7859;
+
+    color:#292824;
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE
+--------------------------------------------------------- */
+
+@media(max-width:850px){
+
+    .indexa-nav{
+        flex-direction:column;
+        align-items:stretch;
+        gap:12px;
+    }
+
+    .indexa-nav-brand{
+        text-align:center;
+        align-items:center;
+    }
+
+    .indexa-nav-links{
+        justify-content:center;
+    }
+
+    .indexa-nav-separator{
+        display:none;
+    }
+
+}
+
+
+@media(max-width:500px){
+
+    .indexa-nav{
+        padding:14px 10px;
+    }
+
+    .indexa-nav-links{
+        gap:3px;
+    }
+
+    .indexa-nav-links a{
+        font-size:8px;
+        padding:7px 8px;
+    }
+
+}
 
 /* ---------- Cartes ---------- */
 
@@ -364,9 +568,42 @@ h1{
     <header class="header">
         <p class="kicker">Archives de l'Ancien Monde</p>
         <h1>Indexa Administratorium</h1>
-        <p class="subtitle">Cartes de références</p>
+        <p class="subtitle">- Accès autorisé -</p>
     </header>
+<nav class="indexa-nav" aria-label="Navigation Indexa Administratorium">
 
+    <a href="Indexa-administratorium.html" class="indexa-nav-brand">
+        <span class="indexa-nav-kicker">Archives de l'Ancien Monde</span>
+        <span class="indexa-nav-title">Indexa Administratorium</span>
+    </a>
+
+    <div class="indexa-nav-links">
+
+        <a href="Indexa-administratorium.html">
+            Accueil Indexa
+        </a>
+
+        <a href="admin.html">
+            Unités
+        </a>
+
+        <a href="atelier-redaction.html">
+            Pages
+        </a>
+
+        <a href="architecture-3d.html">
+            Réseau
+        </a>
+
+        <span class="indexa-nav-separator"></span>
+
+        <a href="index.html" class="indexa-nav-public">
+            ↗ Voir Sillage Noir
+        </a>
+
+    </div>
+
+</nav>
     <div class="section-heading">
         <span>Registres administratifs</span>
     </div>
