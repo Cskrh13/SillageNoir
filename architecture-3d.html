@@ -135,7 +135,70 @@ header p { margin: 8px 0 0; color: var(--argent); letter-spacing: 1.5px; font-si
     .bar input[type="text"], .bar input[type="password"] { min-width: 0; width: 100%; }
     .filecard { left: 12px; right: 12px; width: auto; top: auto; bottom: 12px; }
     .legend { display: none !important; }
+}<style>
+
+/* TON CSS EXISTANT */
+
+
+/* ==========================
+   NAVIGATION INDEXA
+========================== */
+
+.indexa-nav{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+
+    margin:0 auto 24px;
+    padding:12px 18px;
+
+    background:rgba(231,222,199,.96);
+    border:1px solid var(--ligne);
+    box-shadow:0 4px 14px var(--ombre);
 }
+
+.indexa-nav-links{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:5px;
+}
+
+.indexa-nav-links a{
+    padding:8px 11px;
+
+    font-family:"Cinzel",Georgia,serif;
+    font-size:9px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+
+    color:var(--brun);
+    text-decoration:none;
+
+    border:1px solid transparent;
+}
+
+.indexa-nav-links a:hover{
+    background:rgba(214,201,170,.65);
+}
+
+.indexa-nav-separator{
+    width:1px;
+    height:22px;
+    margin:0 5px;
+    background:var(--ligne);
+}
+
+.indexa-nav-public{
+    background:var(--noir);
+    color:#e9dfc5 !important;
+    border:1px solid #76664d !important;
+}
+
+</style>
 </style>
 </head>
 <body>
@@ -144,7 +207,32 @@ header p { margin: 8px 0 0; color: var(--argent); letter-spacing: 1.5px; font-si
     <h1>Cartographe d'Architecture</h1>
     <p>Dépôt GitHub → graphe relationnel en 3D des fichiers et de leurs liens</p>
 </header>
+    <main class="page">
 
+    <!-- NAVIGATION INDEXA -->
+    <nav class="indexa-nav" aria-label="Navigation Indexa Administratorium">
+
+        <div class="indexa-nav-links">
+
+            <a href="admin.html">Unités</a>
+
+            <a href="atelier-redaction.html">Pages</a>
+
+            <a href="architecture-3d.html">Réseau</a>
+
+            <span class="indexa-nav-separator"></span>
+
+            <a href="index.html" class="indexa-nav-public">
+                ↗ Voir Sillage Noir
+            </a>
+
+        </div>
+
+    </nav>
+<body>
+
+
+    <!-- CONTENU DE LA PAGE -->
 <div class="bar">
     <input type="text" id="repoInput" placeholder="https://github.com/utilisateur/depot ou utilisateur/depot/tree/branche">
     <button id="btnCartographier">Cartographier</button>
