@@ -435,7 +435,11 @@ function normalizeMounts(raw) {
       points: m.points != null ? Number(m.points) : 0,
       profile: normalizeProfile(m.profile || m.profil),
       type: m.type || "",
-      base: m.base || ""
+      base: m.base || "",
+      // Pour les chars : référence vers la/les monture(s) attelée(s)
+      // (ex. { id: "dark-steed", count: 2 }), utilisée pour ajouter une
+      // ligne de caractéristiques supplémentaire — voir renderStatsTable.
+      mountRef: m.mountRef || null
     };
   }).filter(Boolean);
 }
@@ -531,6 +535,9 @@ function classifyUnitOptions(rawList, mounts) {
         option.mountProfile = matched.profile;
         option.mountType = matched.type;
         option.mountBase = matched.base;
+        // Pour les chars : monture(s) attelée(s) (ex. { id: "dark-steed",
+        // count: 2 }) — voir renderStatsTable, qui ajoute une ligne dédiée.
+        option.mountHarness = matched.mountRef || null;
         // certaines options de monture n'indiquent pas leur coût dans le
         // texte source (ex. "Dragon solaire") : on le récupère alors sur
         // le profil de monture correspondant.
@@ -1559,7 +1566,15 @@ function renderStatsTable(entry, unit) {
   // montures actuellement chargé plutôt que de se fier au profil figé au
   // moment du parsing (souvent vide pour les unités propres à un
   // supplément — voir findMountById ci-dessus).
-  const mountProfile = mount ? (mount.mountRef ? findMountById(mount.mountRef)?.profile || null : profileForOption(mount)) : null;
+  const mountEntry = mount && mount.mountRef ? findMountById(mount.mountRef) : null;
+  const mountProfile = mount ? (mountEntry ? mountEntry.profile : profileForOption(mount)) : null;
+  // Monture(s) attelée(s) d'un char (ex. 2 Coursiers Noirs tirant un Char à
+  // Harpon) : portée soit par le catalogue de monture résolu ci-dessus
+  // (mountEntry.mountRef), soit déjà résolue lors du classement des options
+  // texte (mount.mountHarness) — voir classifyUnitOptions.
+  const harnessRef = mountEntry ? mountEntry.mountRef : (mount ? mount.mountHarness : null);
+  const harnessMount = harnessRef ? findMountById(typeof harnessRef === "string" ? harnessRef : harnessRef.id) : null;
+  const harnessCount = harnessRef && typeof harnessRef === "object" && harnessRef.count ? Number(harnessRef.count) : 1;
 
   // Le chef d'unité (Sentinelle, Gardien, Héraut…) affiche sa propre ligne
   // de caractéristiques uniquement si l'unité fournit un profil dédié
@@ -1584,6 +1599,12 @@ function renderStatsTable(entry, unit) {
   // La ligne de la monture n'apparaît que si une monture est sélectionnée.
   if (mount) {
     rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
+    // Pour un char, ajoute une ligne dédiée à la ou les monture(s) attelée(s)
+    // (ex. "Coursiers Noirs (x2)"), avec son propre profil.
+    if (harnessMount) {
+      const label = harnessCount > 1 ? `${harnessMount.name} (x${harnessCount})` : harnessMount.name;
+      rows.push(`<tr><td class="stat-row-name">${esc(label)}</td>${STAT_KEYS.map(k => `<td>${harnessMount.profile ? esc(harnessMount.profile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
+    }
   }
 
   // Profils d'équipage / monture attelée fournis directement par l'unité
