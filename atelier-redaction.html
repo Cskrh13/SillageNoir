@@ -135,36 +135,61 @@ textarea { min-height: 80px; resize: vertical; }
 .p-hero h3 { margin: 0 0 8px; text-transform: uppercase; letter-spacing: 2px; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; }
 .p-hero p { font-size: 14px; margin: 10px 0; }
 .p-texte { width: 100%; max-width: 780px; padding: 10px 6px; }
-.p-texte h3 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; }
+.p-texte h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
 .p-texte.centre { text-align: center; }
-.p-texte p { font-size: 15px; line-height: 1.6; margin: 0 0 10px; color: #3a352a; }
+.p-texte p { font-size: var(--taille-texte, 15px); line-height: 1.6; margin: 0 0 10px; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
 .p-image { width: 100%; max-width: 780px; text-align: center; }
 .p-image img { width: 100%; max-height: 340px; object-fit: cover; border: 1px solid var(--ligne); }
 .p-image figcaption { margin-top: 8px; font-size: 12px; color: #56442d; }
-.p-grille-titre { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 2px; text-align: center; margin: 0 0 4px; }
+.p-grille-titre { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 2px; text-align: center; margin: 0 0 4px; color: var(--couleur-titres, #252a29); }
 .p-grille-sep { width: 80px; height: 1px; background: var(--ligne); margin: 0 auto 20px; }
 .p-grille { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; max-width: 900px; }
 .card {
     background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 18px;
     max-width: 260px; text-align: center;
 }
-.card h3 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; }
+.card h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
 .card-carte-image { width: 100%; height: 150px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
-.card p { font-size: 13px; line-height: 1.5; margin: 12px 0; color: #3a352a; }
+.card p { font-size: var(--taille-texte, 13px); line-height: 1.5; margin: 12px 0; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
 .button {
-    display: inline-block; padding: 9px 16px; border: 1px solid #596365; background: var(--bleu-noir);
-    color: var(--texte-clair); font-family: "IM Fell English SC", Georgia, serif; letter-spacing: 1px;
+    display: inline-block; padding: 9px 16px; border: 1px solid #596365; background: var(--couleur-accent, var(--bleu-noir));
+    color: var(--texte-clair); font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); letter-spacing: 1px;
     text-decoration: none; text-transform: uppercase; font-size: 13px;
 }
 .button.disabled { opacity: .5; pointer-events: none; }
 .p-fiche { width: 100%; max-width: 780px; background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 24px; }
 .p-fiche .fiche-image { width: 100%; max-height: 260px; object-fit: cover; border: 1px solid var(--ligne); margin-bottom: 16px; }
-.p-fiche h2 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 2px; margin: 0 0 4px; text-align: center; }
+.p-fiche h2 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 2px; margin: 0 0 4px; text-align: center; color: var(--couleur-titres, #252a29); }
 .p-fiche .sous-titre { text-align: center; font-size: 13px; color: #6b6350; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
 .p-fiche .accroche { text-align: center; font-style: italic; margin-bottom: 18px; color: #3a352a; }
 .p-fiche .fiche-section { margin-top: 16px; border-top: 1px dashed #9c9278; padding-top: 14px; }
-.p-fiche .fiche-section h4 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; margin: 0 0 8px; letter-spacing: .5px; }
-.p-fiche .fiche-section p { font-size: 14px; line-height: 1.6; color: #3a352a; margin: 0; white-space: pre-wrap; }
+.p-fiche .fiche-section h4 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; margin: 0 0 8px; letter-spacing: .5px; color: var(--couleur-titres, #252a29); }
+.p-fiche .fiche-section p { font-size: var(--taille-texte, 14px); line-height: 1.6; color: var(--couleur-texte, #3a352a); margin: 0; white-space: pre-wrap; font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
+
+.p-carrousel-wrap { width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.p-carrousel-vignettes { display: flex; gap: 10px; background: var(--bleu-noir); border: 1px solid var(--ligne); padding: 12px; width: 100%; justify-content: center; flex-wrap: wrap; }
+.p-vignette { width: 70px; text-align: center; }
+.p-vignette img, .p-vignette-vide { width: 100%; height: 60px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
+.p-vignette span { display: block; margin-top: 5px; font-size: 10px; color: var(--texte-clair); text-transform: uppercase; letter-spacing: .5px; }
+.p-carrousel-slide {
+    width: 100%; background: var(--bleu-noir); border: 1px solid var(--ligne); color: var(--texte-clair);
+    display: flex; align-items: center; padding: 30px; gap: 24px; position: relative;
+}
+.p-carrousel-texte { flex: 1; text-align: left; }
+.p-carrousel-texte h3 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; }
+.p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
+.p-carrousel-image { width: 200px; flex-shrink: 0; }
+.p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
+.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: default; padding: 0 6px; }
+.p-carrousel-dots { display: flex; gap: 6px; }
+.p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; }
+.p-dot.active { background: #56442d; }
+@media(max-width: 650px) { .p-carrousel-slide { flex-direction: column; } }
+
+.p-footer { width: 100%; max-width: 900px; padding: 22px 24px; text-align: center; background: rgba(25,32,34,.94); border: 1px solid var(--ligne); color: var(--texte-clair); }
+.p-footer p { font-size: 13px; margin: 0 0 10px; color: #cfc7ab; }
+.p-footer-liens { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.p-footer-lien { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--texte-clair); }
 
 .output { margin-top: 25px; }
 .output label { display: block; margin-bottom: 8px; }
@@ -201,9 +226,43 @@ textarea { min-height: 80px; resize: vertical; }
         <input id="importInput" type="file" accept=".json,application/json" style="display:none">
         <button class="action ok" onclick="exporterJSON()">Exporter JSON</button>
         <button class="action" onclick="copierJSON()">Copier JSON</button>
+        <button class="action ok" onclick="exporterHTML()">Exporter HTML</button>
+        <button class="action" onclick="toutTelecharger()">Télécharger les deux (JSON + HTML)</button>
     </div>
 </section>
 <div class="status-line" id="statusLine"></div>
+
+<section class="page-bar" id="apparenceBar">
+    <div class="field">
+        <label for="stylePolice">Police du texte</label>
+        <select id="stylePolice" onchange="onStyleChange()">
+            <option value="'Vollkorn', Georgia, serif">Vollkorn (défaut du site)</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="'Times New Roman', serif">Times New Roman</option>
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="'Courier New', monospace">Courier New</option>
+        </select>
+    </div>
+    <div class="field">
+        <label for="styleTaille">Taille du texte (px)</label>
+        <input id="styleTaille" type="number" min="10" max="24" value="15" oninput="onStyleChange()">
+    </div>
+    <div class="field">
+        <label for="styleCouleurTexte">Couleur du texte</label>
+        <input id="styleCouleurTexte" type="color" value="#3a352a" oninput="onStyleChange()">
+    </div>
+    <div class="field">
+        <label for="styleCouleurTitres">Couleur des titres</label>
+        <input id="styleCouleurTitres" type="color" value="#252a29" oninput="onStyleChange()">
+    </div>
+    <div class="field">
+        <label for="styleCouleurAccent">Couleur d'accent (boutons)</label>
+        <input id="styleCouleurAccent" type="color" value="#1b2325" oninput="onStyleChange()">
+    </div>
+    <div class="btnrow">
+        <button class="action small" onclick="reinitialiserStyle()">Réinitialiser</button>
+    </div>
+</section>
 
 <div class="workzone">
     <aside class="blocs-list">
@@ -398,19 +457,166 @@ const BLOC_TYPES = {
                         <p>${esc(s.texte||"")}</p>
                     </div>`).join("")}
             </div>`
+    },
+
+    carrousel: {
+        label: "Carrousel de suppléments (vignettes + panneau sombre)",
+        defaultData: () => ({ type:"carrousel", slides:[] }),
+        form: (b,i) => `
+            <div class="sub-list" style="margin-top:0;border-top:none;padding-top:0">
+                <h4>Suppléments du carrousel (${(b.slides||[]).length})</h4>
+                ${(b.slides||[]).map((s,si)=>`
+                    <div class="sub-item">
+                        <div class="sub-head">
+                            <span>${esc(s.nom||"Supplément sans nom")}</span>
+                            <div class="sub-controls">
+                                <button onclick="deplacerSlide(${i},${si},-1)">↑</button>
+                                <button onclick="deplacerSlide(${i},${si},1)">↓</button>
+                                <button onclick="supprimerSlide(${i},${si})">Suppr.</button>
+                            </div>
+                        </div>
+                        <div class="grid">
+                            <div class="field"><label>Nom</label><input value="${esc(s.nom)}" oninput="updateSlide(${i},${si},'nom',this.value)"></div>
+                            <div class="field"><label>Statut</label>
+                                <select onchange="updateSlide(${i},${si},'statut',this.value)">
+                                    <option value="disponible" ${s.statut==="disponible"?"selected":""}>Disponible</option>
+                                    <option value="bientot" ${s.statut==="bientot"?"selected":""}>Bientôt disponible</option>
+                                    <option value="archive" ${s.statut==="archive"?"selected":""}>Archivé</option>
+                                </select>
+                            </div>
+                            <div class="field full"><label>Description</label><textarea oninput="updateSlide(${i},${si},'description',this.value)">${esc(s.description)}</textarea></div>
+                            <div class="field"><label>Image (couverture)</label><input value="${esc(s.image)}" placeholder="images/couverture.png" oninput="updateSlide(${i},${si},'image',this.value)"></div>
+                            <div class="field"><label>Lien</label><input value="${esc(s.lien)}" oninput="updateSlide(${i},${si},'lien',this.value)"></div>
+                        </div>
+                    </div>`).join("") || `<div class="empty-hint">Aucun supplément pour l'instant.</div>`}
+                <button class="action small" onclick="ajouterSlide(${i})">＋ Ajouter un supplément au carrousel</button>
+            </div>`,
+        preview: b => {
+            const slides = b.slides||[];
+            if(!slides.length) return `<div class="p-carrousel-wrap"><div class="preview-empty">Aucun supplément dans le carrousel.</div></div>`;
+            const premier = slides[0];
+            const boutonLabel = premier.statut==="disponible"?"Télécharger":premier.statut==="bientot"?"Bientôt disponible":"Archivé";
+            const disabled = premier.statut!=="disponible";
+            return `
+            <div class="p-carrousel-wrap">
+                <div class="p-carrousel-vignettes">
+                    ${slides.map(s=>`
+                        <div class="p-vignette">
+                            ${s.image?`<img src="${esc(s.image)}" onerror="this.style.display='none'">`:`<div class="p-vignette-vide"></div>`}
+                            <span>${esc(s.nom||"Sans nom")}</span>
+                        </div>`).join("")}
+                </div>
+                <div class="p-carrousel-slide">
+                    <button class="p-carrousel-fleche" aria-hidden="true">&lsaquo;</button>
+                    <div class="p-carrousel-texte">
+                        <h3>${esc(premier.nom||"Titre")}</h3>
+                        <p>${esc(premier.description||"Description à venir.")}</p>
+                        <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
+                    </div>
+                    <div class="p-carrousel-image">
+                        ${premier.image?`<img src="${esc(premier.image)}" onerror="this.style.display='none'">`:""}
+                    </div>
+                    <button class="p-carrousel-fleche" aria-hidden="true">&rsaquo;</button>
+                </div>
+                <div class="p-carrousel-dots">
+                    ${slides.map((s,idx)=>`<span class="p-dot ${idx===0?"active":""}"></span>`).join("")}
+                </div>
+                ${slides.length>1?`<div class="preview-empty" style="padding:4px 0 0">Aperçu du 1er supplément — ${slides.length} au total dans le carrousel.</div>`:""}
+            </div>`;
+        }
+    },
+
+    "pied-de-page": {
+        label: "Pied de page",
+        defaultData: () => ({ type:"pied-de-page", texte:"", liens:[] }),
+        form: (b,i) => `
+            <div class="grid">
+                <div class="field full"><label>Texte (ex. mention de copyright, note fan-made)</label><textarea oninput="updateBloc(${i},'texte',this.value)">${esc(b.texte)}</textarea></div>
+            </div>
+            <div class="sub-list">
+                <h4>Liens (${(b.liens||[]).length})</h4>
+                ${(b.liens||[]).map((l,li)=>`
+                    <div class="sub-item">
+                        <div class="sub-head">
+                            <span>${esc(l.label||"Lien sans nom")}</span>
+                            <div class="sub-controls">
+                                <button onclick="deplacerLienPied(${i},${li},-1)">↑</button>
+                                <button onclick="deplacerLienPied(${i},${li},1)">↓</button>
+                                <button onclick="supprimerLienPied(${i},${li})">Suppr.</button>
+                            </div>
+                        </div>
+                        <div class="grid">
+                            <div class="field"><label>Libellé</label><input value="${esc(l.label)}" oninput="updateLienPied(${i},${li},'label',this.value)"></div>
+                            <div class="field"><label>URL</label><input value="${esc(l.url)}" placeholder="https://..." oninput="updateLienPied(${i},${li},'url',this.value)"></div>
+                        </div>
+                    </div>`).join("") || `<div class="empty-hint">Aucun lien pour l'instant.</div>`}
+                <button class="action small" onclick="ajouterLienPied(${i})">＋ Ajouter un lien</button>
+            </div>`,
+        preview: b => `
+            <footer class="p-footer">
+                ${b.texte?`<p>${esc(b.texte)}</p>`:""}
+                ${(b.liens||[]).length?`<div class="p-footer-liens">
+                    ${(b.liens||[]).map(l=>`<span class="p-footer-lien">${esc(l.label||"Lien")}</span>`).join("")}
+                </div>`:""}
+            </footer>`
     }
 };
 
 /* =========================================================
    ÉTAT
    ========================================================= */
-let page = { id:"", titre:"", description:"", blocs:[] };
+let page = { id:"", titre:"", description:"", style:{ police:"'Vollkorn', Georgia, serif", taille:15, couleurTexte:"#3a352a", couleurTitres:"#252a29", couleurAccent:"#1b2325" }, blocs:[] };
 let selectedIndex = null;
 
+function styleParDefaut(){
+    return { police:"'Vollkorn', Georgia, serif", taille:15, couleurTexte:"#3a352a", couleurTitres:"#252a29", couleurAccent:"#1b2325" };
+}
+
+function onStyleChange(){
+    page.style = {
+        police: $("stylePolice").value,
+        taille: Number($("styleTaille").value) || 15,
+        couleurTexte: $("styleCouleurTexte").value,
+        couleurTitres: $("styleCouleurTitres").value,
+        couleurAccent: $("styleCouleurAccent").value
+    };
+    appliquerStyleApercu();
+    majOutput();
+}
+
+function appliquerStyleApercu(){
+    const s = page.style || styleParDefaut();
+    const zone = $("previewFrame");
+    zone.style.setProperty("--police-texte", s.police);
+    zone.style.setProperty("--police-titres", s.police);
+    zone.style.setProperty("--taille-texte", s.taille + "px");
+    zone.style.setProperty("--couleur-texte", s.couleurTexte);
+    zone.style.setProperty("--couleur-titres", s.couleurTitres);
+    zone.style.setProperty("--couleur-accent", s.couleurAccent);
+}
+
+function chargerControlesStyle(){
+    const s = page.style || styleParDefaut();
+    $("stylePolice").value = s.police;
+    $("styleTaille").value = s.taille;
+    $("styleCouleurTexte").value = s.couleurTexte;
+    $("styleCouleurTitres").value = s.couleurTitres;
+    $("styleCouleurAccent").value = s.couleurAccent;
+}
+
+function reinitialiserStyle(){
+    page.style = styleParDefaut();
+    chargerControlesStyle();
+    appliquerStyleApercu();
+    majOutput();
+    status("Apparence réinitialisée aux valeurs par défaut du site.");
+}
+
 function nouvellePage(){
-    page = { id:"", titre:"", description:"", blocs:[] };
+    page = { id:"", titre:"", description:"", style: styleParDefaut(), blocs:[] };
     selectedIndex = null;
     $("pageId").value = ""; $("pageTitre").value = ""; $("pageDescription").value = "";
+    chargerControlesStyle();
     renderTout();
     status("Nouvelle page vierge créée.");
 }
@@ -486,6 +692,34 @@ function deplacerSection(i,si,dir){
 }
 function updateSection(i,si,champ,val){ page.blocs[i].sections[si][champ]=val; majApercu(); majOutput(); }
 
+/* -------- Slides imbriqués (carrousel) -------- */
+function ajouterSlide(i){
+    page.blocs[i].slides = page.blocs[i].slides || [];
+    page.blocs[i].slides.push({nom:"",description:"",image:"",lien:"",statut:"disponible"});
+    renderEditeur(); majApercu(); majOutput();
+}
+function supprimerSlide(i,si){ page.blocs[i].slides.splice(si,1); renderEditeur(); majApercu(); majOutput(); }
+function deplacerSlide(i,si,dir){
+    const arr=page.blocs[i].slides; const j=si+dir;
+    if(j<0||j>=arr.length) return;
+    [arr[si],arr[j]]=[arr[j],arr[si]]; renderEditeur(); majApercu(); majOutput();
+}
+function updateSlide(i,si,champ,val){ page.blocs[i].slides[si][champ]=val; majApercu(); majOutput(); }
+
+/* -------- Liens imbriqués (pied de page) -------- */
+function ajouterLienPied(i){
+    page.blocs[i].liens = page.blocs[i].liens || [];
+    page.blocs[i].liens.push({label:"",url:""});
+    renderEditeur(); majApercu(); majOutput();
+}
+function supprimerLienPied(i,li){ page.blocs[i].liens.splice(li,1); renderEditeur(); majApercu(); majOutput(); }
+function deplacerLienPied(i,li,dir){
+    const arr=page.blocs[i].liens; const j=li+dir;
+    if(j<0||j>=arr.length) return;
+    [arr[li],arr[j]]=[arr[j],arr[li]]; renderEditeur(); majApercu(); majOutput();
+}
+function updateLienPied(i,li,champ,val){ page.blocs[i].liens[li][champ]=val; majApercu(); majOutput(); }
+
 /* =========================================================
    RENDU
    ========================================================= */
@@ -495,6 +729,8 @@ function nomAffiche(b){
     if(b.type==="image") return b.legende || "Image";
     if(b.type==="grille-cartes") return b.titre || "Grille de cartes";
     if(b.type==="fiche-detaillee") return b.titre || "Fiche détaillée";
+    if(b.type==="carrousel") return "Carrousel (" + (b.slides||[]).length + " supplément(s))";
+    if(b.type==="pied-de-page") return "Pied de page";
     return b.type;
 }
 
@@ -544,7 +780,7 @@ function majApercu(){
 }
 
 function majOutput(){
-    const clean = { id: page.id, titre: page.titre, description: page.description, blocs: page.blocs };
+    const clean = { id: page.id, titre: page.titre, description: page.description, style: page.style || styleParDefaut(), blocs: page.blocs };
     $("outputText").value = JSON.stringify(clean, null, 2);
 }
 
@@ -552,6 +788,7 @@ function renderTout(){
     renderListeSeule();
     renderEditeur();
     majApercu();
+    appliquerStyleApercu();
     majOutput();
 }
 
@@ -560,7 +797,7 @@ function renderTout(){
    ========================================================= */
 function exporterJSON(){
     if(!page.id){ alert("Renseignez un identifiant de page (slug) avant d'exporter."); return; }
-    const clean = { id: page.id, titre: page.titre, description: page.description, blocs: page.blocs };
+    const clean = { id: page.id, titre: page.titre, description: page.description, style: page.style || styleParDefaut(), blocs: page.blocs };
     const blob = new Blob([JSON.stringify(clean,null,2)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -574,15 +811,152 @@ async function copierJSON(){
     await navigator.clipboard.writeText($("outputText").value);
     status("JSON copié dans le presse-papiers.");
 }
+
+/* -------- Génération d'une page HTML autonome (même rendu que l'aperçu) -------- */
+function genererPageHTML(){
+    const s = page.style || styleParDefaut();
+    const corpsBlocs = page.blocs.map(b=>{
+        const def = BLOC_TYPES[b.type];
+        return def ? def.preview(b) : "";
+    }).join("\n");
+
+    return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(page.titre || page.id || "Page")} — Archives de l'Ancien Monde</title>
+<meta name="description" content="${esc(page.description || "")}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bleu-noir: #1b2325;
+    --bleu-ardoise: #2d393d;
+    --texte-clair: #d8d1b8;
+    --ligne: rgba(125,139,140,.5);
+    --police-texte: ${s.police};
+    --police-titres: ${s.police};
+    --taille-texte: ${s.taille}px;
+    --couleur-texte: ${s.couleurTexte};
+    --couleur-titres: ${s.couleurTitres};
+    --couleur-accent: ${s.couleurAccent};
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: linear-gradient(rgba(170,145,105,.72), rgba(170,145,105,.72)), url("images/fond-carte.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    color: #252a29;
+    font-family: "Vollkorn", Georgia, serif;
+}
+.page-wrap { width: calc(100% - 40px); max-width: 900px; margin: 35px auto; display: flex; flex-direction: column; gap: 26px; align-items: center; }
+nav.retour { width: 100%; text-align: center; margin-bottom: -10px; }
+nav.retour a { color: #3a352a; font-size: 13px; text-decoration: none; letter-spacing: 1px; }
+nav.retour a:hover { text-decoration: underline; }
+.p-hero {
+    width: 100%; max-width: 780px; padding: 26px 30px; text-align: center;
+    background: rgba(25,32,34,.94); border: 1px solid var(--ligne); color: var(--texte-clair);
+}
+.p-hero h3 { margin: 0 0 8px; text-transform: uppercase; letter-spacing: 2px; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; }
+.p-hero p { font-size: 14px; margin: 10px 0; }
+.p-texte { width: 100%; max-width: 780px; padding: 10px 6px; }
+.p-texte h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
+.p-texte.centre { text-align: center; }
+.p-texte p { font-size: var(--taille-texte, 15px); line-height: 1.6; margin: 0 0 10px; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
+.p-image { width: 100%; max-width: 780px; text-align: center; }
+.p-image img { width: 100%; max-height: 340px; object-fit: cover; border: 1px solid var(--ligne); }
+.p-image figcaption { margin-top: 8px; font-size: 12px; color: #56442d; }
+.p-grille-titre { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 2px; text-align: center; margin: 0 0 4px; color: var(--couleur-titres, #252a29); }
+.p-grille-sep { width: 80px; height: 1px; background: var(--ligne); margin: 0 auto 20px; }
+.p-grille { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; max-width: 900px; }
+.card {
+    background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 18px;
+    max-width: 260px; text-align: center;
+}
+.card h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
+.card-carte-image { width: 100%; height: 150px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
+.card p { font-size: var(--taille-texte, 13px); line-height: 1.5; margin: 12px 0; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
+.button {
+    display: inline-block; padding: 9px 16px; border: 1px solid #596365; background: var(--couleur-accent, var(--bleu-noir));
+    color: var(--texte-clair); font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); letter-spacing: 1px;
+    text-decoration: none; text-transform: uppercase; font-size: 13px;
+}
+.button:hover { background: var(--bleu-ardoise); }
+.button.disabled { opacity: .5; pointer-events: none; }
+.p-fiche { width: 100%; max-width: 780px; background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 24px; }
+.p-fiche .fiche-image { width: 100%; max-height: 260px; object-fit: cover; border: 1px solid var(--ligne); margin-bottom: 16px; }
+.p-fiche h2 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 2px; margin: 0 0 4px; text-align: center; color: var(--couleur-titres, #252a29); }
+.p-fiche .sous-titre { text-align: center; font-size: 13px; color: #6b6350; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.p-fiche .accroche { text-align: center; font-style: italic; margin-bottom: 18px; color: #3a352a; }
+.p-fiche .fiche-section { margin-top: 16px; border-top: 1px dashed #9c9278; padding-top: 14px; }
+.p-fiche .fiche-section h4 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; margin: 0 0 8px; letter-spacing: .5px; color: var(--couleur-titres, #252a29); }
+.p-fiche .fiche-section p { font-size: var(--taille-texte, 14px); line-height: 1.6; color: var(--couleur-texte, #3a352a); margin: 0; white-space: pre-wrap; font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
+.p-carrousel-wrap { width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.p-carrousel-vignettes { display: flex; gap: 10px; background: var(--bleu-noir); border: 1px solid var(--ligne); padding: 12px; width: 100%; justify-content: center; flex-wrap: wrap; }
+.p-vignette { width: 70px; text-align: center; }
+.p-vignette img, .p-vignette-vide { width: 100%; height: 60px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
+.p-vignette span { display: block; margin-top: 5px; font-size: 10px; color: var(--texte-clair); text-transform: uppercase; letter-spacing: .5px; }
+.p-carrousel-slide {
+    width: 100%; background: var(--bleu-noir); border: 1px solid var(--ligne); color: var(--texte-clair);
+    display: flex; align-items: center; padding: 30px; gap: 24px; position: relative;
+}
+.p-carrousel-texte { flex: 1; text-align: left; }
+.p-carrousel-texte h3 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; }
+.p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
+.p-carrousel-image { width: 200px; flex-shrink: 0; }
+.p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
+.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: default; padding: 0 6px; }
+.p-carrousel-dots { display: flex; gap: 6px; }
+.p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; }
+.p-dot.active { background: #56442d; }
+@media(max-width: 650px) { .p-carrousel-slide { flex-direction: column; } }
+.p-footer { width: 100%; max-width: 900px; padding: 22px 24px; text-align: center; background: rgba(25,32,34,.94); border: 1px solid var(--ligne); color: var(--texte-clair); }
+.p-footer p { font-size: 13px; margin: 0 0 10px; color: #cfc7ab; }
+.p-footer-liens { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.p-footer-lien { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--texte-clair); }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+<nav class="retour"><a href="index.html">&larr; Retour aux Archives de l'Ancien Monde</a></nav>
+${corpsBlocs}
+</div>
+</body>
+</html>`;
+}
+
+function exporterHTML(){
+    if(!page.blocs.length){ alert("Ajoutez au moins un bloc avant d'exporter le HTML."); return; }
+    const html = genererPageHTML();
+    const blob = new Blob([html], {type:"text/html"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = (page.id || "page") + ".html";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    status(`Fichier téléchargé : ${a.download} — page HTML autonome, prête à déposer sur le site.`);
+}
+
+function toutTelecharger(){
+    if(!page.id){ alert("Renseignez un identifiant de page (slug) avant d'exporter."); return; }
+    if(!page.blocs.length){ alert("Ajoutez au moins un bloc avant d'exporter."); return; }
+    exporterJSON();
+    setTimeout(exporterHTML, 300);
+    status("Téléchargement du JSON puis du HTML…");
+}
 $("importInput").addEventListener("change", e=>{
     const f = e.target.files[0]; if(!f) return;
     const reader = new FileReader();
     reader.onload = ()=>{
         try{
             const d = JSON.parse(reader.result);
-            page = { id: d.id||"", titre: d.titre||"", description: d.description||"", blocs: Array.isArray(d.blocs)?d.blocs:[] };
+            page = { id: d.id||"", titre: d.titre||"", description: d.description||"", style: d.style || styleParDefaut(), blocs: Array.isArray(d.blocs)?d.blocs:[] };
             selectedIndex = page.blocs.length ? 0 : null;
             $("pageId").value = page.id; $("pageTitre").value = page.titre; $("pageDescription").value = page.description;
+            chargerControlesStyle();
             renderTout();
             status("Page importée depuis le fichier JSON.");
         }catch(err){ alert("Import impossible : "+err.message); }
@@ -597,6 +971,7 @@ function status(msg){ $("statusLine").textContent = msg; setTimeout(()=>{ if($("
    ========================================================= */
 (function init(){
     $("newBlocType").innerHTML = Object.entries(BLOC_TYPES).map(([key,def])=>`<option value="${key}">${esc(def.label)}</option>`).join("");
+    chargerControlesStyle();
     renderTout();
 })();
 </script>
