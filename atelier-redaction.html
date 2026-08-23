@@ -232,6 +232,65 @@ textarea { min-height: 80px; resize: vertical; }
     .p-carrousel-vignettes { overflow-x: auto; }
     .p-grille-grid { grid-template-columns: 1fr; }
 }
+
+/* ===== Refonte esthétique : langage visuel Indexa Administratorium ===== */
+:root{
+ --papier:#e7dec7; --papier-clair:#eee7d5; --papier-sombre:#d6c9aa;
+ --brun:#554936; --brun-clair:#8a7859; --or:#9b8151;
+ --ombre:rgba(45,35,24,.18);
+}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;
+ background:radial-gradient(circle at 20% 10%,#fff 0,transparent 24%),radial-gradient(circle at 80% 80%,#4d3c28 0,transparent 28%);mix-blend-mode:multiply}
+.page{width:min(calc(100% - 36px),1180px);margin:28px auto 34px}
+header,.page-bar,.blocs-list,.editor{
+ background:linear-gradient(145deg,rgba(238,231,213,.97),rgba(231,222,199,.95));
+ border:1px solid var(--ligne);box-shadow:0 5px 18px var(--ombre)
+}
+header{position:relative;padding:30px 28px 27px;color:var(--encre)}
+header::before,header::after{content:"";position:absolute;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,var(--brun-clair),transparent)}
+header::before{bottom:13px} header::after{top:13px}
+header h1{color:var(--encre);letter-spacing:2px}
+header p{color:var(--brun);font-family:"Cinzel",Georgia,serif;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.page-bar{padding:16px 18px;gap:12px}
+.blacs-list{}
+.blocs-list{padding:14px}
+.editor{padding:22px}
+.bloc-item,.sub-item{
+ position:relative;background:linear-gradient(145deg,var(--papier-clair),var(--papier));
+ border:1px solid var(--ligne);box-shadow:0 3px 10px rgba(45,35,24,.08)
+}
+.bloc-item.active{border-color:var(--brun-clair);background:linear-gradient(145deg,#f3ead5,#ded0ae)}
+input,select,textarea,.rich-field{border-color:rgba(96,78,52,.42);background:#f7f1df}
+.rich-toolbar{background:var(--papier-sombre);border-color:var(--ligne)}
+button.action,.button{
+ background:rgba(42,39,32,.96);border-color:#76664d;color:#e9dfc5;
+ font-family:"Cinzel",Georgia,serif;font-size:10px;letter-spacing:1.1px;text-transform:uppercase;
+ box-shadow:0 2px 5px rgba(0,0,0,.12);transition:transform .18s ease,background .18s ease
+}
+button.action:hover,.button:hover{background:#3a3933;transform:translateY(-1px)}
+button.action.ok{background:#554936} button.action.danger{background:#6a3d37}
+.preview-frame{padding:28px;background:linear-gradient(rgba(177,155,119,.76),rgba(177,155,119,.76)),url("images/fond-carte.jpg");box-shadow:0 5px 18px var(--ombre)}
+.p-hero,.p-fiche,.p-footer,.card{
+ background:linear-gradient(145deg,var(--papier-clair),var(--papier));
+ border-color:var(--ligne);box-shadow:0 5px 18px var(--ombre);color:var(--encre)
+}
+.p-hero{position:relative;padding:30px 28px 26px}
+.p-hero::before,.p-hero::after{content:"";position:absolute;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,var(--brun-clair),transparent)}
+.p-hero::before{top:13px}.p-hero::after{bottom:13px}
+.p-hero h3{font-family:"IM Fell English SC",Georgia,serif;color:var(--encre);font-size:clamp(26px,4vw,42px);letter-spacing:2px}
+.p-hero p{color:var(--brun)}
+.p-texte{background:linear-gradient(145deg,rgba(238,231,213,.92),rgba(231,222,199,.88));padding:24px 28px;border:1px solid var(--ligne);box-shadow:0 4px 13px var(--ombre)}
+.p-grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;width:100%}
+.card{padding:13px 13px 15px;max-width:none;position:relative;transition:transform .18s ease,box-shadow .18s ease}
+.card::before{content:"";position:absolute;inset:5px;border:1px solid rgba(96,78,52,.18);pointer-events:none}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(45,35,24,.24)}
+.card-carte-image{height:auto;aspect-ratio:1/1;margin:1px 1px 14px;border-color:var(--ligne)}
+.card h3{font-size:20px;line-height:1.15}.card p{color:#655945}
+.p-fiche h2,.p-grille-titre{font-family:"IM Fell English SC",Georgia,serif}
+.p-fiche .fiche-section{border-top:1px solid rgba(96,78,52,.35)}
+.p-carrousel-slide,.p-carrousel-vignettes{background:linear-gradient(145deg,#2a302f,#202827);box-shadow:0 5px 18px rgba(45,35,24,.22)}
+.p-footer{border-top:1px solid var(--ligne);border-bottom:1px solid var(--ligne)}
+
 </style>
 </head>
 <body>
@@ -1132,6 +1191,7 @@ body {
     color: #252a29;
     font-family: "Vollkorn", Georgia, serif;
 }
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.14;background:radial-gradient(circle at 20% 10%,#fff 0,transparent 24%),radial-gradient(circle at 80% 80%,#4d3c28 0,transparent 28%);mix-blend-mode:multiply}
 .page-wrap {
     width: min(calc(100% - 40px), var(--page-width));
     max-width: var(--page-width);
@@ -1308,6 +1368,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
     .p-carrousel-image { width: min(100%, 300px); }
     .p-hero, .p-texte, .p-fiche { padding: 20px; }
 }
+
+/* Finition Indexa Administratorium */
+.page-wrap{width:min(calc(100% - 36px),var(--page-width));margin:28px auto 34px}
+.p-hero,.p-texte,.p-image,.p-grille,.p-fiche,.p-carrousel,.p-footer{box-shadow:0 5px 18px rgba(45,35,24,.18)}
+.p-hero{position:relative;background:linear-gradient(145deg,#eee7d5,#e7dec7);color:#292824;padding:30px 28px 26px}
+.p-hero::before,.p-hero::after{content:"";position:absolute;left:12%;right:12%;height:1px;background:linear-gradient(90deg,transparent,#8a7859,transparent)}
+.p-hero::before{top:13px}.p-hero::after{bottom:13px}
+.p-hero h1{font-family:"IM Fell English SC",Georgia,serif!important;color:#292824!important;letter-spacing:2px}.p-hero p{color:#554936}
+.p-texte,.p-fiche{background:linear-gradient(145deg,#eee7d5,#e7dec7);border-color:rgba(72,59,42,.42)}
+.p-grille{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.card{position:relative;background:linear-gradient(145deg,#eee7d5,#e7dec7);border-color:rgba(72,59,42,.42);box-shadow:0 4px 13px rgba(45,35,24,.18);padding:13px 13px 15px;max-width:none;transition:transform .18s ease,box-shadow .18s ease}
+.card::before{content:"";position:absolute;inset:5px;border:1px solid rgba(96,78,52,.18);pointer-events:none}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(45,35,24,.24)}
+.card-carte-image{aspect-ratio:1/1;height:auto!important;object-fit:cover}
+.card h3{font-family:"IM Fell English SC",Georgia,serif;font-size:20px;line-height:1.15}.card p{color:#655945}
+.button{font-family:"Cinzel",Georgia,serif;font-size:9px;letter-spacing:1.2px;text-transform:uppercase;background:rgba(42,39,32,.96);border-color:#76664d;color:#e9dfc5;box-shadow:0 2px 5px rgba(0,0,0,.12)}
 </style>
 </head>
 <body>
