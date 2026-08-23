@@ -298,6 +298,9 @@ const $ = id => document.getElementById(id);
    preview(bloc) -> html
    ========================================================= */
 function esc(s){ return String(s??"").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+function alignCss(valeur){
+    return { gauche:"left", centre:"center", droite:"right" }[valeur] || "left";
+}
 function slugify(t){
     return (t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
         .replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
@@ -353,8 +356,8 @@ const BLOC_TYPES = {
         },
         preview: b => `
             <div class="p-texte">
-                ${b.titre?`<h3 style="text-align:${b.alignementTitre||"gauche"}">${esc(b.titre)}</h3>`:""}
-                <div style="text-align:${b.alignementCorps||"gauche"}">${versHTMLCorps(b.corps) || "<p>Le texte apparaîtra ici.</p>"}</div>
+                ${b.titre?`<h3 style="text-align:${alignCss(b.alignementTitre)}">${esc(b.titre)}</h3>`:""}
+                <div style="text-align:${alignCss(b.alignementCorps)}">${versHTMLCorps(b.corps) || "<p>Le texte apparaîtra ici.</p>"}</div>
             </div>`
     },
 
@@ -597,7 +600,7 @@ let selectedIndex = null;
    gère sa propre police/taille/couleur via sa barre d'outils). */
 function styleParDefaut(){
     return {
-        policeTitres: '"IM Fell English SC", Georgia, serif',
+        policeTitres: "'Vollkorn', Georgia, serif",
         tailleTitres: 15,
         policeTexte: "'Vollkorn', Georgia, serif",
         tailleTexte: 12,
@@ -752,34 +755,24 @@ function champRiche(fieldId, valeur, onChange){
         <div class="rich-toolbar">
             <select onmousedown="event.preventDefault();restaurerSelection('${fieldId}')" onchange="richPolice('${fieldId}',this.value)">
                 <option value="">Police (sélection)…</option>
-                <option value="'Vollkorn', Georgia, serif">Vollkorn</option>
-                <option value='"IM Fell English SC", Georgia, serif'>IM Fell English SC</option>
-                <option value="'Cinzel', Georgia, serif">Cinzel</option>
-                <option value="'EB Garamond', Georgia, serif">EB Garamond</option>
-                <option value="'Crimson Text', Georgia, serif">Crimson Text</option>
-                <option value="'MedievalSharp', Georgia, serif">MedievalSharp</option>
-                <option value="'Merriweather', Georgia, serif">Merriweather</option>
-                <option value="'Playfair Display', Georgia, serif">Playfair Display</option>
-                <option value="Georgia, serif">Georgia</option>
-                <option value="'Times New Roman', serif">Times New Roman</option>
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="'Courier New', monospace">Courier New</option>
+                <option value="'Vollkorn', Georgia, serif" style="font-family:'Vollkorn', Georgia, serif">Vollkorn</option>
+                <option value='"IM Fell English SC", Georgia, serif' style='font-family:"IM Fell English SC", Georgia, serif'>IM Fell English SC</option>
+                <option value="'Cinzel', Georgia, serif" style="font-family:'Cinzel', Georgia, serif">Cinzel</option>
+                <option value="'EB Garamond', Georgia, serif" style="font-family:'EB Garamond', Georgia, serif">EB Garamond</option>
+                <option value="'Crimson Text', Georgia, serif" style="font-family:'Crimson Text', Georgia, serif">Crimson Text</option>
+                <option value="'MedievalSharp', Georgia, serif" style="font-family:'MedievalSharp', Georgia, serif">MedievalSharp</option>
+                <option value="'Merriweather', Georgia, serif" style="font-family:'Merriweather', Georgia, serif">Merriweather</option>
+                <option value="'Playfair Display', Georgia, serif" style="font-family:'Playfair Display', Georgia, serif">Playfair Display</option>
+                <option value="Georgia, serif" style="font-family:Georgia, serif">Georgia</option>
+                <option value="'Times New Roman', serif" style="font-family:'Times New Roman', serif">Times New Roman</option>
+                <option value="Arial, sans-serif" style="font-family:Arial, sans-serif">Arial</option>
+                <option value="'Courier New', monospace" style="font-family:'Courier New', monospace">Courier New</option>
             </select>
             <select onmousedown="event.preventDefault();restaurerSelection('${fieldId}')" onchange="richTaille('${fieldId}',this.value)">
                 <option value="">Taille (sélection)…</option>
-                <option value="10">10 px</option>
-                <option value="11">11 px</option>
-                <option value="12">12 px</option>
-                <option value="13">13 px</option>
-                <option value="14">14 px</option>
-                <option value="15">15 px</option>
-                <option value="16">16 px</option>
-                <option value="18">18 px</option>
-                <option value="20">20 px</option>
-                <option value="24">24 px</option>
-                <option value="28">28 px</option>
-                <option value="32">32 px</option>
-                <option value="40">40 px</option>
+                <option value="8">Petit</option>
+                <option value="12">Moyen</option>
+                <option value="14">Grand</option>
             </select>
             <input type="color" value="#3a352a" title="Couleur du texte sélectionné" onmousedown="restaurerSelection('${fieldId}')" onchange="richCouleur('${fieldId}',this.value)">
             <button type="button" onmousedown="event.preventDefault()" onclick="richCommande('${fieldId}','bold')"><strong>G</strong></button>
