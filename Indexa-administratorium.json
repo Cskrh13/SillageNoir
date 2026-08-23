@@ -1,0 +1,57 @@
+{
+  "id": "Indexa-administratorium",
+  "titre": "Indexa Administratorium",
+  "description": "",
+  "format": "site",
+  "style": {
+    "policeTitres": "'Vollkorn', Georgia, serif",
+    "tailleTitres": 15,
+    "policeTexte": "'Vollkorn', Georgia, serif",
+    "tailleTexte": 12,
+    "couleurTexte": "#3a352a",
+    "couleurTitres": "#252a29",
+    "couleurAccent": "#1b2325"
+  },
+  "blocs": [
+    {
+      "type": "hero",
+      "titre": "Indexa Administratorium",
+      "sousTitre": "",
+      "texte": "",
+      "lien": "",
+      "boutonLabel": "Télécharger"
+    },
+    {
+      "type": "grille-cartes",
+      "titre": "Cartes de références",
+      "cartes": [
+        {
+          "nom": "Administration des unités",
+          "description": "",
+          "image": "https://i.ibb.co/jvZj8LjW/Administration-Des-Unit-s.png",
+          "lien": "https://cskrh13.github.io/SillageNoir/admin.html",
+          "statut": "disponible"
+        },
+        {
+          "nom": "Administration des pages",
+          "description": "",
+          "image": "https://i.ibb.co/5gp23D7D/Administration-des-pages-1.png",
+          "lien": "https://cskrh13.github.io/SillageNoir/atelier-redaction.html",
+          "statut": "disponible"
+        },
+        {
+          "nom": "Administration du réseau",
+          "description": "",
+          "image": "https://i.ibb.co/PGWz5gtx/Carte-Du-Reseau-1.png",
+          "lien": "https://cskrh13.github.io/SillageNoir/architecture-3d.html",
+          "statut": "disponible"
+        }
+      ]
+    },
+    {
+      "type": "pied-de-page",
+      "texte": "Archives de l'Ancien Monde - fichier central",
+      "liens": []
+    }
+  ]
+}
