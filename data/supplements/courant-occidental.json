@@ -256,7 +256,10 @@
           "id": "tome-des-archives",
           "text": "Toute unité amie située à 12 pouces ou moins d’Éryndor gagne la règle Vétéran et peut relancer le D3 du mouvement accordé par Suivre le Courant."
         }
-      ]
+      ],
+       "mountRef": 
+        "elven-steed",
+        "great-eagle-mount"
     },
     {
       "id": "calion-vareth",
@@ -309,7 +312,10 @@
           "id": "bouclier-des-vareth",
           "text": "Le Bouclier des Vareth est un bouclier. Lorsqu'une unité comprenant Calion est la cible d'une charge, après que l'unité qui charge a déterminé sa distance de charge, Calion et l'unité qu'elle a rejointe peuvent effectuer un mouvement de 1D3pas en direction de l'unité qui charge. Effectuez ce mouvement immédiatement avant que l'unité qui charge n'effectue son mouvement de charge. Réduisez le bonus d”initiative de charge de l'unité qui charge du résultat obtenu sur le D3. Le mouvement de Calion et de son unité s'arrête immédiatement si : elles entrent en contact avec une autre unité ou avec un élément de terrain ; poursuivre leur mouvement les amènerait à moins de 1pas d'une unité ennemie. Une unité ne peut pas utiliser le Bouclier des Vareth si son mouvement l'amènerait à moins de 1pas d'une unité ennemie autre que l'unité qui la charge."
         }
-      ]
+      ],
+        "mountRef": 
+        "elven-steed",
+        "great-eagle-mount"
     },
     {
       "id": "elementaires-des-courants",
