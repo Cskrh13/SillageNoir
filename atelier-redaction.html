@@ -204,7 +204,7 @@ textarea { min-height: 80px; resize: vertical; }
 .p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
 .p-carrousel-image { width: 200px; flex-shrink: 0; }
 .p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
-.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: pointer; padding: 0 6px; } .p-vignette, .p-dot { cursor: pointer; } .p-vignette { background: transparent; border: 0; padding: 0; color: inherit; } .p-vignette.active span { text-decoration: underline; }
+.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: default; padding: 0 6px; }
 .p-carrousel-dots { display: flex; gap: 6px; }
 .p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; }
 .p-dot.active { background: #56442d; }
@@ -327,7 +327,7 @@ const BLOC_TYPES = {
                 <h3>${esc(b.titre||"Actualité")}</h3>
                 ${b.sousTitre?`<p><strong>${esc(b.sousTitre)}</strong></p>`:""}
                 ${versHTMLCorps(b.texte||"")}
-                ${b.lien?`<a class="button" href="${esc(b.lien)}">${esc(b.boutonLabel||"Télécharger")}</a>`:""}
+                ${b.lien?`<a class="button">${esc(b.boutonLabel||"Télécharger")}</a>`:""}
             </div>`
     },
 
@@ -426,7 +426,7 @@ const BLOC_TYPES = {
                             <h3>${esc(c.nom||"Titre")}</h3>
                             ${c.image?`<img class="card-carte-image" src="${esc(c.image)}" onerror="this.style.display='none'">`:""}
                             ${versHTMLCorps(c.description||"Description à venir.")}
-                            ${disabled ? `<span class="button disabled">${esc(boutonLabel)}</span>` : `<a class="button" href="${esc(c.lien||"#")}">${esc(boutonLabel)}</a>`}
+                            <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
                         </article>`;
                     }).join("") : `<div class="preview-empty">Aucune carte.</div>`}
                 </div>
@@ -518,72 +518,35 @@ const BLOC_TYPES = {
         preview: b => {
             const slides = b.slides||[];
             if(!slides.length) return `<div class="p-carrousel-wrap"><div class="preview-empty">Aucun supplément dans le carrousel.</div></div>`;
-            const id = "carrousel_" + Math.random().toString(36).slice(2,9);
+            const premier = slides[0];
+            const boutonLabel = premier.statut==="disponible"?"Télécharger":premier.statut==="bientot"?"Bientôt disponible":"Archivé";
+            const disabled = premier.statut!=="disponible";
             return `
-            <div class="p-carrousel-wrap" id="${id}" data-carousel>
+            <div class="p-carrousel-wrap">
                 <div class="p-carrousel-vignettes">
-                    ${slides.map((s,idx)=>`
-                        <button type="button" class="p-vignette" data-slide="${idx}" aria-label="Afficher ${esc(s.nom||"Sans nom")}">
+                    ${slides.map(s=>`
+                        <div class="p-vignette">
                             ${s.image?`<img src="${esc(s.image)}" onerror="this.style.display='none'">`:`<div class="p-vignette-vide"></div>`}
                             <span>${esc(s.nom||"Sans nom")}</span>
-                        </button>`).join("")}
+                        </div>`).join("")}
                 </div>
                 <div class="p-carrousel-slide">
-                    <button type="button" class="p-carrousel-fleche" data-prev aria-label="Précédent">&lsaquo;</button>
-                    <div class="p-carrousel-texte" data-carousel-text></div>
-                    <div class="p-carrousel-image" data-carousel-image></div>
-                    <button type="button" class="p-carrousel-fleche" data-next aria-label="Suivant">&rsaquo;</button>
+                    <button class="p-carrousel-fleche" aria-hidden="true">&lsaquo;</button>
+                    <div class="p-carrousel-texte">
+                        <h3>${esc(premier.nom||"Titre")}</h3>
+                        ${versHTMLCorps(premier.description||"Description à venir.")}
+                        <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
+                    </div>
+                    <div class="p-carrousel-image">
+                        ${premier.image?`<img src="${esc(premier.image)}" onerror="this.style.display='none'">`:""}
+                    </div>
+                    <button class="p-carrousel-fleche" aria-hidden="true">&rsaquo;</button>
                 </div>
                 <div class="p-carrousel-dots">
-                    ${slides.map((s,idx)=>`<button type="button" class="p-dot ${idx===0?"active":""}" data-slide="${idx}" aria-label="Aller au supplément ${idx+1}"></button>`).join("")}
+                    ${slides.map((s,idx)=>`<span class="p-dot ${idx===0?"active":""}"></span>`).join("")}
                 </div>
-            </div>
-            <script>
-            (() => {
-                const root = document.getElementById("${id}");
-                if (!root) return;
-                const slides = ${JSON.stringify(slides)};
-                let index = 0;
-                const text = root.querySelector("[data-carousel-text]");
-                const image = root.querySelector("[data-carousel-image]");
-                const buttons = [...root.querySelectorAll("[data-slide]")];
-
-                function render() {
-                    const s = slides[index];
-                    const label = s.statut === "disponible" ? "Télécharger" : s.statut === "bientot" ? "Bientôt disponible" : "Archivé";
-                    const disabled = s.statut !== "disponible";
-                    const description = s.description || "Description à venir.";
-                    text.innerHTML =
-                        "<h3>" + escapeHtml(s.nom || "Titre") + "</h3>" +
-                        htmlBody(description) +
-                        (disabled
-                            ? '<span class="button disabled">' + escapeHtml(label) + '</span>'
-                            : '<a class="button" href="' + escapeAttr(s.lien || "#") + '">' + escapeHtml(label) + '</a>');
-                    image.innerHTML = s.image
-                        ? '<img src="' + escapeAttr(s.image) + '" alt="' + escapeAttr(s.nom || "") + '">'
-                        : "";
-                    root.querySelectorAll(".p-dot").forEach((d,i)=>d.classList.toggle("active", i===index));
-                    root.querySelectorAll(".p-vignette").forEach((d,i)=>d.classList.toggle("active", i===index));
-                }
-                function escapeHtml(v) {
-                    return String(v ?? "").replace(/[&<>"']/g, m => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[m]));
-                }
-                function escapeAttr(v) { return escapeHtml(v); }
-                function htmlBody(v) {
-                    const str = String(v ?? "");
-                    if (/<[a-z][\s\S]*>/i.test(str)) return str;
-                    return str.split(/\\n\\s*\\n/).filter(p=>p.trim()).map(p=>"<p>"+escapeHtml(p.trim())+"</p>").join("");
-                }
-                function go(n) {
-                    index = (n + slides.length) % slides.length;
-                    render();
-                }
-                root.querySelector("[data-prev]").addEventListener("click", () => go(index - 1));
-                root.querySelector("[data-next]").addEventListener("click", () => go(index + 1));
-                buttons.forEach(btn => btn.addEventListener("click", () => go(Number(btn.dataset.slide))));
-                render();
-            })();
-            </script>`;
+                ${slides.length>1?`<div class="preview-empty" style="padding:4px 0 0">Aperçu du 1er supplément — ${slides.length} au total dans le carrousel.</div>`:""}
+            </div>`;
         }
     },
 
@@ -1143,7 +1106,7 @@ nav.retour a:hover { text-decoration: underline; }
 .p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
 .p-carrousel-image { width: 200px; flex-shrink: 0; }
 .p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
-.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: pointer; padding: 0 6px; } .p-vignette, .p-dot { cursor: pointer; } .p-vignette { background: transparent; border: 0; padding: 0; color: inherit; } .p-vignette.active span { text-decoration: underline; }
+.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: default; padding: 0 6px; }
 .p-carrousel-dots { display: flex; gap: 6px; }
 .p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; }
 .p-dot.active { background: #56442d; }
