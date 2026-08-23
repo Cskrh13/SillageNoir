@@ -192,7 +192,7 @@ textarea { min-height: 80px; resize: vertical; }
 
 .p-carrousel-wrap { width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .p-carrousel-vignettes { display: flex; gap: 10px; background: var(--bleu-noir); border: 1px solid var(--ligne); padding: 12px; width: 100%; justify-content: center; flex-wrap: wrap; }
-.p-vignette { width: 70px; text-align: center; }
+.p-vignette { width: 70px; text-align: center; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; }
 .p-vignette img, .p-vignette-vide { width: 100%; height: 60px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
 .p-vignette span { display: block; margin-top: 5px; font-size: 10px; color: var(--texte-clair); text-transform: uppercase; letter-spacing: .5px; }
 .p-carrousel-slide {
@@ -204,9 +204,9 @@ textarea { min-height: 80px; resize: vertical; }
 .p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
 .p-carrousel-image { width: 200px; flex-shrink: 0; }
 .p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
-.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: default; padding: 0 6px; }
+.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: pointer; padding: 0 6px; }
 .p-carrousel-dots { display: flex; gap: 6px; }
-.p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; }
+.p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; border: 0; padding: 0; cursor: pointer; }
 .p-dot.active { background: #56442d; }
 @media(max-width: 650px) { .p-carrousel-slide { flex-direction: column; } }
 
@@ -327,7 +327,7 @@ const BLOC_TYPES = {
                 <h3>${esc(b.titre||"Actualité")}</h3>
                 ${b.sousTitre?`<p><strong>${esc(b.sousTitre)}</strong></p>`:""}
                 ${versHTMLCorps(b.texte||"")}
-                ${b.lien?`<a class="button">${esc(b.boutonLabel||"Télécharger")}</a>`:""}
+                ${b.lien?`<a class="button" href="${esc(b.lien)}">${esc(b.boutonLabel||"Télécharger")}</a>`:""}
             </div>`
     },
 
@@ -426,7 +426,7 @@ const BLOC_TYPES = {
                             <h3>${esc(c.nom||"Titre")}</h3>
                             ${c.image?`<img class="card-carte-image" src="${esc(c.image)}" onerror="this.style.display='none'">`:""}
                             ${versHTMLCorps(c.description||"Description à venir.")}
-                            <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
+                            ${disabled ? `<span class="button disabled">${esc(boutonLabel)}</span>` : (c.lien ? `<a class="button" href="${esc(c.lien)}">${esc(boutonLabel)}</a>` : `<span class="button disabled">${esc(boutonLabel)}</span>`)}
                         </article>`;
                     }).join("") : `<div class="preview-empty">Aucune carte.</div>`}
                 </div>
@@ -518,34 +518,24 @@ const BLOC_TYPES = {
         preview: b => {
             const slides = b.slides||[];
             if(!slides.length) return `<div class="p-carrousel-wrap"><div class="preview-empty">Aucun supplément dans le carrousel.</div></div>`;
-            const premier = slides[0];
-            const boutonLabel = premier.statut==="disponible"?"Télécharger":premier.statut==="bientot"?"Bientôt disponible":"Archivé";
-            const disabled = premier.statut!=="disponible";
             return `
-            <div class="p-carrousel-wrap">
+            <div class="p-carrousel-wrap" data-carousel data-slides="${esc(JSON.stringify(slides))}">
                 <div class="p-carrousel-vignettes">
-                    ${slides.map(s=>`
-                        <div class="p-vignette">
+                    ${slides.map((s,idx)=>`
+                        <button type="button" class="p-vignette" data-carousel-slide="${idx}">
                             ${s.image?`<img src="${esc(s.image)}" onerror="this.style.display='none'">`:`<div class="p-vignette-vide"></div>`}
                             <span>${esc(s.nom||"Sans nom")}</span>
-                        </div>`).join("")}
+                        </button>`).join("")}
                 </div>
                 <div class="p-carrousel-slide">
-                    <button class="p-carrousel-fleche" aria-hidden="true">&lsaquo;</button>
-                    <div class="p-carrousel-texte">
-                        <h3>${esc(premier.nom||"Titre")}</h3>
-                        ${versHTMLCorps(premier.description||"Description à venir.")}
-                        <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
-                    </div>
-                    <div class="p-carrousel-image">
-                        ${premier.image?`<img src="${esc(premier.image)}" onerror="this.style.display='none'">`:""}
-                    </div>
-                    <button class="p-carrousel-fleche" aria-hidden="true">&rsaquo;</button>
+                    <button type="button" class="p-carrousel-fleche" data-carousel-prev aria-label="Précédent">&lsaquo;</button>
+                    <div class="p-carrousel-texte" data-carousel-text></div>
+                    <div class="p-carrousel-image" data-carousel-image></div>
+                    <button type="button" class="p-carrousel-fleche" data-carousel-next aria-label="Suivant">&rsaquo;</button>
                 </div>
                 <div class="p-carrousel-dots">
-                    ${slides.map((s,idx)=>`<span class="p-dot ${idx===0?"active":""}"></span>`).join("")}
+                    ${slides.map((s,idx)=>`<button type="button" class="p-dot ${idx===0?"active":""}" data-carousel-slide="${idx}" aria-label="Aller au supplément ${idx+1}"></button>`).join("")}
                 </div>
-                ${slides.length>1?`<div class="preview-empty" style="padding:4px 0 0">Aperçu du 1er supplément — ${slides.length} au total dans le carrousel.</div>`:""}
             </div>`;
         }
     },
@@ -583,7 +573,7 @@ const BLOC_TYPES = {
             <footer class="p-footer">
                 ${b.texte?versHTMLCorps(b.texte):""}
                 ${(b.liens||[]).length?`<div class="p-footer-liens">
-                    ${(b.liens||[]).map(l=>`<span class="p-footer-lien">${esc(l.label||"Lien")}</span>`).join("")}
+                    ${(b.liens||[]).map(l=>l.url?`<a class="p-footer-lien" href="${esc(l.url)}">${esc(l.label||"Lien")}</a>`:`<span class="p-footer-lien">${esc(l.label||"Lien")}</span>`).join("")}
                 </div>`:""}
             </footer>`
     }
@@ -917,6 +907,35 @@ function richColler(evenement, fieldId){
     /* sinon : collage par défaut du navigateur (texte simple). */
 }
 
+/* -------- Carrousels : initialisation commune aperçu + HTML exporté -------- */
+function initCarrousels(root=document){
+    root.querySelectorAll('[data-carousel]').forEach(carousel=>{
+        if(carousel.dataset.carouselReady === "1") return;
+        let slides=[];
+        try { slides=JSON.parse(carousel.dataset.slides || "[]"); } catch(e) { return; }
+        if(!slides.length) return;
+        carousel.dataset.carouselReady="1";
+        let index=0;
+        const text=carousel.querySelector('[data-carousel-text]');
+        const image=carousel.querySelector('[data-carousel-image]');
+        const slideButtons=[...carousel.querySelectorAll('[data-carousel-slide]')];
+        const prev=carousel.querySelector('[data-carousel-prev]');
+        const next=carousel.querySelector('[data-carousel-next]');
+        function render(){
+            const s=slides[index] || {};
+            const label=s.statut==="disponible" ? "Télécharger" : s.statut==="bientot" ? "Bientôt disponible" : "Archivé";
+            const enabled=s.statut==="disponible" && !!s.lien;
+            text.innerHTML=`<h3>${esc(s.nom||"Titre")}</h3>${versHTMLCorps(s.description||"Description à venir.")}${enabled?`<a class="button" href="${esc(s.lien)}">${esc(label)}</a>`:`<span class="button disabled">${esc(label)}</span>`}`;
+            image.innerHTML=s.image?`<img src="${esc(s.image)}" alt="${esc(s.nom||"")}" onerror="this.style.display='none'">`:"";
+            slideButtons.forEach(btn=>btn.classList.toggle('active', Number(btn.dataset.carouselSlide)===index));
+        }
+        prev?.addEventListener('click',()=>{ index=(index-1+slides.length)%slides.length; render(); });
+        next?.addEventListener('click',()=>{ index=(index+1)%slides.length; render(); });
+        slideButtons.forEach(btn=>btn.addEventListener('click',()=>{ index=Number(btn.dataset.carouselSlide)||0; render(); }));
+        render();
+    });
+}
+
 /* =========================================================
    RENDU
    ========================================================= */
@@ -974,6 +993,7 @@ function majApercu(){
         const def = BLOC_TYPES[b.type];
         return def ? def.preview(b) : "";
     }).join("");
+    initCarrousels(zone);
 }
 
 function majOutput(){
@@ -1094,7 +1114,7 @@ nav.retour a:hover { text-decoration: underline; }
 .p-fiche .fiche-section p { font-size: var(--taille-texte, 14px); line-height: 1.6; color: var(--couleur-texte, #3a352a); margin: 0; white-space: pre-wrap; font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
 .p-carrousel-wrap { width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
 .p-carrousel-vignettes { display: flex; gap: 10px; background: var(--bleu-noir); border: 1px solid var(--ligne); padding: 12px; width: 100%; justify-content: center; flex-wrap: wrap; }
-.p-vignette { width: 70px; text-align: center; }
+.p-vignette { width: 70px; text-align: center; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; }
 .p-vignette img, .p-vignette-vide { width: 100%; height: 60px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
 .p-vignette span { display: block; margin-top: 5px; font-size: 10px; color: var(--texte-clair); text-transform: uppercase; letter-spacing: .5px; }
 .p-carrousel-slide {
@@ -1106,9 +1126,9 @@ nav.retour a:hover { text-decoration: underline; }
 .p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
 .p-carrousel-image { width: 200px; flex-shrink: 0; }
 .p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
-.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: default; padding: 0 6px; }
+.p-carrousel-fleche { background: none; border: none; color: var(--texte-clair); font-size: 22px; cursor: pointer; padding: 0 6px; }
 .p-carrousel-dots { display: flex; gap: 6px; }
-.p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; }
+.p-dot { width: 8px; height: 8px; border-radius: 50%; background: #9c9278; display: inline-block; border: 0; padding: 0; cursor: pointer; }
 .p-dot.active { background: #56442d; }
 @media(max-width: 650px) { .p-carrousel-slide { flex-direction: column; } }
 .p-footer { width: 100%; max-width: 900px; padding: 22px 24px; text-align: center; background: rgba(25,32,34,.94); border: 1px solid var(--ligne); color: var(--texte-clair); }
@@ -1125,6 +1145,30 @@ nav.retour a:hover { text-decoration: underline; }
 <nav class="retour"><a href="index.html">&larr; Retour aux Archives de l'Ancien Monde</a></nav>
 ${corpsBlocs}
 </div>
+<script>
+function esc(s){return String(s??"").replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]||m;});}
+function versHTMLCorps(corps){if(!corps)return "";if(/<[a-z][\s\S]*>/i.test(corps))return corps;return corps.split(/\n\s*\n/).filter(function(p){return p.trim();}).map(function(p){return "<p>"+esc(p.trim())+"</p>";}).join("");}
+function initCarrousels(root){
+ root=root||document;
+ root.querySelectorAll('[data-carousel]').forEach(function(carousel){
+  if(carousel.dataset.carouselReady==='1')return;
+  var slides=[];try{slides=JSON.parse(carousel.dataset.slides||"[]");}catch(e){return;} if(!slides.length)return;
+  carousel.dataset.carouselReady='1';var index=0;
+  var text=carousel.querySelector('[data-carousel-text]'),image=carousel.querySelector('[data-carousel-image]');
+  var buttons=Array.prototype.slice.call(carousel.querySelectorAll('[data-carousel-slide]')),prev=carousel.querySelector('[data-carousel-prev]'),next=carousel.querySelector('[data-carousel-next]');
+  function render(){
+   var s=slides[index]||{},label=s.statut==='disponible'?'Télécharger':s.statut==='bientot'?'Bientôt disponible':'Archivé',enabled=s.statut==='disponible'&&!!s.lien;
+   text.innerHTML='<h3>'+esc(s.nom||'Titre')+'</h3>'+versHTMLCorps(s.description||'Description à venir.')+(enabled?'<a class="button" href="'+esc(s.lien)+'">'+esc(label)+'</a>':'<span class="button disabled">'+esc(label)+'</span>');
+   image.innerHTML=s.image?'<img src="'+esc(s.image)+'" alt="'+esc(s.nom||'')+'">':'';
+   buttons.forEach(function(b){b.classList.toggle('active',Number(b.dataset.carouselSlide)===index);});
+  }
+  if(prev)prev.addEventListener('click',function(){index=(index-1+slides.length)%slides.length;render();});
+  if(next)next.addEventListener('click',function(){index=(index+1)%slides.length;render();});
+  buttons.forEach(function(b){b.addEventListener('click',function(){index=Number(b.dataset.carouselSlide)||0;render();});});render();
+ });
+}
+initCarrousels();
+<\/script>
 </body>
 </html>`;
 }
@@ -1134,10 +1178,11 @@ function exporterHTML(){
     const html = genererPageHTML();
     const blob = new Blob([html], {type:"text/html"});
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
+    a.href = url;
     a.download = (page.id || "page") + ".html";
     a.click();
-    URL.revokeObjectURL(a.href);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
     status(`Fichier téléchargé : ${a.download} — page HTML autonome, prête à déposer sur le site.`);
 }
 
