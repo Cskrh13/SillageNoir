@@ -187,8 +187,7 @@
       "equipment": [
         "Arme de base",
         "Armure lourde",
-        "Fouet des Lamentations",
-        "Cape en peau de dragon des mers"
+        "Fouet des Lamentations"
       ],
       "options": [
         {
@@ -205,6 +204,14 @@
           "name": "Manticore",
           "points": 130,
           "mountRef": "manticore-mount"
+        },
+        {
+          "name": "Cape en peau de Dragon des Mers",
+          "points": 4
+        },
+        {
+          "name": "Bouclier",
+          "points": 2
         }
       ],
       "rules": [
@@ -269,7 +276,10 @@
         "Meurtriers",
         "Couvent du Sillage Noir",
         "Sacrifice rituel"
-      ]
+      ],
+      "wizard": {
+        "lores": ["Domaine de Naggaroth", "Domaine de l'Agonie"]
+      }
     },
     {
       "id": "esclaves",
@@ -320,7 +330,8 @@
         {
           "name": "Fouet barbelé pour le Contremaître",
           "points": 2
-        }
+        },
+        "Contremaître : objets magiques jusqu'à 25 pts"
       ],
       "rules": [
         "Tirailleurs",
