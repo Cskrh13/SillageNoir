@@ -44,7 +44,66 @@ header h1 {
     font-size: clamp(22px, 3.4vw, 34px); letter-spacing: 4px; color: var(--parchemin-clair);
 }
 header p { margin: 8px 0 0; color: var(--argent); letter-spacing: 1.5px; font-size: 12.5px; }
+/* TON CSS EXISTANT */
 
+
+/* ==========================
+   NAVIGATION INDEXA
+========================== */
+
+.indexa-nav{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+
+    margin:0 auto 24px;
+    padding:12px 18px;
+
+    background:rgba(231,222,199,.96);
+    border:1px solid var(--ligne);
+    box-shadow:0 4px 14px var(--ombre);
+}
+
+.indexa-nav-links{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:5px;
+}
+
+.indexa-nav-links a{
+    padding:8px 11px;
+
+    font-family:"Cinzel",Georgia,serif;
+    font-size:9px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+
+    color:var(--brun);
+    text-decoration:none;
+
+    border:1px solid transparent;
+}
+
+.indexa-nav-links a:hover{
+    background:rgba(214,201,170,.65);
+}
+
+.indexa-nav-separator{
+    width:1px;
+    height:22px;
+    margin:0 5px;
+    background:var(--ligne);
+}
+
+.indexa-nav-public{
+    background:var(--noir);
+    color:#e9dfc5 !important;
+    border:1px solid #76664d !important;
+}
 /* -------- Barre de saisie -------- */
 .bar {
     position: relative; z-index: 5;
@@ -136,67 +195,7 @@ header p { margin: 8px 0 0; color: var(--argent); letter-spacing: 1.5px; font-si
     .filecard { left: 12px; right: 12px; width: auto; top: auto; bottom: 12px; }
     .legend { display: none !important; }
     
-}/* TON CSS EXISTANT */
-
-
-/* ==========================
-   NAVIGATION INDEXA
-========================== */
-
-.indexa-nav{
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:18px;
-
-    margin:0 auto 24px;
-    padding:12px 18px;
-
-    background:rgba(231,222,199,.96);
-    border:1px solid var(--ligne);
-    box-shadow:0 4px 14px var(--ombre);
-}
-
-.indexa-nav-links{
-    display:flex;
-    align-items:center;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:5px;
-}
-
-.indexa-nav-links a{
-    padding:8px 11px;
-
-    font-family:"Cinzel",Georgia,serif;
-    font-size:9px;
-    letter-spacing:1px;
-    text-transform:uppercase;
-
-    color:var(--brun);
-    text-decoration:none;
-
-    border:1px solid transparent;
-}
-
-.indexa-nav-links a:hover{
-    background:rgba(214,201,170,.65);
-}
-
-.indexa-nav-separator{
-    width:1px;
-    height:22px;
-    margin:0 5px;
-    background:var(--ligne);
-}
-
-.indexa-nav-public{
-    background:var(--noir);
-    color:#e9dfc5 !important;
-    border:1px solid #76664d !important;
-}
-    
+}    
  
 </style>
 </head>
@@ -206,6 +205,8 @@ header p { margin: 8px 0 0; color: var(--argent); letter-spacing: 1.5px; font-si
     <h1>Cartographe d'Architecture</h1>
     <p>Dépôt GitHub → graphe relationnel en 3D des fichiers et de leurs liens</p>
 </header>
+
+<body>
     <main class="page">
 
     <!-- NAVIGATION INDEXA -->
@@ -229,8 +230,6 @@ header p { margin: 8px 0 0; color: var(--argent); letter-spacing: 1.5px; font-si
         </div>
 
     </nav>
-<body>
-
 
     <!-- CONTENU DE LA PAGE -->
 <div class="bar">
