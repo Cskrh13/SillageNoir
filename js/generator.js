@@ -218,6 +218,37 @@ function armyLabel(id) {
   })[id] || String(id || "").replace(/[-_]/g," ").replace(/\b\w/g,m=>m.toUpperCase());
 }
 
+// Normalise les accents pour une comparaison de mots-clés fiable (évite les
+// faux négatifs du type "pégase" vs "pegase" recherché sans accent).
+function foldAccents(s) {
+  return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Motifs qui désignent une "fausse monture" : le mot "dragon" (ou autre
+// mot-clé de monture) apparaît dans le nom sans qu'il s'agisse réellement
+// d'une monture — ex. une pièce d'équipement fabriquée à partir d'une
+// créature ("Cape en peau de Dragon des Mers"), pas la créature elle-même
+// montée au combat. Testé avant la détection générique de monture.
+const NON_MOUNT_ITEM_RE = /\b(cape|manteau|peau|cuir|ecaille|écaille|trophee|trophée)\b.*\bdragon/;
+
+// Poisons de l'Assassin Khainite (et tout autre personnage à qui un
+// supplément proposerait un choix de poison) : un seul poison peut être
+// appliqué à la fois — ce n'est pas une liste d'options cumulables comme
+// les armes. Détectés par nom plutôt que par mot-clé générique, car seul
+// "Poison des Cales Noires" contient littéralement le mot "poison".
+const KNOWN_POISON_NAMES = ["lotus noir", "venin noir", "manbane", "poison des cales noires", "venin de la mer rouge"];
+function isKnownPoisonName(name) {
+  const s = foldAccents(String(name).toLocaleLowerCase("fr"));
+  return KNOWN_POISON_NAMES.some(p => s.includes(foldAccents(p)));
+}
+
+// Chef d'unité (Champion / Contremaître / Sentinelle / Héraut / promotion) :
+// ne matche QUE quand le nom désigne le chef lui-même — en tête de nom, ou
+// via la formule "promouvoir" / "chef d'unité" — jamais quand le mot
+// apparaît en complément d'un autre objet ("Fouet barbelé pour le
+// Contremaître" est une arme, pas la promotion elle-même).
+const CHAMPION_NAME_RE = /^(champion|contremaitre|sentinelle|heraut|maitre)\b|\bpromouvoir\b|\bchef d'unite\b/;
+
 function normalizeOption(raw, kindOverride) {
   if (raw == null) return null;
 
@@ -262,15 +293,29 @@ function normalizeOption(raw, kindOverride) {
 }
 
 function inferOptionKind(name) {
-  const s = String(name).toLocaleLowerCase("fr");
-  if (s.includes("bannière") || s.includes("banniere") || s.includes("étendard") || s.includes("etendard")) return "banner";
-  if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) return "mount";
+  const raw = String(name).toLocaleLowerCase("fr");
+  const s = foldAccents(raw);
+  if (s.includes("banniere") || s.includes("etendard")) return "banner";
+  if (isKnownPoisonName(name)) return "poison";
+  if (NON_MOUNT_ITEM_RE.test(s)) {
+    // ex. "Cape en peau de Dragon des Mers" : c'est un vêtement, pas une
+    // monture — on laisse la détection continuer (armure/autre) plutôt que
+    // de la classer "mount" à cause du seul mot "dragon".
+  } else if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) {
+    return "mount";
+  }
+  // Chef d'unité (Champion, Contremaître, Sentinelle, Héraut…) : détecté
+  // seulement quand le nom DÉSIGNE le chef lui-même (en début de nom, ou
+  // via "promouvoir"/"chef d'unité"), jamais quand le mot apparaît en
+  // complément d'un autre objet — ex. "Fouet barbelé pour le Contremaître"
+  // est une arme, pas la promotion elle-même, malgré le mot "Contremaître".
+  if (CHAMPION_NAME_RE.test(s)) return "champion";
   // Bouclier séparé de l'armure : un personnage peut porter les deux à la
   // fois (un seul profil d'armure ET un seul bouclier, chacun via son
   // propre menu déroulant — voir renderCharacterOptions).
   if (s.includes("bouclier")) return "shield";
-  if (s.includes("armure") || s.includes("heaume")) return "armour";
-  if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("épée") || s.includes("epee") || s.includes("arc") || s.includes("arbalète") || s.includes("arbalete") || s.includes("poing")) return "weapon";
+  if (s.includes("armure") || s.includes("heaume") || (s.includes("cape") && s.includes("peau"))) return "armour";
+  if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("epee") || s.includes("arc") || s.includes("arbalete") || s.includes("poing") || s.includes("fouet")) return "weapon";
   return "other";
 }
 
@@ -288,7 +333,7 @@ function normalizeTextList(raw) {
 function normalizeUnit(u, fallbackId = "", mounts = []) {
   if (!u || typeof u !== "object") return null;
   const points = u.points ?? u.cost ?? u.cout;
-  const { options, magicItemsLimit, bannerItemsLimit, championWeaponLimit } = classifyUnitOptions(u.options, mounts);
+  const { options, magicItemsLimit, bannerItemsLimit, championWeaponLimit, championMagicItemsLimit } = classifyUnitOptions(u.options, mounts);
 
   // Règles spéciales optionnelles / honneurs (choisissables), distinctes des
   // règles spéciales natives (fixes, toujours actives).
@@ -349,6 +394,7 @@ function normalizeUnit(u, fallbackId = "", mounts = []) {
     magicItemsLimit: u.magicItemsLimit != null ? Number(u.magicItemsLimit) : magicItemsLimit,
     bannerItemsLimit: u.bannerItemsLimit != null ? Number(u.bannerItemsLimit) : bannerItemsLimit,
     championWeaponLimit: u.championWeaponLimit != null ? Number(u.championWeaponLimit) : championWeaponLimit,
+    championMagicItemsLimit: u.championMagicItemsLimit != null ? Number(u.championMagicItemsLimit) : championMagicItemsLimit,
     source: u.source || "armée",
     unitSize: u.unitSize || "",
     minSize,
@@ -415,6 +461,13 @@ function matchMountProfile(name, mounts) {
 const MAGIC_ITEMS_LIMIT_RE = /^objets?\s+magiques?\s+jusqu[’']?à\s*(\d+)\s*pts?/i;
 const MAGIC_BANNER_LIMIT_RE = /^bannière\s+magique\s+jusqu[’']?à\s*(\d+)\s*pts?/i;
 const MAGIC_WEAPON_LIMIT_RE = /arme\s+magique\s+jusqu[’']?à\s*(\d+)\s*pts?/i;
+// Budget d'objets magiques réservé au chef d'unité, générique : reconnaît
+// n'importe quelle formule "<Nom du chef> : objets magiques jusqu'à X pts"
+// (ex. "Maître de la Tour : objets magiques jusqu'à 50 pts", "Contremaître :
+// objets magiques jusqu'à 25 pts") sans coder le nom du chef en dur. Dès
+// qu'un supplément ajoute cette phrase à une unité, son chef y a
+// automatiquement accès une fois sélectionné (voir renderChampionMagicItemsSelector).
+const MAGIC_CHAMPION_ITEMS_LIMIT_RE = /:\s*objets?\s+magiques?\s+jusqu[’']?à\s*(\d+)\s*pts?/i;
 
 // Transforme le tableau brut d'options d'une unité en :
 //  - une liste d'options normalisées réellement sélectionnables ;
@@ -425,7 +478,7 @@ const MAGIC_WEAPON_LIMIT_RE = /arme\s+magique\s+jusqu[’']?à\s*(\d+)\s*pts?/i;
 //    l'option à coût fixe placée juste avant "Porte-étendard".
 function classifyUnitOptions(rawList, mounts) {
   const rawArr = Array.isArray(rawList) ? rawList : [];
-  let magicItemsLimit = null, bannerItemsLimit = null, championWeaponLimit = null;
+  let magicItemsLimit = null, bannerItemsLimit = null, championWeaponLimit = null, championMagicItemsLimit = null;
   const standardIndex = rawArr.findIndex(r => typeof r === "string" && /^porte-?[ée]tendard/i.test(r.trim()));
   const options = [];
 
@@ -446,6 +499,11 @@ function classifyUnitOptions(rawList, mounts) {
 
     const weaponMatch = text.match(MAGIC_WEAPON_LIMIT_RE);
     if (weaponMatch) { championWeaponLimit = Number(weaponMatch[1]); return; }
+
+    // "<Nom du chef> : objets magiques jusqu'à X pts" — budget générique du
+    // chef d'unité, quel que soit son nom (voir MAGIC_CHAMPION_ITEMS_LIMIT_RE).
+    const championMagicMatch = text.match(MAGIC_CHAMPION_ITEMS_LIMIT_RE);
+    if (championMagicMatch) { championMagicItemsLimit = Number(championMagicMatch[1]); return; }
 
     let forcedKind = null;
     if (/^porte-?[ée]tendard/i.test(text)) forcedKind = "standard";
@@ -478,7 +536,7 @@ function classifyUnitOptions(rawList, mounts) {
     options.push(option);
   });
 
-  return { options, magicItemsLimit, bannerItemsLimit, championWeaponLimit };
+  return { options, magicItemsLimit, bannerItemsLimit, championWeaponLimit, championMagicItemsLimit };
 }
 
 
@@ -541,11 +599,31 @@ async function loadMagicItems(armyId, supplementId) {
       armyId ? getJSON(base + armyId + ".json").catch(() => null) : Promise.resolve(null),
       (supplementId && supplementId !== armyId) ? getJSON(base + supplementId + ".json").catch(() => null) : Promise.resolve(null)
     ]);
-    const merged = mergeMagicItems(
+    let merged = mergeMagicItems(
       normalizeMagicItems(common, "Objets magiques communs"),
       normalizeMagicItems(own, own?.source || own?.name || `Objets magiques des ${armyLabel(armyId)}`),
       normalizeMagicItems(supp, supp?.source || supp?.name || "Objets magiques du supplément")
     );
+    // Un supplément peut déclarer explicitement la liste des catalogues à
+    // fusionner (restrictions.global.magicItems.source : tableau d'ids de
+    // fichiers data/objets-magiques/<id>.json), en plus — ou à la place —
+    // de la convention armée/supplément par défaut ci-dessus. Utile quand
+    // le supplément combine plusieurs sources qui ne correspondent ni à son
+    // propre id ni à celui de l'armée (ex. un catalogue "communs" nommé
+    // différemment, ou une source tierce). Les catalogues déjà chargés
+    // (armée/supplément courants) ne sont pas re-fetchés.
+    const declaredSources = state.supplement?.restrictions?.global?.magicItems?.source;
+    if (Array.isArray(declaredSources) && declaredSources.length) {
+      const alreadyLoaded = new Set([armyId, supplementId, "communs"].filter(Boolean));
+      const extraIds = declaredSources.filter(id => id && !alreadyLoaded.has(id));
+      if (extraIds.length) {
+        const extras = await Promise.all(extraIds.map(id => getJSON(base + id + ".json").catch(() => null)));
+        extras.forEach((raw, i) => {
+          if (!raw) return;
+          merged = mergeMagicItems(merged, normalizeMagicItems(raw, raw?.source || raw?.name || `Objets magiques (${extraIds[i]})`));
+        });
+      }
+    }
     state.magicItems = Object.keys(merged).length ? merged : null;
   } catch (e) {
     // Un fichier d'objets magiques manquant n'est pas bloquant : l'armée
@@ -1447,6 +1525,23 @@ function statDisplay(value, modifier) {
 
 // Tableau de caractéristiques façon "fiche" : une ligne par figurine
 // (porteur, puis monture si sélectionnée), comme sur l'exemple fourni.
+// Retrouve une monture native déclarée au niveau armée/supplément (tableau
+// "mounts"), à partir de son id — résolu au moment de l'AFFICHAGE plutôt
+// qu'au moment du parsing des données du supplément. C'est ce qui permet
+// à une monture (ex. "Pégase Noir", mountRef: "dark-pegasus") définie dans
+// un supplément de retrouver son profil dans le catalogue de l'ARMÉE même
+// si celle-ci n'était pas encore chargée quand les unités du supplément
+// ont été normalisées (le supplément se charge avant l'armée).
+function findMountById(id) {
+  if (!id) return null;
+  const pools = [state.army?.mounts, state.supplement?.mounts];
+  for (const pool of pools) {
+    const found = (pool || []).find(m => m.id === id);
+    if (found) return found;
+  }
+  return null;
+}
+
 function renderStatsTable(entry, unit) {
   const data = effectiveProfile(entry, unit);
   const profile = data.profile || {};
@@ -1454,20 +1549,31 @@ function renderStatsTable(entry, unit) {
   if (!hasProfile) return "";
 
   const mount = selectedMount(entry, unit);
-  const mountProfile = mount ? profileForOption(mount) : null;
+  // Si l'option de monture porte un mountRef explicite (ex. "Pégase Noir" →
+  // "dark-pegasus"), on résout son profil en direct dans le catalogue de
+  // montures actuellement chargé plutôt que de se fier au profil figé au
+  // moment du parsing (souvent vide pour les unités propres à un
+  // supplément — voir findMountById ci-dessus).
+  const mountProfile = mount ? (mount.mountRef ? findMountById(mount.mountRef)?.profile || null : profileForOption(mount)) : null;
 
   // Le chef d'unité (Sentinelle, Gardien, Héraut…) affiche sa propre ligne
   // de caractéristiques uniquement si l'unité fournit un profil dédié
   // (championProfile) et que l'option correspondante est cochée.
   const champion = selectedOptionOfKind(entry, unit, "champion");
-  const championProfile = champion ? normalizeProfile(unit.championProfile) : null;
+  // championProfile peut être fourni à plat ({M,CC,...}) ou imbriqué sous
+  // .profile ({name, points, profile:{M,CC,...}}) selon les fichiers de
+  // données — on accepte les deux formats plutôt que de silencieusement
+  // renvoyer null pour le second.
+  const championProfile = champion ? normalizeProfile(unit.championProfile?.profile || unit.championProfile) : null;
+  const championLabel = (champion && unit.championProfile && typeof unit.championProfile === "object" && unit.championProfile.name)
+    ? unit.championProfile.name : champion?.name;
 
   const rows = [`<tr><td class="stat-row-name">${esc(unit.name)}</td>${STAT_KEYS.map(k => `<td>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</td>`).join("")}</tr>`];
 
   // La ligne du chef n'apparaît que si l'option est cochée et qu'un profil
   // dédié existe dans les données.
   if (champion && championProfile) {
-    rows.push(`<tr><td class="stat-row-name">${esc(champion.name)}</td>${STAT_KEYS.map(k => `<td>${esc(championProfile[k] ?? "-")}</td>`).join("")}</tr>`);
+    rows.push(`<tr><td class="stat-row-name">${esc(championLabel)}</td>${STAT_KEYS.map(k => `<td>${esc(championProfile[k] ?? "-")}</td>`).join("")}</tr>`);
   }
 
   // La ligne de la monture n'apparaît que si une monture est sélectionnée.
@@ -1533,7 +1639,7 @@ function renderNativeRules(entry, unit) {
 }
 
 function optionGroups(entry, u) {
-  const result = { banner:[], mount:[], weapon:[], armour:[], shield:[], champion:[], standard:[], musician:[], other:[] };
+  const result = { banner:[], mount:[], weapon:[], armour:[], shield:[], champion:[], standard:[], musician:[], poison:[], other:[] };
   effectiveOptions(entry, u).forEach(o => (result[o.kind] || result.other).push(o));
   // Un Mage ou un Archimage (ou tout personnage devenu Sorcier via un
   // Honneur Elfique) ne peut pas porter d'armure ou de bouclier mondain —
@@ -1573,7 +1679,15 @@ function allowedHonours() {
   const restr = state.supplement?.restrictions?.honours || {};
   const allowed = Array.isArray(restr.allowed) ? restr.allowed : null;
   const excluded = new Set(Array.isArray(restr.excluded) ? restr.excluded : []);
-  return all.filter(h => (!allowed || allowed.includes(h.id)) && !excluded.has(h.id));
+  const armyId = state.army?.id || null;
+  return all.filter(h => {
+    if (allowed && !allowed.includes(h.id)) return false;
+    if (excluded.has(h.id)) return false;
+    if (!allowed && Array.isArray(h.armies) && h.armies.length && armyId) {
+      if (!h.armies.includes(armyId)) return false;
+    }
+    return true;
+  });
 }
 
 // Identifiants d'objets magiques déjà pris par d'autres entrées de la liste.
@@ -1623,7 +1737,7 @@ function renderCharacterOptions(entry, u) {
   const groups = optionGroups(entry, u);
   const label = u.category === "Personnages" ? "Options de personnage" : "Options de l'unité";
   const commandOptions = [...groups.champion, ...groups.standard, ...groups.musician];
-  const hasAny = commandOptions.length || groups.banner.length || groups.weapon.length || groups.armour.length || groups.shield.length || groups.other.length;
+  const hasAny = commandOptions.length || groups.banner.length || groups.weapon.length || groups.armour.length || groups.shield.length || groups.poison.length || groups.other.length;
   if (!hasAny) return "";
 
   let html = `<div class="options-box"><div class="options-title">${esc(label)}</div>`;
@@ -1654,8 +1768,8 @@ function renderCharacterOptions(entry, u) {
   // un objet magique équivalent (Armures magiques) est déjà choisi pour
   // cette entrée, il remplace l'option de personnage correspondante : le
   // menu n'est alors plus proposé.
-  const labels = { banner:"Bannière / étendard", armour:"Armure", shield:"Bouclier" };
-  ["banner","armour","shield"].forEach(kind => {
+  const labels = { banner:"Bannière / étendard", armour:"Armure", shield:"Bouclier", poison:"Poison" };
+  ["banner","armour","shield","poison"].forEach(kind => {
     const arr = groups[kind];
     const magicOverride = (kind === "armour" || kind === "shield") ? selectedMagicArmourOfKind(entry, kind) : null;
     if (magicOverride) {
@@ -1701,7 +1815,11 @@ function renderBudgetItemSelector(entry, u, { limit, category, title, excludeCat
       ? `<div class="no-options">Chargement des objets magiques…</div>`
       : "";
   }
-  const chosenAll = selectedMagicObjects(entry).filter(x => !excludeCategory || x.category !== excludeCategory);
+  // excludeCategory accepte une catégorie unique (rétro-compatibilité) ou un
+  // tableau de catégories à exclure (ex. Bannières + Armures pour un Sorcier).
+  const excluded = excludeCategory == null ? [] : (Array.isArray(excludeCategory) ? excludeCategory : [excludeCategory]);
+  const isExcluded = cat => excluded.includes(cat);
+  const chosenAll = selectedMagicObjects(entry).filter(x => !isExcluded(x.category));
   const chosen = category ? chosenAll.filter(x => x.category === category) : chosenAll;
   const unlimited = limit === Infinity;
   const used = chosen.reduce((s,x)=>s+Number(x.points||0),0);
@@ -1713,7 +1831,7 @@ function renderBudgetItemSelector(entry, u, { limit, category, title, excludeCat
   const otherEntriesUsed = usedMagicItemIds(entry.uid);
   const available = magicItemList().filter(item => {
     if (category && item.category !== category) return false;
-    if (excludeCategory && item.category === excludeCategory) return false;
+    if (isExcluded(item.category)) return false;
     if (otherEntriesUsed.has(String(item.id))) return false;
     if (chosenAll.some(c => String(c.id) === String(item.id))) return false;
     // Restriction propre à l'objet (porteur compatible ?), lue depuis ses
@@ -1773,7 +1891,10 @@ function renderBudgetItemSelector(entry, u, { limit, category, title, excludeCat
 function renderMagicItemsSelector(entry, u) {
   const limit = effectiveBudget(u, "magicItemsLimit");
   if (limit == null) return "";
-  return renderBudgetItemSelector(entry, u, { limit, category: null, title: "Objets magiques", excludeCategory: "Bannières magiques" });
+  // Un Sorcier ne peut porter ni armure mondaine ni armure magique — seule
+  // l'armure "naturelle" éventuelle de son profil reste valable.
+  const excludeCategory = isWizardUnit(u, entry) ? ["Bannières magiques", "Armures magiques"] : "Bannières magiques";
+  return renderBudgetItemSelector(entry, u, { limit, category: null, title: "Objets magiques", excludeCategory });
 }
 
 // Bannière magique du Porteur de la Grande Bannière : « en plus de son
@@ -1807,17 +1928,23 @@ function renderChampionWeaponSelector(entry, u) {
   return renderBudgetItemSelector(entry, u, { limit, category: "Armes magiques", title: "Arme magique du chef" });
 }
 
-// Budget d'objets magiques réservé au chef d'unité (Maître Maritime de la
-// Garde Maritime de Lothern : 25 pts, Maître des lames des Maîtres des
-// épées de Hoeth : 50 pts) — voir CHAMPION_MAGIC_ITEM_BUDGETS. Distinct du
-// budget normal de l'unité (ces unités n'en proposent pas), et disponible
-// uniquement si l'option de chef est cochée.
+// Budget d'objets magiques réservé au chef d'unité : générique, dérivé de
+// la phrase "<Nom du chef> : objets magiques jusqu'à X pts" présente dans
+// les données (u.championMagicItemsLimit, voir MAGIC_CHAMPION_ITEMS_LIMIT_RE) —
+// avec repli sur CHAMPION_MAGIC_ITEM_BUDGETS pour les unités historiques qui
+// n'ont pas encore cette phrase dans leurs données (Maître Maritime de la
+// Garde Maritime de Lothern, Maître des lames des Maîtres des épées de
+// Hoeth). Distinct du budget normal de l'unité, et disponible uniquement si
+// l'option de chef est cochée : dès qu'un champion est sélectionné et
+// qu'un budget existe (générique ou hérité), l'accès aux objets magiques
+// s'ouvre automatiquement, sans rien coder en dur pour chaque unité.
 function renderChampionMagicItemsSelector(entry, u) {
-  const limit = CHAMPION_MAGIC_ITEM_BUDGETS[u?.id];
+  const limit = effectiveBudget(u, "championMagicItemsLimit") ?? CHAMPION_MAGIC_ITEM_BUDGETS[u?.id] ?? null;
   if (limit == null) return "";
   const champion = selectedOptionOfKind(entry, u, "champion");
   if (!champion) return "";
-  return renderBudgetItemSelector(entry, u, { limit, category: null, title: `Objets magiques du ${champion.name}`, excludeCategory: "Bannières magiques" });
+  const excludeCategory = isWizardUnit(u, entry) ? ["Bannières magiques", "Armures magiques"] : "Bannières magiques";
+  return renderBudgetItemSelector(entry, u, { limit, category: null, title: `Objets magiques du ${champion.name}`, excludeCategory });
 }
 
 // Options de règles spéciales (règles optionnelles / honneurs proposés par
@@ -1890,15 +2017,26 @@ function renderHonourSelector(entry, u) {
 // détection générique via isWizardUnit, jamais liée au nom d'un Honneur
 // précis. Le choix est ajouté aux règles spéciales de l'entrée (voir
 // renderNativeRules) et n'affecte jamais le coût en points.
+// Domaines de magie réellement proposables pour cette entrée : ceux
+// déclarés par l'unité elle-même (u.wizard.lores, propres à son armée —
+// ex. Magie Noire/Démonologie/Naggaroth pour les Elfes Noirs), avec repli
+// sur la liste générique MAGIC_DOMAINS uniquement si l'unité n'en déclare
+// aucun (Honneur Elfique donnant un niveau de Sorcier sans lores propres).
+function domainsForUnit(u) {
+  const own = Array.isArray(u?.wizard?.lores) ? u.wizard.lores.filter(Boolean) : [];
+  return own.length ? own : MAGIC_DOMAINS;
+}
+
 function renderMagicDomainSelector(entry, u) {
   if (!isWizardUnit(u, entry)) return "";
   const current = entry.magicDomain || "";
+  const domains = domainsForUnit(u);
   return `<div class="options-box">
     <div class="options-title">Domaine de magie</div>
     <label class="option-select-label">Domaine
       <select data-select-domain="${esc(entry.uid)}">
         <option value="">Choisir…</option>
-        ${MAGIC_DOMAINS.map(d => `<option value="${esc(d)}" ${d===current?"selected":""}>${esc(d)}</option>`).join("")}
+        ${domains.map(d => `<option value="${esc(d)}" ${d===current?"selected":""}>${esc(d)}</option>`).join("")}
       </select>
     </label>
   </div>`;
