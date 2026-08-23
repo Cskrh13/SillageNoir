@@ -316,14 +316,18 @@ const BLOC_TYPES = {
             <div class="grid">
                 <div class="field"><label>Titre du bloc</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
                 <div class="field"><label>Sous-titre</label><input value="${esc(b.sousTitre)}" oninput="updateBloc(${i},'sousTitre',this.value)"></div>
-                <div class="field full"><label>Texte</label><textarea oninput="updateBloc(${i},'texte',this.value)">${esc(b.texte)}</textarea></div>
+                <div class="field full">
+                    <label>Texte</label>
+                    ${champRiche("hero_"+i, b.texte, html => { page.blocs[i].texte = html; renderListeSeule(); })}
+                </div>
                 <div class="field"><label>Lien du bouton</label><input value="${esc(b.lien)}" placeholder="https://..." oninput="updateBloc(${i},'lien',this.value)"></div>
                 <div class="field"><label>Texte du bouton</label><input value="${esc(b.boutonLabel)}" oninput="updateBloc(${i},'boutonLabel',this.value)"></div>
             </div>`,
         preview: b => `
             <div class="p-hero">
                 <h3>${esc(b.titre||"Actualité")}</h3>
-                <p>${b.sousTitre?`<strong>${esc(b.sousTitre)}</strong><br>`:""}${esc(b.texte||"")}</p>
+                ${b.sousTitre?`<p><strong>${esc(b.sousTitre)}</strong></p>`:""}
+                ${versHTMLCorps(b.texte||"")}
                 ${b.lien?`<a class="button">${esc(b.boutonLabel||"Télécharger")}</a>`:""}
             </div>`
     },
@@ -331,7 +335,8 @@ const BLOC_TYPES = {
     texte: {
         label: "Bloc texte libre",
         defaultData: () => ({ type:"texte", titre:"", corps:"", alignement:"gauche" }),
-        form: (b,i) => `
+        form: (b,i) => {
+            return `
             <div class="grid">
                 <div class="field"><label>Titre (optionnel)</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
                 <div class="field"><label>Alignement</label>
@@ -340,12 +345,16 @@ const BLOC_TYPES = {
                         <option value="centre" ${b.alignement==="centre"?"selected":""}>Centré</option>
                     </select>
                 </div>
-                <div class="field full"><label>Corps du texte (un paragraphe par ligne vide)</label><textarea style="min-height:140px" oninput="updateBloc(${i},'corps',this.value)">${esc(b.corps)}</textarea></div>
-            </div>`,
+                <div class="field full">
+                    <label>Corps du texte</label>
+                    ${champRiche("texte_"+i, b.corps, html => { page.blocs[i].corps = html; })}
+                </div>
+            </div>`;
+        },
         preview: b => `
             <div class="p-texte ${b.alignement==="centre"?"centre":""}">
                 ${b.titre?`<h3>${esc(b.titre)}</h3>`:""}
-                ${(b.corps||"").split(/\n\s*\n/).filter(p=>p.trim()).map(p=>`<p>${esc(p.trim())}</p>`).join("") || "<p>Le texte apparaîtra ici.</p>"}
+                ${versHTMLCorps(b.corps) || "<p>Le texte apparaîtra ici.</p>"}
             </div>`
     },
 
@@ -392,7 +401,10 @@ const BLOC_TYPES = {
                                     <option value="archive" ${c.statut==="archive"?"selected":""}>Archivé</option>
                                 </select>
                             </div>
-                            <div class="field full"><label>Description</label><textarea oninput="updateCarte(${i},${ci},'description',this.value)">${esc(c.description)}</textarea></div>
+                            <div class="field full">
+                                <label>Description</label>
+                                ${champRiche("carte_"+i+"_"+ci, c.description, html => { page.blocs[i].cartes[ci].description = html; })}
+                            </div>
                             <div class="field"><label>Image</label><input value="${esc(c.image)}" placeholder="images/couverture.png" oninput="updateCarte(${i},${ci},'image',this.value)"></div>
                             <div class="field"><label>Lien</label><input value="${esc(c.lien)}" oninput="updateCarte(${i},${ci},'lien',this.value)"></div>
                         </div>
@@ -410,7 +422,7 @@ const BLOC_TYPES = {
                         return `<article class="card">
                             <h3>${esc(c.nom||"Titre")}</h3>
                             ${c.image?`<img class="card-carte-image" src="${esc(c.image)}" onerror="this.style.display='none'">`:""}
-                            <p>${esc(c.description||"Description à venir.")}</p>
+                            ${versHTMLCorps(c.description||"Description à venir.")}
                             <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
                         </article>`;
                     }).join("") : `<div class="preview-empty">Aucune carte.</div>`}
@@ -425,7 +437,10 @@ const BLOC_TYPES = {
             <div class="grid">
                 <div class="field"><label>Titre</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
                 <div class="field"><label>Sous-titre</label><input value="${esc(b.sousTitre)}" oninput="updateBloc(${i},'sousTitre',this.value)"></div>
-                <div class="field full"><label>Accroche</label><textarea oninput="updateBloc(${i},'accroche',this.value)">${esc(b.accroche)}</textarea></div>
+                <div class="field full">
+                    <label>Accroche</label>
+                    ${champRiche("accroche_"+i, b.accroche, html => { page.blocs[i].accroche = html; })}
+                </div>
                 <div class="field"><label>Image</label><input value="${esc(b.image)}" placeholder="images/couverture.png" oninput="updateBloc(${i},'image',this.value)"></div>
             </div>
             <div class="sub-list">
@@ -441,7 +456,10 @@ const BLOC_TYPES = {
                             </div>
                         </div>
                         <div class="field"><label>Titre de section</label><input value="${esc(s.titreSection)}" oninput="updateSection(${i},${si},'titreSection',this.value)"></div>
-                        <div class="field"><label>Texte</label><textarea oninput="updateSection(${i},${si},'texte',this.value)">${esc(s.texte)}</textarea></div>
+                        <div class="field full">
+                            <label>Texte</label>
+                            ${champRiche("section_"+i+"_"+si, s.texte, html => { page.blocs[i].sections[si].texte = html; })}
+                        </div>
                     </div>`).join("") || `<div class="empty-hint">Aucune section pour l'instant.</div>`}
                 <button class="action small" onclick="ajouterSection(${i})">＋ Ajouter une section</button>
             </div>`,
@@ -450,11 +468,11 @@ const BLOC_TYPES = {
                 ${b.image?`<img class="fiche-image" src="${esc(b.image)}" onerror="this.style.display='none'">`:""}
                 <h2>${esc(b.titre||"Titre de la fiche")}</h2>
                 ${b.sousTitre?`<div class="sous-titre">${esc(b.sousTitre)}</div>`:""}
-                ${b.accroche?`<div class="accroche">${esc(b.accroche)}</div>`:""}
+                ${b.accroche?`<div class="accroche">${versHTMLCorps(b.accroche)}</div>`:""}
                 ${(b.sections||[]).map(s=>`
                     <div class="fiche-section">
                         <h4>${esc(s.titreSection||"Section")}</h4>
-                        <p>${esc(s.texte||"")}</p>
+                        ${versHTMLCorps(s.texte||"")}
                     </div>`).join("")}
             </div>`
     },
@@ -484,7 +502,10 @@ const BLOC_TYPES = {
                                     <option value="archive" ${s.statut==="archive"?"selected":""}>Archivé</option>
                                 </select>
                             </div>
-                            <div class="field full"><label>Description</label><textarea oninput="updateSlide(${i},${si},'description',this.value)">${esc(s.description)}</textarea></div>
+                            <div class="field full">
+                                <label>Description</label>
+                                ${champRiche("slide_"+i+"_"+si, s.description, html => { page.blocs[i].slides[si].description = html; })}
+                            </div>
                             <div class="field"><label>Image (couverture)</label><input value="${esc(s.image)}" placeholder="images/couverture.png" oninput="updateSlide(${i},${si},'image',this.value)"></div>
                             <div class="field"><label>Lien</label><input value="${esc(s.lien)}" oninput="updateSlide(${i},${si},'lien',this.value)"></div>
                         </div>
@@ -510,7 +531,7 @@ const BLOC_TYPES = {
                     <button class="p-carrousel-fleche" aria-hidden="true">&lsaquo;</button>
                     <div class="p-carrousel-texte">
                         <h3>${esc(premier.nom||"Titre")}</h3>
-                        <p>${esc(premier.description||"Description à venir.")}</p>
+                        ${versHTMLCorps(premier.description||"Description à venir.")}
                         <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
                     </div>
                     <div class="p-carrousel-image">
@@ -531,7 +552,10 @@ const BLOC_TYPES = {
         defaultData: () => ({ type:"pied-de-page", texte:"", liens:[] }),
         form: (b,i) => `
             <div class="grid">
-                <div class="field full"><label>Texte (ex. mention de copyright, note fan-made)</label><textarea oninput="updateBloc(${i},'texte',this.value)">${esc(b.texte)}</textarea></div>
+                <div class="field full">
+                    <label>Texte (ex. mention de copyright, note fan-made)</label>
+                    ${champRiche("pied_"+i, b.texte, html => { page.blocs[i].texte = html; })}
+                </div>
             </div>
             <div class="sub-list">
                 <h4>Liens (${(b.liens||[]).length})</h4>
@@ -554,7 +578,7 @@ const BLOC_TYPES = {
             </div>`,
         preview: b => `
             <footer class="p-footer">
-                ${b.texte?`<p>${esc(b.texte)}</p>`:""}
+                ${b.texte?versHTMLCorps(b.texte):""}
                 ${(b.liens||[]).length?`<div class="p-footer-liens">
                     ${(b.liens||[]).map(l=>`<span class="p-footer-lien">${esc(l.label||"Lien")}</span>`).join("")}
                 </div>`:""}
@@ -719,6 +743,132 @@ function deplacerLienPied(i,li,dir){
     [arr[li],arr[j]]=[arr[j],arr[li]]; renderEditeur(); majApercu(); majOutput();
 }
 function updateLienPied(i,li,champ,val){ page.blocs[i].liens[li][champ]=val; majApercu(); majOutput(); }
+
+/* -------- Texte enrichi (sélection partielle : police / taille / couleur / gras / italique) --------
+   Généralisé à toute "partie de texte libre" via un identifiant de champ (fieldId) unique
+   sous forme de chaîne (ex: "texte_0", "hero_2", "carte_1_3", "section_0_1"...). Chaque champ
+   riche est déclaré avec un getter/setter enregistré dans richFields au moment du rendu du
+   formulaire, ce qui permet à un seul jeu de fonctions de piloter tous les champs riches. */
+const savedRanges = {};
+const richFields = {};
+
+function versHTMLCorps(corps){
+    if(!corps) return "";
+    if(/<[a-z][\s\S]*>/i.test(corps)) return corps;
+    return corps.split(/\n\s*\n/).filter(p=>p.trim()).map(p=>`<p>${esc(p.trim())}</p>`).join("");
+}
+
+function enregistrerChampRiche(fieldId, onChange){
+    richFields[fieldId] = { onChange };
+}
+
+function champRiche(fieldId, valeur, onChange){
+    enregistrerChampRiche(fieldId, onChange);
+    const html = versHTMLCorps(valeur);
+    return `
+        <div class="rich-toolbar">
+            <select onmousedown="event.preventDefault();restaurerSelection('${fieldId}')" onchange="richPolice('${fieldId}',this.value)">
+                <option value="">Police (sélection)…</option>
+                <option value="'Vollkorn', Georgia, serif">Vollkorn</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="'Courier New', monospace">Courier New</option>
+            </select>
+            <input type="number" min="8" max="60" placeholder="Taille" style="width:80px" onmousedown="event.preventDefault();restaurerSelection('${fieldId}')" onchange="richTaille('${fieldId}',this.value)">
+            <input type="color" value="#3a352a" title="Couleur du texte sélectionné" onmousedown="restaurerSelection('${fieldId}')" onchange="richCouleur('${fieldId}',this.value)">
+            <button type="button" onmousedown="event.preventDefault()" onclick="richCommande('${fieldId}','bold')"><strong>G</strong></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="richCommande('${fieldId}','italic')"><em>I</em></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="richEffacerStyle('${fieldId}')">Effacer le style</button>
+        </div>
+        <div class="rich-editable" id="richCorps_${fieldId}" contenteditable="true"
+             onmouseup="sauvegarderSelection('${fieldId}')" onkeyup="sauvegarderSelection('${fieldId}')"
+             oninput="syncRichCorps('${fieldId}')">${html}</div>
+        <div class="rich-hint">Sélectionnez du texte dans le champ ci-dessus (y compris du texte déjà surligné/sélectionné), puis choisissez une police, une taille ou une couleur pour l'appliquer uniquement à cette sélection.</div>`;
+}
+
+function sauvegarderSelection(fieldId){
+    const div = $("richCorps_"+fieldId);
+    const sel = window.getSelection();
+    if(!sel || sel.rangeCount===0) return;
+    const range = sel.getRangeAt(0);
+    if(div && div.contains(range.commonAncestorContainer) && !range.collapsed){
+        savedRanges[fieldId] = range.cloneRange();
+    }
+}
+
+function restaurerSelection(fieldId){
+    const range = savedRanges[fieldId];
+    if(!range) return;
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+function syncRichCorps(fieldId){
+    const div = $("richCorps_"+fieldId);
+    const champ = richFields[fieldId];
+    if(!div || !champ) return;
+    champ.onChange(div.innerHTML);
+    majApercu();
+    majOutput();
+}
+
+function richCommande(fieldId, commande){
+    const div = $("richCorps_"+fieldId);
+    restaurerSelection(fieldId);
+    if(!window.getSelection().toString()){ alert("Sélectionnez d'abord du texte dans le champ à modifier."); return; }
+    div.focus();
+    document.execCommand(commande, false, null);
+    syncRichCorps(fieldId);
+}
+
+function richPolice(fieldId, police){
+    if(!police) return;
+    const div = $("richCorps_"+fieldId);
+    restaurerSelection(fieldId);
+    if(!window.getSelection().toString()){ alert("Sélectionnez d'abord du texte dans le champ à modifier."); return; }
+    div.focus();
+    document.execCommand("fontName", false, police);
+    syncRichCorps(fieldId);
+}
+
+function richCouleur(fieldId, couleur){
+    const div = $("richCorps_"+fieldId);
+    restaurerSelection(fieldId);
+    if(!window.getSelection().toString()){ alert("Sélectionnez d'abord du texte dans le champ à modifier."); return; }
+    div.focus();
+    document.execCommand("foreColor", false, couleur);
+    syncRichCorps(fieldId);
+}
+
+function richTaille(fieldId, taille){
+    if(!taille) return;
+    const div = $("richCorps_"+fieldId);
+    restaurerSelection(fieldId);
+    const sel = window.getSelection();
+    if(!sel.toString()){ alert("Sélectionnez d'abord du texte dans le champ à modifier."); return; }
+    const range = sel.getRangeAt(0);
+    const span = document.createElement("span");
+    span.style.fontSize = taille + "px";
+    try{
+        range.surroundContents(span);
+    }catch(e){
+        const contenu = range.extractContents();
+        span.appendChild(contenu);
+        range.insertNode(span);
+    }
+    syncRichCorps(fieldId);
+}
+
+function richEffacerStyle(fieldId){
+    const div = $("richCorps_"+fieldId);
+    restaurerSelection(fieldId);
+    if(!window.getSelection().toString()){ alert("Sélectionnez d'abord du texte dans le champ à modifier."); return; }
+    div.focus();
+    document.execCommand("removeFormat", false, null);
+    syncRichCorps(fieldId);
+}
 
 /* =========================================================
    RENDU
