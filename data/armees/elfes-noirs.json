@@ -152,10 +152,10 @@
         "Arbalète à répétition +6 pts",
         "Arme de poing à répétition +5 pts",
         "Paire d'armes de poing à répétition +10 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
-        "Cape en peau de Dragon des Mers +4 pts",
         "Coursier Noir +14 pts",
         "Sang-Froid +18 pts",
         "Char à Sang-Froid +125 pts",
@@ -204,10 +204,10 @@
         "Arbalète à répétition +6 pts",
         "Arme de poing à répétition +5 pts",
         "Paire d'armes de poing à répétition +10 pts",
+        "Cape en peau de Dragon des Mers +4 pts",
         "Bouclier +2 pts",
         "Armure lourde +3 pts",
         "Armure intégrale +6 pts",
-        "Cape en peau de Dragon des Mers +4 pts",
         "Coursier Noir +14 pts",
         "Sang-Froid +18 pts",
         "Char à Sang-Froid +125 pts",
@@ -373,7 +373,7 @@
     },
     {
       "id": "death-hag",
-      "name": "Hag de Khaine",
+      "name": "Grande Matriarche de Khaine",
       "category": "Personnages",
       "points": 70,
       "min": 0,
@@ -414,7 +414,7 @@
     },
     {
       "id": "khainite-assassin",
-      "name": "Assassin Khainite",
+      "name": "Assassin",
       "category": "Personnages",
       "points": 80,
       "min": 0,
@@ -481,7 +481,7 @@
         "Boucliers"
       ],
       "options": [
-        "Champion +5 pts",
+        "Nobliau +5 pts",
         "Porte-étendard +5 pts",
         "Musicien +5 pts",
         "Lances d'estoc +1 pt/modèle",
@@ -492,7 +492,19 @@
         "Réflexes elfiques",
         "Haine (Hauts-Elfes)",
         "Maîtrise martiale"
-      ]
+      ],
+      "championProfile": {
+        "name": "Nobliau",
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 2,
+        "Cd": 8
+      }
     },
     {
       "id": "repeater-crossbowmen",
@@ -521,7 +533,7 @@
         "Armure légère"
       ],
       "options": [
-        "Champion +5 pts",
+        "Noblion +5 pts",
         "Porte-étendard +5 pts",
         "Musicien +5 pts",
         "Boucliers +1 pt/modèle",
@@ -532,7 +544,19 @@
         "Réflexes elfiques",
         "Haine (Hauts-Elfes)",
         "Maîtrise martiale"
-      ]
+      ],
+      "championProfile": {
+        "name": "Noblion",
+        "M": 5,
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      }
     },
     {
       "id": "black-ark-corsairs",
@@ -561,7 +585,7 @@
       ],
       "options": [
         "Armes de base additionnelles gratuites ou armes de poing à répétition gratuites",
-        "Reaver +6 pts",
+        "Saccageur +6 pts",
         "Porte-étendard +6 pts",
         "Musicien +6 pts",
         "Bannière magique jusqu'à 50 pts"
@@ -572,7 +596,19 @@
         "Progression à travers les terrains",
         "Ordre ouvert",
         "Cape en peau de Dragon des Mers"
-      ]
+      ],
+       "championProfile": {
+        "name": "Saccageur",
+        "M": 5,
+        "CC": 4,
+        "CT": 5,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 4,
+        "A": 1,
+        "Cd": 8
+      }
     },
     {
       "id": "dark-riders",
@@ -657,7 +693,7 @@
         "Deux armes de base"
       ],
       "options": [
-        "Hag +7 pts",
+        "Matriarche +7 pts",
         "Porte-étendard +7 pts",
         "Musicien +7 pts",
         "Bannière magique jusqu'à 50 pts"
@@ -674,7 +710,7 @@
       ],
       "restriction": "0-1 unité si l'armée contient au moins une Hag de Khaine ; elle est alors une unité de Base.",
       "championProfile": {
-        "name": "Hag",
+        "name": "Matriarche",
         "M": 5,
         "CC": 5,
         "CT": 4,
@@ -826,8 +862,8 @@
         "Armes de base additionnelles +1 pt/modèle",
         "Armes lourdes +2 pts/modèle",
         "Armure légère +1 pt/modèle",
-        "Bloodshade +6 pts",
-        "Bloodshade : objets magiques jusqu'à 25 pts",
+        "Ombre-de-Sang +6 pts",
+        "Ombre-de-Sang : objets magiques jusqu'à 25 pts",
         "Embuscade +1 pt/modèle (0-1)",
         "Coureurs de chars +1 pt/modèle (0-1)",
         "Vétérans +1 pt/modèle (0-1)"
@@ -839,7 +875,20 @@
         "Progression à travers les terrains",
         "Éclaireurs",
         "Tirailleurs"
-      ]
+      ],
+       "championProfile": {
+        "name": "Ombre-de-Sang",
+        "M": 5,
+        "CC": 5,
+        "CT": 6,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 1,
+        "Cd": 8
+      }
+      
     },
     {
       "id": "sisters-of-slaughter",
@@ -867,7 +916,7 @@
         "Fouet et bouclier"
       ],
       "options": [
-        "Hag +7 pts",
+        "Matriarche +7 pts",
         "Porte-étendard +7 pts",
         "Musicien +7 pts",
         "Bannière magique jusqu'à 50 pts"
@@ -880,7 +929,19 @@
         "Solitaire",
         "Meurtrières",
         "Ordre ouvert"
-      ]
+      ],
+       "championProfile": {
+        "name": "Matriarche",
+        "M": 5,
+        "CC": 5,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 6,
+        "A": 3,
+        "Cd": 9
+      }
     },
     {
       "id": "harpies",
@@ -943,7 +1004,7 @@
         "Sang-Froids"
       ],
       "options": [
-        "Chevalier Dread +7 pts",
+        "Chevalier de l'Effroi +7 pts",
         "Porte-étendard +7 pts",
         "Musicien +7 pts",
         "Bannière magique jusqu'à 50 pts",
@@ -964,7 +1025,7 @@
       "restriction": "0-1 unité par tranche de 1 000 points.",
       "mountRef": "cold-one-mount",
       "championProfile": {
-        "name": "Chevalier Dread",
+        "name": "Chevalier de l'Effroi",
         "M": 5,
         "CC": 5,
         "CT": 4,
@@ -1074,7 +1135,7 @@
       },
       "crewProfiles": [
         {
-          "name": "Chevalier Charioteer",
+          "name": "Chevalier Aurige",
           "count": 2,
           "M": "-",
           "CC": 5,
@@ -1233,6 +1294,18 @@
         "Attaques empoisonnées",
         "Rapidité"
       ],
+        "championProfile": {
+        "name": "Chevalier de l'Effroi",
+        "M": -,
+        "CC": 4,
+        "CT": 4,
+        "F": 4,
+        "E": 3,
+        "PV": 1,
+        "I": 5,
+        "A": 2,
+        "Cd": 8
+      },
       "restriction": "0-1 unité par tranche de 1 000 points."
     },
     {
@@ -1257,8 +1330,8 @@
       "base": "60 x 100 mm",
       "unitSize": "1",
       "equipment": [
-        "Gardiennes du sanctuaire x2",
-        "Méduse Bloodwrack"
+        "Furie du Supplice Sanglant x2",
+        "Méduse du Supplice Sanglant"
       ],
       "specialRules": [
         "Ordre serré",
@@ -1276,7 +1349,7 @@
       ],
       "crewProfiles": [
         {
-          "name": "Gardiennes du Sanctuaire",
+          "name": "Furie du Supplice Sanglant",
           "count": 2,
           "M": "-",
           "CC": 4,
@@ -1287,6 +1360,20 @@
           "I": 5,
           "A": 1,
           "Cd": 8
+        },
+        "crewProfiles": [
+        {
+          "name": "Méduse du Supplice Sanglant",
+          "count": 2,
+          "M": "-",
+          "CC": 5,
+          "CT": 5,
+          "F": 1,
+          "E": "-",
+          "PV": "-",
+          "I": 5,
+          "A": 3,
+          "Cd": "-"
         }
       ]
     },
@@ -1396,7 +1483,7 @@
     },
     {
       "id": "bloodwrack-medusa",
-      "name": "Méduse Bloodwrack",
+      "name": "Méduse du Supplice Sanglant",
       "category": "Unités Rares",
       "points": 85,
       "min": 0,
