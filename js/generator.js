@@ -147,68 +147,60 @@ async function loadMagicItemSource(source) {
   };
 }
 
-async function loadMagicItems(armyId, supplementId) {
+async function loadMagicItems(sources = []) {
   state.magicItems = {};
 
-  const requested = [];
-
-  // Source propre à l'armée générique.
-  const army = state.army;
-  if (army?.magicItemsSource) {
-    requested.push(army.magicItemsSource);
-  } else if (armyId) {
-    requested.push(armyId);
+  if (!Array.isArray(sources)) {
+    sources = [sources];
   }
 
-  // Sources déclarées par le supplément.
-  const supplementSources = getMagicItemsSources();
-  requested.push(...supplementSources);
-
-  // Déduplication après résolution des alias.
-  const unique = [];
-  const seen = new Set();
-  for (const source of requested) {
-    const id = magicItemSourceId(source);
-    if (!id || seen.has(id)) continue;
-    seen.add(id);
-    unique.push(id);
-  }
-
-  const loaded = [];
-  const errors = [];
-
-  for (const id of unique) {
-    try {
-      loaded.push(await loadMagicItemSource(id));
-    } catch (e) {
-      errors.push(`${id}: ${e.message}`);
-    }
-  }
-
-  for (const source of loaded) {
+  for (const source of sources) {
     if (!source) continue;
-    for (const [category, items] of Object.entries(source.magicItems || {})) {
-      if (!Array.isArray(items)) continue;
-      if (!Array.isArray(state.magicItems[category])) {
-        state.magicItems[category] = [];
-      }
-      const existing = new Set(
-        state.magicItems[category].map(item => item?.id).filter(Boolean)
+
+    const fileMap = {
+      "objets-magiques-courants": "communs.json",
+      "elfes-noirs": "elfes-noirs.json",
+      "hauts-elfes": "hauts-elfes.json",
+      "elfes-sylvains": "elfes-sylvains.json",
+      "courant-occidental": "courant-occidental.json",
+      "tour-dargent": "tour-d-argent.json",
+      "sillage-noir": "sillage-noir.json"
+    };
+
+    const filename = fileMap[source] || `${source}.json`;
+
+    try {
+      const raw = await getJSON(
+        "data/objets-magiques/" + filename
       );
-      for (const item of items) {
-        if (!item) continue;
-        if (item.id && existing.has(item.id)) continue;
-        state.magicItems[category].push(item);
-        if (item.id) existing.add(item.id);
+
+      const collection = raw.magicItems || raw;
+
+      for (const [category, items] of Object.entries(collection)) {
+        if (!Array.isArray(items)) continue;
+
+        if (!state.magicItems[category]) {
+          state.magicItems[category] = [];
+        }
+
+        state.magicItems[category].push(
+          ...items.map(item =>
+            normalizeMagicItem(item, category)
+          )
+        );
       }
+
+      console.log(
+        `[MagicItems] Source chargée : ${source} → ${filename}`
+      );
+
+    } catch (e) {
+      console.error(
+        `[MagicItems] Impossible de charger ${source}`,
+        e
+      );
     }
   }
-
-  if (errors.length) {
-    console.warn("Certaines sources d'objets magiques n'ont pas pu être chargées :", errors);
-  }
-
-  return state.magicItems;
 }
 
 
@@ -3183,7 +3175,7 @@ async function loadArmy(id, reset=true) {
     const raw = await getJSON(PATHS.armies + id + ".json");
     state.army = normalizeArmy(raw,id);
     if (reset) state.list = [];
-    await loadMagicItems(id, state.supplement?.id);
+    await loadMagicItems(getMagicItemsSources());
     updateSelectors();
     render();
     setStatus(`${state.supplement.name} · ${state.army.name}`, "ok");
