@@ -224,6 +224,14 @@ textarea { min-height: 80px; resize: vertical; }
     min-height: 280px; background: #15191a; color: #d8d1b8;
     font-family: Consolas, monospace; font-size: 12.5px;
 }
+@media(max-width:650px) {
+    .page-wrap { width: calc(100% - 20px); max-width: none; min-height: auto; }
+    .p-hero, .p-texte, .p-fiche { padding: 20px; }
+    .p-carrousel-slide { flex-direction: column; }
+    .p-carrousel-image { width: min(100%, 300px); }
+    .p-carrousel-vignettes { overflow-x: auto; }
+    .p-grille-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -246,6 +254,24 @@ textarea { min-height: 80px; resize: vertical; }
     <div class="field">
         <label for="pageDescription">Description (méta)</label>
         <input id="pageDescription" placeholder="Résumé court" oninput="onMetaChange()">
+    </div>
+
+    <div class="field">
+        <label for="pageFormat">Format de sortie</label>
+        <select id="pageFormat" onchange="onFormatChange()">
+            <option value="site">Site Sillage Noir — 900 px</option>
+            <option value="large">Large — 1200 px</option>
+            <option value="wide">Très large — 1400 px</option>
+            <option value="16-9">Écran 16:9 — 1280 × 720</option>
+            <option value="full-hd">Écran Full HD — 1920 × 1080</option>
+            <option value="mobile">Mobile — 390 × 844</option>
+            <option value="a4">A4 portrait — 794 × 1123</option>
+            <option value="a4-landscape">A4 paysage — 1123 × 794</option>
+            <option value="a5">A5 portrait — 559 × 794</option>
+            <option value="a5-landscape">A5 paysage — 794 × 559</option>
+            <option value="square">Carré — 1080 × 1080</option>
+            <option value="9-16">Vertical 9:16 — 1080 × 1920</option>
+        </select>
     </div>
     <div class="btnrow">
         <button class="action" onclick="nouvellePage()">Nouvelle page</button>
@@ -592,7 +618,23 @@ const BLOC_TYPES = {
 /* =========================================================
    ÉTAT
    ========================================================= */
-let page = { id:"", titre:"", description:"", style: null, blocs:[] };
+
+const FORMATS_PAGE = {
+    site:           { label:"Site Sillage Noir", width:900,  height:null, cssWidth:"900px",  cssHeight:"auto" },
+    large:          { label:"Large",             width:1200, height:null, cssWidth:"1200px", cssHeight:"auto" },
+    wide:           { label:"Très large",        width:1400, height:null, cssWidth:"1400px", cssHeight:"auto" },
+    "16-9":         { label:"Écran 16:9",        width:1280, height:720,  cssWidth:"1280px", cssHeight:"720px" },
+    "full-hd":      { label:"Écran Full HD",     width:1920, height:1080, cssWidth:"1920px", cssHeight:"1080px" },
+    mobile:         { label:"Mobile",             width:390,  height:844,  cssWidth:"390px",  cssHeight:"844px" },
+    a4:             { label:"A4 portrait",        width:794,  height:1123, cssWidth:"794px",  cssHeight:"1123px" },
+    "a4-landscape": { label:"A4 paysage",         width:1123, height:794, cssWidth:"1123px", cssHeight:"794px" },
+    a5:             { label:"A5 portrait",        width:559,  height:794, cssWidth:"559px",  cssHeight:"794px" },
+    "a5-landscape": { label:"A5 paysage",         width:794,  height:559, cssWidth:"794px",  cssHeight:"559px" },
+    square:         { label:"Carré",              width:1080, height:1080, cssWidth:"1080px", cssHeight:"1080px" },
+    "9-16":         { label:"Vertical 9:16",      width:1080, height:1920, cssWidth:"1080px", cssHeight:"1920px" }
+};
+
+let page = { id:"", titre:"", description:"", format:"site", style: null, blocs:[] };
 page.style = styleParDefaut();
 let selectedIndex = null;
 
@@ -610,6 +652,27 @@ function styleParDefaut(){
     };
 }
 
+function getFormat(){
+    return FORMATS_PAGE[page.format] || FORMATS_PAGE.site;
+}
+
+function appliquerFormatApercu(){
+    const f = getFormat();
+    const zone = $("previewFrame");
+    if(!zone) return;
+    zone.style.setProperty("--page-width", f.cssWidth);
+    zone.style.setProperty("--page-height", f.cssHeight);
+    zone.style.maxWidth = f.cssWidth;
+    zone.style.minHeight = f.height ? f.cssHeight : "";
+}
+
+function onFormatChange(){
+    page.format = $("pageFormat").value || "site";
+    appliquerFormatApercu();
+    majOutput();
+    status("Format : " + getFormat().label);
+}
+
 function appliquerStyleApercu(){
     const s = page.style || styleParDefaut();
     const zone = $("previewFrame");
@@ -623,9 +686,10 @@ function appliquerStyleApercu(){
 }
 
 function nouvellePage(){
-    page = { id:"", titre:"", description:"", style: styleParDefaut(), blocs:[] };
+    page = { id:"", titre:"", description:"", format:"site", style: styleParDefaut(), blocs:[] };
     selectedIndex = null;
     $("pageId").value = ""; $("pageTitre").value = ""; $("pageDescription").value = "";
+    $("pageFormat").value = "site";
     renderTout();
     status("Nouvelle page vierge créée.");
 }
@@ -977,7 +1041,7 @@ function majApercu(){
 }
 
 function majOutput(){
-    const clean = { id: page.id, titre: page.titre, description: page.description, style: page.style || styleParDefaut(), blocs: page.blocs };
+    const clean = { id: page.id, titre: page.titre, description: page.description, format: page.format || "site", style: page.style || styleParDefaut(), blocs: page.blocs };
     $("outputText").value = JSON.stringify(clean, null, 2);
 }
 
@@ -994,7 +1058,7 @@ function renderTout(){
    ========================================================= */
 function exporterJSON(){
     if(!page.id){ alert("Renseignez un identifiant de page (slug) avant d'exporter."); return; }
-    const clean = { id: page.id, titre: page.titre, description: page.description, style: page.style || styleParDefaut(), blocs: page.blocs };
+    const clean = { id: page.id, titre: page.titre, description: page.description, format: page.format || "site", style: page.style || styleParDefaut(), blocs: page.blocs };
     const blob = new Blob([JSON.stringify(clean,null,2)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -1020,10 +1084,12 @@ function genererPageHTML(){
         id: page.id || "",
         titre: page.titre || "",
         description: page.description || "",
+        format: page.format || "site",
         style: page.style || styleParDefaut(),
         blocs: page.blocs || []
     };
 
+    const format = FORMATS_PAGE[pageData.format] || FORMATS_PAGE.site;
     const dataJS = JSON.stringify(pageData)
         .replace(/</g, "\\u003c")
         .replace(/>/g, "\\u003e")
@@ -1054,6 +1120,8 @@ function genererPageHTML(){
     --couleur-texte: ${s.couleurTexte};
     --couleur-titres: ${s.couleurTitres};
     --couleur-accent: ${s.couleurAccent};
+    --page-width: ${format.cssWidth};
+    --page-height: ${format.cssHeight};
 }
 * { box-sizing: border-box; }
 body {
@@ -1065,8 +1133,8 @@ body {
     font-family: "Vollkorn", Georgia, serif;
 }
 .page-wrap {
-    width: calc(100% - 40px);
-    max-width: 900px;
+    width: min(calc(100% - 40px), var(--page-width));
+    max-width: var(--page-width);
     margin: 35px auto;
     display: flex;
     flex-direction: column;
@@ -1255,6 +1323,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
  * Les données de la page sont embarquées dans PAGE_DATA.
  * Aucun chargement de atelier-redaction.html ou de BLOC_TYPES externe.
  */
+const FORMATS_PAGE_EXPORT = {
+    site:{width:900,height:null}, large:{width:1200,height:null}, wide:{width:1400,height:null},
+    "16-9":{width:1280,height:720}, "full-hd":{width:1920,height:1080}, mobile:{width:390,height:844},
+    a4:{width:794,height:1123}, "a4-landscape":{width:1123,height:794},
+    a5:{width:559,height:794}, "a5-landscape":{width:794,height:559},
+    square:{width:1080,height:1080}, "9-16":{width:1080,height:1920}
+};
 const PAGE_DATA = ${dataJS};
 
 function escHTML(value) {
@@ -1502,9 +1577,10 @@ $("importInput").addEventListener("change", e=>{
     reader.onload = ()=>{
         try{
             const d = JSON.parse(reader.result);
-            page = { id: d.id||"", titre: d.titre||"", description: d.description||"", style: d.style || styleParDefaut(), blocs: Array.isArray(d.blocs)?d.blocs:[] };
+            page = { id: d.id||"", titre: d.titre||"", description: d.description||"", format: FORMATS_PAGE[d.format] ? d.format : "site", style: d.style || styleParDefaut(), blocs: Array.isArray(d.blocs)?d.blocs:[] };
             selectedIndex = page.blocs.length ? 0 : null;
             $("pageId").value = page.id; $("pageTitre").value = page.titre; $("pageDescription").value = page.description;
+            $("pageFormat").value = page.format || "site";
             renderTout();
             status("Page importée depuis le fichier JSON.");
         }catch(err){ alert("Import impossible : "+err.message); }
