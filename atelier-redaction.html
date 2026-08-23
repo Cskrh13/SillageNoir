@@ -7,7 +7,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&family=Cinzel:wght@400;600&family=EB+Garamond:wght@400;600&family=Crimson+Text:wght@400;600&family=MedievalSharp&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 :root {
@@ -159,9 +159,9 @@ textarea { min-height: 80px; resize: vertical; }
 .p-hero h3 { margin: 0 0 8px; text-transform: uppercase; letter-spacing: 2px; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; }
 .p-hero p { font-size: 14px; margin: 10px 0; }
 .p-texte { width: 100%; max-width: 780px; padding: 10px 6px; }
-.p-texte h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
+.p-texte h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-size: var(--taille-titres, 15px); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
 .p-texte.centre { text-align: center; }
-.p-texte p { font-size: var(--taille-texte, 15px); line-height: 1.6; margin: 0 0 10px; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
+.p-texte p { font-size: var(--taille-texte, 12px); line-height: 1.6; margin: 0 0 10px; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
 .p-image { width: 100%; max-width: 780px; text-align: center; }
 .p-image img { width: 100%; max-height: 340px; object-fit: cover; border: 1px solid var(--ligne); }
 .p-image figcaption { margin-top: 8px; font-size: 12px; color: #56442d; }
@@ -215,6 +215,9 @@ textarea { min-height: 80px; resize: vertical; }
 .p-footer-liens { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 .p-footer-lien { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--texte-clair); }
 
+/* Images insérées dans un champ de texte riche : toujours responsives */
+.rich-editable img, .p-texte img, .p-hero img, .card img, .p-fiche .fiche-section img, .p-carrousel-texte img, .p-footer img { max-width: 100%; height: auto; display: block; margin: 8px 0; border: 1px solid var(--ligne, #9c9278); }
+
 .output { margin-top: 25px; }
 .output label { display: block; margin-bottom: 8px; }
 .output textarea {
@@ -256,15 +259,6 @@ textarea { min-height: 80px; resize: vertical; }
 </section>
 <div class="status-line" id="statusLine"></div>
 
-<section class="page-bar" id="apparenceBar">
-    <div class="field">
-        <label for="styleCouleurAccent">Couleur d'accent (boutons)</label>
-        <input id="styleCouleurAccent" type="color" value="#1b2325" oninput="onStyleChange()">
-    </div>
-    <div class="btnrow">
-        <button class="action small" onclick="reinitialiserStyle()">Réinitialiser</button>
-    </div>
-</section>
 
 <div class="workzone">
     <aside class="blocs-list">
@@ -336,16 +330,20 @@ const BLOC_TYPES = {
 
     texte: {
         label: "Bloc texte libre",
-        defaultData: () => ({ type:"texte", titre:"", corps:"", alignement:"gauche" }),
+        defaultData: () => ({ type:"texte", titre:"", corps:"", alignementTitre:"gauche", alignementCorps:"gauche" }),
         form: (b,i) => {
+            const optsAlign = (champ, valeur) => `
+                        <option value="gauche" ${valeur==="gauche"?"selected":""}>Gauche</option>
+                        <option value="centre" ${valeur==="centre"?"selected":""}>Centré</option>
+                        <option value="droite" ${valeur==="droite"?"selected":""}>Droite</option>`;
             return `
             <div class="grid">
                 <div class="field"><label>Titre (optionnel)</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
-                <div class="field"><label>Alignement</label>
-                    <select onchange="updateBloc(${i},'alignement',this.value)">
-                        <option value="gauche" ${b.alignement==="gauche"?"selected":""}>Gauche</option>
-                        <option value="centre" ${b.alignement==="centre"?"selected":""}>Centré</option>
-                    </select>
+                <div class="field"><label>Alignement du titre</label>
+                    <select onchange="updateBloc(${i},'alignementTitre',this.value)">${optsAlign('alignementTitre', b.alignementTitre||"gauche")}</select>
+                </div>
+                <div class="field"><label>Alignement du texte</label>
+                    <select onchange="updateBloc(${i},'alignementCorps',this.value)">${optsAlign('alignementCorps', b.alignementCorps||"gauche")}</select>
                 </div>
                 <div class="field full">
                     <label>Corps du texte</label>
@@ -354,9 +352,9 @@ const BLOC_TYPES = {
             </div>`;
         },
         preview: b => `
-            <div class="p-texte ${b.alignement==="centre"?"centre":""}">
-                ${b.titre?`<h3>${esc(b.titre)}</h3>`:""}
-                ${versHTMLCorps(b.corps) || "<p>Le texte apparaîtra ici.</p>"}
+            <div class="p-texte">
+                ${b.titre?`<h3 style="text-align:${b.alignementTitre||"gauche"}">${esc(b.titre)}</h3>`:""}
+                <div style="text-align:${b.alignementCorps||"gauche"}">${versHTMLCorps(b.corps) || "<p>Le texte apparaîtra ici.</p>"}</div>
             </div>`
     },
 
@@ -591,55 +589,40 @@ const BLOC_TYPES = {
 /* =========================================================
    ÉTAT
    ========================================================= */
-let page = { id:"", titre:"", description:"", style:{ police:"'Vollkorn', Georgia, serif", taille:15, couleurTexte:"#3a352a", couleurTitres:"#252a29", couleurAccent:"#1b2325" }, blocs:[] };
+let page = { id:"", titre:"", description:"", style: null, blocs:[] };
+page.style = styleParDefaut();
 let selectedIndex = null;
 
+/* Styles par défaut du site (plus de réglage global : chaque bloc de texte riche
+   gère sa propre police/taille/couleur via sa barre d'outils). */
 function styleParDefaut(){
-    return { police:"'Vollkorn', Georgia, serif", taille:15, couleurTexte:"#3a352a", couleurTitres:"#252a29", couleurAccent:"#1b2325" };
-}
-
-function onStyleChange(){
-    page.style = {
-        police: styleParDefaut().police,
-        taille: styleParDefaut().taille,
-        couleurTexte: styleParDefaut().couleurTexte,
-        couleurTitres: $("styleCouleurTitres").value,
-        couleurAccent: $("styleCouleurAccent").value
+    return {
+        policeTitres: '"IM Fell English SC", Georgia, serif',
+        tailleTitres: 15,
+        policeTexte: "'Vollkorn', Georgia, serif",
+        tailleTexte: 12,
+        couleurTexte: "#3a352a",
+        couleurTitres: "#252a29",
+        couleurAccent: "#1b2325"
     };
-    appliquerStyleApercu();
-    majOutput();
 }
 
 function appliquerStyleApercu(){
     const s = page.style || styleParDefaut();
     const zone = $("previewFrame");
-    zone.style.setProperty("--police-texte", s.police);
-    zone.style.setProperty("--police-titres", s.police);
-    zone.style.setProperty("--taille-texte", s.taille + "px");
+    zone.style.setProperty("--police-texte", s.policeTexte);
+    zone.style.setProperty("--police-titres", s.policeTitres);
+    zone.style.setProperty("--taille-texte", s.tailleTexte + "px");
+    zone.style.setProperty("--taille-titres", s.tailleTitres + "px");
     zone.style.setProperty("--couleur-texte", s.couleurTexte);
     zone.style.setProperty("--couleur-titres", s.couleurTitres);
     zone.style.setProperty("--couleur-accent", s.couleurAccent);
-}
-
-function chargerControlesStyle(){
-    const s = page.style || styleParDefaut();
-    $("styleCouleurTitres").value = s.couleurTitres;
-    $("styleCouleurAccent").value = s.couleurAccent;
-}
-
-function reinitialiserStyle(){
-    page.style = styleParDefaut();
-    chargerControlesStyle();
-    appliquerStyleApercu();
-    majOutput();
-    status("Apparence réinitialisée aux valeurs par défaut du site.");
 }
 
 function nouvellePage(){
     page = { id:"", titre:"", description:"", style: styleParDefaut(), blocs:[] };
     selectedIndex = null;
     $("pageId").value = ""; $("pageTitre").value = ""; $("pageDescription").value = "";
-    chargerControlesStyle();
     renderTout();
     status("Nouvelle page vierge créée.");
 }
@@ -770,22 +753,45 @@ function champRiche(fieldId, valeur, onChange){
             <select onmousedown="event.preventDefault();restaurerSelection('${fieldId}')" onchange="richPolice('${fieldId}',this.value)">
                 <option value="">Police (sélection)…</option>
                 <option value="'Vollkorn', Georgia, serif">Vollkorn</option>
+                <option value='"IM Fell English SC", Georgia, serif'>IM Fell English SC</option>
+                <option value="'Cinzel', Georgia, serif">Cinzel</option>
+                <option value="'EB Garamond', Georgia, serif">EB Garamond</option>
+                <option value="'Crimson Text', Georgia, serif">Crimson Text</option>
+                <option value="'MedievalSharp', Georgia, serif">MedievalSharp</option>
+                <option value="'Merriweather', Georgia, serif">Merriweather</option>
+                <option value="'Playfair Display', Georgia, serif">Playfair Display</option>
                 <option value="Georgia, serif">Georgia</option>
                 <option value="'Times New Roman', serif">Times New Roman</option>
                 <option value="Arial, sans-serif">Arial</option>
                 <option value="'Courier New', monospace">Courier New</option>
             </select>
-            <input type="number" min="8" max="60" placeholder="Taille" style="width:80px" onmousedown="event.preventDefault();restaurerSelection('${fieldId}')" onchange="richTaille('${fieldId}',this.value)">
+            <select onmousedown="event.preventDefault();restaurerSelection('${fieldId}')" onchange="richTaille('${fieldId}',this.value)">
+                <option value="">Taille (sélection)…</option>
+                <option value="10">10 px</option>
+                <option value="11">11 px</option>
+                <option value="12">12 px</option>
+                <option value="13">13 px</option>
+                <option value="14">14 px</option>
+                <option value="15">15 px</option>
+                <option value="16">16 px</option>
+                <option value="18">18 px</option>
+                <option value="20">20 px</option>
+                <option value="24">24 px</option>
+                <option value="28">28 px</option>
+                <option value="32">32 px</option>
+                <option value="40">40 px</option>
+            </select>
             <input type="color" value="#3a352a" title="Couleur du texte sélectionné" onmousedown="restaurerSelection('${fieldId}')" onchange="richCouleur('${fieldId}',this.value)">
             <button type="button" onmousedown="event.preventDefault()" onclick="richCommande('${fieldId}','bold')"><strong>G</strong></button>
             <button type="button" onmousedown="event.preventDefault()" onclick="richCommande('${fieldId}','italic')"><em>I</em></button>
+            <button type="button" onmousedown="event.preventDefault()" onclick="richImage('${fieldId}')" title="Insérer une image">🖼️ Image</button>
             <button type="button" onmousedown="event.preventDefault()" onclick="richEffacerStyle('${fieldId}')">Effacer le style</button>
         </div>
         <div class="rich-editable" id="richCorps_${fieldId}" contenteditable="true"
              onmouseup="sauvegarderSelection('${fieldId}')" onkeyup="sauvegarderSelection('${fieldId}')"
-             oninput="syncRichCorps('${fieldId}')">${html}</div>
+             oninput="syncRichCorps('${fieldId}')" onpaste="richColler(event,'${fieldId}')">${html}</div>
         </div>
-        <div class="rich-hint">Sélectionnez du texte dans le champ ci-dessus (y compris du texte déjà surligné/sélectionné), puis choisissez une police, une taille ou une couleur pour l'appliquer uniquement à cette sélection.</div>`;
+        <div class="rich-hint">Sélectionnez du texte dans le champ ci-dessus (y compris du texte déjà surligné/sélectionné), puis choisissez une police, une taille ou une couleur pour l'appliquer uniquement à cette sélection. Le bouton « Image » insère une image depuis une URL, et coller un lien d'image l'affiche directement.</div>`;
 }
 
 function sauvegarderSelection(fieldId){
@@ -820,6 +826,8 @@ function richCommande(fieldId, commande){
     restaurerSelection(fieldId);
     if(!window.getSelection().toString()){ alert("Sélectionnez d'abord du texte dans le champ à modifier."); return; }
     div.focus();
+    /* execCommand bascule nativement : si la sélection est déjà entièrement en gras/italique,
+       elle retire le style ; sinon elle l'applique à toute la sélection. */
     document.execCommand(commande, false, null);
     syncRichCorps(fieldId);
 }
@@ -869,6 +877,51 @@ function richEffacerStyle(fieldId){
     div.focus();
     document.execCommand("removeFormat", false, null);
     syncRichCorps(fieldId);
+}
+
+/* -------- Images dans le texte riche (bouton "Image" + collage direct d'un lien) -------- */
+function inserer_image_a_la_selection(div, url){
+    const inseree = document.execCommand("insertImage", false, url);
+    if(!inseree){
+        const sel = window.getSelection();
+        const img = document.createElement("img");
+        img.src = url;
+        if(sel && sel.rangeCount && div.contains(sel.getRangeAt(0).commonAncestorContainer)){
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(img);
+            range.collapse(false);
+        } else {
+            div.appendChild(img);
+        }
+    }
+}
+
+function richImage(fieldId){
+    const div = $("richCorps_"+fieldId);
+    const url = prompt("URL de l'image à insérer :");
+    if(!url || !url.trim()) return;
+    div.focus();
+    restaurerSelection(fieldId);
+    inserer_image_a_la_selection(div, url.trim());
+    syncRichCorps(fieldId);
+}
+
+function estUrlImage(texte){
+    return /^https?:\/\/\S+\.(png|jpe?g|gif|webp|svg|avif)(\?\S*)?$/i.test((texte||"").trim());
+}
+
+function richColler(evenement, fieldId){
+    const donnees = evenement.clipboardData || window.clipboardData;
+    const texte = donnees ? donnees.getData("text/plain") : "";
+    if(texte && estUrlImage(texte)){
+        evenement.preventDefault();
+        const div = $("richCorps_"+fieldId);
+        div.focus();
+        inserer_image_a_la_selection(div, texte.trim());
+        syncRichCorps(fieldId);
+    }
+    /* sinon : collage par défaut du navigateur (texte simple). */
 }
 
 /* =========================================================
@@ -980,16 +1033,17 @@ function genererPageHTML(){
 <meta name="description" content="${esc(page.description || "")}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&family=Cinzel:wght@400;600&family=EB+Garamond:wght@400;600&family=Crimson+Text:wght@400;600&family=MedievalSharp&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
     --bleu-noir: #1b2325;
     --bleu-ardoise: #2d393d;
     --texte-clair: #d8d1b8;
     --ligne: rgba(125,139,140,.5);
-    --police-texte: ${s.police};
-    --police-titres: ${s.police};
-    --taille-texte: ${s.taille}px;
+    --police-texte: ${s.policeTexte};
+    --police-titres: ${s.policeTitres};
+    --taille-texte: ${s.tailleTexte}px;
+    --taille-titres: ${s.tailleTitres}px;
     --couleur-texte: ${s.couleurTexte};
     --couleur-titres: ${s.couleurTitres};
     --couleur-accent: ${s.couleurAccent};
@@ -1014,9 +1068,9 @@ nav.retour a:hover { text-decoration: underline; }
 .p-hero h3 { margin: 0 0 8px; text-transform: uppercase; letter-spacing: 2px; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; }
 .p-hero p { font-size: 14px; margin: 10px 0; }
 .p-texte { width: 100%; max-width: 780px; padding: 10px 6px; }
-.p-texte h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
+.p-texte h3 { font-family: var(--police-titres, "IM Fell English SC", Georgia, serif); font-size: var(--taille-titres, 15px); font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; color: var(--couleur-titres, #252a29); }
 .p-texte.centre { text-align: center; }
-.p-texte p { font-size: var(--taille-texte, 15px); line-height: 1.6; margin: 0 0 10px; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
+.p-texte p { font-size: var(--taille-texte, 12px); line-height: 1.6; margin: 0 0 10px; color: var(--couleur-texte, #3a352a); font-family: var(--police-texte, "Vollkorn", Georgia, serif); }
 .p-image { width: 100%; max-width: 780px; text-align: center; }
 .p-image img { width: 100%; max-height: 340px; object-fit: cover; border: 1px solid var(--ligne); }
 .p-image figcaption { margin-top: 8px; font-size: 12px; color: #56442d; }
@@ -1068,6 +1122,9 @@ nav.retour a:hover { text-decoration: underline; }
 .p-footer p { font-size: 13px; margin: 0 0 10px; color: #cfc7ab; }
 .p-footer-liens { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 .p-footer-lien { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--texte-clair); }
+
+/* Images insérées dans un champ de texte riche : toujours responsives */
+.rich-editable img, .p-texte img, .p-hero img, .card img, .p-fiche .fiche-section img, .p-carrousel-texte img, .p-footer img { max-width: 100%; height: auto; display: block; margin: 8px 0; border: 1px solid var(--ligne, #9c9278); }
 </style>
 </head>
 <body>
@@ -1107,7 +1164,6 @@ $("importInput").addEventListener("change", e=>{
             page = { id: d.id||"", titre: d.titre||"", description: d.description||"", style: d.style || styleParDefaut(), blocs: Array.isArray(d.blocs)?d.blocs:[] };
             selectedIndex = page.blocs.length ? 0 : null;
             $("pageId").value = page.id; $("pageTitre").value = page.titre; $("pageDescription").value = page.description;
-            chargerControlesStyle();
             renderTout();
             status("Page importée depuis le fichier JSON.");
         }catch(err){ alert("Import impossible : "+err.message); }
@@ -1122,7 +1178,6 @@ function status(msg){ $("statusLine").textContent = msg; setTimeout(()=>{ if($("
    ========================================================= */
 (function init(){
     $("newBlocType").innerHTML = Object.entries(BLOC_TYPES).map(([key,def])=>`<option value="${key}">${esc(def.label)}</option>`).join("");
-    chargerControlesStyle();
     renderTout();
 })();
 </script>
