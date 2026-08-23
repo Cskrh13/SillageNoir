@@ -1,2406 +1,426 @@
-// generator.js — Générateur de listes d'armée
-// Version corrigée — gestion de la Grande Bannière selon les données de l'armée
-
-const MAGIC_ITEM_CATEGORY_KEYS = {
-  "Armes magiques": "magic_weapon",
-  "Armures magiques": "magic_armour",
-  "Talismans": "talisman",
-  "Bannières magiques": "magic_standard",
-  "Objets enchantés": "enchanted_item",
-  "Objets cabalistiques": "arcane_item"
-};
-
-const CATEGORY_DEFAULT_REQUIRES = {
-  arcane_item: ["wizard"],
-  magic_standard: ["grand_banner_bearer"]
-};
-
-const GRAND_BANNER_RE = /grande?\s+banni[eè]re/i;
+(() => {
+"use strict";
 
 /*
- * Infrastructure de chargement des données.
- * Les fichiers du dépôt sont des JSON indépendants.
- */
+  ARCHIVES DU COURANT — GÉNÉRATEUR V4
+  ------------------------------------------------------------
+  Données :
+    data/supplements.json
+    data/armees/*.json
+    data/supplements/*.json
+
+  Le générateur ne modifie jamais les fichiers data/.
+
+  Principes :
+    - une unité ajoutée = une entrée indépendante dans la liste ;
+    - plusieurs entrées identiques sont possibles ;
+    - chaque entrée possède son propre effectif et ses propres options ;
+    - les options sont chiffrées automatiquement lorsqu'elles sont décrites
+      dans les JSON ;
+    - les restrictions min/max, maxPer1000 et maxPerCharacter sont prises en compte ;
+    - les pourcentages de composition sont calculés sur le format choisi ;
+    - les contraintes affichent toujours leur équivalent en points.
+*/
+
 const PATHS = {
   catalog: "data/supplements.json",
-  supplements: "data/supplements/",
   armies: "data/armees/",
-  magicItems: "data/objets-magiques/",
-  honours: "data/aptitudes/honneurs-elfiques.json"
+  supplements: "data/supplements/"
 };
 
-async function getJSON(path) {
-  const response = await fetch(path, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Impossible de charger ${path} (${response.status})`);
-  }
-  return response.json();
-}
-
-function normalizeSupplement(raw, catalog) {
-  return {
-    ...(catalog || {}),
-    ...(raw || {}),
-    // L'identifiant du catalogue reste l'identifiant de sélection/sauvegarde.
-    id: catalog?.id || raw?.id,
-    dataId: raw?.id || catalog?.id,
-    armies: Array.isArray(raw?.armies)
-      ? raw.armies
-      : (Array.isArray(catalog?.armies) ? catalog.armies : []),
-    allowedUnits: Array.isArray(raw?.allowedUnits)
-      ? raw.allowedUnits
-      : (Array.isArray(catalog?.allowedUnits) ? catalog.allowedUnits : []),
-    excludedUnits: Array.isArray(raw?.excludedUnits)
-      ? raw.excludedUnits
-      : (Array.isArray(catalog?.excludedUnits) ? catalog.excludedUnits : []),
-    restrictions: {
-      ...(catalog?.restrictions || {}),
-      ...(raw?.restrictions || {}),
-      global: {
-        ...(catalog?.restrictions?.global || {}),
-        ...(raw?.restrictions?.global || {})
-      },
-      units: {
-        ...(catalog?.restrictions?.units || {}),
-        ...(raw?.restrictions?.units || {})
-      },
-      categories: {
-        ...(catalog?.restrictions?.categories || {}),
-        ...(raw?.restrictions?.categories || {})
-      }
-    }
-  };
-}
-
-function normalizeArmy(raw, id) {
-  return {
-    ...(raw || {}),
-    id: raw?.id || id,
-    units: Array.isArray(raw?.units) ? raw.units : [],
-    restrictions: raw?.restrictions || {}
-  };
-}
-
-async function loadHonours() {
-  try {
-    const raw = await getJSON(PATHS.honours);
-    state.honours = Array.isArray(raw)
-      ? raw
-      : (Array.isArray(raw?.aptitudes) ? raw.aptitudes : []);
-  } catch (e) {
-    // Les honneurs sont facultatifs pour les armées qui n'en utilisent pas.
-    state.honours = [];
-    console.warn("Honneurs elfiques non chargés :", e);
-  }
-}
-
-/*
- * Compatibilité entre les identifiants historiques utilisés dans les
- * suppléments et les vrais noms de fichiers présents dans data/objets-magiques.
- */
-const MAGIC_ITEM_SOURCE_ALIASES = {
-  "objets-magiques-courants": "communs",
-  "objets magiques courants": "communs",
-  "objets-magiques-communs": "communs",
-  "royaumes-hauts-elfes": "hauts-elfes",
-  "hauts-elfes": "hauts-elfes",
-  "elfes-noirs": "elfes-noirs",
-  "elfes-sylvains": "elfes-sylvains",
-  "sillage-noir": "sillage-noir",
-  "tour-dargent": "tour-d-argent",
-  "tour-d-argent": "tour-d-argent",
-  "courant-occidental": "courant-occidental"
+const state = {
+  catalog: [],
+  supplement: null,
+  army: null,
+  list: [],
+  pointsLimit: 2000,
+  filter: "",
+  category: "Toutes",
+  magicItems: null,
+  magicItemsLoading: false
 };
 
-function magicItemSourceId(value) {
-  const raw = String(value ?? "").trim();
-  if (!raw) return null;
+const $ = id => document.getElementById(id);
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;"
+}[c]));
 
-  const key = raw
-    .toLocaleLowerCase("fr")
-    .replace(/\.json$/i, "")
-    .replace(/\\/g, "/")
-    .split("/")
-    .pop();
-
-  return (
-    MAGIC_ITEM_SOURCE_ALIASES[key] ||
-    key
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9-]+/g, "-")
-      .replace(/^-|-$/g, "")
-  );
+function uid() {
+  return "u_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-async function loadMagicItemSource(source) {
-  const id = magicItemSourceId(source);
-  if (!id) return null;
-
-  const raw = await getJSON(PATHS.magicItems + id + ".json");
-  return {
-    id: raw?.id || id,
-    name: raw?.name || id,
-    magicItems: raw?.magicItems && typeof raw.magicItems === "object"
-      ? raw.magicItems
-      : {}
-  };
+async function getJSON(url) {
+  const r = await fetch(url, { cache: "no-store" });
+  if (!r.ok) throw new Error(`Impossible de charger ${url} (${r.status}).`);
+  const text = await r.text();
+  try { return JSON.parse(text); }
+  catch { throw new Error(`Le fichier ${url} contient un JSON invalide.`); }
 }
 
-async function loadMagicItems(sources = []) {
-  state.magicItems = {};
-
-  if (!Array.isArray(sources)) {
-    sources = [sources];
-  }
-
-  for (const source of sources) {
-    if (!source) continue;
-
-    const fileMap = {
-      "objets-magiques-courants": "communs.json",
-      "elfes-noirs": "elfes-noirs.json",
-      "hauts-elfes": "hauts-elfes.json",
-      "elfes-sylvains": "elfes-sylvains.json",
-      "courant-occidental": "courant-occidental.json",
-      "tour-dargent": "tour-d-argent.json",
-      "sillage-noir": "sillage-noir.json"
-    };
-
-    const filename = fileMap[source] || `${source}.json`;
-
-    try {
-      const raw = await getJSON(
-        "data/objets-magiques/" + filename
-      );
-
-      const collection = raw.magicItems || raw;
-
-      for (const [category, items] of Object.entries(collection)) {
-        if (!Array.isArray(items)) continue;
-
-        if (!state.magicItems[category]) {
-          state.magicItems[category] = [];
-        }
-
-        state.magicItems[category].push(
-          ...items.map(item =>
-            normalizeMagicItem(item, category)
-          )
-        );
-      }
-
-      console.log(
-        `[MagicItems] Source chargée : ${source} → ${filename}`
-      );
-
-    } catch (e) {
-      console.error(
-        `[MagicItems] Impossible de charger ${source}`,
-        e
-      );
-    }
-  }
+function armyLabel(id) {
+  return ({
+    "elfes-noirs":"Elfes Noirs",
+    "hauts-elfes":"Hauts-Elfes",
+    "elfes-sylvains":"Elfes Sylvains"
+  })[id] || String(id || "").replace(/[-_]/g," ").replace(/\b\w/g,m=>m.toUpperCase());
 }
 
+function normalizeOption(raw) {
+  if (raw == null) return null;
 
-function isGrandBannerOption(o) {
-  return !!(o && GRAND_BANNER_RE.test(String(o.name || "")));
-}
-
-function isGrandBannerBearer(entry, u) {
-  if (!entry || !u) return false;
-
-  return effectiveOptions(entry, u).some(
-    o =>
-      isGrandBannerOption(o) &&
-      (entry.options || []).includes(o.id)
-  );
-}
-
-function grandBannerBearerUid() {
-  const found = state.list.find(item => {
-    const u = getUnit(item.id);
-    return u && isGrandBannerBearer(item, u);
-  });
-
-  return found ? found.uid : null;
-}
-
-/*
- * Détermine les personnages autorisés à porter la Grande Bannière
- * à partir des données de l'armée.
- *
- * Formats supportés :
- *
- * "battleStandardBearer": {
- *   "unit": "Noble",
- *   "points": 25
- * }
- *
- * ou :
- *
- * "battleStandardBearer": {
- *   "eligibleCategory": "dark-elf-master",
- *   "points": 25
- * }
- *
- * ou plusieurs unités :
- *
- * "battleStandardBearer": {
- *   "units": ["Noble", "Maître Elfe Noir"],
- *   "points": 25
- * }
- */
-function battleStandardBearerConfig() {
-  return (
-    state.supplement?.restrictions?.global?.battleStandardBearer ||
-    state.supplement?.battleStandardBearer ||
-    state.army?.restrictions?.global?.battleStandardBearer ||
-    state.army?.battleStandardBearer ||
-    null
-  );
-}
-
-function isBattleStandardBearerEligible(u) {
-  const config = battleStandardBearerConfig();
-
-  if (!u || !config) return false;
-
-  const normalize = value =>
-    String(value ?? "")
-      .trim()
-      .toLocaleLowerCase("fr");
-
-  const unitId = normalize(u.id);
-  const unitName = normalize(u.name);
-
-  const candidates = [];
-
-  if (config.unit) {
-    candidates.push(config.unit);
-  }
-
-  if (Array.isArray(config.units)) {
-    candidates.push(...config.units);
-  }
-
-  if (
-    candidates.some(value => {
-      const candidate = normalize(value);
-
-      return (
-        candidate === unitId ||
-        candidate === unitName
-      );
-    })
-  ) {
-    return true;
-  }
-
-  /*
-   * Compatibilité avec le format :
-   *
-   * "eligibleCategory": "dark-elf-master"
-   */
-  if (config.eligibleCategory) {
-    const categories = Array.isArray(config.eligibleCategory)
-      ? config.eligibleCategory
-      : [config.eligibleCategory];
-
-    if (
-      categories.some(category => {
-        const value = normalize(category);
-
-        return (
-          value === unitId ||
-          value === unitName ||
-          value === normalize(u.category)
-        );
-      })
-    ) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function isNobleUnit(u) {
-  return isBattleStandardBearerEligible(u);
-}
-
-function isWizardUnit(u, entry) {
-  if (!u) return false;
-
-  const rules = [
-    ...(Array.isArray(u.specialRules) ? u.specialRules : []),
-    ...(Array.isArray(u.rules) ? u.rules : [])
-  ]
-    .map(r => String(r).toLocaleLowerCase("fr"));
-
-  if (
-    rules.some(r =>
-      r.includes("sorcier") ||
-      r.includes("wizard")
-    )
-  ) {
-    return true;
-  }
-
-  if (entry?.wizardLevel != null) return true;
-
-  if (u.wizardLevel != null) return true;
-
-  return false;
-}
-
-function unitTroopType(u) {
-  return String(
-    u?.type ||
-    u?.unitType ||
-    u?.category ||
-    ""
-  ).toLocaleLowerCase("fr");
-}
-
-function renownMatches(requirement, entry, u) {
-  if (!requirement) return true;
-
-  if (typeof requirement === "string") {
-    return (
-      String(entry?.renown || "")
-        .toLocaleLowerCase("fr") ===
-      requirement.toLocaleLowerCase("fr")
-    );
-  }
-
-  if (typeof requirement !== "object") return false;
-
-  const value = String(
-    entry?.renown ||
-    u?.renown ||
-    ""
-  ).toLocaleLowerCase("fr");
-
-  if (requirement.equals != null) {
-    return (
-      value ===
-      String(requirement.equals).toLocaleLowerCase("fr")
-    );
-  }
-
-  if (Array.isArray(requirement.anyOf)) {
-    return requirement.anyOf.some(v =>
-      value === String(v).toLocaleLowerCase("fr")
-    );
-  }
-
-  return false;
-}
-
-function optionRequirementSatisfied(item, entry, u) {
-  const explicit = item?.restriction?.requires;
-
-  const requires = Array.isArray(explicit)
-    ? explicit
-    : (
-        explicit != null
-          ? [explicit]
-          : (
-              CATEGORY_DEFAULT_REQUIRES[item?.categoryKey] ||
-              []
-            )
-      );
-
-  if (item?.restriction?.override === "no-wizard-required") {
-    return true;
-  }
-
-  return requires.every(req => {
-    if (req === "wizard") {
-      return isWizardUnit(u, entry);
-    }
-
-    if (req === "grand_banner_bearer") {
-      return isGrandBannerBearer(entry, u);
-    }
-
-    if (
-      req &&
-      typeof req === "object" &&
-      req.troopType
-    ) {
-      const allowed = (
-        Array.isArray(req.troopType)
-          ? req.troopType
-          : [req.troopType]
-      ).map(t =>
-        String(t).toLocaleLowerCase("fr")
-      );
-
-      return allowed.some(t =>
-        unitTroopType(u).includes(t)
-      );
-    }
-
-    if (
-      req &&
-      typeof req === "object" &&
-      req.renown
-    ) {
-      return renownMatches(req.renown, entry, u);
-    }
-
-    return true;
-  });
-}
-
-function getUnit(id) {
-  if (!id) return null;
-
-  const allUnits = [];
-
-  if (Array.isArray(state.units)) {
-    allUnits.push(...state.units);
-  }
-
-  if (Array.isArray(state.supplement?.units)) {
-    allUnits.push(...state.supplement.units);
-  }
-
-  if (Array.isArray(state.army?.units)) {
-    allUnits.push(...state.army.units);
-  }
-
-  return (
-    allUnits.find(u => u?.id === id) ||
-    null
-  );
-}
-
-function effectiveOptions(entry, u) {
-  if (!u) return [];
-
-  const options = [];
-
-  if (Array.isArray(u.options)) {
-    options.push(...u.options);
-  }
-
-  if (Array.isArray(entry?.optionsData)) {
-    options.push(...entry.optionsData);
-  }
-
-  return options.map((option, index) => {
-    if (typeof option === "string") {
-      return {
-        id: `${u.id}-option-${index}`,
-        name: option,
-        raw: option
-      };
-    }
-
+  if (typeof raw === "string") {
+    const text = raw.trim();
+    if (!text) return null;
+    const match = text.match(/([+-]\s*\d+)\s*pts?(?:\s*\/\s*mod(?:èle|èles))?/i);
+    const perModel = /\/\s*mod(?:èle|èles)/i.test(text);
+    const limitMatch = text.match(/jusqu[’']?à\s*(\d+)\s*pts?/i);
+    const points = match ? Number(match[1].replace(/\s/g,"")) : 0;
+    const name = match ? text.slice(0, match.index).trim() : text;
     return {
-      ...option,
-      id:
-        option.id ||
-        `${u.id}-option-${index}`
-    };
-  });
-}
-
-function normalizeOptionName(value) {
-  return String(value || "")
-    .trim()
-    .toLocaleLowerCase("fr");
-}
-
-function optionMatches(option, value) {
-  const wanted = normalizeOptionName(value);
-
-  if (!wanted) return false;
-
-  return (
-    normalizeOptionName(option?.name) === wanted ||
-    normalizeOptionName(option?.id) === wanted
-  );
-}
-
-function parsePointsFromOption(option) {
-  if (!option) return 0;
-
-  if (typeof option.points === "number") {
-    return option.points;
-  }
-
-  if (
-    typeof option.pointsPerModel === "number"
-  ) {
-    return option.pointsPerModel;
-  }
-
-  const text =
-    typeof option === "string"
-      ? option
-      : option.name || "";
-
-  const match = String(text).match(
-    /([+-]?\d+)\s*pts?/i
-  );
-
-  return match
-    ? Number(match[1])
-    : 0;
-}
-
-function getOptionPoints(option) {
-  return parsePointsFromOption(option);
-}
-
-function optionIdFor(option, unitId, index) {
-  if (typeof option === "string") {
-    return `${unitId}-option-${index}`;
-  }
-
-  return (
-    option?.id ||
-    `${unitId}-option-${index}`
-  );
-}
-
-function normalizeOption(option, unitId, index) {
-  if (typeof option === "string") {
-    return {
-      id: optionIdFor(option, unitId, index),
-      name: option,
-      points: parsePointsFromOption(option)
+      id: "opt-" + slug(name),
+      name,
+      points: Number.isFinite(points) ? points : 0,
+      pointsPerModel: perModel ? points : 0,
+      kind: inferOptionKind(name),
+      maxPoints: limitMatch ? Number(limitMatch[1]) : null,
+      raw: text
     };
   }
 
+  if (typeof raw !== "object") return null;
+  const name = raw.name || raw.nom || raw.label || "Option";
+  const points = raw.points != null ? Number(raw.points) : 0;
+  const pointsPerModel = raw.pointsPerModel != null
+    ? Number(raw.pointsPerModel)
+    : (raw.perModel ? points : 0);
+
   return {
-    ...option,
-    id: optionIdFor(option, unitId, index)
+    ...raw,
+    id: String(raw.id || ("opt-" + slug(name))),
+    name,
+    points: Number.isFinite(points) ? points : 0,
+    pointsPerModel: Number.isFinite(pointsPerModel) ? pointsPerModel : 0,
+    kind: raw.kind || inferOptionKind(name),
+    maxPoints: raw.maxPoints != null ? Number(raw.maxPoints) : null
   };
 }
 
-function getCharacterOptions(u) {
-  if (!u) return [];
-
-  return (u.options || []).map(
-    (option, index) =>
-      normalizeOption(option, u.id, index)
-  );
+function inferOptionKind(name) {
+  const s = String(name).toLocaleLowerCase("fr");
+  if (s.includes("bannière") || s.includes("banniere") || s.includes("étendard") || s.includes("etendard")) return "banner";
+  if (s.includes("monture") || s.includes("coursier") || s.includes("sang-froid") || s.includes("pegase") || s.includes("manticore") || s.includes("char") || s.includes("aigle") || s.includes("dragon") || s.includes("licorne")) return "mount";
+  if (s.includes("armure") || s.includes("heaume") || s.includes("bouclier")) return "armour";
+  if (s.includes("arme") || s.includes("lance") || s.includes("hallebarde") || s.includes("épée") || s.includes("epee") || s.includes("arc") || s.includes("arbalète") || s.includes("arbalete") || s.includes("poing")) return "weapon";
+  return "other";
 }
 
-function getMountOptions(u) {
-  if (!u) return [];
+function normalizeUnit(u, fallbackId = "") {
+  if (!u || typeof u !== "object") return null;
+  const points = u.points ?? u.cost ?? u.cout;
+  const options = Array.isArray(u.options) ? u.options.map(normalizeOption).filter(Boolean) : [];
 
-  return getCharacterOptions(u).filter(option =>
-    option.mountRef
-  );
-}
-
-function isMountOption(option) {
-  return !!option?.mountRef;
-}
-
-function getMountRef(option) {
-  return option?.mountRef || null;
-}
-
-function getMountByRef(ref) {
-  if (!ref) return null;
-
-  const sources = [
-    state.mounts,
-    state.supplement?.mounts,
-    state.army?.mounts
-  ];
-
-  for (const source of sources) {
-    if (!Array.isArray(source)) continue;
-
-    const found = source.find(
-      mount => mount?.id === ref
-    );
-
-    if (found) return found;
-  }
-
-  return null;
-}
-
-function cloneProfile(profile) {
-  if (!profile || typeof profile !== "object") {
-    return null;
+  let minSize = u.minSize != null ? Number(u.minSize) : null;
+  let maxSize = u.maxSize != null ? Number(u.maxSize) : null;
+  const size = String(u.unitSize ?? "").trim();
+  if (minSize == null && size) {
+    const range = size.match(/(\d+)\s*[-–]\s*(\d+)/);
+    const plus = size.match(/(\d+)\s*\+/);
+    const single = size.match(/^\d+$/);
+    if (range) { minSize = Number(range[1]); maxSize = Number(range[2]); }
+    else if (plus) { minSize = Number(plus[1]); maxSize = Infinity; }
+    else if (single) { minSize = Number(single[0]); maxSize = Number(single[0]); }
   }
 
   return {
-    ...profile
+    ...u,
+    id: String(u.id || fallbackId),
+    name: u.name || u.nom || "Unité sans nom",
+    category: u.category || u.categorie || "Autres",
+    points: points == null || points === "" ? null : Number(points),
+    options,
+    rules: u.rules ?? u.regles ?? u.specialRules ?? [],
+    profile: u.profile || u.profil || null,
+    source: u.source || "armée",
+    unitSize: u.unitSize || "",
+    minSize,
+    maxSize,
+    minEntries: u.minEntries ?? null,
+    maxEntries: u.maxEntries ?? null,
+    min: u.min ?? 0,
+    max: u.max ?? Infinity
   };
 }
 
-function getMountProfile(entry, u) {
-  if (!entry || !u) return null;
-
-  const selectedMount = getCharacterOptions(u)
-    .find(option =>
-      option.id === entry.options?.find(
-        id => id === option.id
-      ) &&
-      isMountOption(option)
-    );
-
-  if (!selectedMount) return null;
-
-  const mountRef = getMountRef(selectedMount);
-
-  if (!mountRef) return null;
-
-  const mount = getMountByRef(mountRef);
-
-  if (!mount) return null;
-
-  return cloneProfile(mount.profile);
-}
-
-function selectedMountOption(entry, u) {
-  if (!entry || !u) return null;
-
-  const options = getCharacterOptions(u);
-
-  return options.find(option =>
-    isMountOption(option) &&
-    (entry.options || []).includes(option.id)
-  ) || null;
-}
-
-function hasSelectedMount(entry, u) {
-  return !!selectedMountOption(entry, u);
-}
-
-function getSelectedOptionObjects(entry, u) {
-  if (!entry || !u) return [];
-
-  const options = getCharacterOptions(u);
-  const selected = entry.options || [];
-
-  return options.filter(option =>
-    selected.includes(option.id)
-  );
-}
-
-function calculateSelectedOptionsPoints(entry, u) {
-  return getSelectedOptionObjects(entry, u)
-    .reduce(
-      (total, option) =>
-        total + getOptionPoints(option),
-      0
-    );
-}
-
-function calculateEntryPoints(entry) {
-  const u = getUnit(entry?.id);
-
-  if (!u) return 0;
-
-  let total =
-    Number(u.points || 0) *
-    Number(entry.count || 1);
-
-  if (
-    u.category === "Personnages" ||
-    String(u.type || "")
-      .toLocaleLowerCase("fr")
-      .includes("personnage")
-  ) {
-    total =
-      Number(u.points || 0);
+function unitsFrom(raw) {
+  if (Array.isArray(raw?.units)) return raw.units.map(u => normalizeUnit(u)).filter(Boolean);
+  if (raw?.units && typeof raw.units === "object") {
+    return Object.entries(raw.units).map(([id,u]) => normalizeUnit(u,id)).filter(Boolean);
   }
-
-  total +=
-    calculateSelectedOptionsPoints(entry, u);
-
-  if (entry.magicItems) {
-    total += calculateMagicItemsPoints(
-      entry.magicItems
-    );
-  }
-
-  return total;
-}
-
-function calculateMagicItemsPoints(items) {
-  if (!Array.isArray(items)) return 0;
-
-  return items.reduce(
-    (total, item) =>
-      total + Number(item?.points || 0),
-    0
-  );
-}
-
-function effectiveBudget(u, type = "magicItemsLimit") {
-  if (!u) return null;
-
-  const options = getCharacterOptions(u);
-
-  for (const option of options) {
-    const text =
-      String(option.name || "");
-
-    const match = text.match(
-      /objets?\s+magiques?\s+jusqu['’]?\s*[àa]?\s*(\d+)\s*pts?/i
-    );
-
-    if (match) {
-      return Number(match[1]);
-    }
-  }
-
-  if (u[type] != null) {
-    return Number(u[type]);
-  }
-
-  return null;
-}
-
-function getMagicItemCategoryKey(category) {
-  if (!category) return null;
-
-  return (
-    MAGIC_ITEM_CATEGORY_KEYS[category] ||
-    category
-  );
-}
-
-function normalizeMagicItem(item, category) {
-  if (!item) return null;
-
-  return {
-    ...item,
-    category,
-    categoryKey:
-      item.categoryKey ||
-      getMagicItemCategoryKey(category)
-  };
-}
-
-function getMagicItemsSources() {
-  const global =
-    state.supplement?.restrictions?.global
-      ?.magicItems;
-
-  if (!global) return [];
-
-  if (Array.isArray(global.source)) {
-    return global.source;
-  }
-
-  if (global.source) {
-    return [global.source];
-  }
-
   return [];
 }
 
-function getMagicItemsData() {
-  const result = [];
 
-  const collections = [
-    state.magicItems,
-    state.supplement?.magicItems,
-    state.army?.magicItems
-  ];
-
-  for (const collection of collections) {
-    if (!collection) continue;
-
-    for (const [category, values] of Object.entries(
-      collection
-    )) {
-      if (!Array.isArray(values)) continue;
-
-      for (const item of values) {
-        result.push(
-          normalizeMagicItem(
-            item,
-            category
-          )
-        );
+function normalizeMagicItems(raw) {
+  if (!raw || typeof raw !== "object") return {};
+  const source = raw.magicItems || raw.objetsMagiques || raw.categories || raw;
+  const result = {};
+  Object.entries(source).forEach(([category, items]) => {
+    if (!Array.isArray(items)) return;
+    result[category] = items.map((item, index) => {
+      if (typeof item === "string") {
+        return { id: "magic-" + slug(item), name: item, points: 0 };
       }
-    }
-  }
-
-  return result;
-}
-
-function magicItemAllowedForCharacter(
-  item,
-  entry,
-  u
-) {
-  if (!item || !u) return false;
-
-  return optionRequirementSatisfied(
-    item,
-    entry,
-    u
-  );
-}
-
-function getAvailableMagicItems(
-  entry,
-  u
-) {
-  return getMagicItemsData().filter(item =>
-    magicItemAllowedForCharacter(
-      item,
-      entry,
-      u
-    )
-  );
-}
-
-function selectedMagicItemCategories(entry) {
-  const result = new Set();
-
-  for (const item of entry?.magicItems || []) {
-    if (item?.categoryKey) {
-      result.add(item.categoryKey);
-    }
-  }
-
-  return result;
-}
-
-function canTakeMagicItem(
-  item,
-  entry,
-  u
-) {
-  if (!item || !entry || !u) return false;
-
-  if (
-    !magicItemAllowedForCharacter(
-      item,
-      entry,
-      u
-    )
-  ) {
-    return false;
-  }
-
-  const selected =
-    selectedMagicItemCategories(entry);
-
-  const categoryKey =
-    item.categoryKey ||
-    getMagicItemCategoryKey(
-      item.category
-    );
-
-  if (
-    categoryKey &&
-    selected.has(categoryKey)
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-function canTakeMagicStandard(
-  entry,
-  u
-) {
-  if (!entry || !u) return false;
-
-  return isBattleStandardBearerEligible(u);
-}
-
-function getBattleStandardPoints() {
-  const config =
-    battleStandardBearerConfig();
-
-  if (!config) return 25;
-
-  return Number(
-    config.points ?? 25
-  );
-}
-
-function battleStandardEnabled() {
-  const config =
-    battleStandardBearerConfig();
-
-  if (!config) return false;
-
-  if (config.enabled === false) {
-    return false;
-  }
-
-  return true;
-}
-
-function battleStandardMax() {
-  const config =
-    battleStandardBearerConfig();
-
-  if (!config) return 0;
-
-  return Number(
-    config.max ?? 1
-  );
-}
-
-function canSelectGrandBanner(
-  entry,
-  u
-) {
-  if (!battleStandardEnabled()) {
-    return false;
-  }
-
-  if (!isBattleStandardBearerEligible(u)) {
-    return false;
-  }
-
-  const bearer =
-    grandBannerBearerUid();
-
-  if (
-    bearer &&
-    bearer !== entry.uid
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-function getCurrentArmyTotal() {
-  return state.list.reduce(
-    (total, entry) =>
-      total + calculateEntryPoints(entry),
-    0
-  );
-}
-
-function getArmyLimit() {
-  return Number(
-    state.armySize ||
-    state.pointsLimit ||
-    0
-  );
-}
-
-function getCategoryTotal(category) {
-  return state.list.reduce(
-    (total, entry) => {
-      const u = getUnit(entry.id);
-
-      if (!u || u.category !== category) {
-        return total;
-      }
-
-      return (
-        total +
-        calculateEntryPoints(entry)
-      );
-    },
-    0
-  );
-}
-
-function getCategoryPercent(category) {
-  const total =
-    getCurrentArmyTotal();
-
-  if (!total) return 0;
-
-  return (
-    getCategoryTotal(category) /
-    total *
-    100
-  );
-}
-
-function getRestrictionForUnit(id) {
-  return (
-    state.supplement
-      ?.restrictions
-      ?.units
-      ?.[id] ||
-    state.army
-      ?.restrictions
-      ?.units
-      ?.[id] ||
-    null
-  );
-}
-
-function getCategoryRestriction(
-  category
-) {
-  return (
-    state.supplement
-      ?.restrictions
-      ?.categories
-      ?.[category] ||
-    state.army
-      ?.restrictions
-      ?.categories
-      ?.[category] ||
-    null
-  );
-}
-
-function getUnitCount(id) {
-  return state.list
-    .filter(entry => entry.id === id)
-    .reduce(
-      (total, entry) =>
-        total +
-        Number(entry.count || 1),
-      0
-    );
-}
-
-function getUnitEntryCount(id) {
-  return state.list.filter(
-    entry => entry.id === id
-  ).length;
-}
-
-function maxPer1000Value(
-  restriction
-) {
-  if (!restriction?.maxPer1000) {
-    return Infinity;
-  }
-
-  return (
-    Math.floor(
-      getArmyLimit() / 1000
-    ) *
-    Number(
-      restriction.maxPer1000
-    )
-  );
-}
-
-function unitRestrictionAllowsAdding(
-  id
-) {
-  const restriction =
-    getRestrictionForUnit(id);
-
-  if (!restriction) return true;
-
-  if (restriction.max != null) {
-    if (
-      getUnitEntryCount(id) >=
-      Number(restriction.max)
-    ) {
-      return false;
-    }
-  }
-
-  if (restriction.maxPer1000 != null) {
-    if (
-      getUnitEntryCount(id) >=
-      maxPer1000Value(restriction)
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function groupRestrictionAllowsAdding(
-  id
-) {
-  const restriction =
-    getRestrictionForUnit(id);
-
-  if (!restriction?.group) {
-    return true;
-  }
-
-  const group = restriction.group;
-
-  const members =
-    Object.entries(
-      state.supplement?.restrictions
-        ?.units || {}
-    )
-      .filter(
-        ([, value]) =>
-          value?.group === group
-      )
-      .map(([unitId]) => unitId);
-
-  const total =
-    members.reduce(
-      (sum, unitId) =>
-        sum +
-        getUnitEntryCount(unitId),
-      0
-    );
-
-  if (
-    restriction.maxPer1000 != null &&
-    total >=
-      maxPer1000Value(restriction)
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-function canAddUnit(id) {
-  const u = getUnit(id);
-
-  if (!u) return false;
-
-  if (
-    !unitRestrictionAllowsAdding(id)
-  ) {
-    return false;
-  }
-
-  if (
-    !groupRestrictionAllowsAdding(id)
-  ) {
-    return false;
-  }
-
-  return true;
-}
-
-function createListEntry(id) {
-  const u = getUnit(id);
-
-  if (!u) return null;
-
-  return {
-    uid:
-      `${id}-${Date.now()}-${Math.random()
-        .toString(36)
-        .slice(2)}`,
-    id,
-    count:
-      u.unitSize &&
-      String(u.unitSize).includes("-")
-        ? Number(
-            String(u.unitSize)
-              .split("-")[0]
-          )
-        : 1,
-    options: [],
-    magicItems: []
-  };
-}
-
-function addUnitToList(id) {
-  if (!canAddUnit(id)) {
-    return false;
-  }
-
-  const entry =
-    createListEntry(id);
-
-  if (!entry) return false;
-
-  state.list.push(entry);
-
-  render();
-
-  return true;
-}
-
-function removeUnitFromList(uid) {
-  state.list =
-    state.list.filter(
-      entry =>
-        entry.uid !== uid
-    );
-
-  render();
-}
-
-function findEntry(uid) {
-  return state.list.find(
-    entry =>
-      entry.uid === uid
-  );
-}
-
-function setUnitCount(
-  uid,
-  count
-) {
-  const entry =
-    findEntry(uid);
-
-  if (!entry) return;
-
-  const u =
-    getUnit(entry.id);
-
-  if (!u) return;
-
-  let value =
-    Number(count);
-
-  if (!Number.isFinite(value)) {
-    value = 1;
-  }
-
-  const size =
-    String(
-      u.unitSize || ""
-    );
-
-  if (size.includes("-")) {
-    const [min, max] =
-      size
-        .split("-")
-        .map(Number);
-
-    value =
-      Math.max(
-        min,
-        Math.min(max, value)
-      );
-  } else if (
-    Number.isFinite(
-      Number(u.unitSize)
-    )
-  ) {
-    value =
-      Number(u.unitSize);
-  }
-
-  entry.count = value;
-
-  render();
-}
-
-function incrementUnit(
-  uid,
-  amount = 1
-) {
-  const entry =
-    findEntry(uid);
-
-  if (!entry) return;
-
-  setUnitCount(
-    uid,
-    Number(entry.count || 1) +
-      amount
-  );
-}
-
-function toggleOption(
-  uid,
-  optionId
-) {
-  const entry =
-    findEntry(uid);
-
-  if (!entry) return;
-
-  const u =
-    getUnit(entry.id);
-
-  if (!u) return;
-
-  const options =
-    getCharacterOptions(u);
-
-  const option =
-    options.find(
-      o => o.id === optionId
-    );
-
-  if (!option) return;
-
-  if (
-    isMountOption(option)
-  ) {
-    entry.options =
-      entry.options.filter(
-        id => {
-          const other =
-            options.find(
-              o => o.id === id
-            );
-
-          return (
-            !isMountOption(other) ||
-            id === optionId
-          );
-        }
-      );
-  }
-
-  if (
-    entry.options.includes(
-      optionId
-    )
-  ) {
-    entry.options =
-      entry.options.filter(
-        id =>
-          id !== optionId
-      );
-  } else {
-    entry.options.push(
-      optionId
-    );
-  }
-
-  render();
-}
-
-function toggleMagicItem(
-  uid,
-  itemId
-) {
-  const entry =
-    findEntry(uid);
-
-  if (!entry) return;
-
-  const u =
-    getUnit(entry.id);
-
-  if (!u) return;
-
-  const item =
-    getMagicItemsData()
-      .find(
-        value =>
-          value.id === itemId
-      );
-
-  if (!item) return;
-
-  if (
-    !canTakeMagicItem(
-      item,
-      entry,
-      u
-    )
-  ) {
-    return;
-  }
-
-  if (!entry.magicItems) {
-    entry.magicItems = [];
-  }
-
-  const existing =
-    entry.magicItems.find(
-      value =>
-        value.id === itemId
-    );
-
-  if (existing) {
-    entry.magicItems =
-      entry.magicItems.filter(
-        value =>
-          value.id !== itemId
-      );
-  } else {
-    entry.magicItems.push({
-      ...item,
-      points:
-        Number(
-          item.points || 0
-        )
-    });
-  }
-
-  render();
-}
-
-function toggleGrandBanner(
-  uid
-) {
-  const entry =
-    findEntry(uid);
-
-  if (!entry) return;
-
-  const u =
-    getUnit(entry.id);
-
-  if (!u) return;
-
-  if (
-    !canSelectGrandBanner(
-      entry,
-      u
-    )
-  ) {
-    return;
-  }
-
-  const options =
-    getCharacterOptions(u);
-
-  const bannerOption =
-    options.find(
-      isGrandBannerOption
-    );
-
-  if (!bannerOption) return;
-
-  toggleOption(
-    uid,
-    bannerOption.id
-  );
-}
-
-function getGrandBannerOption(
-  u
-) {
-  if (!u) return null;
-
-  return getCharacterOptions(u)
-    .find(
-      isGrandBannerOption
-    ) || null;
-}
-
-function renderGrandBannerItemSelector(
-  entry,
-  u
-) {
-  if (!entry || !u) return "";
-
-  if (
-    !isGrandBannerBearer(
-      entry,
-      u
-    )
-  ) {
-    return "";
-  }
-
-  if (
-    !battleStandardEnabled()
-  ) {
-    return "";
-  }
-
-  const items =
-    getMagicItemsData()
-      .filter(
-        item =>
-          item.categoryKey ===
-          "magic_standard"
-      );
-
-  if (!items.length) {
-    return "";
-  }
-
-  const selected =
-    entry.magicItems || [];
-
-  return `
-    <div class="grand-banner-items">
-      <div class="option-title">
-        Bannière magique
-      </div>
-
-      <select
-        class="grand-banner-select"
-        data-entry-uid="${entry.uid}"
-      >
-        <option value="">
-          Aucune bannière
-        </option>
-
-        ${items.map(item => `
-          <option
-            value="${item.id}"
-            ${selected.some(
-              selectedItem =>
-                selectedItem.id === item.id
-            ) ? "selected" : ""}
-          >
-            ${item.name}
-            (+${Number(
-              item.points || 0
-            )} pts)
-          </option>
-        `).join("")}
-      </select>
-    </div>
-  `;
-}
-
-function selectGrandBannerItem(
-  uid,
-  itemId
-) {
-  const entry =
-    findEntry(uid);
-
-  if (!entry) return;
-
-  const u =
-    getUnit(entry.id);
-
-  if (!u) return;
-
-  if (
-    !isGrandBannerBearer(
-      entry,
-      u
-    )
-  ) {
-    return;
-  }
-
-  const items =
-    getMagicItemsData()
-      .filter(
-        item =>
-          item.categoryKey ===
-          "magic_standard"
-      );
-
-  if (!entry.magicItems) {
-    entry.magicItems = [];
-  }
-
-  entry.magicItems =
-    entry.magicItems.filter(
-      item =>
-        item.categoryKey !==
-        "magic_standard"
-    );
-
-  if (itemId) {
-    const item =
-      items.find(
-        value =>
-          value.id === itemId
-      );
-
-    if (item) {
-      entry.magicItems.push({
+      const name = item.name || item.nom || "Objet magique";
+      return {
         ...item,
-        points:
-          Number(
-            item.points || 0
-          )
-      });
-    }
-  }
-
-  render();
+        id: String(item.id || ("magic-" + slug(name) + "-" + index)),
+        name,
+        points: item.points == null ? 0 : Number(item.points)
+      };
+    });
+  });
+  return result;
 }
 
-function getEffectiveMagicItems(
-  entry,
-  u
-) {
-  return getAvailableMagicItems(
-    entry,
-    u
-  );
+async function loadMagicItems(armyId) {
+  state.magicItems = null;
+  if (!armyId) return;
+  state.magicItemsLoading = true;
+  try {
+    const raw = await getJSON(PATHS.armies + "../objets-magiques/" + armyId + ".json");
+    state.magicItems = normalizeMagicItems(raw);
+  } catch (e) {
+    // A missing magic-item file is not fatal: the army can still be built.
+    state.magicItems = null;
+  } finally {
+    state.magicItemsLoading = false;
+  }
 }
 
-function renderMagicItemsSelector(
-  entry,
-  u
-) {
-  if (!entry || !u) return "";
-
-  const limit =
-    effectiveBudget(
-      u,
-      "magicItemsLimit"
-    );
-
-  if (limit == null) {
-    return "";
-  }
-
-  const items =
-    getEffectiveMagicItems(
-      entry,
-      u
-    );
-
-  if (!items.length) {
-    return "";
-  }
-
-  const selected =
-    entry.magicItems || [];
-
-  const normalItems =
-    items.filter(
-      item =>
-        item.categoryKey !==
-        "magic_standard"
-    );
-
-  return `
-    <div class="magic-items-selector">
-      <div class="option-title">
-        Objets magiques
-        <span>
-          (${limit} pts)
-        </span>
-      </div>
-
-      ${normalItems.map(item => {
-        const checked =
-          selected.some(
-            selectedItem =>
-              selectedItem.id ===
-              item.id
-          );
-
-        return `
-          <label class="magic-item-option">
-            <input
-              type="checkbox"
-              data-magic-item-id="${item.id}"
-              ${checked ? "checked" : ""}
-            >
-            <span>
-              ${item.name}
-            </span>
-            <span>
-              ${Number(
-                item.points || 0
-              )} pts
-            </span>
-          </label>
-        `;
-      }).join("")}
-    </div>
-  `;
+function magicItemsForEntry(entry, unit) {
+  if (!state.magicItems || !unit || unit.category !== "Personnages") return [];
+  const categories = [];
+  Object.entries(state.magicItems).forEach(([category, items]) => {
+    categories.push(...items.map(item => ({...item, category})));
+  });
+  return categories;
 }
 
-function renderCharacterOptions(
-  entry,
-  u
-) {
-  if (!entry || !u) return "";
-
-  const options =
-    getCharacterOptions(u);
-
-  if (!options.length) {
-    return "";
-  }
-
-  const result = {
-    mount: [],
-    banner: [],
-    normal: []
+function normalizeArmy(raw, fallbackId) {
+  return {
+    ...raw,
+    id: raw.id || fallbackId,
+    name: raw.name || raw.nom || armyLabel(fallbackId),
+    units: unitsFrom(raw),
+    composition: raw.composition || { categories: {} }
   };
-
-  for (const option of options) {
-    if (
-      isGrandBannerOption(
-        option
-      )
-    ) {
-      result.banner.push(
-        option
-      );
-    } else if (
-      isMountOption(option)
-    ) {
-      result.mount.push(
-        option
-      );
-    } else {
-      result.normal.push(
-        option
-      );
-    }
-  }
-
-  /*
-   * Grande Bannière :
-   * elle dépend maintenant exclusivement
-   * de la configuration de l'armée.
-   */
-  const bearer =
-    grandBannerBearerUid();
-
-  result.banner =
-    result.banner.filter(
-      option => {
-        if (
-          !isGrandBannerOption(
-            option
-          )
-        ) {
-          return true;
-        }
-
-        if (
-          !isBattleStandardBearerEligible(
-            u
-          )
-        ) {
-          return false;
-        }
-
-        return (
-          !bearer ||
-          bearer === entry.uid
-        );
-      }
-    );
-
-  let html = "";
-
-  if (result.mount.length) {
-    html += `
-      <div class="character-options-group">
-        <div class="option-title">
-          Monture
-        </div>
-
-        ${result.mount.map(
-          option => `
-            <label class="character-option">
-              <input
-                type="checkbox"
-                data-option-id="${option.id}"
-                ${entry.options.includes(
-                  option.id
-                ) ? "checked" : ""}
-              >
-              <span>
-                ${option.name}
-              </span>
-              <span>
-                +${getOptionPoints(
-                  option
-                )} pts
-              </span>
-            </label>
-          `
-        ).join("")}
-      </div>
-    `;
-  }
-
-  if (result.normal.length) {
-    html += `
-      <div class="character-options-group">
-        <div class="option-title">
-          Options
-        </div>
-
-        ${result.normal.map(
-          option => `
-            <label class="character-option">
-              <input
-                type="checkbox"
-                data-option-id="${option.id}"
-                ${entry.options.includes(
-                  option.id
-                ) ? "checked" : ""}
-              >
-              <span>
-                ${option.name}
-              </span>
-              <span>
-                +${getOptionPoints(
-                  option
-                )} pts
-              </span>
-            </label>
-          `
-        ).join("")}
-      </div>
-    `;
-  }
-
-  if (result.banner.length) {
-    html += `
-      <div class="character-options-group">
-        <div class="option-title">
-          Grande Bannière
-        </div>
-
-        ${result.banner.map(
-          option => `
-            <label class="character-option">
-              <input
-                type="checkbox"
-                data-option-id="${option.id}"
-                ${entry.options.includes(
-                  option.id
-                ) ? "checked" : ""}
-              >
-              <span>
-                ${option.name}
-              </span>
-              <span>
-                +${getOptionPoints(
-                  option
-                )} pts
-              </span>
-            </label>
-          `
-        ).join("")}
-      </div>
-    `;
-  }
-
-  return html;
 }
 
-function renderUnitEntry(
-  entry
-) {
-  const u =
-    getUnit(entry.id);
-
-  if (!u) return "";
-
-  const total =
-    calculateEntryPoints(entry);
-
-  return `
-    <div
-      class="army-entry"
-      data-entry-uid="${entry.uid}"
-    >
-      <div class="army-entry-header">
-        <strong>
-          ${u.name}
-        </strong>
-
-        <span>
-          ${total} pts
-        </span>
-
-        <button
-          type="button"
-          data-remove-entry="${entry.uid}"
-        >
-          ×
-        </button>
-      </div>
-
-      <div class="army-entry-body">
-        ${
-          u.category !==
-          "Personnages"
-            ? `
-              <div class="unit-count">
-                <button
-                  type="button"
-                  data-count-minus="${entry.uid}"
-                >
-                  −
-                </button>
-
-                <input
-                  type="number"
-                  min="1"
-                  value="${entry.count || 1}"
-                  data-count-input="${entry.uid}"
-                >
-
-                <button
-                  type="button"
-                  data-count-plus="${entry.uid}"
-                >
-                  +
-                </button>
-              </div>
-            `
-            : ""
-        }
-
-        ${renderCharacterOptions(
-          entry,
-          u
-        )}
-
-        ${renderMagicItemsSelector(
-          entry,
-          u
-        )}
-
-        ${renderGrandBannerItemSelector(
-          entry,
-          u
-        )}
-      </div>
-    </div>
-  `;
+function normalizeSupplement(raw, fallback) {
+  return {
+    ...fallback,
+    ...raw,
+    id: fallback.id || raw.id,
+    name: raw.name || fallback.name,
+    armies: Array.isArray(raw.armies) && raw.armies.length
+      ? raw.armies
+      : (Array.isArray(raw.army) ? raw.army : (raw.army ? [raw.army] : (fallback.armies || (fallback.army ? [fallback.army] : [])))),
+    description: raw.description || fallback.description || "",
+    allowedUnits: Array.isArray(raw.allowedUnits) ? raw.allowedUnits : (fallback.allowedUnits || []),
+    excludedUnits: Array.isArray(raw.excludedUnits) ? raw.excludedUnits : (fallback.excludedUnits || []),
+    restrictions: raw.restrictions || fallback.restrictions || {},
+    specialRules: raw.specialRules || fallback.specialRules || [],
+    units: unitsFrom(raw)
+  };
 }
 
-function getAvailableUnits() {
-  const units = [];
-
-  const sources = [
-    state.supplement?.units,
-    state.army?.units,
-    state.units
-  ];
-
-  for (const source of sources) {
-    if (!Array.isArray(source)) {
-      continue;
-    }
-
-    for (const unit of source) {
-      if (
-        !units.some(
-          existing =>
-            existing.id ===
-            unit.id
-        )
-      ) {
-        units.push(unit);
-      }
-    }
-  }
-
-  return units;
+function unitMap() {
+  const map = new Map();
+  (state.army?.units || []).forEach(u => map.set(u.id, u));
+  (state.supplement?.units || []).forEach(u => map.set(u.id, u));
+  return map;
 }
 
-function unitIsAllowedBySupplement(
-  u
-) {
-  if (!u) return false;
-
-  const allowed =
-    state.supplement
-      ?.allowedUnits;
-
-  const excluded =
-    state.supplement
-      ?.excludedUnits;
-
-  if (
-    Array.isArray(excluded) &&
-    excluded.includes(u.id)
-  ) {
-    return false;
-  }
-
-  if (
-    Array.isArray(allowed) &&
-    allowed.length
-  ) {
-    return allowed.includes(
-      u.id
-    );
-  }
-
-  return true;
+function allUnits() {
+  // Un supplément est une variante de sa liste d'armée de référence :
+  // toutes les unités de l'armée restent disponibles sauf exclusion explicite.
+  // Les unités propres au supplément sont ajoutées au catalogue.
+  const map = unitMap();
+  const excluded = new Set(state.supplement?.excludedUnits || []);
+  return [...map.values()].filter(u => !excluded.has(u.id));
 }
 
-function unitIsAllowedByArmy(
-  u
-) {
-  if (!u) return false;
-
-  const allowed =
-    state.army?.allowedUnits;
-
-  const excluded =
-    state.army?.excludedUnits;
-
-  if (
-    Array.isArray(excluded) &&
-    excluded.includes(u.id)
-  ) {
-    return false;
-  }
-
-  if (
-    Array.isArray(allowed) &&
-    allowed.length
-  ) {
-    return allowed.includes(
-      u.id
-    );
-  }
-
-  return true;
-}
-
-function unitIsSelectable(
-  u
-) {
-  if (!u) return false;
-
-  if (
-    !unitIsAllowedBySupplement(
-      u
-    )
-  ) {
-    return false;
-  }
-
-  if (
-    !unitIsAllowedByArmy(
-      u
-    )
-  ) {
-    return false;
-  }
-
-  return canAddUnit(u.id);
-}
-
-function renderUnitSelection() {
-  const container =
-    document.querySelector(
-      "#unit-selection"
-    );
-
-  if (!container) return;
-
-  const units =
-    getAvailableUnits();
-
-  container.innerHTML =
-    units.map(u => {
-      const selectable =
-        unitIsSelectable(u);
-
-      return `
-        <button
-          type="button"
-          class="unit-select-button ${
-            selectable
-              ? ""
-              : "disabled"
-          }"
-          data-add-unit="${u.id}"
-          ${selectable
-            ? ""
-            : "disabled"}
-        >
-          <span>
-            ${u.name}
-          </span>
-
-          <span>
-            ${u.points ?? 0} pts
-          </span>
-        </button>
-      `;
-    }).join("");
-}
-
-function renderArmyList() {
-  const container =
-    document.querySelector(
-      "#army-list"
-    );
-
-  if (!container) return;
-
-  container.innerHTML =
-    state.list
-      .map(
-        renderUnitEntry
-      )
-      .join("");
-}
-
-function renderArmyTotals() {
-  const total =
-    getCurrentArmyTotal();
-
-  const element =
-    document.querySelector(
-      "#army-total"
-    );
-
-  if (element) {
-    element.textContent =
-      `${total} pts`;
-  }
-}
-
-function render() {
-  renderUnitSelection();
-  renderArmyList();
-  renderArmyTotals();
-
-  if (
-    typeof updatePieChart ===
-    "function"
-  ) {
-    updatePieChart();
-  }
-
-  if (
-    typeof updateRestrictions ===
-    "function"
-  ) {
-    updateRestrictions();
-  }
-}
-
-function attachGeneratorEvents() {
-  document.addEventListener(
-    "click",
-    event => {
-      const addButton =
-        event.target.closest(
-          "[data-add-unit]"
-        );
-
-      if (addButton) {
-        addUnitToList(
-          addButton.dataset
-            .addUnit
-        );
-
-        return;
-      }
-
-      const removeButton =
-        event.target.closest(
-          "[data-remove-entry]"
-        );
-
-      if (removeButton) {
-        removeUnitFromList(
-          removeButton.dataset
-            .removeEntry
-        );
-
-        return;
-      }
-
-      const plusButton =
-        event.target.closest(
-          "[data-count-plus]"
-        );
-
-      if (plusButton) {
-        incrementUnit(
-          plusButton.dataset
-            .countPlus,
-          1
-        );
-
-        return;
-      }
-
-      const minusButton =
-        event.target.closest(
-          "[data-count-minus]"
-        );
-
-      if (minusButton) {
-        incrementUnit(
-          minusButton.dataset
-            .countMinus,
-          -1
-        );
-
-        return;
-      }
-    }
-  );
-
-  document.addEventListener(
-    "change",
-    event => {
-      const option =
-        event.target.closest(
-          "[data-option-id]"
-        );
-
-      if (option) {
-        const entryElement =
-          option.closest(
-            "[data-entry-uid]"
-          );
-
-        if (entryElement) {
-          toggleOption(
-            entryElement.dataset
-              .entryUid,
-            option.dataset
-              .optionId
-          );
-        }
-
-        return;
-      }
-
-      const countInput =
-        event.target.closest(
-          "[data-count-input]"
-        );
-
-      if (countInput) {
-        setUnitCount(
-          countInput.dataset
-            .countInput,
-          countInput.value
-        );
-
-        return;
-      }
-
-      const magicItem =
-        event.target.closest(
-          "[data-magic-item-id]"
-        );
-
-      if (magicItem) {
-        const entryElement =
-          magicItem.closest(
-            "[data-entry-uid]"
-          );
-
-        if (entryElement) {
-          toggleMagicItem(
-            entryElement.dataset
-              .entryUid,
-            magicItem.dataset
-              .magicItemId
-          );
-        }
-
-        return;
-      }
-
-      const bannerSelect =
-        event.target.closest(
-          ".grand-banner-select"
-        );
-
-      if (bannerSelect) {
-        selectGrandBannerItem(
-          bannerSelect.dataset
-            .entryUid,
-          bannerSelect.value
-        );
-      }
-    }
-  );
-}
-
-
-function $(id) {
-  return document.getElementById(id);
-}
-
-function esc(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function uid() {
-  return `entry-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
+function getUnit(id) { return unitMap().get(id); }
+function restrictionForUnit(id) { return state.supplement?.restrictions?.units?.[id] || {}; }
 
 function compositionRules() {
-  return (
-    state.supplement?.composition?.categories ||
-    state.army?.composition?.categories ||
-    {}
-  );
+  const armyCategories = state.army?.composition?.categories || {};
+  const supplementCategories = state.supplement?.restrictions?.categories || {};
+  const merged = {};
+  Object.entries(armyCategories).forEach(([cat, rule]) => { merged[cat] = { ...(rule || {}) }; });
+  Object.entries(supplementCategories).forEach(([cat, rule]) => {
+    merged[cat] = { ...(merged[cat] || {}), ...(rule || {}) };
+  });
+  return merged;
 }
 
-function effectiveCategory(u) {
-  return u?.category || u?.type || "";
+function isAllowed(u) {
+  if (!u) return false;
+  const excluded = state.supplement?.excludedUnits || [];
+  if (excluded.includes(u.id)) return false;
+  if (!conditionalAllowed(u)) return false;
+  const allowed = state.supplement?.allowedUnits || [];
+  const native = (state.supplement?.units || []).some(x => x.id === u.id);
+  return !allowed.length || native || allowed.includes(u.id);
+}
+
+function allSelectedOptionNames(){
+  const names=[];
+  state.list.forEach(entry=>{
+    const u=getUnit(entry.id); if(!u) return;
+    (entry.options||[]).forEach(id=>{ const o=(u.options||[]).find(x=>x.id===id); if(o) names.push(String(o.name).toLocaleLowerCase("fr")); });
+    [u.notes,u.specialRules,u.honours,u.honor,u.honneurs].forEach(v=>{
+      if(Array.isArray(v)) v.forEach(x=>names.push(String(typeof x==='object'?(x.name||x.label||x.id||''):x).toLocaleLowerCase("fr")));
+      else if(v) names.push(String(typeof v==='object'?(v.name||v.label||v.id||''):v).toLocaleLowerCase("fr"));
+    });
+  });
+  return names;
+}
+function hasCondition(text, unit=null){
+  const t=String(text||'').toLocaleLowerCase('fr');
+  if(!t) return true;
+  const names=allSelectedOptionNames();
+  const generalIds=state.list.filter(x=>getUnit(x.id)?.category==='Personnages').map(x=>x.id);
+  if(t.includes('eryndor') || t.includes('éryndor')) return generalIds.includes('eryndor-vareth');
+  if(t.includes('garde maritime')) return generalIds.includes('eryndor-vareth') || names.some(n=>n.includes('garde maritime')) || state.list.some(x=>{
+    const u=getUnit(x.id); return String(u?.notes||'').toLocaleLowerCase('fr').includes('honneur elfique garde maritime') || String(u?.notes||'').toLocaleLowerCase('fr').includes('honneur garde maritime');
+  });
+  if(t.includes('gardien de saphery')) return names.some(n=>n.includes('gardien de saphery'));
+  if(t.includes('maître du savoir') || t.includes('maitre du savoir')) return names.some(n=>n.includes('maître du savoir')||n.includes('maitre du savoir'));
+  return names.some(n=>t.replace(/^général avec l'honneur\s*/,'').replace(/^general avec l'honneur\s*/,'').split(/[,.]/)[0].trim() && n.includes(t.replace(/^général avec l'honneur\s*/,'').replace(/^general avec l'honneur\s*/,'').split(/[,.]/)[0].trim()));
+}
+function conditionalAllowed(u){
+  const r=restrictionForUnit(u?.id);
+  if(!r?.conditional) return true;
+  const conditions=Array.isArray(r.conditional)?r.conditional:[r.conditional];
+  return conditions.some(c=>hasCondition(c,u));
+}
+function effectiveCategory(u){
+  if(!u) return 'Autres';
+  // Éryndor permet explicitement à la Garde Maritime de devenir un choix de Base.
+  if(u.id==='lothern-sea-guard' && hasCondition('Général avec l’Honneur Garde Maritime')) return 'Unités de Base';
+  if(u.category==='Unités Spéciales' && u.id==='lothern-sea-guard' && state.list.some(x=>x.id==='eryndor-vareth')) return 'Unités de Base';
+  return u.category;
+}
+
+function getEntriesForUnit(id) {
+  return state.list.filter(x => x.id === id);
+}
+
+function getCharacterEntryCount() {
+  return state.list.filter(item => getUnit(item.id)?.category === "Personnages").length;
+}
+
+function maxEntriesForUnit(u) {
+  if (!u) return 0;
+  const r = restrictionForUnit(u.id);
+  let max = Infinity;
+
+  if (u.maxEntries != null) max = Math.min(max, Number(u.maxEntries));
+  if (r.maxEntries != null) max = Math.min(max, Number(r.maxEntries));
+  if (r.max != null && (u.category === "Personnages" || u.minSize === 1)) max = Math.min(max, Number(r.max));
+
+  if (r.maxPer1000 != null) {
+    const per = Number(r.maxPer1000);
+    if (Number.isFinite(per) && per >= 0) max = Math.min(max, Math.floor(state.pointsLimit / 1000) * per);
+  }
+
+  if (r.maxPerCharacter != null) {
+    max = Math.min(max, getCharacterEntryCount() * Number(r.maxPerCharacter));
+  }
+
+  if(r.group){
+    const groupRules=Object.entries(state.supplement?.restrictions?.units||{}).filter(([id,rule])=>rule?.group===r.group);
+    const groupMax=groupRules.reduce((m,[id,rule])=>{
+      if(rule.maxPer1000==null) return m;
+      return Math.min(m,Math.floor(state.pointsLimit/1000)*Number(rule.maxPer1000));
+    },Infinity);
+    const currentGroup=groupRules.reduce((n,[id])=>n+getEntriesForUnit(id).length,0);
+    max=Math.min(max,Math.max(0,groupMax-currentGroup));
+  }
+
+  return max;
 }
 
 function entryModelMin(u) {
   if (!u) return 1;
-  if (u.unitSize != null) {
-    const text = String(u.unitSize);
-    const match = text.match(/(\d+)/);
-    if (match) return Number(match[1]);
-  }
-  if (u.minSize != null) return Number(u.minSize) || 1;
-  return 1;
+  return Number.isFinite(Number(u.minSize)) ? Number(u.minSize) : 1;
 }
 
 function entryModelMax(u) {
   if (!u) return 1;
-  if (u.unitSize != null) {
-    const text = String(u.unitSize);
-    const match = text.match(/(\d+)\s*-\s*(\d+)/);
-    if (match) return Number(match[2]);
-  }
-  if (u.maxSize != null) return Number(u.maxSize) || 999;
-  return 999;
+  let max=(u.maxSize == null || u.maxSize === Infinity || !Number.isFinite(Number(u.maxSize))) ? Infinity : Number(u.maxSize);
+  const r=restrictionForUnit(u.id);
+  if(r.maxUnitSize!=null) max=Math.min(max,Number(r.maxUnitSize));
+  return max;
 }
 
-function isAllowed(u) {
-  return unitIsSelectable(u);
+function selectedOptions(entry) {
+  return Array.isArray(entry.options) ? entry.options : [];
 }
 
-function canAdd(u) {
-  if (!u) return false;
-  return canAddUnit(u.id);
+function optionCost(u, entry) {
+  const selected = selectedOptions(entry);
+  return selected.reduce((sum, id) => {
+    const opt = u.options.find(o => o.id === id);
+    if (!opt) return sum;
+    return sum + Number(opt.points || 0) + Number(opt.pointsPerModel || 0) * Number(entry.qty || 0);
+  }, 0);
 }
 
 function entryPoints(entry) {
-  return calculateEntryPoints(entry);
+  const u = getUnit(entry.id);
+  if (!u || u.points == null) return 0;
+  return Number(u.points) * Number(entry.qty || 0) + optionCost(u, entry) + magicCost(entry);
 }
 
-function initializeState() {
-  if (
-    typeof state !==
-    "object"
-  ) {
-    window.state = {};
-  }
-
-  if (!Array.isArray(state.list)) state.list = [];
-  if (!Array.isArray(state.catalog)) state.catalog = [];
-  if (!Array.isArray(state.units)) state.units = [];
-  if (!Array.isArray(state.mounts)) state.mounts = [];
-  if (!state.magicItems || typeof state.magicItems !== "object") state.magicItems = {};
-  if (!Array.isArray(state.honours)) state.honours = [];
-  if (!Number.isFinite(Number(state.pointsLimit))) state.pointsLimit = 2000;
-  if (typeof state.filter !== "string") state.filter = "";
-  if (typeof state.category !== "string") state.category = "";
+function getCategoryTotal(category) {
+  return state.list.reduce((sum, item) => {
+    const u = getUnit(item.id);
+    return sum + (effectiveCategory(u) === category ? entryPoints(item) : 0);
+  }, 0);
 }
 
-initializeState();
+function getTotal() { return state.list.reduce((sum,item) => sum + entryPoints(item), 0); }
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-    attachGeneratorEvents();
-    render();
+function canAdd(u, silent=false) {
+  if (!u) return false;
+  if (u.points == null || Number.isNaN(u.points)) {
+    if (!silent) setStatus(`Coût non renseigné pour « ${u.name} » : ajout désactivé.`, "error");
+    return false;
   }
-);
+  const currentEntries = getEntriesForUnit(u.id).length;
+  const max = maxEntriesForUnit(u);
+  const category=effectiveCategory(u);
+  const categoryRule=compositionRules()[category]||{};
+  if(categoryRule.maxPercent!=null){
+    const cap=state.pointsLimit*Number(categoryRule.maxPercent)/100;
+    const projected=getCategoryTotal(category)+Number(u.points||0)*entryModelMin(u);
+    if(projected>cap+1e-9){
+      if(!silent) setStatus(`${u.name} : l’ajout dépasserait la limite de ${categoryRule.maxPercent} % de ${category}.`,"error");
+      return false;
+    }
+  }
+  if (currentEntries >= max) {
+    if (!silent) {
+      const detail = Number.isFinite(max) ? ` (${max} unité${max > 1 ? "s" : ""} maximum)` : "";
+      setStatus(`Maximum atteint pour ${u.name}${detail}.`, "error");
+    }
+    return false;
+  }
+  return true;
+}
+
 function addUnit(id) {
   const u = getUnit(id);
   if (!isAllowed(u) || !canAdd(u)) return;
@@ -2408,8 +428,7 @@ function addUnit(id) {
     uid: uid(),
     id,
     qty: entryModelMin(u),
-    options: [],
-    magicItems: []
+    options: []
   });
   render();
   requestAnimationFrame(() => {
@@ -2465,6 +484,12 @@ function setOption(uidValue, optionId, checked) {
   render();
 }
 
+function setMagicBanner(uidValue,itemId){
+  const entry=findEntry(uidValue); if(!entry) return;
+  entry.magicBannerId=itemId||null;
+  render();
+}
+
 function setSelectOption(uidValue, kind, optionId) {
   const entry = findEntry(uidValue);
   const u = entry && getUnit(entry.id);
@@ -2473,21 +498,6 @@ function setSelectOption(uidValue, kind, optionId) {
   const sameKind = u.options.filter(o => o.kind === kind).map(o => o.id);
   entry.options = entry.options.filter(id => !sameKind.includes(id));
   if (optionId) entry.options.push(optionId);
-  render();
-}
-
-function addMagicItem(uidValue, itemId) {
-  const entry = findEntry(uidValue);
-  if (!entry || !itemId) return;
-  entry.magicItems ||= [];
-  if (!entry.magicItems.includes(itemId)) entry.magicItems.push(itemId);
-  render();
-}
-
-function removeMagicItem(uidValue, itemId) {
-  const entry = findEntry(uidValue);
-  if (!entry) return;
-  entry.magicItems = (entry.magicItems || []).filter(x => x !== itemId);
   render();
 }
 
@@ -2527,19 +537,12 @@ function applyModifier(base, modifier) {
 }
 
 function selectedMagicObjects(entry) {
-  return selectedMagicItemIds(entry)
-    .map(id => magicItemList().find(x => String(x.id) === String(id)))
-    .filter(Boolean);
-}
-
-// Monture actuellement sélectionnée pour une entrée (ou null).
-function selectedMount(entry, unit) {
-  const mountId = selectedOptions(entry).find(id => {
-    const o = (unit.options || []).find(x => x.id === id);
-    return o?.kind === "mount";
-  });
-  if (!mountId) return null;
-  return (unit.options || []).find(o => o.id === mountId) || null;
+  const result = [];
+  if (entry?.magicBannerId) {
+    const item = magicItemList().find(x => String(x.id) === String(entry.magicBannerId));
+    if (item) result.push(item);
+  }
+  return result;
 }
 
 function effectiveProfile(entry, unit) {
@@ -2558,9 +561,7 @@ function effectiveProfile(entry, unit) {
 
   selectedOptions(entry).forEach(id => {
     const option = (unit?.options || []).find(o => o.id === id);
-    // les modificateurs de la monture s'appliquent au profil de la
-    // monture elle-même, pas à celui du porteur : on les ignore ici.
-    if (option && option.kind !== "mount") addMods(option);
+    if (option) addMods(option);
   });
   selectedMagicObjects(entry).forEach(addMods);
 
@@ -2574,54 +575,33 @@ function effectiveProfile(entry, unit) {
 
 function statDisplay(value, modifier) {
   const mod = numericStat(modifier);
-  if (!mod) return esc(value ?? "—");
-  return `${esc(value)} <span class="stat-mod">(${mod > 0 ? "+" : ""}${mod})</span>`;
+  const suffix = mod ? ` <span class="stat-mod">(${mod > 0 ? "+" : ""}${mod})</span>` : ' <span class="stat-mod empty">(—)</span>';
+  return `${esc(value)}${suffix}`;
 }
 
-// Tableau de caractéristiques façon "fiche" : une ligne par figurine
-// (porteur, puis monture si sélectionnée), comme sur l'exemple fourni.
-function renderStatsTable(entry, unit) {
+function renderProfileTable(entry, unit, label="CARACTÉRISTIQUES") {
   const data = effectiveProfile(entry, unit);
   const profile = data.profile || {};
   const hasProfile = STAT_KEYS.some(k => profile[k] !== undefined);
   if (!hasProfile) return "";
-
-  const mount = selectedMount(entry, unit);
-  const mountProfile = mount ? profileForOption(mount) : null;
-
-  const rows = [`<tr><td class="stat-row-name">${esc(unit.name)}</td>${STAT_KEYS.map(k => `<td>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</td>`).join("")}`];
-
-  // La ligne de la monture n'apparaît que si une monture est sélectionnée.
-  if (mount) {
-    rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
-  }
-
   return `<div class="profile-block">
-    <div class="profile-title">Caractéristiques</div>
-    <table class="stat-table">
-      <thead><tr><th>Figurine</th>${STAT_KEYS.map(k => `<th>${k}</th>`).join("")}</tr></thead>
-      <tbody>${rows.join("")}</tbody>
-    </table>
-    ${mount && !mountProfile ? `<div class="profile-missing">Profil de monture non renseigné dans les données.</div>` : ""}
+    <div class="profile-title">${esc(label)}</div>
+    <div class="profile-grid">
+      ${STAT_KEYS.map(k => `<div class="profile-cell"><span class="profile-key">${k}</span><strong>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</strong></div>`).join("")}
+    </div>
   </div>`;
 }
 
-// Équipement natif (fixe, non modifiable) de l'unité.
-function renderEquipment(unit) {
-  if (!unit.equipment?.length) return "";
-  return `<div class="unit-block">
-    <div class="profile-title">Équipement</div>
-    <ul class="unit-block-list">${unit.equipment.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-  </div>`;
-}
-
-// Règles spéciales natives (fixes, toujours actives) de l'unité.
-function renderNativeRules(unit) {
-  if (!unit.rules?.length) return "";
-  return `<div class="unit-block">
-    <div class="profile-title">Règles spéciales</div>
-    <ul class="unit-block-list">${unit.rules.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-  </div>`;
+function renderMountProfile(entry, unit) {
+  const selectedMountId = selectedOptions(entry).find(id => {
+    const o = (unit.options || []).find(x => x.id === id);
+    return o?.kind === "mount";
+  });
+  if (!selectedMountId) return "";
+  const mount = (unit.options || []).find(o => o.id === selectedMountId);
+  const profile = profileForOption(mount);
+  if (!profile) return `<div class="mount-profile-block"><div class="profile-title">PROFIL DE LA MONTURE</div><div class="profile-missing">Profil de monture non renseigné dans les données.</div></div>`;
+  return `<div class="mount-profile-block"><div class="profile-title">PROFIL DE LA MONTURE — ${esc(mount.name)}</div><div class="profile-grid">${STAT_KEYS.map(k => `<div class="profile-cell"><span class="profile-key">${k}</span><strong>${esc(profile[k] ?? "—")}</strong></div>`).join("")}</div></div>`;
 }
 
 function optionGroups(u) {
@@ -2638,66 +618,43 @@ function magicItemList(){
   });
   return result;
 }
-
-// Identifiants d'objets magiques déjà pris par d'autres entrées de la liste.
-// Un objet marqué "repeatable" (unique === false / multiple === true dans les
-// données) reste disponible pour toutes les unités.
-function usedMagicItemIds(excludeUid) {
-  const used = new Set();
-  state.list.forEach(e => {
-    if (e.uid === excludeUid) return;
-    selectedMagicItemIds(e).forEach(id => {
-      const item = magicItemList().find(x => String(x.id) === String(id));
-      if (item?.repeatable) return;
-      used.add(String(id));
-    });
+function magicBannersForOption(opt){
+  const max=opt?.maxPoints!=null?Number(opt.maxPoints):Infinity;
+  return magicItemList().filter(item=>{
+    const c=String(item.category||'').toLocaleLowerCase('fr');
+    const n=String(item.name||'').toLocaleLowerCase('fr');
+    const isBanner=c.includes('banner')||c.includes('banni')||c.includes('standard')||n.includes('bannière')||n.includes('banniere');
+    return isBanner && Number(item.points||0)<=max;
   });
-  return used;
 }
-
-function availableMagicItems(entry) {
-  const used = usedMagicItemIds(entry.uid);
-  return magicItemList().filter(item => !used.has(String(item.id)));
-}
-
 function magicCost(entry){
-  return selectedMagicObjects(entry).reduce((sum,item) => sum + Number(item.points || 0), 0);
+  if(!entry?.magicBannerId) return 0;
+  const item=magicItemList().find(x=>String(x.id)===String(entry.magicBannerId));
+  return Number(item?.points||0);
 }
-function magicItemsLabel(entry){
-  return selectedMagicObjects(entry).map(x => x.name);
-}
-
-// Bloc "Monture" : sélecteur dédié, uniquement si l'unité propose des montures.
-function renderMountSelector(entry, u) {
-  const mounts = (u.options || []).filter(o => o.kind === "mount");
-  if (!mounts.length) return "";
-  const current = entry.options.find(id => mounts.some(o => o.id === id)) || "";
-  return `<div class="options-box">
-    <div class="options-title">Monture</div>
-    <label class="option-select-label">Monture
-      <select data-select-option="${esc(entry.uid)}" data-option-kind="mount">
-        <option value="">Aucune</option>
-        ${mounts.map(o => `<option value="${esc(o.id)}" ${o.id===current?"selected":""}>${esc(o.name)}${optionPrice(o)}</option>`).join("")}
-      </select>
-    </label>
-  </div>`;
+function magicName(entry){
+  if(!entry?.magicBannerId) return '';
+  return magicItemList().find(x=>String(x.id)===String(entry.magicBannerId))?.name || '';
 }
 
-// Bloc "Options de personnage" (ou "Options de l'unité") : bannières, armes,
-// armures et autres options hors monture / objets magiques.
-function renderCharacterOptions(entry, u) {
+function renderOptionControls(entry, u) {
+  if (!u.options?.length) return `<div class="no-options">Aucune option renseignée pour cette unité.</div>`;
   const groups = optionGroups(u);
-  const label = u.category === "Personnages" ? "Options de personnage" : "Options de l'unité";
-  const hasAny = groups.banner.length || groups.weapon.length || groups.armour.length || groups.other.length;
-  if (!hasAny) return "";
+  let html = "<div class=\"options-box\"><div class=\"options-title\">Options de l'unité</div>";
 
-  let html = `<div class="options-box"><div class="options-title">${esc(label)}</div>`;
-  const labels = { banner:"Bannière / étendard", weapon:"Arme", armour:"Armure / protection" };
-  ["banner","weapon","armour"].forEach(kind => {
+  const labels = { banner:"Bannière / étendard", mount:"Monture", weapon:"Arme", armour:"Armure / protection" };
+  ["banner","mount","weapon","armour"].forEach(kind => {
     const arr = groups[kind];
     if (!arr.length) return;
     const current = entry.options.find(id => arr.some(o => o.id === id)) || "";
     html += `<label class="option-select-label">${labels[kind]}<select data-select-option="${esc(entry.uid)}" data-option-kind="${kind}"><option value="">Aucune</option>${arr.map(o => `<option value="${esc(o.id)}" ${o.id===current?"selected":""}>${esc(o.name)}${optionPrice(o)}</option>`).join("")}</select></label>`;
+    if(kind === 'banner') {
+      arr.forEach(o => {
+        if(o.maxPoints == null) return;
+        const choices=magicBannersForOption(o);
+        html += `<label class="option-select-label magic-banner-choice"><span>Bannière magique ≤ ${o.maxPoints} pts</span><select data-magic-banner="${esc(entry.uid)}"><option value="">Aucune</option>${choices.map(item=>`<option value="${esc(item.id)}" ${String(item.id)===String(entry.magicBannerId||'')?'selected':''}>${esc(item.name)} — ${formatPoints(item.points||0)}</option>`).join('')}</select>${!choices.length?'<small class="muted">Aucun objet magique chargé pour cette armée.</small>':''}</label>`;
+      });
+    }
   });
 
   if (groups.other.length) {
@@ -2711,62 +668,6 @@ function renderCharacterOptions(entry, u) {
 
   html += "</div>";
   return html;
-}
-
-// Bloc "Objets magiques" : sélection par menu déroulant. Un objet déjà pris
-// par une autre unité n'apparaît plus dans la liste (sauf s'il est marqué
-// répétable dans les données), et disparaît du menu dès qu'il est ajouté ici.
-function renderMagicItemsSelector(entry, u) {
-  if (u.category !== "Personnages") return "";
-  if (!state.magicItems) {
-    return state.magicItemsLoading
-      ? `<div class="no-options">Chargement des objets magiques…</div>`
-      : "";
-  }
-  const chosen = selectedMagicObjects(entry);
-  const available = availableMagicItems(entry);
-  const limit = u.magicItemsLimit != null ? Number(u.magicItemsLimit)
-    : (restrictionForUnit(u.id).magicItemsLimit != null ? Number(restrictionForUnit(u.id).magicItemsLimit) : null);
-  const used = chosen.reduce((s,x)=>s+Number(x.points||0),0);
-
-  let html = `<div class="options-box"><div class="options-title">Objets magiques${limit!=null?` (max ${formatPoints(limit)})`:""}</div>`;
-
-  if (chosen.length) {
-    html += `<div class="check-options">` + chosen.map(item => `
-      <label class="check-option magic-item-chosen">
-        <span>${esc(item.name)} — ${formatPoints(item.points||0)}</span>
-        <button type="button" class="remove" data-remove-magic="${esc(entry.uid)}" data-magic-id="${esc(item.id)}">×</button>
-      </label>`).join("") + `</div>`;
-  }
-
-  html += `<label class="option-select-label">Ajouter un objet
-    <select data-add-magic="${esc(entry.uid)}">
-      <option value="">Choisir…</option>
-      ${available.map(item => {
-        const disabledByLimit = limit != null && (used + Number(item.points||0)) > limit;
-        return `<option value="${esc(item.id)}" ${disabledByLimit?"disabled":""}>${esc(item.category)} — ${esc(item.name)} (${formatPoints(item.points||0)})</option>`;
-      }).join("")}
-    </select>
-  </label>`;
-
-  if (!available.length && !chosen.length) html += `<small class="muted">Aucun objet magique disponible (tous déjà attribués).</small>`;
-  html += `</div>`;
-  return html;
-}
-
-// Options de règles spéciales (règles optionnelles / honneurs proposés par
-// l'unité), distinctes des règles spéciales natives affichées plus haut.
-function renderRuleOptions(entry, u) {
-  if (!u.ruleOptions?.length) return "";
-  return `<div class="options-box">
-    <div class="options-title">Options de règles spéciales</div>
-    <div class="check-options">
-      ${u.ruleOptions.map(o => {
-        const checked = entry.options.includes(o.id);
-        return `<label class="check-option"><input type="checkbox" data-check-option="${esc(entry.uid)}" data-option-id="${esc(o.id)}" ${checked?"checked":""}><span>${esc(o.name)}${optionPrice(o)}</span></label>`;
-      }).join("")}
-    </div>
-  </div>`;
 }
 
 function optionPrice(o) {
@@ -2799,16 +700,13 @@ function validate() {
 
   for (const item of state.list) {
     const u = getUnit(item.id);
+    const r = restrictionForUnit(item.id);
     if (!u) { errors.push(`Unité inconnue : ${item.id}.`); continue; }
 
     const minSize = entryModelMin(u);
     const maxSize = entryModelMax(u);
     if (item.qty < minSize) errors.push(`${u.name} : minimum ${minSize} figurine${minSize > 1 ? "s" : ""}.`);
     if (item.qty > maxSize) errors.push(`${u.name} : maximum ${maxSize} figurine${maxSize > 1 ? "s" : ""}.`);
-
-    const limit = u.magicItemsLimit != null ? Number(u.magicItemsLimit)
-      : (restrictionForUnit(u.id).magicItemsLimit != null ? Number(restrictionForUnit(u.id).magicItemsLimit) : null);
-    if (limit != null && magicCost(item) > limit) errors.push(`${u.name} : objets magiques au-dessus de la limite de ${formatPoints(limit)}.`);
   }
 
   for (const u of allUnits()) {
@@ -2834,11 +732,12 @@ function validate() {
 
   return { errors:[...new Set(errors)], warnings:[...new Set(warnings)] };
 }
+
 function filteredUnits() {
   const q = state.filter.trim().toLocaleLowerCase("fr");
   return allUnits().filter(u =>
     (state.category === "Toutes" || effectiveCategory(u) === state.category) &&
-    (!q || `${u.name} ${u.category} ${u.rules.join(" ")}`.toLocaleLowerCase("fr").includes(q))
+    (!q || `${u.name} ${u.category} ${Array.isArray(u.rules) ? u.rules.join(" ") : u.rules || ""}`.toLocaleLowerCase("fr").includes(q))
   );
 }
 
@@ -2854,131 +753,43 @@ function formatPoints(n) { return Number(n || 0).toLocaleString("fr-FR") + " pts
 
 function renderAvailable() {
   const container = $("availableUnits");
-  // Seules les unités réellement sélectionnables sont affichées : plus
-  // d'unités grisées ni de séparateur "indisponibles" dans la colonne de
-  // gauche — une unité qu'on ne peut pas ajouter (coût manquant, non
-  // autorisée par le supplément, maximum atteint…) n'y apparaît plus.
-  const units = filteredUnits().filter(u => u.points != null && isAllowed(u) && canAdd(u, true));
-
-  // groups[categorie] contient des cartes ; chaque carte est soit normale
-  // ({u, rule:null}), soit une carte "supplémentaire" générée par une règle
-  // de recatégorisation active (ex. Éryndor Vareth, Honneur Garde
-  // Maritime) : {u, rule}. Une même unité peut donc apparaître deux fois,
-  // dans deux catégories différentes, sans être dupliquée dans les données
-  // JSON — la carte normale ci-dessous n'est jamais modifiée par ce qui suit.
-  const groups = {};
-  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push({ u, rule: null }));
-
-  // Cartes additionnelles : dérivées uniquement de restrictions.reclassifications
-  // (déjà utilisées pour la case "Compter comme choix de..." dans "Ma
-  // liste") — aucune nouvelle donnée à saisir dans le JSON. On reprend
-  // l'ensemble filtré/autorisé (pas seulement `units`, qui exclut déjà les
-  // unités au maximum : le plafond pertinent ici est celui de la règle, pas
-  // celui de l'unité) pour ne pas manquer une unité déjà à son maximum de
-  // cartes normales mais encore éligible via la règle.
-  filteredUnits().filter(u => u.points != null && isAllowed(u)).forEach(u => {
-    activeReclassificationRulesFor(u).forEach(rule => {
-      if (canAddAsReclassified(u, rule)) {
-        (groups[rule.toCategory] ||= []).push({ u, rule });
-      }
-    });
-  });
-
-  if (!Object.values(groups).some(arr => arr.length)) {
-    container.innerHTML = `<div class="empty">Aucune unité disponible ne correspond aux critères.</div>`;
+  const units = filteredUnits();
+  if (!units.length) {
+    container.innerHTML = `<div class="empty">Aucune unité ne correspond aux critères.</div>`;
     return;
   }
 
-  container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
+  const groups = {};
+  units.forEach(u => (groups[effectiveCategory(u)] ||= []).push(u));
+
+  container.innerHTML = Object.entries(groups).map(([cat, arr]) => `
     <section class="unit-group">
       <div class="group-head"><span>${esc(cat)}</span><span>${arr.length}</span></div>
-      ${arr.map(({ u, rule }) => {
-        if (!rule) {
-          // Carte normale : comportement strictement inchangé.
-          const entries = getEntriesForUnit(u.id).length;
-          const max = maxEntriesForUnit(u);
-          const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
-          return `<article class="unit-card">
-            <div class="unit-main">
-              <strong>${esc(u.name)}</strong>
-              <span class="unit-points">${formatPoints(u.points)} / figurine</span>
-              <small>${esc(limitText)}</small>
-            </div>
-            <button class="add-btn" data-add="${esc(u.id)}">＋ Ajouter</button>
-          </article>`;
-        }
-        // Carte "supplémentaire" issue d'une règle de recatégorisation :
-        // le budget affiché (used/max) est celui de la règle, PARTAGÉ entre
-        // toutes les unités qui l'utilisent (ex. 0-1 au total pour Éryndor,
-        // toutes unités Spéciales/Rares confondues) — pas un compteur par
-        // unité. Affichage volontairement minimal (nom + bouton) ; le détail
-        // (points, budget partagé, règle d'origine) reste consultable via le
-        // titre (info-bulle) du bouton plutôt qu'affiché en permanence.
-        const used = reclassifiedCount(rule.id);
-        const limitText = Number.isFinite(rule.max)
-          ? `${used}/${rule.max} choix "${rule.toCategory}"${rule.label ? ` — ${rule.label}` : ""} (budget partagé)`
-          : `choix "${rule.toCategory}" illimité${rule.label ? ` — ${rule.label}` : ""}`;
-        return `<article class="unit-card">
+      ${[
+        ...arr.filter(u => !(u.points == null || !isAllowed(u) || !canAdd(u, true))),
+        ...arr.filter(u =>  (u.points == null || !isAllowed(u) || !canAdd(u, true)))
+      ].map((u, pos, ordered) => {
+        const can = canAdd(u, true);
+        const disabled = u.points == null || !isAllowed(u) || !can;
+        const rules = Array.isArray(u.rules) ? u.rules.slice(0,3).join(" · ") : (u.rules || "");
+        const entries = getEntriesForUnit(u.id).length;
+        const max = maxEntriesForUnit(u);
+        const limitText = Number.isFinite(max) ? `${entries}/${max} unité${max > 1 ? "s" : ""}` : `${entries} unité${entries > 1 ? "s" : ""}`;
+        const firstDisabled = disabled && !ordered.slice(0,pos).some(x => x.points == null || !isAllowed(x) || !canAdd(x, true));
+        const separator = firstDisabled ? `<div class="unavailable-separator">Unités actuellement indisponibles</div>` : "";
+        return separator + `<article class="unit-card ${disabled ? "disabled" : ""}">
           <div class="unit-main">
             <strong>${esc(u.name)}</strong>
+            <span class="unit-points">${u.points == null ? "Coût à renseigner" : formatPoints(u.points) + " / figurine"}</span>
+            <small>${esc(u.unitSize ? "Taille : " + u.unitSize : "")} · ${esc(limitText)}</small>
+            ${rules ? `<em>${esc(rules)}</em>` : ""}
           </div>
-          <button class="add-btn" data-add-reclassified="${esc(u.id)}" data-rule-id="${esc(rule.id)}" title="${esc(`${formatPoints(u.points)} / figurine — ${limitText}`)}">＋ Ajouter</button>
+          <button class="add-btn" data-add="${esc(u.id)}" ${disabled ? "disabled" : ""}>＋ Ajouter</button>
         </article>`;
       }).join("")}
-
     </section>`).join("");
 
   container.querySelectorAll("[data-add]").forEach(b => b.onclick = () => addUnit(b.dataset.add));
-  container.querySelectorAll("[data-add-reclassified]").forEach(b => b.onclick = () => addUnit(b.dataset.addReclassified, b.dataset.ruleId));
-}
-
-// --- Général de l'armée -----------------------------------------------
-// Le Général est, par défaut, le Personnage ayant le plus haut Commandement
-// (Cd) de la liste ; il est transféré automatiquement si un Personnage avec
-// un Commandement plus élevé est ajouté, et retransféré s'il est retiré. En
-// cas d'égalité, une coche manuelle (voir renderGeneralMarker) tranche entre
-// les personnages à égalité. Un Noble porteur de la Grande Bannière ne peut
-// jamais être Général.
-function entryStatValue(item, u, key) {
-  const n = numericStat(effectiveProfile(item, u).profile[key]);
-  return n === null ? -Infinity : n;
-}
-function personnageGeneralPool() {
-  return state.list
-    .map(item => ({ item, u: getUnit(item.id) }))
-    .filter(({item,u}) => u && u.category === "Personnages" && !isGrandBannerBearer(item, u));
-}
-function generalCandidates() {
-  const pool = personnageGeneralPool();
-  if (!pool.length) return [];
-  const max = pool.reduce((m,{item,u}) => Math.max(m, entryStatValue(item,u,"Cd")), -Infinity);
-  if (!Number.isFinite(max)) return [];
-  return pool.filter(({item,u}) => entryStatValue(item,u,"Cd") === max);
-}
-function resolvedGeneralUid() {
-  const cands = generalCandidates();
-  if (!cands.length) return null;
-  if (cands.length === 1) return cands[0].item.uid;
-  if (state.generalUid && cands.some(c => c.item.uid === state.generalUid)) return state.generalUid;
-  return cands[0].item.uid;
-}
-function setGeneral(uidValue) {
-  if (!generalCandidates().some(c => c.item.uid === uidValue)) return;
-  state.generalUid = uidValue;
-  render();
-}
-// Badge "Général" (automatique) ou coche (en cas d'égalité de Cd) affiché à
-// côté du nom d'un Personnage candidat.
-function renderGeneralMarker(item, u) {
-  if (u.category !== "Personnages") return "";
-  const candidates = generalCandidates();
-  if (!candidates.some(c => c.item.uid === item.uid)) return "";
-  const resolved = resolvedGeneralUid();
-  if (candidates.length === 1) {
-    return item.uid === resolved ? ` <span class="general-badge" title="Général de l'armée">★ Général</span>` : "";
-  }
-  const checked = item.uid === resolved;
-  return ` <label class="general-tie" title="Commandement à égalité : cocher pour désigner le Général"><input type="checkbox" data-set-general="${esc(item.uid)}" ${checked?"checked":""}> Général</label>`;
 }
 
 function renderList() {
@@ -2989,50 +800,30 @@ function renderList() {
   if (!items.length) { container.innerHTML = ""; return; }
 
   const groups = {};
-  items.forEach(x => (groups[entryEffectiveCategory(x.item, x.unit)] ||= []).push(x));
+  items.forEach(x => (groups[effectiveCategory(x.unit)] ||= []).push(x));
 
-  container.innerHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
+  container.innerHTML = Object.entries(groups).map(([cat, arr]) => `
     <section class="roster-group">
       <div class="group-head"><span>${esc(cat)}</span><span>${formatPoints(arr.reduce((s,x)=>s+entryPoints(x.item),0))}</span></div>
       ${arr.map(({item,unit}, index) => {
-        const expanded = !!item.expanded;
         const min = entryModelMin(unit), max = entryModelMax(unit);
         const maxText = max === Infinity ? "" : ` / ${max}`;
-        // Fiche repliée par défaut : seuls le nom et le coût total de
-        // l'entrée sont visibles. Cocher la case "onglet" charge la fiche
-        // complète (caractéristiques, équipement, options, objets…).
-        return `<article class="roster-entry ${expanded ? "expanded" : "collapsed"}" data-entry="${esc(item.uid)}">
+        const selected = selectedOptions(item);
+        const optionNames = selected.map(id => unit.options.find(o=>o.id===id)?.name).filter(Boolean);
+        if(item.magicBannerId) optionNames.push(magicName(item));
+        return `<article class="roster-entry" data-entry="${esc(item.uid)}">
           <div class="roster-entry-head">
-            <div>
-              <label class="entry-toggle">
-                <input type="checkbox" data-toggle-expand="${esc(item.uid)}" ${expanded?"checked":""} title="Afficher la fiche complète">
-                <span class="entry-number">${index+1}</span>
-                <strong>${esc(unit.name)}</strong>
-              </label>${renderGeneralMarker(item, unit)}
-              ${expanded ? `<small>${formatPoints(unit.points)} / figurine · Taille ${min}${maxText}</small>` : ""}
-            </div>
+            <div><span class="entry-number">${index+1}</span><strong>${esc(unit.name)}</strong><small>${formatPoints(unit.points)} / figurine · Taille ${min}${maxText}</small></div>
             <div class="entry-total">${formatPoints(entryPoints(item))}</div>
             <button class="remove" data-remove="${esc(item.uid)}" title="Retirer cette unité">×</button>
           </div>
-          ${!expanded ? "" : `
           <div class="roster-entry-controls">
             <div class="qty-control"><button data-minus="${esc(item.uid)}">−</button><input class="qty-input" type="number" min="${min}" ${max===Infinity?"":`max="${max}"`} value="${item.qty}" data-qty-input="${esc(item.uid)}" aria-label="Effectif de ${esc(unit.name)}"><button data-plus="${esc(item.uid)}">+</button><span>figurine${item.qty > 1 ? "s" : ""}</span></div>
+            <div class="selected-options">${optionNames.length ? optionNames.map(esc).join(" · ") : "Aucune option"}</div>
           </div>
-          ${renderReclassificationToggle(item, unit)}
-          ${renderStatsTable(item, unit)}
-          ${renderEquipment(item, unit)}
-          ${renderNativeRules(item, unit)}
-          ${renderMountSelector(item, unit)}
-          ${renderCharacterOptions(item, unit)}
-          ${renderHonourSelector(item, unit)}
-          ${renderMagicDomainSelector(item, unit)}
-          ${renderMagicItemsSelector(item, unit)}
-          ${renderGrandBannerItemSelector(item, unit)}
-          ${renderBannerItemsSelector(item, unit)}
-          ${renderChampionWeaponSelector(item, unit)}
-          ${renderChampionMagicItemsSelector(item, unit)}
-          ${renderRuleOptions(item, unit)}
-          `}
+          ${renderProfileTable(item, unit)}
+          ${renderMountProfile(item, unit)}
+          ${renderOptionControls(item, unit)}
         </article>`;
       }).join("")}
     </section>`).join("");
@@ -3041,20 +832,11 @@ function renderList() {
   container.querySelectorAll("[data-plus]").forEach(b => b.onclick = () => changeQty(b.dataset.plus,1));
   container.querySelectorAll("[data-qty-input]").forEach(i => { i.onchange = () => setQty(i.dataset.qtyInput,i.value); i.onkeydown = e => { if(e.key === "Enter") i.blur(); }; });
   container.querySelectorAll("[data-remove]").forEach(b => b.onclick = () => removeEntry(b.dataset.remove));
-  container.querySelectorAll("[data-toggle-expand]").forEach(b => b.onchange = () => toggleExpanded(b.dataset.toggleExpand));
   container.querySelectorAll("[data-check-option]").forEach(b => b.onchange = () => setOption(b.dataset.checkOption,b.dataset.optionId,b.checked));
   container.querySelectorAll("[data-select-option]").forEach(s => s.onchange = () => setSelectOption(s.dataset.selectOption,s.dataset.optionKind,s.value));
-  container.querySelectorAll("[data-add-magic]").forEach(s => s.onchange = () => { addMagicItem(s.dataset.addMagic, s.value); });
-  container.querySelectorAll("[data-remove-magic]").forEach(b => b.onclick = () => removeMagicItem(b.dataset.removeMagic, b.dataset.magicId));
-  container.querySelectorAll("[data-reclassify]").forEach(b => b.onchange = () => setReclassified(b.dataset.reclassify, b.dataset.ruleId, b.checked));
-  container.querySelectorAll("[data-select-honour]").forEach(s => s.onchange = () => setHonour(s.dataset.selectHonour, s.value));
-  container.querySelectorAll("[data-select-domain]").forEach(s => s.onchange = () => setMagicDomain(s.dataset.selectDomain, s.value));
-  container.querySelectorAll("[data-set-general]").forEach(b => b.onchange = () => { if (b.checked) setGeneral(b.dataset.setGeneral); else render(); });
+  container.querySelectorAll("[data-magic-banner]").forEach(s => s.onchange = () => setMagicBanner(s.dataset.magicBanner,s.value));
 }
 
-// Barre de proportions (remplace l'ancien diagramme circulaire) : un seul
-// bandeau horizontal, un segment par catégorie, largeur proportionnelle à
-// sa part dans le total de points de la liste actuelle.
 function renderCompositionChart(){
   const chart=$('compositionChart'), legend=$('compositionLegend'), toggle=$('chartToggle');
   if(!chart||!legend) return;
@@ -3062,21 +844,10 @@ function renderCompositionChart(){
   const values=cats.map(cat=>getCategoryTotal(cat));
   const total=values.reduce((a,b)=>a+b,0);
   const colors=['#c79a32','#5a2f24','#9a6f22','#a9503d'];
-
-  chart.style.display = "flex";
-  chart.style.overflow = "hidden";
-  if (!chart.style.height) chart.style.height = "28px";
-  if (!chart.style.borderRadius) chart.style.borderRadius = "6px";
-
-  chart.innerHTML = total
-    ? values.map((v,i) => {
-        const pct = v/total*100;
-        if (pct <= 0) return "";
-        return `<div class="composition-bar-segment" style="flex:${pct} 0 0;height:100%;background:${colors[i]}" title="${esc(cats[i])} — ${formatPoints(v)} (${pct.toFixed(1)} % de la liste)"></div>`;
-      }).join("")
-    : `<div class="composition-bar-segment" style="flex:1 0 0;height:100%;background:#6a5a45"></div>`;
+  let cursor=0;
+  const stops=values.map((v,i)=>{const a=total?cursor/total*360:0; cursor+=v; const b=total?cursor/total*360:0; return `${colors[i]} ${a}deg ${b}deg`;}).join(',');
+  chart.style.background=total?`conic-gradient(${stops})`:'conic-gradient(#6a5a45 0 360deg)';
   chart.hidden=!(toggle?.checked);
-
   legend.innerHTML=cats.map((cat,i)=>{const pct=state.pointsLimit?values[i]/state.pointsLimit*100:0; return `<div><span class="legend-dot" style="background:${colors[i]}"></span><span>${cat}</span><strong>${formatPoints(values[i])}</strong><small>${pct.toFixed(1)} % du format</small></div>`;}).join('');
 }
 
@@ -3129,18 +900,6 @@ function renderInfo() {
 }
 
 function render() {
-  // Une recatégorisation (ex. "compter comme choix de Base" via la
-  // Réquisition avisée d'Éryndor) n'a de sens que tant que sa condition
-  // reste vraie. Si elle ne l'est plus (le personnage qui l'accorde a été
-  // retiré de la liste, par exemple), on la lève automatiquement : l'entrée
-  // redevient simplement une unité normale de sa catégorie native, plutôt
-  // que de rester bloquée sur une recatégorisation invalide.
-  state.list.forEach(entry => {
-    if (!entry.reclassified) return;
-    const rule = findReclassificationRule(entry.reclassified);
-    const u = getUnit(entry.id);
-    if (!rule || !ruleAppliesToUnit(rule, u) || !conditionMet(rule.when)) entry.reclassified = null;
-  });
   renderCategories();
   renderAvailable();
   renderList();
@@ -3175,7 +934,7 @@ async function loadArmy(id, reset=true) {
     const raw = await getJSON(PATHS.armies + id + ".json");
     state.army = normalizeArmy(raw,id);
     if (reset) state.list = [];
-    await loadMagicItems(getMagicItemsSources());
+    await loadMagicItems(id);
     updateSelectors();
     render();
     setStatus(`${state.supplement.name} · ${state.army.name}`, "ok");
@@ -3216,7 +975,7 @@ function saveList() {
   const name = $("nameInput").value.trim() || "Ma liste";
   const payload = {
     id: uid(),
-    version: 6,
+    version: 5,
     supplementId: state.supplement?.id || "",
     armyId: state.army?.id || "",
     name,
@@ -3253,10 +1012,7 @@ function loadList() {
         id: item.id,
         qty: Number(item.qty) || 1,
         options: Array.isArray(item.options) ? item.options : [],
-        // compatibilité ascendante avec l'ancien format (une seule bannière magique)
-        magicItems: Array.isArray(item.magicItems)
-          ? item.magicItems
-          : (item.magicBannerId ? [item.magicBannerId] : [])
+        magicBannerId: item.magicBannerId || null
       })).filter(x => getUnit(x.id))
     : [];
   render();
@@ -3265,7 +1021,7 @@ function loadList() {
 
 function exportJSON() {
   const payload = {
-    version: 5,
+    version: 4,
     supplement: { id: state.supplement?.id, name: state.supplement?.name },
     army: { id: state.army?.id, name: state.army?.name },
     name: $("nameInput").value.trim() || "Ma liste",
@@ -3287,15 +1043,13 @@ function exportTXT() {
     ""
   ];
   const groups = {};
-  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[entryEffectiveCategory(item, u)] ||= []).push({u,item}); });
-  sortByCategory(Object.entries(groups)).forEach(([cat,arr]) => {
+  state.list.forEach(item => { const u=getUnit(item.id); if(u) (groups[u.category] ||= []).push({u,item}); });
+  Object.entries(groups).forEach(([cat,arr]) => {
     lines.push(cat.toUpperCase());
     lines.push("-".repeat(cat.length));
     arr.forEach(({u,item},i) => {
-      const pool = effectivePool(item, u);
-      const opts = selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
-      opts.push(...magicItemsLabel(item));
-      if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
+      const opts = selectedOptions(item).map(id=>u.options.find(o=>o.id===id)?.name).filter(Boolean);
+      if(item.magicBannerId) opts.push(magicName(item));
       lines.push(`${i+1}. ${item.qty} figurine${item.qty>1?"s":""} — ${u.name}${opts.length?" — "+opts.join(", "):""} — ${entryPoints(item)} pts`);
     });
     lines.push("");
@@ -3312,17 +1066,10 @@ function download(name, content, type) {
 }
 
 function printList() {
-  const ordered = state.list
-    .map(item => ({ item, u: getUnit(item.id) }))
-    .filter(x => x.u)
-    .sort((a,b) => categoryRank(entryEffectiveCategory(a.item, a.u)) - categoryRank(entryEffectiveCategory(b.item, b.u)));
-  const rows = ordered.map(({item,u},index) => {
-    const pool = effectivePool(item, u);
-    const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
-    opts.push(...magicItemsLabel(item));
-    if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
-    const optText=opts.join(", ");
-    return `<tr><td>${index+1}</td><td>${esc(entryEffectiveCategory(item, u))}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
+  const rows = state.list.map((item,index) => {
+    const u=getUnit(item.id); if(!u) return "";
+    const opts=selectedOptions(item).map(id=>u.options.find(o=>o.id===id)?.name).filter(Boolean); if(item.magicBannerId) opts.push(magicName(item)); const optText=opts.join(", ");
+    return `<tr><td>${index+1}</td><td>${esc(u.category)}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
   }).join("");
   const w=window.open("","_blank");
   if(!w) return setStatus("La fenêtre d'impression a été bloquée.", "error");
@@ -3358,9 +1105,7 @@ const chartToggle=$('chartToggle'); if(chartToggle) chartToggle.onchange=()=>ren
 
 async function init() {
   try {
-    // Le catalogue d'Honneurs Elfiques est indépendant de l'armée/supplément :
-    // chargé en parallèle du catalogue de suppléments, une seule fois.
-    const [raw] = await Promise.all([getJSON(PATHS.catalog), loadHonours()]);
+    const raw = await getJSON(PATHS.catalog);
     state.catalog = Array.isArray(raw) ? raw : (raw.supplements || []);
     if (!state.catalog.length) throw new Error("Aucun supplément n'est défini.");
     updateSelectors();
@@ -3372,3 +1117,4 @@ async function init() {
 }
 
 init();
+})();
