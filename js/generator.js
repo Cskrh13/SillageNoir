@@ -456,6 +456,24 @@ function optionRequirementSatisfied(item, entry, u) {
   });
 }
 
+function allUnits() {
+  const units = [];
+
+  if (Array.isArray(state.units)) {
+    units.push(...state.units);
+  }
+
+  if (Array.isArray(state.supplement?.units)) {
+    units.push(...state.supplement.units);
+  }
+
+  if (Array.isArray(state.army?.units)) {
+    units.push(...state.army.units);
+  }
+
+  return units;
+}
+
 function getUnit(id) {
   if (!id) return null;
 
@@ -2583,17 +2601,60 @@ function statDisplay(value, modifier) {
 function renderStatsTable(entry, unit) {
   const data = effectiveProfile(entry, unit);
   const profile = data.profile || {};
+  const crewProfiles = Array.isArray(unit?.crewProfiles)
+    ? unit.crewProfiles.filter(p => p && typeof p === "object")
+    : [];
+
   const hasProfile = STAT_KEYS.some(k => profile[k] !== undefined);
-  if (!hasProfile) return "";
+  const hasCrewProfiles = crewProfiles.some(p =>
+    STAT_KEYS.some(k => p[k] !== undefined)
+  );
+
+  if (!hasProfile && !hasCrewProfiles) return "";
 
   const mount = selectedMount(entry, unit);
   const mountProfile = mount ? profileForOption(mount) : null;
 
-  const rows = [`<tr><td class="stat-row-name">${esc(unit.name)}</td>${STAT_KEYS.map(k => `<td>${statDisplay(profile[k] ?? "—", data.modifiers[k] || 0)}</td>`).join("")}`];
+  const rows = [];
+
+  if (hasProfile) {
+    rows.push(
+      `<tr><td class="stat-row-name">${esc(unit.name)}</td>${
+        STAT_KEYS.map(k =>
+          `<td>${statDisplay(
+            profile[k] ?? "—",
+            data.modifiers[k] || 0
+          )}</td>`
+        ).join("")
+      }</tr>`
+    );
+  }
+
+  // Plusieurs équipages peuvent appartenir simultanément à la même unité.
+  // Chaque entrée de crewProfiles correspond à une ligne indépendante.
+  for (const crew of crewProfiles) {
+    const count = crew.count != null
+      ? ` × ${esc(crew.count)}`
+      : "";
+
+    rows.push(
+      `<tr><td class="stat-row-name">${esc(crew.name || "Équipage")}${count}</td>${
+        STAT_KEYS.map(k =>
+          `<td>${esc(crew[k] ?? "—")}</td>`
+        ).join("")
+      }</tr>`
+    );
+  }
 
   // La ligne de la monture n'apparaît que si une monture est sélectionnée.
   if (mount) {
-    rows.push(`<tr><td class="stat-row-name">${esc(mount.name)}</td>${STAT_KEYS.map(k => `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`).join("")}</tr>`);
+    rows.push(
+      `<tr><td class="stat-row-name">${esc(mount.name)}</td>${
+        STAT_KEYS.map(k =>
+          `<td>${mountProfile ? esc(mountProfile[k] ?? "-") : "-"}</td>`
+        ).join("")
+      }</tr>`
+    );
   }
 
   return `<div class="profile-block">
