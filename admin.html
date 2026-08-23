@@ -70,6 +70,70 @@ pre.preview{white-space:pre-wrap;background:#171d1f;color:#ddd7c3;padding:15px;o
 .editorbox .headline h4{margin:0;font-size:18px}
 .catbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.grid2,.grid3{grid-template-columns:1fr}.statgrid{grid-template-columns:repeat(3,1fr)}.sidebar{order:2}}
+<style>
+
+/* TON CSS EXISTANT */
+
+
+/* ==========================
+   NAVIGATION INDEXA
+========================== */
+
+.indexa-nav{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+
+    margin:0 auto 24px;
+    padding:12px 18px;
+
+    background:rgba(231,222,199,.96);
+    border:1px solid var(--ligne);
+    box-shadow:0 4px 14px var(--ombre);
+}
+
+.indexa-nav-links{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:5px;
+}
+
+.indexa-nav-links a{
+    padding:8px 11px;
+
+    font-family:"Cinzel",Georgia,serif;
+    font-size:9px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+
+    color:var(--brun);
+    text-decoration:none;
+
+    border:1px solid transparent;
+}
+
+.indexa-nav-links a:hover{
+    background:rgba(214,201,170,.65);
+}
+
+.indexa-nav-separator{
+    width:1px;
+    height:22px;
+    margin:0 5px;
+    background:var(--ligne);
+}
+
+.indexa-nav-public{
+    background:var(--noir);
+    color:#e9dfc5 !important;
+    border:1px solid #76664d !important;
+}
+
+</style>
 </style>
 </head>
 <body>
@@ -77,8 +141,28 @@ pre.preview{white-space:pre-wrap;background:#171d1f;color:#ddd7c3;padding:15px;o
 <header>
 <h1>Archives de l'Ancien Monde</h1>
 <p>Administration des données</p>
-<nav class="main-nav"><a class="home-link" href="index.html">← Retour aux Archives de l'Ancien Monde</a></nav>
-</header>
+<main class="page">
+
+    <!-- NAVIGATION INDEXA -->
+    <nav class="indexa-nav" aria-label="Navigation Indexa Administratorium">
+
+        <div class="indexa-nav-links">
+
+            <a href="admin.html">Unités</a>
+
+            <a href="atelier-redaction.html">Pages</a>
+
+            <a href="architecture-3d.html">Réseau</a>
+
+            <span class="indexa-nav-separator"></span>
+
+            <a href="index.html" class="indexa-nav-public">
+                ↗ Voir Sillage Noir
+            </a>
+
+        </div>
+
+    </nav></header>
 <div class="toolbar">
 <button class="btn" onclick="loadGitHub()">↻ Charger GitHub</button>
 <button class="btn dark" onclick="document.getElementById('fileInput').click()">↑ Importer un fichier</button>
