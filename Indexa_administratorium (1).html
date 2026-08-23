@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indexa_administratorium — Archives de l'Ancien Monde</title>
+<meta name="description" content="Page d&#39;administration du réseau">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&family=Cinzel:wght@400;600&family=EB+Garamond:wght@400;600&family=Crimson+Text:wght@400;600&family=MedievalSharp&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bleu-noir: #1b2325;
+    --bleu-ardoise: #2d393d;
+    --texte-clair: #d8d1b8;
+    --ligne: rgba(125,139,140,.5);
+    --police-texte: 'Vollkorn', Georgia, serif;
+    --police-titres: 'Vollkorn', Georgia, serif;
+    --taille-texte: 12px;
+    --taille-titres: 15px;
+    --couleur-texte: #3a352a;
+    --couleur-titres: #252a29;
+    --couleur-accent: #1b2325;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: linear-gradient(rgba(170,145,105,.72), rgba(170,145,105,.72)), url("images/fond-carte.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    color: #252a29;
+    font-family: "Vollkorn", Georgia, serif;
+}
+.page-wrap {
+    width: calc(100% - 40px);
+    max-width: 900px;
+    margin: 35px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    align-items: center;
+}
+nav.retour { width: 100%; text-align: center; margin-bottom: -10px; }
+nav.retour a { color: #3a352a; font-size: 13px; text-decoration: none; letter-spacing: 1px; }
+a { color: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+.button {
+    display: inline-block;
+    padding: 8px 16px;
+    border: 1px solid #9c9278;
+    color: var(--texte-clair);
+    background: rgba(25,32,34,.94);
+    text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+.button:hover { filter: brightness(1.15); }
+.button.disabled { opacity: .55; cursor: default; pointer-events: none; }
+.p-hero, .p-texte, .p-image, .p-grille, .p-fiche, .p-carrousel, .p-footer {
+    width: 100%;
+    max-width: 900px;
+}
+.p-hero {
+    padding: 34px;
+    background: rgba(25,32,34,.94);
+    border: 1px solid var(--ligne);
+    color: var(--texte-clair);
+    text-align: center;
+}
+.p-hero h1 {
+    margin: 0 0 10px;
+    font-family: var(--police-titres), Georgia, serif;
+    font-size: var(--taille-titres);
+    color: var(--couleur-titres);
+}
+.p-hero p { margin: 0 0 18px; color: #cfc7ab; }
+.p-texte {
+    padding: 25px 30px;
+    background: rgba(245,238,215,.86);
+    border: 1px solid #8f856e;
+    color: var(--couleur-texte);
+    font-size: var(--taille-texte);
+}
+.p-texte h2, .p-fiche h2, .p-grille h2 {
+    font-family: var(--police-titres), Georgia, serif;
+    color: var(--couleur-titres);
+}
+.p-image {
+    text-align: center;
+}
+.p-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: auto;
+}
+.p-grille-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+.p-card {
+    background: rgba(25,32,34,.94);
+    border: 1px solid var(--ligne);
+    color: var(--texte-clair);
+    padding: 18px;
+}
+.p-card img { width: 100%; height: auto; margin-bottom: 12px; }
+.p-card h3 { margin: 0 0 8px; font-family: var(--police-titres), Georgia, serif; }
+.p-card p { margin: 0 0 12px; color: #cfc7ab; }
+.p-fiche {
+    background: rgba(25,32,34,.94);
+    border: 1px solid var(--ligne);
+    color: var(--texte-clair);
+    padding: 25px;
+}
+.p-fiche h2 { margin-top: 0; }
+.fiche-section { margin-top: 18px; }
+.fiche-section h3 {
+    font-family: var(--police-titres), Georgia, serif;
+    color: var(--couleur-titres);
+}
+.p-carrousel {
+    background: rgba(25,32,34,.94);
+    border: 1px solid var(--ligne);
+    color: var(--texte-clair);
+}
+.p-carrousel-vignettes {
+    display: flex;
+    gap: 10px;
+    padding: 12px;
+    overflow-x: auto;
+}
+.p-vignette {
+    min-width: 120px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--texte-clair);
+    padding: 6px;
+    cursor: pointer;
+    font-family: inherit;
+}
+.p-vignette:hover, .p-vignette.active { border-color: #b7975c; }
+.p-vignette img {
+    display: block;
+    width: 100%;
+    height: 70px;
+    object-fit: cover;
+    margin-bottom: 5px;
+}
+.p-carrousel-slide {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+}
+.p-carrousel-texte { flex: 1; text-align: left; }
+.p-carrousel-texte h3 {
+    font-family: "IM Fell English SC", Georgia, serif;
+    font-weight: normal;
+    letter-spacing: 1px;
+    margin: 0 0 10px;
+}
+.p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
+.p-carrousel-image { width: 200px; flex-shrink: 0; }
+.p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
+.p-carrousel-fleche {
+    background: none;
+    border: none;
+    color: var(--texte-clair);
+    font-size: 30px;
+    cursor: pointer;
+    padding: 8px 12px;
+}
+.p-carrousel-fleche:hover { color: #fff; }
+.p-carrousel-dots {
+    display: flex;
+    gap: 7px;
+    justify-content: center;
+    padding: 0 0 18px;
+}
+.p-dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: #9c9278;
+    cursor: pointer;
+}
+.p-dot.active { background: #d0b16b; }
+.p-footer {
+    padding: 22px 24px;
+    text-align: center;
+    background: rgba(25,32,34,.94);
+    border: 1px solid var(--ligne);
+    color: var(--texte-clair);
+}
+.p-footer p { font-size: 13px; margin: 0 0 10px; color: #cfc7ab; }
+.p-footer-liens { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.p-footer-lien { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--texte-clair); }
+.rich-editable img, .p-texte img, .p-hero img, .p-card img, .p-fiche img, .p-carrousel-texte img, .p-footer img {
+    max-width: 100%; height: auto; display: block; margin: 8px 0;
+}
+@media(max-width:650px) {
+    .p-carrousel-slide { flex-direction: column; }
+    .p-carrousel-image { width: min(100%, 300px); }
+    .p-hero, .p-texte, .p-fiche { padding: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+<nav class="retour"><a href="index.html">&larr; Retour aux Archives de l'Ancien Monde</a></nav>
+<div id="page-root"></div>
+</div>
+
+<script>
+/*
+ * ARCHIVES DE L'ANCIEN MONDE
+ * Moteur autonome de rendu des pages.
+ * Les données de la page sont embarquées dans PAGE_DATA.
+ * Aucun chargement de atelier-redaction.html ou de BLOC_TYPES externe.
+ */
+const PAGE_DATA = {"id":"Indexa_administratorium","titre":"Indexa_administratorium","description":"Page d'administration du réseau","style":{"policeTitres":"'Vollkorn', Georgia, serif","tailleTitres":15,"policeTexte":"'Vollkorn', Georgia, serif","tailleTexte":12,"couleurTexte":"#3a352a","couleurTitres":"#252a29","couleurAccent":"#1b2325"},"blocs":[{"type":"hero","titre":"Indexa administratorium","sousTitre":"","texte":"\u003cbr\u003e","lien":"","boutonLabel":"Télécharger"},{"type":"carrousel","slides":[{"nom":"Administration des unités","description":"\u003cbr\u003e","image":"https://i.ibb.co/jvZj8LjW/Administration-Des-Unit-s.png","lien":"https://cskrh13.github.io/SillageNoir/admin.html","statut":"disponible"},{"nom":"Administration des pages","description":"","image":"https://i.ibb.co/5gp23D7D/Administration-des-pages-1.png","lien":"atelier-redaction.html","statut":"disponible"},{"nom":"Carte du réseau","description":"","image":"https://i.ibb.co/PGWz5gtx/Carte-Du-Reseau-1.png","lien":"https://cskrh13.github.io/SillageNoir/architecture-3d.html","statut":"disponible"}]},{"type":"pied-de-page","texte":"Archives de l'Ancien Monde - fichier central","liens":[]}]};
+
+function escHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function(ch) {
+        return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+    });
+}
+
+function escAttr(value) {
+    return escHTML(value);
+}
+
+function corpsHTML(value) {
+    const str = String(value ?? "");
+    if (!str.trim()) return "";
+    if (/<[a-z][sS]*>/i.test(str)) return str;
+    return str
+        .split(/\n\s*\n/)
+        .filter(function(p){ return p.trim(); })
+        .map(function(p){ return "<p>" + escHTML(p.trim()).replace(/\n/g, "<br>") + "</p>"; })
+        .join("");
+}
+
+function lienHTML(label, href, disabled) {
+    if (disabled || !href) {
+        return '<span class="button disabled">' + escHTML(label) + '</span>';
+    }
+    return '<a class="button" href="' + escAttr(href) + '">' + escHTML(label) + '</a>';
+}
+
+function renderHero(b) {
+    const titre = b.titre || b.title || PAGE_DATA.titre || "";
+    const texte = b.texte || b.description || b.contenu || "";
+    const label = b.boutonLabel || "En savoir plus";
+    return '<section class="p-hero">' +
+        '<h1>' + escHTML(titre) + '</h1>' +
+        corpsHTML(texte) +
+        (b.lien ? '<div>' + lienHTML(label, b.lien, false) + '</div>' : '') +
+        '</section>';
+}
+
+function renderTexte(b) {
+    return '<section class="p-texte">' +
+        (b.titre ? '<h2>' + escHTML(b.titre) + '</h2>' : '') +
+        corpsHTML(b.texte || b.contenu || b.description || "") +
+        '</section>';
+}
+
+function renderImage(b) {
+    if (!b.image && !b.src) return "";
+    const src = b.image || b.src;
+    return '<section class="p-image">' +
+        '<img src="' + escAttr(src) + '" alt="' + escAttr(b.alt || b.titre || "") + '">' +
+        (b.legende ? '<p>' + escHTML(b.legende) + '</p>' : '') +
+        '</section>';
+}
+
+function renderGrille(b) {
+    const cartes = Array.isArray(b.cartes) ? b.cartes :
+                   Array.isArray(b.cards) ? b.cards :
+                   Array.isArray(b.elements) ? b.elements : [];
+    return '<section class="p-grille">' +
+        (b.titre ? '<h2>' + escHTML(b.titre) + '</h2>' : '') +
+        '<div class="p-grille-grid">' +
+        cartes.map(function(c) {
+            const img = c.image ? '<img src="' + escAttr(c.image) + '" alt="' + escAttr(c.nom || c.titre || "") + '">' : '';
+            const label = c.boutonLabel || "Ouvrir";
+            const href = c.lien || c.url || "";
+            return '<article class="p-card">' +
+                img +
+                '<h3>' + escHTML(c.nom || c.titre || "") + '</h3>' +
+                corpsHTML(c.description || c.texte || "") +
+                (href ? '<div>' + lienHTML(label, href, false) + '</div>' : '') +
+                '</article>';
+        }).join("") +
+        '</div></section>';
+}
+
+function renderFiche(b) {
+    const sections = Array.isArray(b.sections) ? b.sections : [];
+    return '<section class="p-fiche">' +
+        (b.titre ? '<h2>' + escHTML(b.titre) + '</h2>' : '') +
+        (b.introduction ? corpsHTML(b.introduction) : '') +
+        sections.map(function(s) {
+            return '<div class="fiche-section">' +
+                (s.titre ? '<h3>' + escHTML(s.titre) + '</h3>' : '') +
+                corpsHTML(s.texte || s.contenu || "") +
+                '</div>';
+        }).join("") +
+        '</section>';
+}
+
+function renderCarousel(b) {
+    const slides = Array.isArray(b.slides) ? b.slides : [];
+    if (!slides.length) {
+        return '<section class="p-carrousel"><div class="p-carrousel-slide">Aucun élément dans le carrousel.</div></section>';
+    }
+
+    const id = "carrousel-" + Math.random().toString(36).slice(2, 10);
+
+    return '<section class="p-carrousel" id="' + id + '" data-carousel>' +
+        '<div class="p-carrousel-vignettes">' +
+        slides.map(function(s, i) {
+            return '<button type="button" class="p-vignette' + (i === 0 ? ' active' : '') + '" data-carousel-index="' + i + '">' +
+                (s.image ? '<img src="' + escAttr(s.image) + '" alt="' + escAttr(s.nom || s.titre || "") + '">' : '') +
+                '<span>' + escHTML(s.nom || s.titre || ("Élément " + (i + 1))) + '</span>' +
+                '</button>';
+        }).join("") +
+        '</div>' +
+        '<div class="p-carrousel-slide">' +
+            '<button type="button" class="p-carrousel-fleche" data-carousel-prev aria-label="Précédent">&lsaquo;</button>' +
+            '<div class="p-carrousel-texte" data-carousel-text></div>' +
+            '<div class="p-carrousel-image" data-carousel-image></div>' +
+            '<button type="button" class="p-carrousel-fleche" data-carousel-next aria-label="Suivant">&rsaquo;</button>' +
+        '</div>' +
+        '<div class="p-carrousel-dots">' +
+            slides.map(function(s, i) {
+                return '<button type="button" class="p-dot' + (i === 0 ? ' active' : '') + '" data-carousel-index="' + i + '" aria-label="Afficher ' + (i + 1) + '"></button>';
+            }).join("") +
+        '</div>' +
+        '</section>';
+}
+
+function renderFooter(b) {
+    const liens = Array.isArray(b.liens) ? b.liens :
+                  Array.isArray(b.links) ? b.links : [];
+    return '<footer class="p-footer">' +
+        (b.texte ? corpsHTML(b.texte) : '') +
+        '<div class="p-footer-liens">' +
+        liens.map(function(l) {
+            const label = l.label || l.nom || l.titre || "Lien";
+            const href = l.lien || l.url || "#";
+            return '<a class="p-footer-lien" href="' + escAttr(href) + '">' + escHTML(label) + '</a>';
+        }).join("") +
+        '</div></footer>';
+}
+
+const RENDERERS = {
+    "hero": renderHero,
+    "texte": renderTexte,
+    "image": renderImage,
+    "grille-cartes": renderGrille,
+    "fiche-detaillee": renderFiche,
+    "carrousel": renderCarousel,
+    "pied-de-page": renderFooter
+};
+
+function renderBloc(b) {
+    if (!b || !b.type) return "";
+    const renderer = RENDERERS[b.type];
+    if (!renderer) {
+        console.warn("Type de bloc inconnu :", b.type);
+        return "";
+    }
+    return renderer(b);
+}
+
+function renderPage() {
+    const root = document.getElementById("page-root");
+    root.innerHTML = (PAGE_DATA.blocs || []).map(renderBloc).join("");
+    initCarrousels(root);
+}
+
+function initCarrousels(root) {
+    root.querySelectorAll("[data-carousel]").forEach(function(carousel) {
+        const block = PAGE_DATA.blocs.find(function(b) {
+            return b && b.type === "carrousel";
+        });
+        const slides = block && Array.isArray(block.slides) ? block.slides : [];
+        if (!slides.length) return;
+
+        let index = 0;
+        const text = carousel.querySelector("[data-carousel-text]");
+        const image = carousel.querySelector("[data-carousel-image]");
+        const thumbs = carousel.querySelectorAll("[data-carousel-index]");
+        const prev = carousel.querySelector("[data-carousel-prev]");
+        const next = carousel.querySelector("[data-carousel-next]");
+
+        function draw() {
+            const s = slides[index] || {};
+            const titre = s.nom || s.titre || "";
+            const description = s.description || s.texte || "";
+            const statut = s.statut || "disponible";
+            const label = s.boutonLabel || (statut === "bientot" ? "Bientôt disponible" : statut === "archive" ? "Archivé" : "Télécharger");
+            const disabled = statut !== "disponible" || !s.lien;
+
+            text.innerHTML =
+                '<h3>' + escHTML(titre) + '</h3>' +
+                corpsHTML(description) +
+                lienHTML(label, s.lien || "", disabled);
+
+            image.innerHTML = s.image
+                ? '<img src="' + escAttr(s.image) + '" alt="' + escAttr(titre) + '">'
+                : "";
+
+            thumbs.forEach(function(el, i) {
+                el.classList.toggle("active", Number(el.getAttribute("data-carousel-index")) === index);
+            });
+        }
+
+        function go(n) {
+            index = (n + slides.length) % slides.length;
+            draw();
+        }
+
+        prev.addEventListener("click", function(){ go(index - 1); });
+        next.addEventListener("click", function(){ go(index + 1); });
+        thumbs.forEach(function(el) {
+            el.addEventListener("click", function(){
+                go(Number(el.getAttribute("data-carousel-index")));
+            });
+        });
+
+        draw();
+    });
+}
+
+renderPage();
+</script>
+</body>
+</html>
