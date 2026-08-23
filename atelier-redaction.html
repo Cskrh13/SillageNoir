@@ -30,62 +30,147 @@ body {
     color: var(--encre);
     font-family: "Vollkorn", Georgia, serif;
 }
-.page { width: calc(100% - 40px); max-width: 1200px; margin: 35px auto; }
+button, input, select, textarea { font-family: "Vollkorn", Georgia, serif; }
+button { cursor: pointer; }
+.page { width: calc(100% - 40px); max-width: 1300px; margin: 35px auto; }
 header {
-    padding: 40px; text-align: center; color: var(--texte-clair);
+    padding: 34px; text-align: center; color: var(--texte-clair);
     background: linear-gradient(rgba(25,32,34,.94), rgba(30,38,40,.94)), url("images/fond-carte.jpg");
     background-size: cover; border: 1px solid var(--ligne);
 }
-header h1 { margin: 0; font-family: "IM Fell English SC", Georgia, serif; font-size: clamp(32px, 5vw, 58px); font-weight: normal; letter-spacing: 4px; }
-header p { margin: 12px 0 0; color: #aaa89b; letter-spacing: 2px; }
-.editor { margin-top: 20px; padding: 30px; background: rgba(222,212,183,.95); border: 1px solid var(--ligne); }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+header h1 { margin: 0; font-family: "IM Fell English SC", Georgia, serif; font-size: clamp(28px, 4.5vw, 50px); font-weight: normal; letter-spacing: 4px; }
+header p { margin: 10px 0 0; color: #aaa89b; letter-spacing: 2px; font-size: 13px; }
+
+/* -------- Barre page (métadonnées + import/export) -------- */
+.page-bar {
+    margin-top: 20px; padding: 18px 22px; background: rgba(222,212,183,.95);
+    border: 1px solid var(--ligne); display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+}
+.page-bar .field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
+.page-bar label { font-weight: 600; font-size: 12px; color: #363b39; text-transform: uppercase; letter-spacing: 1px; }
+.page-bar input { padding: 9px 10px; border: 1px solid #9c9278; background: #eee7d1; color: #252a29; font-size: 14px; }
+.page-bar .btnrow { display: flex; gap: 8px; flex-wrap: wrap; }
+
+button.action {
+    padding: 9px 14px; border: 1px solid #596365; background: var(--bleu-noir);
+    color: var(--texte-clair); font-family: "IM Fell English SC", Georgia, serif;
+    letter-spacing: .5px; font-size: 13px;
+}
+button.action:hover { background: var(--bleu-ardoise); }
+button.action.ok { background: #3c4f40; }
+button.action.danger { background: #5c3230; }
+button.action.small { padding: 5px 9px; font-size: 12px; }
+button.action:disabled { opacity: .4; cursor: not-allowed; }
+
+.status-line { margin-top: 8px; color: #4a4530; font-size: 13px; min-height: 18px; }
+
+/* -------- Corps : liste de blocs + éditeur -------- */
+.workzone { margin-top: 20px; display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: start; }
+.blocs-list {
+    background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 16px;
+}
+.blocs-list h2 { margin: 0 0 12px; font-family: "IM Fell English SC", Georgia, serif; font-size: 18px; letter-spacing: 1px; }
+.add-bloc { display: flex; gap: 6px; margin-bottom: 14px; }
+.add-bloc select { flex: 1; padding: 8px; border: 1px solid #9c9278; background: #eee7d1; font-size: 13px; }
+.bloc-item {
+    display: flex; flex-direction: column; gap: 6px; padding: 10px; margin-bottom: 8px;
+    background: #eee7d1; border: 1px solid #9c9278; cursor: pointer;
+}
+.bloc-item.active { border-color: #56442d; background: #e4d8b3; }
+.bloc-item .titre-item { font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; gap: 6px; }
+.bloc-item .type-item { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6b6350; }
+.bloc-item .controls { display: flex; gap: 4px; flex-wrap: wrap; }
+.bloc-item .controls button {
+    padding: 4px 7px; font-size: 11px; border: 1px solid #9c9278; background: #ded4b7; color: #252a29;
+}
+.bloc-item .controls button:hover { background: #cfc19a; }
+.empty-hint { font-size: 13px; color: #56442d; padding: 8px 2px; }
+
+.editor-col { display: flex; flex-direction: column; gap: 18px; }
+.editor {
+    padding: 24px; background: rgba(222,212,183,.95); border: 1px solid var(--ligne);
+}
+.editor h2 { margin: 0 0 4px; font-family: "IM Fell English SC", Georgia, serif; font-size: 20px; letter-spacing: 1px; }
+.editor .subtitle-editor { margin: 0 0 16px; font-size: 12px; color: #6b6350; text-transform: uppercase; letter-spacing: 1px; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field.full { grid-column: 1 / -1; }
-label { font-weight: 600; color: #363b39; }
+label { font-weight: 600; color: #363b39; font-size: 13px; }
 input, select, textarea {
-    width: 100%; padding: 11px 13px; border: 1px solid #9c9278; background: #eee7d1;
-    color: #252a29; font-family: "Vollkorn", Georgia, serif; font-size: 15px;
+    width: 100%; padding: 10px 12px; border: 1px solid #9c9278; background: #eee7d1;
+    color: #252a29; font-size: 14px;
 }
-textarea { min-height: 95px; resize: vertical; }
-.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; }
-.actions button {
-    padding: 12px 18px; border: 1px solid #596365; background: var(--bleu-noir);
-    color: var(--texte-clair); font-family: "IM Fell English SC", Georgia, serif; cursor: pointer;
+textarea { min-height: 80px; resize: vertical; }
+@media(max-width: 900px) { .grid { grid-template-columns: 1fr; } .field.full { grid-column: auto; } .workzone { grid-template-columns: 1fr; } }
+
+.sub-list { margin-top: 16px; border-top: 1px dashed #9c9278; padding-top: 14px; }
+.sub-list h4 { margin: 0 0 10px; font-size: 14px; }
+.sub-item {
+    padding: 12px; margin-bottom: 10px; background: #e4d8b3; border: 1px solid #9c9278;
+    display: flex; flex-direction: column; gap: 8px;
 }
-.actions button:hover { background: var(--bleu-ardoise); }
-.status { margin-top: 10px; color: #555; }
+.sub-item .sub-head { display: flex; justify-content: space-between; align-items: center; }
+.sub-item .sub-head span { font-weight: 600; font-size: 13px; }
+.sub-item .sub-controls { display: flex; gap: 4px; }
+.sub-item .sub-controls button {
+    padding: 3px 7px; font-size: 11px; border: 1px solid #9c9278; background: #ded4b7;
+}
+
+/* -------- Aperçu : styles réels du site -------- */
 .preview-label {
-    margin-top: 30px; text-transform: uppercase; letter-spacing: 2px; font-size: 12px;
+    margin-top: 6px; text-transform: uppercase; letter-spacing: 2px; font-size: 12px;
     color: #56442d; text-align: center;
 }
 .preview-frame {
-    margin-top: 12px; padding: 30px; background: linear-gradient(rgba(170,145,105,.72), rgba(170,145,105,.72)), url("images/fond-carte.jpg");
-    background-size: cover; border: 1px solid var(--ligne); display: flex; justify-content: center;
+    margin-top: 10px; padding: 30px 25px; background: linear-gradient(rgba(170,145,105,.72), rgba(170,145,105,.72)), url("images/fond-carte.jpg");
+    background-size: cover; border: 1px solid var(--ligne); display: flex; flex-direction: column; gap: 26px; align-items: center;
 }
-/* ============ Classes REELLES du site (index.html) reproduites ici pour l'apercu ============ */
+.preview-empty { color: #56442d; font-size: 13px; padding: 20px; }
+
+/* classes réelles reproduites (issues de index.html) */
+.p-hero {
+    width: 100%; max-width: 780px; padding: 26px 30px; text-align: center;
+    background: rgba(25,32,34,.94); border: 1px solid var(--ligne); color: var(--texte-clair);
+}
+.p-hero h3 { margin: 0 0 8px; text-transform: uppercase; letter-spacing: 2px; font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; }
+.p-hero p { font-size: 14px; margin: 10px 0; }
+.p-texte { width: 100%; max-width: 780px; padding: 10px 6px; }
+.p-texte h3 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; }
+.p-texte.centre { text-align: center; }
+.p-texte p { font-size: 15px; line-height: 1.6; margin: 0 0 10px; color: #3a352a; }
+.p-image { width: 100%; max-width: 780px; text-align: center; }
+.p-image img { width: 100%; max-height: 340px; object-fit: cover; border: 1px solid var(--ligne); }
+.p-image figcaption { margin-top: 8px; font-size: 12px; color: #56442d; }
+.p-grille-titre { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 2px; text-align: center; margin: 0 0 4px; }
+.p-grille-sep { width: 80px; height: 1px; background: var(--ligne); margin: 0 auto 20px; }
+.p-grille { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; max-width: 900px; }
 .card {
     background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 18px;
-    max-width: 300px; text-align: center;
+    max-width: 260px; text-align: center;
 }
 .card h3 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; }
-.card-carte-image { width: 100%; height: 180px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
-.card p { font-size: 14px; line-height: 1.5; margin: 12px 0; color: #3a352a; }
+.card-carte-image { width: 100%; height: 150px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
+.card p { font-size: 13px; line-height: 1.5; margin: 12px 0; color: #3a352a; }
 .button {
     display: inline-block; padding: 9px 16px; border: 1px solid #596365; background: var(--bleu-noir);
     color: var(--texte-clair); font-family: "IM Fell English SC", Georgia, serif; letter-spacing: 1px;
     text-decoration: none; text-transform: uppercase; font-size: 13px;
 }
-.button:hover { background: var(--bleu-ardoise); }
 .button.disabled { opacity: .5; pointer-events: none; }
+.p-fiche { width: 100%; max-width: 780px; background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 24px; }
+.p-fiche .fiche-image { width: 100%; max-height: 260px; object-fit: cover; border: 1px solid var(--ligne); margin-bottom: 16px; }
+.p-fiche h2 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 2px; margin: 0 0 4px; text-align: center; }
+.p-fiche .sous-titre { text-align: center; font-size: 13px; color: #6b6350; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.p-fiche .accroche { text-align: center; font-style: italic; margin-bottom: 18px; color: #3a352a; }
+.p-fiche .fiche-section { margin-top: 16px; border-top: 1px dashed #9c9278; padding-top: 14px; }
+.p-fiche .fiche-section h4 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; margin: 0 0 8px; letter-spacing: .5px; }
+.p-fiche .fiche-section p { font-size: 14px; line-height: 1.6; color: #3a352a; margin: 0; white-space: pre-wrap; }
+
 .output { margin-top: 25px; }
+.output label { display: block; margin-bottom: 8px; }
 .output textarea {
-    min-height: 260px; background: #15191a; color: #d8d1b8;
-    font-family: Consolas, monospace; font-size: 13px;
-}
-@media(max-width: 750px) {
-    .grid { grid-template-columns: 1fr; }
-    .field.full { grid-column: auto; }
+    min-height: 280px; background: #15191a; color: #d8d1b8;
+    font-family: Consolas, monospace; font-size: 12.5px;
 }
 </style>
 </head>
@@ -94,235 +179,426 @@ textarea { min-height: 95px; resize: vertical; }
 
 <header>
     <h1>Atelier des Archives</h1>
-    <p>Générateur de fiches pour l'Ancien Monde — HTML aligné sur le site réel</p>
+    <p>Compositeur de pages — moteur de blocs (vitrines &amp; fiches détaillées)</p>
 </header>
 
-<section class="editor">
-    <div class="grid">
-        <div class="field">
-            <label for="nom">Nom du contenu</label>
-            <input id="nom" placeholder="Ex. La Marée de Sang">
-        </div>
-        <div class="field">
-            <label for="type">Type de contenu</label>
-            <select id="type">
-                <option value="supplement">Supplément</option>
-                <option value="campagne">Campagne narrative</option>
-                <option value="cartes">Cartes de références</option>
-                <option value="scenario">Scénario</option>
-                <option value="armee">Livre / supplément d'armée</option>
-                <option value="outil">Outil</option>
-                <option value="autre">Autre création</option>
-            </select>
-        </div>
-        <div class="field">
-            <label for="peuple">Peuple / faction</label>
-            <input id="peuple" placeholder="Ex. Druchii, Hauts-Elfes...">
-        </div>
-        <div class="field">
-            <label for="statut">Statut</label>
-            <select id="statut">
-                <option value="disponible">Disponible</option>
-                <option value="bientot">Bientôt disponible</option>
-                <option value="archive">Archive</option>
-            </select>
-        </div>
-        <div class="field full">
-            <label for="accroche">Accroche</label>
-            <textarea id="accroche" placeholder="Une phrase courte, type slogan de carte — ex. « Faites souffrir vos ennemis. Montrez leur votre cruauté ! »"></textarea>
-        </div>
-        <div class="field">
-            <label for="contexte">Contexte</label>
-            <textarea id="contexte" placeholder="Où se déroule l'histoire ? Quelle est la situation ?"></textarea>
-        </div>
-        <div class="field">
-            <label for="contenu">Contenu</label>
-            <textarea id="contenu" placeholder="Que contient concrètement le supplément ? (nombre de scénarios, mécanique...)"></textarea>
-        </div>
-        <div class="field full">
-            <label for="promesse">Promesse pour le joueur</label>
-            <textarea id="promesse" placeholder="Quelle expérience le joueur va-t-il vivre ?"></textarea>
-        </div>
-        <div class="field">
-            <label for="image">Image (chemin dans images/)</label>
-            <input id="image" placeholder="images/couverture.png">
-        </div>
-        <div class="field">
-            <label for="lien">Lien de téléchargement</label>
-            <input id="lien" placeholder="https://drive.google.com/...">
-        </div>
+<section class="page-bar">
+    <div class="field">
+        <label for="pageId">Identifiant de la page (slug)</label>
+        <input id="pageId" placeholder="ex. armee-elfes-noirs" oninput="onMetaChange()">
     </div>
-
-    <div class="actions">
-        <button type="button" onclick="generer()">Générer la fiche</button>
-        <button type="button" onclick="copierTexte()">Copier le texte</button>
-        <button type="button" onclick="copierHTML()">Copier le HTML (compatible index.html)</button>
-        <button type="button" onclick="effacer()">Effacer</button>
+    <div class="field">
+        <label for="pageTitre">Titre de la page</label>
+        <input id="pageTitre" placeholder="Titre affiché" oninput="onMetaChange()">
     </div>
-    <div class="status" id="status"></div>
+    <div class="field">
+        <label for="pageDescription">Description (méta)</label>
+        <input id="pageDescription" placeholder="Résumé court" oninput="onMetaChange()">
+    </div>
+    <div class="btnrow">
+        <button class="action" onclick="nouvellePage()">Nouvelle page</button>
+        <button class="action" onclick="document.getElementById('importInput').click()">Importer JSON</button>
+        <input id="importInput" type="file" accept=".json,application/json" style="display:none">
+        <button class="action ok" onclick="exporterJSON()">Exporter JSON</button>
+        <button class="action" onclick="copierJSON()">Copier JSON</button>
+    </div>
 </section>
+<div class="status-line" id="statusLine"></div>
 
-<div class="preview-label">Aperçu — rendu tel qu'il apparaîtra sur le site</div>
-<div class="preview-frame">
-    <article class="card" id="previewCard">
-        <h3 id="previewNom">Votre contenu</h3>
-        <img id="previewImage" class="card-carte-image" src="" alt="" style="display:none">
-        <p id="previewDescription">La présentation apparaîtra ici.</p>
-        <a class="button" id="previewButton" href="#">Télécharger</a>
-    </article>
+<div class="workzone">
+    <aside class="blocs-list">
+        <h2>Blocs de la page</h2>
+        <div class="add-bloc">
+            <select id="newBlocType"></select>
+            <button class="action small" onclick="ajouterBloc()">＋ Ajouter</button>
+        </div>
+        <div id="blocsListe"></div>
+    </aside>
+
+    <div class="editor-col">
+        <section class="editor" id="editorZone">
+            <div class="empty-hint">Sélectionnez un bloc à gauche, ou ajoutez-en un nouveau.</div>
+        </section>
+
+        <div>
+            <div class="preview-label">Aperçu — rendu tel qu'il apparaîtra sur le site</div>
+            <div class="preview-frame" id="previewFrame"></div>
+        </div>
+
+        <section class="output">
+            <label>JSON généré (à déposer dans data/pages/&lt;slug&gt;.json, ou data/page-accueil.json pour la page d'accueil)</label>
+            <textarea id="outputText" readonly></textarea>
+        </section>
+    </div>
 </div>
-
-<section class="output">
-    <label>HTML généré (à coller dans la section &lt;article class="card"&gt; de index.html)</label>
-    <textarea id="outputText" readonly></textarea>
-</section>
 
 </div>
 
 <script>
 const $ = id => document.getElementById(id);
 
-const types = {
-    supplement: "Supplément",
-    campagne: "Campagne narrative",
-    cartes: "Cartes de références",
-    scenario: "Scénario",
-    armee: "Livre / supplément d'armée",
-    outil: "Outil",
-    autre: "Création"
+/* =========================================================
+   DÉFINITION DES TYPES DE BLOCS
+   Chaque type expose : label, defaultData(), form(bloc,i) -> html,
+   preview(bloc) -> html
+   ========================================================= */
+function esc(s){ return String(s??"").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
+function slugify(t){
+    return (t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+}
+
+const BLOC_TYPES = {
+
+    hero: {
+        label: "Bandeau (actualité / mise en avant)",
+        defaultData: () => ({ type:"hero", titre:"Actualité", sousTitre:"", texte:"", lien:"", boutonLabel:"Télécharger" }),
+        form: (b,i) => `
+            <div class="grid">
+                <div class="field"><label>Titre du bloc</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
+                <div class="field"><label>Sous-titre</label><input value="${esc(b.sousTitre)}" oninput="updateBloc(${i},'sousTitre',this.value)"></div>
+                <div class="field full"><label>Texte</label><textarea oninput="updateBloc(${i},'texte',this.value)">${esc(b.texte)}</textarea></div>
+                <div class="field"><label>Lien du bouton</label><input value="${esc(b.lien)}" placeholder="https://..." oninput="updateBloc(${i},'lien',this.value)"></div>
+                <div class="field"><label>Texte du bouton</label><input value="${esc(b.boutonLabel)}" oninput="updateBloc(${i},'boutonLabel',this.value)"></div>
+            </div>`,
+        preview: b => `
+            <div class="p-hero">
+                <h3>${esc(b.titre||"Actualité")}</h3>
+                <p>${b.sousTitre?`<strong>${esc(b.sousTitre)}</strong><br>`:""}${esc(b.texte||"")}</p>
+                ${b.lien?`<a class="button">${esc(b.boutonLabel||"Télécharger")}</a>`:""}
+            </div>`
+    },
+
+    texte: {
+        label: "Bloc texte libre",
+        defaultData: () => ({ type:"texte", titre:"", corps:"", alignement:"gauche" }),
+        form: (b,i) => `
+            <div class="grid">
+                <div class="field"><label>Titre (optionnel)</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
+                <div class="field"><label>Alignement</label>
+                    <select onchange="updateBloc(${i},'alignement',this.value)">
+                        <option value="gauche" ${b.alignement==="gauche"?"selected":""}>Gauche</option>
+                        <option value="centre" ${b.alignement==="centre"?"selected":""}>Centré</option>
+                    </select>
+                </div>
+                <div class="field full"><label>Corps du texte (un paragraphe par ligne vide)</label><textarea style="min-height:140px" oninput="updateBloc(${i},'corps',this.value)">${esc(b.corps)}</textarea></div>
+            </div>`,
+        preview: b => `
+            <div class="p-texte ${b.alignement==="centre"?"centre":""}">
+                ${b.titre?`<h3>${esc(b.titre)}</h3>`:""}
+                ${(b.corps||"").split(/\n\s*\n/).filter(p=>p.trim()).map(p=>`<p>${esc(p.trim())}</p>`).join("") || "<p>Le texte apparaîtra ici.</p>"}
+            </div>`
+    },
+
+    image: {
+        label: "Image pleine largeur",
+        defaultData: () => ({ type:"image", src:"", legende:"" }),
+        form: (b,i) => `
+            <div class="grid">
+                <div class="field"><label>Image (chemin dans images/)</label><input value="${esc(b.src)}" placeholder="images/illustration.jpg" oninput="updateBloc(${i},'src',this.value)"></div>
+                <div class="field"><label>Légende</label><input value="${esc(b.legende)}" oninput="updateBloc(${i},'legende',this.value)"></div>
+            </div>`,
+        preview: b => `
+            <figure class="p-image">
+                ${b.src?`<img src="${esc(b.src)}" onerror="this.style.display='none'">`:`<div class="preview-empty">Aucune image renseignée.</div>`}
+                ${b.legende?`<figcaption>${esc(b.legende)}</figcaption>`:""}
+            </figure>`
+    },
+
+    "grille-cartes": {
+        label: "Grille de cartes (suppléments, cartes de référence...)",
+        defaultData: () => ({ type:"grille-cartes", titre:"Cartes de références", cartes:[] }),
+        form: (b,i) => `
+            <div class="grid">
+                <div class="field full"><label>Titre de la section</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
+            </div>
+            <div class="sub-list">
+                <h4>Cartes (${(b.cartes||[]).length})</h4>
+                ${(b.cartes||[]).map((c,ci)=>`
+                    <div class="sub-item">
+                        <div class="sub-head">
+                            <span>${esc(c.nom||"Carte sans nom")}</span>
+                            <div class="sub-controls">
+                                <button onclick="deplacerCarte(${i},${ci},-1)">↑</button>
+                                <button onclick="deplacerCarte(${i},${ci},1)">↓</button>
+                                <button onclick="supprimerCarte(${i},${ci})">Suppr.</button>
+                            </div>
+                        </div>
+                        <div class="grid">
+                            <div class="field"><label>Nom</label><input value="${esc(c.nom)}" oninput="updateCarte(${i},${ci},'nom',this.value)"></div>
+                            <div class="field"><label>Statut</label>
+                                <select onchange="updateCarte(${i},${ci},'statut',this.value)">
+                                    <option value="disponible" ${c.statut==="disponible"?"selected":""}>Disponible</option>
+                                    <option value="bientot" ${c.statut==="bientot"?"selected":""}>Bientôt disponible</option>
+                                    <option value="archive" ${c.statut==="archive"?"selected":""}>Archivé</option>
+                                </select>
+                            </div>
+                            <div class="field full"><label>Description</label><textarea oninput="updateCarte(${i},${ci},'description',this.value)">${esc(c.description)}</textarea></div>
+                            <div class="field"><label>Image</label><input value="${esc(c.image)}" placeholder="images/couverture.png" oninput="updateCarte(${i},${ci},'image',this.value)"></div>
+                            <div class="field"><label>Lien</label><input value="${esc(c.lien)}" oninput="updateCarte(${i},${ci},'lien',this.value)"></div>
+                        </div>
+                    </div>`).join("") || `<div class="empty-hint">Aucune carte pour l'instant.</div>`}
+                <button class="action small" onclick="ajouterCarte(${i})">＋ Ajouter une carte</button>
+            </div>`,
+        preview: b => `
+            <div class="p-image" style="max-width:900px">
+                <h3 class="p-grille-titre">${esc(b.titre||"Cartes de références")}</h3>
+                <div class="p-grille-sep"></div>
+                <div class="p-grille">
+                    ${(b.cartes||[]).length ? (b.cartes||[]).map(c=>{
+                        const boutonLabel = c.statut==="disponible"?"Télécharger":c.statut==="bientot"?"Bientôt disponible":"Archivé";
+                        const disabled = c.statut!=="disponible";
+                        return `<article class="card">
+                            <h3>${esc(c.nom||"Titre")}</h3>
+                            ${c.image?`<img class="card-carte-image" src="${esc(c.image)}" onerror="this.style.display='none'">`:""}
+                            <p>${esc(c.description||"Description à venir.")}</p>
+                            <span class="button ${disabled?"disabled":""}">${esc(boutonLabel)}</span>
+                        </article>`;
+                    }).join("") : `<div class="preview-empty">Aucune carte.</div>`}
+                </div>
+            </div>`
+    },
+
+    "fiche-detaillee": {
+        label: "Fiche détaillée (armée, supplément, campagne...)",
+        defaultData: () => ({ type:"fiche-detaillee", titre:"", sousTitre:"", accroche:"", image:"", sections:[] }),
+        form: (b,i) => `
+            <div class="grid">
+                <div class="field"><label>Titre</label><input value="${esc(b.titre)}" oninput="updateBloc(${i},'titre',this.value)"></div>
+                <div class="field"><label>Sous-titre</label><input value="${esc(b.sousTitre)}" oninput="updateBloc(${i},'sousTitre',this.value)"></div>
+                <div class="field full"><label>Accroche</label><textarea oninput="updateBloc(${i},'accroche',this.value)">${esc(b.accroche)}</textarea></div>
+                <div class="field"><label>Image</label><input value="${esc(b.image)}" placeholder="images/couverture.png" oninput="updateBloc(${i},'image',this.value)"></div>
+            </div>
+            <div class="sub-list">
+                <h4>Sections (${(b.sections||[]).length})</h4>
+                ${(b.sections||[]).map((s,si)=>`
+                    <div class="sub-item">
+                        <div class="sub-head">
+                            <span>${esc(s.titreSection||"Section sans titre")}</span>
+                            <div class="sub-controls">
+                                <button onclick="deplacerSection(${i},${si},-1)">↑</button>
+                                <button onclick="deplacerSection(${i},${si},1)">↓</button>
+                                <button onclick="supprimerSection(${i},${si})">Suppr.</button>
+                            </div>
+                        </div>
+                        <div class="field"><label>Titre de section</label><input value="${esc(s.titreSection)}" oninput="updateSection(${i},${si},'titreSection',this.value)"></div>
+                        <div class="field"><label>Texte</label><textarea oninput="updateSection(${i},${si},'texte',this.value)">${esc(s.texte)}</textarea></div>
+                    </div>`).join("") || `<div class="empty-hint">Aucune section pour l'instant.</div>`}
+                <button class="action small" onclick="ajouterSection(${i})">＋ Ajouter une section</button>
+            </div>`,
+        preview: b => `
+            <div class="p-fiche">
+                ${b.image?`<img class="fiche-image" src="${esc(b.image)}" onerror="this.style.display='none'">`:""}
+                <h2>${esc(b.titre||"Titre de la fiche")}</h2>
+                ${b.sousTitre?`<div class="sous-titre">${esc(b.sousTitre)}</div>`:""}
+                ${b.accroche?`<div class="accroche">${esc(b.accroche)}</div>`:""}
+                ${(b.sections||[]).map(s=>`
+                    <div class="fiche-section">
+                        <h4>${esc(s.titreSection||"Section")}</h4>
+                        <p>${esc(s.texte||"")}</p>
+                    </div>`).join("")}
+            </div>`
+    }
 };
 
-function nettoyer(texte) {
-    return texte.trim().replace(/\s+/g, " ");
+/* =========================================================
+   ÉTAT
+   ========================================================= */
+let page = { id:"", titre:"", description:"", blocs:[] };
+let selectedIndex = null;
+
+function nouvellePage(){
+    page = { id:"", titre:"", description:"", blocs:[] };
+    selectedIndex = null;
+    $("pageId").value = ""; $("pageTitre").value = ""; $("pageDescription").value = "";
+    renderTout();
+    status("Nouvelle page vierge créée.");
 }
 
-function slugify(texte) {
-    return texte.toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+function onMetaChange(){
+    page.id = $("pageId").value.trim();
+    page.titre = $("pageTitre").value.trim();
+    page.description = $("pageDescription").value.trim();
+    majOutput();
 }
 
-function genererDonnees() {
-    const nom = nettoyer($("nom").value);
-    const type = $("type").value;
-    const peuple = nettoyer($("peuple").value);
-    const accroche = nettoyer($("accroche").value);
-    const contexte = nettoyer($("contexte").value);
-    const contenu = nettoyer($("contenu").value);
-    const promesse = nettoyer($("promesse").value);
-    const statut = $("statut").value;
-    const lien = nettoyer($("lien").value);
-    const image = nettoyer($("image").value);
+/* -------- Gestion des blocs -------- */
+function ajouterBloc(){
+    const type = $("newBlocType").value;
+    const def = BLOC_TYPES[type];
+    if(!def) return;
+    page.blocs.push(def.defaultData());
+    selectedIndex = page.blocs.length - 1;
+    renderTout();
+    status("Bloc « " + def.label + " » ajouté.");
+}
+function supprimerBloc(i){
+    if(!confirm("Supprimer ce bloc ?")) return;
+    page.blocs.splice(i,1);
+    if(selectedIndex===i) selectedIndex = null;
+    else if(selectedIndex>i) selectedIndex--;
+    renderTout();
+    status("Bloc supprimé.");
+}
+function dupliquerBloc(i){
+    const copie = JSON.parse(JSON.stringify(page.blocs[i]));
+    page.blocs.splice(i+1,0,copie);
+    selectedIndex = i+1;
+    renderTout();
+    status("Bloc dupliqué.");
+}
+function deplacerBloc(i,dir){
+    const j = i+dir;
+    if(j<0 || j>=page.blocs.length) return;
+    [page.blocs[i],page.blocs[j]] = [page.blocs[j],page.blocs[i]];
+    if(selectedIndex===i) selectedIndex=j;
+    else if(selectedIndex===j) selectedIndex=i;
+    renderTout();
+}
+function selectionnerBloc(i){ selectedIndex = i; renderTout(); }
+function updateBloc(i,champ,val){ page.blocs[i][champ]=val; majApercu(); majOutput(); renderListeSeule(); }
 
-    // Sur le site reel, la carte n'affiche qu'un seul paragraphe court (accroche).
-    // Contexte / Contenu / Promesse restent des notes de redaction internes,
-    // pas affichees telles quelles sur une carte deja tres condensee.
-    const description = accroche || contenu || contexte;
+/* -------- Cartes imbriquées (grille-cartes) -------- */
+function ajouterCarte(i){
+    page.blocs[i].cartes = page.blocs[i].cartes || [];
+    page.blocs[i].cartes.push({nom:"",description:"",image:"",lien:"",statut:"disponible"});
+    renderEditeur(); majApercu(); majOutput();
+}
+function supprimerCarte(i,ci){ page.blocs[i].cartes.splice(ci,1); renderEditeur(); majApercu(); majOutput(); }
+function deplacerCarte(i,ci,dir){
+    const arr=page.blocs[i].cartes; const j=ci+dir;
+    if(j<0||j>=arr.length) return;
+    [arr[ci],arr[j]]=[arr[j],arr[ci]]; renderEditeur(); majApercu(); majOutput();
+}
+function updateCarte(i,ci,champ,val){ page.blocs[i].cartes[ci][champ]=val; majApercu(); majOutput(); }
 
-    let boutonHTML = "";
-    if (statut === "disponible" && lien) {
-        boutonHTML = `<a class="button" href="${lien}" target="_blank" rel="noopener noreferrer">\n                    Télécharger\n                </a>`;
-    } else if (statut === "bientot") {
-        boutonHTML = `<a class="button disabled" href="#">\n                    Bientôt disponible\n                </a>`;
-    } else if (statut === "archive") {
-        boutonHTML = `<a class="button disabled" href="#">\n                    Archivé\n                </a>`;
+/* -------- Sections imbriquées (fiche-detaillee) -------- */
+function ajouterSection(i){
+    page.blocs[i].sections = page.blocs[i].sections || [];
+    page.blocs[i].sections.push({titreSection:"",texte:""});
+    renderEditeur(); majApercu(); majOutput();
+}
+function supprimerSection(i,si){ page.blocs[i].sections.splice(si,1); renderEditeur(); majApercu(); majOutput(); }
+function deplacerSection(i,si,dir){
+    const arr=page.blocs[i].sections; const j=si+dir;
+    if(j<0||j>=arr.length) return;
+    [arr[si],arr[j]]=[arr[j],arr[si]]; renderEditeur(); majApercu(); majOutput();
+}
+function updateSection(i,si,champ,val){ page.blocs[i].sections[si][champ]=val; majApercu(); majOutput(); }
+
+/* =========================================================
+   RENDU
+   ========================================================= */
+function nomAffiche(b){
+    if(b.type==="hero") return b.titre || "Bandeau";
+    if(b.type==="texte") return b.titre || "Bloc texte";
+    if(b.type==="image") return b.legende || "Image";
+    if(b.type==="grille-cartes") return b.titre || "Grille de cartes";
+    if(b.type==="fiche-detaillee") return b.titre || "Fiche détaillée";
+    return b.type;
+}
+
+function renderListeSeule(){
+    const zone = $("blocsListe");
+    if(!page.blocs.length){
+        zone.innerHTML = `<div class="empty-hint">Aucun bloc. Ajoutez-en un ci-dessus.</div>`;
+        return;
     }
-
-    const idSlug = nom ? "carte-" + slugify(nom) : "carte-nouveau-contenu";
-
-    const html =
-`<article class="card" id="${idSlug}">
-
-    <h3>
-        ${nom || "Titre du contenu"}
-    </h3>
-    ${image ? `<img src="${image}" alt="Cartes de références pour ${nom || "ce contenu"}" class="card-carte-image">` : ""}
-
-    <p>
-        ${description || "Description à venir."}
-    </p>
-
-    ${boutonHTML}
-
-</article>`;
-
-    return { nom, type, peuple, accroche, contexte, contenu, promesse, statut, lien, image, description, html };
+    zone.innerHTML = page.blocs.map((b,i)=>`
+        <div class="bloc-item ${i===selectedIndex?"active":""}" onclick="selectionnerBloc(${i})">
+            <div class="titre-item"><span>${esc(nomAffiche(b))}</span></div>
+            <div class="type-item">${esc(BLOC_TYPES[b.type]?.label||b.type)}</div>
+            <div class="controls">
+                <button onclick="event.stopPropagation();deplacerBloc(${i},-1)" ${i===0?"disabled":""}>↑</button>
+                <button onclick="event.stopPropagation();deplacerBloc(${i},1)" ${i===page.blocs.length-1?"disabled":""}>↓</button>
+                <button onclick="event.stopPropagation();dupliquerBloc(${i})">Dupliquer</button>
+                <button onclick="event.stopPropagation();supprimerBloc(${i})">Suppr.</button>
+            </div>
+        </div>`).join("");
 }
 
-function generer() {
-    const data = genererDonnees();
-
-    $("previewNom").textContent = data.nom || "Votre contenu";
-    $("previewDescription").textContent = data.description || "La présentation apparaîtra ici.";
-
-    const img = $("previewImage");
-    if (data.image) {
-        img.src = data.image;
-        img.style.display = "block";
-        img.onerror = () => { img.style.display = "none"; };
-    } else {
-        img.style.display = "none";
+function renderEditeur(){
+    const zone = $("editorZone");
+    if(selectedIndex===null || !page.blocs[selectedIndex]){
+        zone.innerHTML = `<div class="empty-hint">Sélectionnez un bloc à gauche, ou ajoutez-en un nouveau.</div>`;
+        return;
     }
+    const b = page.blocs[selectedIndex];
+    const def = BLOC_TYPES[b.type];
+    zone.innerHTML = `
+        <h2>${esc(def.label)}</h2>
+        <div class="subtitle-editor">Bloc n°${selectedIndex+1} sur ${page.blocs.length}</div>
+        ${def.form(b, selectedIndex)}`;
+}
 
-    const btn = $("previewButton");
-    if (data.statut === "disponible") {
-        btn.textContent = "Télécharger";
-        btn.href = data.lien || "#";
-        btn.classList.remove("disabled");
-    } else if (data.statut === "bientot") {
-        btn.textContent = "Bientôt disponible";
-        btn.href = "#";
-        btn.classList.add("disabled");
-    } else {
-        btn.textContent = "Archivé";
-        btn.href = "#";
-        btn.classList.add("disabled");
+function majApercu(){
+    const zone = $("previewFrame");
+    if(!page.blocs.length){
+        zone.innerHTML = `<div class="preview-empty">La page est vide pour l'instant.</div>`;
+        return;
     }
-
-    $("outputText").value = data.html;
+    zone.innerHTML = page.blocs.map(b=>{
+        const def = BLOC_TYPES[b.type];
+        return def ? def.preview(b) : "";
+    }).join("");
 }
 
-async function copierTexte() {
-    const data = genererDonnees();
-    let texte = "";
-    texte += (data.nom || "Titre") + "\n\n";
-    texte += types[data.type] + (data.peuple ? " • " + data.peuple : "") + "\n\n";
-    if (data.accroche) texte += data.accroche + "\n\n";
-    if (data.contexte) texte += data.contexte + "\n\n";
-    if (data.contenu) texte += data.contenu + "\n\n";
-    if (data.promesse) texte += "PROMESSE JOUEUR\n" + data.promesse + "\n\n";
-    texte += "STATUT : " + data.statut.toUpperCase();
-    if (data.lien) texte += "\nLIEN : " + data.lien;
-    if (data.image) texte += "\nIMAGE : " + data.image;
-
-    await navigator.clipboard.writeText(texte);
-    afficherStatus("Texte de rédaction copié.");
+function majOutput(){
+    const clean = { id: page.id, titre: page.titre, description: page.description, blocs: page.blocs };
+    $("outputText").value = JSON.stringify(clean, null, 2);
 }
 
-async function copierHTML() {
-    const data = genererDonnees();
-    await navigator.clipboard.writeText(data.html);
-    afficherStatus("HTML copié — prêt à coller dans <section class=\"grid\"> de index.html.");
+function renderTout(){
+    renderListeSeule();
+    renderEditeur();
+    majApercu();
+    majOutput();
 }
 
-function effacer() {
-    document.querySelectorAll("input, textarea").forEach(el => el.value = "");
-    $("statut") && ($("statut").value = "disponible");
-    generer();
+/* =========================================================
+   IMPORT / EXPORT
+   ========================================================= */
+function exporterJSON(){
+    if(!page.id){ alert("Renseignez un identifiant de page (slug) avant d'exporter."); return; }
+    const clean = { id: page.id, titre: page.titre, description: page.description, blocs: page.blocs };
+    const blob = new Blob([JSON.stringify(clean,null,2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = (page.id === "page-accueil" ? "page-accueil" : page.id) + ".json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    status(`Fichier téléchargé : ${a.download} — à déposer dans data/pages/ (ou data/ pour page-accueil.json).`);
 }
-
-function afficherStatus(message) {
-    $("status").textContent = message;
-    setTimeout(() => { $("status").textContent = ""; }, 2500);
+async function copierJSON(){
+    majOutput();
+    await navigator.clipboard.writeText($("outputText").value);
+    status("JSON copié dans le presse-papiers.");
 }
-
-document.querySelectorAll("input, textarea, select").forEach(el => {
-    el.addEventListener("input", generer);
-    el.addEventListener("change", generer);
+$("importInput").addEventListener("change", e=>{
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+        try{
+            const d = JSON.parse(reader.result);
+            page = { id: d.id||"", titre: d.titre||"", description: d.description||"", blocs: Array.isArray(d.blocs)?d.blocs:[] };
+            selectedIndex = page.blocs.length ? 0 : null;
+            $("pageId").value = page.id; $("pageTitre").value = page.titre; $("pageDescription").value = page.description;
+            renderTout();
+            status("Page importée depuis le fichier JSON.");
+        }catch(err){ alert("Import impossible : "+err.message); }
+    };
+    reader.readAsText(f); e.target.value = "";
 });
 
-generer();
+function status(msg){ $("statusLine").textContent = msg; setTimeout(()=>{ if($("statusLine").textContent===msg) $("statusLine").textContent=""; }, 3500); }
+
+/* =========================================================
+   INIT
+   ========================================================= */
+(function init(){
+    $("newBlocType").innerHTML = Object.entries(BLOC_TYPES).map(([key,def])=>`<option value="${key}">${esc(def.label)}</option>`).join("");
+    renderTout();
+})();
 </script>
 </body>
 </html>
