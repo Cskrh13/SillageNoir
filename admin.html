@@ -99,6 +99,8 @@ pre.preview{white-space:pre-wrap;background:#171d1f;color:#ddd7c3;padding:15px;o
 <div id="magicNav"></div>
 <h3>HONNEURS ELFIQUES</h3>
 <div id="honourNav"></div>
+<h3>PAGE D'ACCUEIL</h3>
+<div><button class="navitem" onclick="selectItem('page','page-accueil')">Blocs de la page<small id="pageBlocCount"></small></button></div>
 </aside>
 
 <section class="workspace">
@@ -125,6 +127,8 @@ const STAT_KEYS=["M","CC","CT","F","E","PV","I","A","Cd"];
 const MAGIC_CATEGORIES=["Armes magiques","Armures magiques","Talismans","Bannières magiques","Objets enchantés","Objets cabalistiques"];
 
 let armies={}, supplements={}, magicCatalogs={}, honours=null;
+let imageFiles=[];
+let pageData=null;
 let currentType=null, currentId=null, currentTab="general";
 let editingUnitIndex=null, editingMountIndex=null, activeMagicCategory=null;
 
@@ -136,7 +140,7 @@ function linesToArr(text){return String(text||"").split("\n").map(x=>x.trim()).f
 function arrToLines(arr){return (arr||[]).join("\n");}
 
 function store(type){ return type==="army"?armies:type==="supp"?supplements:type==="magic"?magicCatalogs:null; }
-function data(){ if(currentType==="honour") return honours; const s=store(currentType); return s?s[currentId]:null; }
+function data(){ if(currentType==="honour") return honours; if(currentType==="page") return pageData; const s=store(currentType); return s?s[currentId]:null; }
 
 // ---------------------------------------------------------------- Nav ----
 function renderNav(){
@@ -147,9 +151,10 @@ function renderNav(){
 }
 
 function selectItem(type,id){
-  currentType=type; currentId=type==="honour"?null:id;
-  currentTab= type==="army"?"general": type==="supp"?"general": type==="magic"?"items": "list";
+  currentType=type; currentId=(type==="honour"||type==="page")?null:id;
+  currentTab= type==="army"?"general": type==="supp"?"general": type==="magic"?"items": type==="page"?"hero": "list";
   editingUnitIndex=null; editingMountIndex=null; activeMagicCategory=null;
+  if(type==="page"&&!pageData){ pageData={blocs:[]}; }
   renderNav(); render();
 }
 
@@ -159,6 +164,7 @@ function tabsFor(type){
   if(type==="supp") return [["general","Général"],["targets","Armées ciblées"],["restrictions","Restrictions"],["units","Unités propres"],["rules","Règles spéciales"],["presentation","Présentation (site)"],["preview","Aperçu JSON"]];
   if(type==="magic") return [["general","Général"],["items","Objets magiques"],["preview","Aperçu JSON"]];
   if(type==="honour") return [["list","Honneurs"],["preview","Aperçu JSON"]];
+  if(type==="page") return [["hero","Bloc Actualité"],["preview","Aperçu JSON"]];
   return [];
 }
 
@@ -168,8 +174,8 @@ function render(){
     $("title").textContent="Administration"; $("subtitle").textContent="Sélectionnez une entrée dans le menu de gauche.";
     $("tabs").innerHTML=""; $("content").innerHTML=""; return;
   }
-  $("title").textContent=d.name||d.id;
-  $("subtitle").textContent={army:"Armée",supp:"Supplément",magic:"Catalogue d'objets magiques",honour:"Catalogue global des Honneurs Elfiques"}[currentType];
+  $("title").textContent=currentType==="page"?"Page d'accueil":(d.name||d.id);
+  $("subtitle").textContent={army:"Armée",supp:"Supplément",magic:"Catalogue d'objets magiques",honour:"Catalogue global des Honneurs Elfiques",page:"Blocs de la page d'accueil (data/page-accueil.json)"}[currentType];
   const tabs=tabsFor(currentType);
   $("tabs").innerHTML=tabs.map(([id,label])=>`<button class="tab ${currentTab===id?"active":""}" onclick="showTab('${id}')">${esc(label)}</button>`).join("");
   const c=$("content");
@@ -194,6 +200,9 @@ function render(){
     else if(currentTab==="preview") c.innerHTML=previewForm(d);
   } else if(currentType==="honour"){
     if(currentTab==="list") c.innerHTML=honoursForm(d);
+    else if(currentTab==="preview") c.innerHTML=previewForm(d);
+  } else if(currentType==="page"){
+    if(currentTab==="hero"){ c.innerHTML=heroBlocForm(d); renderHeroPreview(d); }
     else if(currentTab==="preview") c.innerHTML=previewForm(d);
   }
 }
@@ -524,7 +533,12 @@ function presentationForm(d){
     <div class="field"><label>Statut d'affichage</label>
       <select id="p_statut">${statuts.map(([v,l])=>`<option value="${v}" ${p.statut===v?"selected":""}>${esc(l)}</option>`).join("")}</select>
     </div>
-    <div class="field"><label>Image (chemin dans images/)</label><input id="p_image" value="${esc(p.image||"")}" placeholder="images/couverture.png"></div>
+    <div class="field"><label>Image (chemin dans images/)</label>
+      <div style="display:flex;gap:6px">
+        <input id="p_image" value="${esc(p.image||"")}" placeholder="images/couverture.png" oninput="renderPresentationPreview(data())">
+        <button type="button" class="btn small" onclick="openImagePicker()">Parcourir…</button>
+      </div>
+    </div>
     <div class="field"><label>Lien de téléchargement</label><input id="p_lien" value="${esc(p.lien||"")}" placeholder="https://drive.google.com/..."></div>
     <div class="field"><label>Nombre de scénarios <small class="hint">(si campagne)</small></label><input id="p_scenarios" type="number" min="0" value="${p.nombreScenarios??""}"></div>
   </div>
@@ -557,6 +571,31 @@ function applyPresentation(){
   renderPresentationPreview(d);
   status("Présentation enregistrée dans le JSON du supplément.","ok");
 }
+function openImagePicker(){
+  if(!imageFiles.length){ alert("Aucune image trouvée. Cliquez d'abord sur « ↻ Charger GitHub » pour lister les images du dossier images/."); return; }
+  const overlay=document.createElement("div");
+  overlay.id="imgPickerOverlay";
+  overlay.style="position:fixed;inset:0;background:#000c;z-index:999;display:flex;align-items:center;justify-content:center";
+  overlay.onclick=e=>{ if(e.target===overlay) overlay.remove(); };
+  const box=document.createElement("div");
+  box.style="background:#20282a;border:1px solid #596769;max-width:700px;max-height:80vh;overflow:auto;padding:16px";
+  box.innerHTML=`<h3 style="margin-top:0;color:#ded3b1">Choisir une image (${imageFiles.length})</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px">
+    ${imageFiles.map(path=>`
+      <div style="cursor:pointer;text-align:center" onclick="selectImage('${esc(path)}')">
+        <img src="https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${path}" style="width:100%;height:80px;object-fit:cover;border:1px solid #596769" loading="lazy" onerror="this.style.opacity=.2">
+        <small style="display:block;color:#aaa895;font-size:10px;word-break:break-all">${esc(path.replace("images/",""))}</small>
+      </div>`).join("")}
+    </div>
+    <div style="text-align:right;margin-top:12px"><button class="btn dark" onclick="document.getElementById('imgPickerOverlay').remove()">Fermer</button></div>`;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+function selectImage(path){
+  $("p_image").value=path;
+  renderPresentationPreview(data());
+  const ov=document.getElementById("imgPickerOverlay"); if(ov) ov.remove();
+}
 function renderPresentationPreview(d){
   const p=d.presentation||{};
   const el=$("p_preview"); if(!el) return;
@@ -568,6 +607,51 @@ function renderPresentationPreview(d){
     ${p.image?`<img src="${esc(p.image)}" style="width:100%;height:150px;object-fit:cover;border:1px solid #8a836d" onerror="this.style.display='none'">`:""}
     <p style="font-size:13px;margin:12px 0">${desc}</p>
     <span class="btn small ${disabled?"":"ok"}" style="${disabled?"opacity:.5":""}">${esc(boutonLabel)}</span>
+  </div>`;
+}
+
+// -------------------------------------------------------- Bloc Hero ------
+function heroBlocForm(d){
+  d.blocs = d.blocs || [];
+  let hero = d.blocs.find(b => b.type === "hero");
+  if(!hero){ hero = {type:"hero"}; d.blocs.unshift(hero); }
+  return `<div class="panel"><h3>Bloc « Actualité » (haut de la page d'accueil)</h3>
+  <div class="notice">Ce bloc est le premier module de la page d'accueil piloté depuis cet outil. D'autres types de blocs (bandeau, carrousel, grille) seront ajoutés progressivement au même endroit.</div>
+  <div class="grid2">
+    <div class="field"><label>Titre du bloc</label><input id="h_titre" value="${esc(hero.titre||"Actualité")}"></div>
+    <div class="field"><label>Sous-titre <small class="hint">(ex. nom du supplément mis en avant)</small></label><input id="h_sousTitre" value="${esc(hero.sousTitre||"")}"></div>
+  </div>
+  <div class="field" style="margin-top:12px"><label>Texte</label><textarea id="h_texte">${esc(hero.texte||"")}</textarea></div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="field"><label>Lien du bouton</label><input id="h_lien" value="${esc(hero.lien||"")}" placeholder="https://drive.google.com/..."></div>
+    <div class="field"><label>Texte du bouton</label><input id="h_boutonLabel" value="${esc(hero.boutonLabel||"Télécharger le supplément")}"></div>
+  </div>
+  <br><button class="btn ok" onclick="applyHeroBloc()">Appliquer le bloc Actualité</button>
+  <hr class="divider">
+  <h4>Aperçu</h4>
+  <div id="h_preview"></div>
+  </div>`;
+}
+function applyHeroBloc(){
+  const d=data();
+  d.blocs = d.blocs || [];
+  let hero = d.blocs.find(b => b.type === "hero");
+  if(!hero){ hero = {type:"hero"}; d.blocs.unshift(hero); }
+  hero.titre = $("h_titre").value.trim();
+  hero.sousTitre = $("h_sousTitre").value.trim();
+  hero.texte = $("h_texte").value.trim();
+  hero.lien = $("h_lien").value.trim();
+  hero.boutonLabel = $("h_boutonLabel").value.trim();
+  renderHeroPreview(d);
+  status("Bloc Actualité mis à jour. Pensez à Exporter puis déposer data/page-accueil.json sur GitHub.","ok");
+}
+function renderHeroPreview(d){
+  const hero=(d.blocs||[]).find(b=>b.type==="hero")||{};
+  const el=$("h_preview"); if(!el) return;
+  el.innerHTML=`<div style="max-width:420px;border:1px solid #6c6b5c;background:#1b2325;color:#d8d1b8;padding:20px;text-align:center;font-family:Georgia,serif">
+    <h3 style="margin:0 0 8px;text-transform:uppercase;letter-spacing:2px">${esc(hero.titre||"Actualité")}</h3>
+    <p style="font-size:13px;margin:10px 0">${hero.sousTitre?`<strong>${esc(hero.sousTitre)}</strong><br>`:""}${esc(hero.texte||"")}</p>
+    ${hero.lien?`<span class="btn small ok">${esc(hero.boutonLabel||"Télécharger")}</span>`:""}
   </div>`;
 }
 
@@ -590,10 +674,11 @@ function exportCurrent(){
   const clean=JSON.parse(JSON.stringify(d));
   const blob=new Blob([JSON.stringify(clean,null,2)],{type:"application/json"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
-  a.download=(currentType==="honour"?"honneurs-elfiques":d.id)+".json";
+  a.download=(currentType==="honour"?"honneurs-elfiques":currentType==="page"?"page-accueil":d.id)+".json";
   a.click(); URL.revokeObjectURL(a.href);
-  const folder={army:REMOTE_PATHS.armies,supp:REMOTE_PATHS.supplements,magic:REMOTE_PATHS.magicItems,honour:""}[currentType];
-  status(`Fichier téléchargé : ${a.download} — à déposer dans ${folder||"data/aptitudes/"} sur le dépôt.`,"ok");
+  const folder={army:REMOTE_PATHS.armies,supp:REMOTE_PATHS.supplements,magic:REMOTE_PATHS.magicItems,honour:"",page:""}[currentType];
+  const chemin=currentType==="page"?"data/page-accueil.json":currentType==="honour"?"data/aptitudes/":folder;
+  status(`Fichier téléchargé : ${a.download} — à déposer dans ${chemin} sur le dépôt.`,"ok");
 }
 
 $("fileInput").addEventListener("change",e=>{
@@ -620,8 +705,12 @@ async function loadGitHub(){
     const repo=`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
     const tree=await fetch(repo).then(r=>{ if(!r.ok) throw Error("GitHub inaccessible"); return r.json(); });
     const files=tree.tree||[];
-    armies={}; supplements={}; magicCatalogs={}; honours=null;
+    armies={}; supplements={}; magicCatalogs={}; honours=null; imageFiles=[];
+    const IMG_EXT=/\.(png|jpe?g|webp|gif|svg)$/i;
     for(const f of files){
+      if(f.type==="blob"&&f.path.startsWith("images/")&&IMG_EXT.test(f.path)){
+        imageFiles.push(f.path);
+      }
       if(f.type!=="blob"||!f.path.endsWith(".json")) continue;
       const raw=`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${f.path}`;
       if(f.path.startsWith(REMOTE_PATHS.armies)){
@@ -632,6 +721,8 @@ async function loadGitHub(){
         const d=await fetch(raw).then(r=>r.json()).catch(()=>null); if(d) magicCatalogs[d.id||f.path]=d;
       } else if(f.path===REMOTE_PATHS.honours){
         honours=await fetch(raw).then(r=>r.json()).catch(()=>null);
+      } else if(f.path==="data/page-accueil.json"){
+        pageData=await fetch(raw).then(r=>r.json()).catch(()=>null);
       }
     }
     currentType=null; currentId=null; renderNav(); render();
