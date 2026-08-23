@@ -1,6 +1,7 @@
 {
   "id": "sillage-noir",
   "name": "Le Sillage Noir",
+  "renown": "armee-infamie-sillage-noir",
   "language": "fr",
   "version": "1.0",
   "source": "Le Sillage Noir.pdf",
