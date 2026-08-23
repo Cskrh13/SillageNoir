@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Archives de l'Ancien Monde — Atelier de rédaction</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --fond: #15191a;
+    --bleu-noir: #1b2325;
+    --bleu-ardoise: #2d393d;
+    --parchemin: #c8bd9d;
+    --parchemin-clair: #ded4b7;
+    --encre: #252a29;
+    --texte-clair: #d8d1b8;
+    --argent: #91a6aa;
+    --ligne: rgba(125,139,140,.5);
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    background: linear-gradient(rgba(170,145,105,.72), rgba(170,145,105,.72)), url("images/fond-carte.jpg");
+    background-size: cover;
+    background-attachment: fixed;
+    color: var(--encre);
+    font-family: "Vollkorn", Georgia, serif;
+}
+.page { width: calc(100% - 40px); max-width: 1200px; margin: 35px auto; }
+header {
+    padding: 40px; text-align: center; color: var(--texte-clair);
+    background: linear-gradient(rgba(25,32,34,.94), rgba(30,38,40,.94)), url("images/fond-carte.jpg");
+    background-size: cover; border: 1px solid var(--ligne);
+}
+header h1 { margin: 0; font-family: "IM Fell English SC", Georgia, serif; font-size: clamp(32px, 5vw, 58px); font-weight: normal; letter-spacing: 4px; }
+header p { margin: 12px 0 0; color: #aaa89b; letter-spacing: 2px; }
+.editor { margin-top: 20px; padding: 30px; background: rgba(222,212,183,.95); border: 1px solid var(--ligne); }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.full { grid-column: 1 / -1; }
+label { font-weight: 600; color: #363b39; }
+input, select, textarea {
+    width: 100%; padding: 11px 13px; border: 1px solid #9c9278; background: #eee7d1;
+    color: #252a29; font-family: "Vollkorn", Georgia, serif; font-size: 15px;
+}
+textarea { min-height: 95px; resize: vertical; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 25px; }
+.actions button {
+    padding: 12px 18px; border: 1px solid #596365; background: var(--bleu-noir);
+    color: var(--texte-clair); font-family: "IM Fell English SC", Georgia, serif; cursor: pointer;
+}
+.actions button:hover { background: var(--bleu-ardoise); }
+.status { margin-top: 10px; color: #555; }
+.preview-label {
+    margin-top: 30px; text-transform: uppercase; letter-spacing: 2px; font-size: 12px;
+    color: #56442d; text-align: center;
+}
+.preview-frame {
+    margin-top: 12px; padding: 30px; background: linear-gradient(rgba(170,145,105,.72), rgba(170,145,105,.72)), url("images/fond-carte.jpg");
+    background-size: cover; border: 1px solid var(--ligne); display: flex; justify-content: center;
+}
+/* ============ Classes REELLES du site (index.html) reproduites ici pour l'apercu ============ */
+.card {
+    background: rgba(222,212,183,.95); border: 1px solid var(--ligne); padding: 18px;
+    max-width: 300px; text-align: center;
+}
+.card h3 { font-family: "IM Fell English SC", Georgia, serif; font-weight: normal; letter-spacing: 1px; margin: 0 0 10px; }
+.card-carte-image { width: 100%; height: 180px; object-fit: cover; border: 1px solid var(--ligne); background: #202829; }
+.card p { font-size: 14px; line-height: 1.5; margin: 12px 0; color: #3a352a; }
+.button {
+    display: inline-block; padding: 9px 16px; border: 1px solid #596365; background: var(--bleu-noir);
+    color: var(--texte-clair); font-family: "IM Fell English SC", Georgia, serif; letter-spacing: 1px;
+    text-decoration: none; text-transform: uppercase; font-size: 13px;
+}
+.button:hover { background: var(--bleu-ardoise); }
+.button.disabled { opacity: .5; pointer-events: none; }
+.output { margin-top: 25px; }
+.output textarea {
+    min-height: 260px; background: #15191a; color: #d8d1b8;
+    font-family: Consolas, monospace; font-size: 13px;
+}
+@media(max-width: 750px) {
+    .grid { grid-template-columns: 1fr; }
+    .field.full { grid-column: auto; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+    <h1>Atelier des Archives</h1>
+    <p>Générateur de fiches pour l'Ancien Monde — HTML aligné sur le site réel</p>
+</header>
+
+<section class="editor">
+    <div class="grid">
+        <div class="field">
+            <label for="nom">Nom du contenu</label>
+            <input id="nom" placeholder="Ex. La Marée de Sang">
+        </div>
+        <div class="field">
+            <label for="type">Type de contenu</label>
+            <select id="type">
+                <option value="supplement">Supplément</option>
+                <option value="campagne">Campagne narrative</option>
+                <option value="cartes">Cartes de références</option>
+                <option value="scenario">Scénario</option>
+                <option value="armee">Livre / supplément d'armée</option>
+                <option value="outil">Outil</option>
+                <option value="autre">Autre création</option>
+            </select>
+        </div>
+        <div class="field">
+            <label for="peuple">Peuple / faction</label>
+            <input id="peuple" placeholder="Ex. Druchii, Hauts-Elfes...">
+        </div>
+        <div class="field">
+            <label for="statut">Statut</label>
+            <select id="statut">
+                <option value="disponible">Disponible</option>
+                <option value="bientot">Bientôt disponible</option>
+                <option value="archive">Archive</option>
+            </select>
+        </div>
+        <div class="field full">
+            <label for="accroche">Accroche</label>
+            <textarea id="accroche" placeholder="Une phrase courte, type slogan de carte — ex. « Faites souffrir vos ennemis. Montrez leur votre cruauté ! »"></textarea>
+        </div>
+        <div class="field">
+            <label for="contexte">Contexte</label>
+            <textarea id="contexte" placeholder="Où se déroule l'histoire ? Quelle est la situation ?"></textarea>
+        </div>
+        <div class="field">
+            <label for="contenu">Contenu</label>
+            <textarea id="contenu" placeholder="Que contient concrètement le supplément ? (nombre de scénarios, mécanique...)"></textarea>
+        </div>
+        <div class="field full">
+            <label for="promesse">Promesse pour le joueur</label>
+            <textarea id="promesse" placeholder="Quelle expérience le joueur va-t-il vivre ?"></textarea>
+        </div>
+        <div class="field">
+            <label for="image">Image (chemin dans images/)</label>
+            <input id="image" placeholder="images/couverture.png">
+        </div>
+        <div class="field">
+            <label for="lien">Lien de téléchargement</label>
+            <input id="lien" placeholder="https://drive.google.com/...">
+        </div>
+    </div>
+
+    <div class="actions">
+        <button type="button" onclick="generer()">Générer la fiche</button>
+        <button type="button" onclick="copierTexte()">Copier le texte</button>
+        <button type="button" onclick="copierHTML()">Copier le HTML (compatible index.html)</button>
+        <button type="button" onclick="effacer()">Effacer</button>
+    </div>
+    <div class="status" id="status"></div>
+</section>
+
+<div class="preview-label">Aperçu — rendu tel qu'il apparaîtra sur le site</div>
+<div class="preview-frame">
+    <article class="card" id="previewCard">
+        <h3 id="previewNom">Votre contenu</h3>
+        <img id="previewImage" class="card-carte-image" src="" alt="" style="display:none">
+        <p id="previewDescription">La présentation apparaîtra ici.</p>
+        <a class="button" id="previewButton" href="#">Télécharger</a>
+    </article>
+</div>
+
+<section class="output">
+    <label>HTML généré (à coller dans la section &lt;article class="card"&gt; de index.html)</label>
+    <textarea id="outputText" readonly></textarea>
+</section>
+
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const types = {
+    supplement: "Supplément",
+    campagne: "Campagne narrative",
+    cartes: "Cartes de références",
+    scenario: "Scénario",
+    armee: "Livre / supplément d'armée",
+    outil: "Outil",
+    autre: "Création"
+};
+
+function nettoyer(texte) {
+    return texte.trim().replace(/\s+/g, " ");
+}
+
+function slugify(texte) {
+    return texte.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+}
+
+function genererDonnees() {
+    const nom = nettoyer($("nom").value);
+    const type = $("type").value;
+    const peuple = nettoyer($("peuple").value);
+    const accroche = nettoyer($("accroche").value);
+    const contexte = nettoyer($("contexte").value);
+    const contenu = nettoyer($("contenu").value);
+    const promesse = nettoyer($("promesse").value);
+    const statut = $("statut").value;
+    const lien = nettoyer($("lien").value);
+    const image = nettoyer($("image").value);
+
+    // Sur le site reel, la carte n'affiche qu'un seul paragraphe court (accroche).
+    // Contexte / Contenu / Promesse restent des notes de redaction internes,
+    // pas affichees telles quelles sur une carte deja tres condensee.
+    const description = accroche || contenu || contexte;
+
+    let boutonHTML = "";
+    if (statut === "disponible" && lien) {
+        boutonHTML = `<a class="button" href="${lien}" target="_blank" rel="noopener noreferrer">\n                    Télécharger\n                </a>`;
+    } else if (statut === "bientot") {
+        boutonHTML = `<a class="button disabled" href="#">\n                    Bientôt disponible\n                </a>`;
+    } else if (statut === "archive") {
+        boutonHTML = `<a class="button disabled" href="#">\n                    Archivé\n                </a>`;
+    }
+
+    const idSlug = nom ? "carte-" + slugify(nom) : "carte-nouveau-contenu";
+
+    const html =
+`<article class="card" id="${idSlug}">
+
+    <h3>
+        ${nom || "Titre du contenu"}
+    </h3>
+    ${image ? `<img src="${image}" alt="Cartes de références pour ${nom || "ce contenu"}" class="card-carte-image">` : ""}
+
+    <p>
+        ${description || "Description à venir."}
+    </p>
+
+    ${boutonHTML}
+
+</article>`;
+
+    return { nom, type, peuple, accroche, contexte, contenu, promesse, statut, lien, image, description, html };
+}
+
+function generer() {
+    const data = genererDonnees();
+
+    $("previewNom").textContent = data.nom || "Votre contenu";
+    $("previewDescription").textContent = data.description || "La présentation apparaîtra ici.";
+
+    const img = $("previewImage");
+    if (data.image) {
+        img.src = data.image;
+        img.style.display = "block";
+        img.onerror = () => { img.style.display = "none"; };
+    } else {
+        img.style.display = "none";
+    }
+
+    const btn = $("previewButton");
+    if (data.statut === "disponible") {
+        btn.textContent = "Télécharger";
+        btn.href = data.lien || "#";
+        btn.classList.remove("disabled");
+    } else if (data.statut === "bientot") {
+        btn.textContent = "Bientôt disponible";
+        btn.href = "#";
+        btn.classList.add("disabled");
+    } else {
+        btn.textContent = "Archivé";
+        btn.href = "#";
+        btn.classList.add("disabled");
+    }
+
+    $("outputText").value = data.html;
+}
+
+async function copierTexte() {
+    const data = genererDonnees();
+    let texte = "";
+    texte += (data.nom || "Titre") + "\n\n";
+    texte += types[data.type] + (data.peuple ? " • " + data.peuple : "") + "\n\n";
+    if (data.accroche) texte += data.accroche + "\n\n";
+    if (data.contexte) texte += data.contexte + "\n\n";
+    if (data.contenu) texte += data.contenu + "\n\n";
+    if (data.promesse) texte += "PROMESSE JOUEUR\n" + data.promesse + "\n\n";
+    texte += "STATUT : " + data.statut.toUpperCase();
+    if (data.lien) texte += "\nLIEN : " + data.lien;
+    if (data.image) texte += "\nIMAGE : " + data.image;
+
+    await navigator.clipboard.writeText(texte);
+    afficherStatus("Texte de rédaction copié.");
+}
+
+async function copierHTML() {
+    const data = genererDonnees();
+    await navigator.clipboard.writeText(data.html);
+    afficherStatus("HTML copié — prêt à coller dans <section class=\"grid\"> de index.html.");
+}
+
+function effacer() {
+    document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+    $("statut") && ($("statut").value = "disponible");
+    generer();
+}
+
+function afficherStatus(message) {
+    $("status").textContent = message;
+    setTimeout(() => { $("status").textContent = ""; }, 2500);
+}
+
+document.querySelectorAll("input, textarea, select").forEach(el => {
+    el.addEventListener("input", generer);
+    el.addEventListener("change", generer);
+});
+
+generer();
+</script>
+</body>
+</html>
