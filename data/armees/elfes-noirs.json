@@ -1614,9 +1614,27 @@
       "id": "scourgerunner-mount",
       "name": "Char à Harpon",
       "points": 85,
+      "profile": {
+        "M": "-",
+        "CC": "-",
+        "CT": "-",
+        "F": 4,
+        "E": 4,
+        "PV": 4,
+        "I": "-",
+        "A": "-",
+        "Cd": "-"
+      },
+      "equipment": [
+        "Coursiers Noirs x2"
+      ],
       "specialRules": [
         "Voir l'entrée Chars à Harpon"
-      ]
+      ],
+      "mountRef": {
+        "id": "dark-steed",
+        "count": 2
+      }
     },
     {
       "id": "cold-one-chariot-mount",
