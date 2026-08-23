@@ -439,7 +439,11 @@ function normalizeMounts(raw) {
       // Pour les chars : référence vers la/les monture(s) attelée(s)
       // (ex. { id: "dark-steed", count: 2 }), utilisée pour ajouter une
       // ligne de caractéristiques supplémentaire — voir renderStatsTable.
-      mountRef: m.mountRef || null
+      mountRef: m.mountRef || null,
+      // Règles spéciales propres à la monture (ex. "Terreur", "Vol (9)"),
+      // affichées à la suite des règles de la figurine — voir
+      // renderNativeRules / mountRuleNames.
+      rules: normalizeTextList(m.specialRules || m.rules)
     };
   }).filter(Boolean);
 }
@@ -538,6 +542,7 @@ function classifyUnitOptions(rawList, mounts) {
         // Pour les chars : monture(s) attelée(s) (ex. { id: "dark-steed",
         // count: 2 }) — voir renderStatsTable, qui ajoute une ligne dédiée.
         option.mountHarness = matched.mountRef || null;
+        option.mountRules = matched.rules || [];
         // certaines options de monture n'indiquent pas leur coût dans le
         // texte source (ex. "Dragon solaire") : on le récupère alors sur
         // le profil de monture correspondant.
@@ -1644,6 +1649,17 @@ function renderEquipment(entry, unit) {
   </div>`;
 }
 
+// Règles spéciales propres à la monture actuellement sélectionnée (ex.
+// "Terreur", "Vol (9)" pour une Manticore) — résolues qu'elles proviennent
+// d'un mountRef direct sur l'option ou d'une reconnaissance par nom (voir
+// classifyUnitOptions).
+function mountRuleNames(entry, unit) {
+  const mount = selectedMount(entry, unit);
+  if (!mount) return [];
+  const mountEntry = mount.mountRef ? findMountById(mount.mountRef) : null;
+  return mountEntry ? (mountEntry.rules || []) : (mount.mountRules || []);
+}
+
 // Règles spéciales de l'unité — natives, puis ajoutées/remplacées par
 // l'Honneur Elfique choisi le cas échéant (voir effectiveRules), complétées
 // directement par le domaine de magie choisi, les options de règles
@@ -1657,6 +1673,9 @@ function renderNativeRules(entry, unit) {
   selectedMagicObjects(entry)
     .filter(x => x.categoryKey !== "magic_weapon" && x.categoryKey !== "magic_armour")
     .forEach(x => rules.push(x.name));
+  // Règles spéciales propres à la monture sélectionnée (ex. Terreur, Vol…),
+  // ajoutées à la suite des règles de la figurine — jamais de doublon.
+  mountRuleNames(entry, unit).forEach(r => { if (!rules.includes(r)) rules.push(r); });
   if (!rules.length) return "";
   return `<div class="unit-block">
     <div class="profile-title">Règles spéciales</div>
@@ -2568,65 +2587,93 @@ function newList() {
   setStatus("Nouvelle liste.", "ok");
 }
 
-const SAVE_KEY = "archivesCourantArmyLists";
-
-function readSavedLists() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch { return []; }
-}
-
-function saveList() {
-  const name = $("nameInput").value.trim() || "Ma liste";
-  const payload = {
-    id: uid(),
-    version: 6,
-    supplementId: state.supplement?.id || "",
-    armyId: state.army?.id || "",
-    name,
-    pointsLimit: state.pointsLimit,
-    list: state.list,
-    savedAt: new Date().toISOString()
+// --- Chargement depuis un fichier (JSON exporté en amont, ou TXT en
+// best-effort) — remplace l'ancienne sauvegarde/chargement via
+// localStorage : la liste n'est plus persistée dans le navigateur, elle est
+// reprise depuis un fichier précédemment exporté avec "Exporter JSON" ou
+// "Exporter TXT".
+function applyImportedJSON(payload) {
+  if (!payload || typeof payload !== "object") { setStatus("Fichier JSON invalide.", "error"); return; }
+  const list = Array.isArray(payload.list) ? payload.list : [];
+  const finish = () => {
+    state.pointsLimit = Number(payload.pointsLimit) || state.pointsLimit;
+    $("pointsInput").value = state.pointsLimit;
+    $("nameInput").value = payload.name || $("nameInput").value;
+    state.list = list.map(item => ({
+      uid: item.uid || uid(),
+      id: item.id,
+      qty: Number(item.qty) || 1,
+      options: Array.isArray(item.options) ? item.options : [],
+      // compatibilité ascendante avec l'ancien format (une seule bannière magique)
+      magicItems: Array.isArray(item.magicItems) ? item.magicItems : (item.magicBannerId ? [item.magicBannerId] : []),
+      honour: item.honour || null,
+      reclassified: item.reclassified || null,
+      expanded: false
+    })).filter(x => getUnit(x.id));
+    render();
+    setStatus(`« ${payload.name || "Liste"} » chargée depuis le fichier JSON.`, "ok");
   };
-  const saves = readSavedLists().filter(x => !(x.supplementId === payload.supplementId && x.armyId === payload.armyId && x.name === name));
-  saves.unshift(payload);
-  localStorage.setItem(SAVE_KEY, JSON.stringify(saves.slice(0, 20)));
-  setStatus(`« ${name} » sauvegardée dans ce navigateur.`, "ok");
+
+  const wantedSupplement = payload.supplement?.id;
+  const wantedArmy = payload.army?.id;
+  if (wantedSupplement && wantedSupplement !== state.supplement?.id) {
+    loadSupplement(wantedSupplement)
+      .then(() => wantedArmy && wantedArmy !== state.army?.id ? loadArmy(wantedArmy, true).then(finish) : finish())
+      .catch(e => setStatus(e.message, "error"));
+  } else if (wantedArmy && wantedArmy !== state.army?.id) {
+    loadArmy(wantedArmy, true).then(finish).catch(e => setStatus(e.message, "error"));
+  } else {
+    finish();
+  }
 }
 
-function loadList() {
-  const saves = readSavedLists();
-  if (!saves.length) return setStatus("Aucune liste sauvegardée dans ce navigateur.", "error");
+// Le format TXT exporté est un texte lisible sans identifiants d'unité :
+// seuls le nom de la liste, les unités (par correspondance de nom dans le
+// catalogue actuellement chargé) et leur effectif peuvent être restaurés de
+// façon fiable. Options, honneurs et objets magiques doivent être
+// resélectionnés manuellement après import.
+function applyImportedTXT(text) {
+  const lines = text.split(/\r?\n/);
+  const nameLine = (lines[0] || "").trim();
+  if (nameLine) $("nameInput").value = nameLine;
 
-  const compatible = saves.filter(x => x.supplementId === state.supplement?.id && x.armyId === state.army?.id);
-  if (!compatible.length) return setStatus("Aucune sauvegarde compatible avec le supplément et l'armée actuellement sélectionnés.", "error");
+  const unitLineRe = /^\d+\.\s*(\d+)\s*figurines?\s*—\s*([^—]+?)\s*(?:—.*)?—\s*[\d\s]+pts\s*$/;
+  const entries = [];
+  let unmatched = 0;
+  lines.forEach(raw => {
+    const m = raw.trim().match(unitLineRe);
+    if (!m) return;
+    const qty = Number(m[1]) || 1;
+    const name = m[2].trim().toLocaleLowerCase("fr");
+    const unit = allUnits().find(u => String(u.name).toLocaleLowerCase("fr") === name);
+    if (!unit) { unmatched++; return; }
+    entries.push({ uid: uid(), id: unit.id, qty, options: [], magicItems: [], honour: null, reclassified: null, expanded: false });
+  });
 
-  const menu = compatible.map((x,i) => `${i+1}. ${x.name} — ${x.pointsLimit} pts — ${new Date(x.savedAt).toLocaleString("fr-FR")}`).join("\n");
-  const answer = prompt(`Choisissez la liste à charger :\n\n${menu}\n\nEntrez son numéro.`);
-  if (answer === null) return;
-  const index = Number(answer) - 1;
-  if (!Number.isInteger(index) || !compatible[index]) return setStatus("Numéro de sauvegarde invalide.", "error");
-
-  const p = compatible[index];
-  state.pointsLimit = Number(p.pointsLimit) || 2000;
-  $("pointsInput").value = state.pointsLimit;
-  $("nameInput").value = p.name || "Ma liste";
-  state.list = Array.isArray(p.list)
-    ? p.list.map(item => ({
-        uid: item.uid || uid(),
-        id: item.id,
-        qty: Number(item.qty) || 1,
-        options: Array.isArray(item.options) ? item.options : [],
-        // compatibilité ascendante avec l'ancien format (une seule bannière magique)
-        magicItems: Array.isArray(item.magicItems)
-          ? item.magicItems
-          : (item.magicBannerId ? [item.magicBannerId] : [])
-      })).filter(x => getUnit(x.id))
-    : [];
+  if (!entries.length) {
+    setStatus("Aucune unité reconnue dans ce fichier TXT — vérifiez que le supplément et l'armée sélectionnés correspondent à ceux de l'export.", "error");
+    return;
+  }
+  state.list = entries;
   render();
-  setStatus(`« ${p.name} » chargée.`, "ok");
+  setStatus(`Liste importée depuis le fichier TXT (${entries.length} entrée${entries.length>1?"s":""}${unmatched?`, ${unmatched} unité(s) non reconnue(s)`:""}). Options, honneurs et objets magiques à resélectionner.`, unmatched ? "error" : "ok");
+}
+
+function importListFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const text = String(reader.result || "");
+    if (/\.json$/i.test(file.name)) {
+      try { applyImportedJSON(JSON.parse(text)); } catch (e) { setStatus("Fichier JSON invalide : " + e.message, "error"); }
+      return;
+    }
+    if (/\.txt$/i.test(file.name)) { applyImportedTXT(text); return; }
+    // Extension inconnue : on tente le JSON, sinon on retombe sur le TXT.
+    try { applyImportedJSON(JSON.parse(text)); } catch { applyImportedTXT(text); }
+  };
+  reader.onerror = () => setStatus("Impossible de lire ce fichier.", "error");
+  reader.readAsText(file);
 }
 
 function exportJSON() {
@@ -2677,23 +2724,69 @@ function download(name, content, type) {
   setTimeout(() => URL.revokeObjectURL(a.href), 500);
 }
 
+// Impression : reconstruit la liste dans la zone #printSheet en réutilisant
+// directement renderStatsTable / renderEquipment / renderNativeRules — donc
+// exactement la même typographie que la colonne centrale "Ma liste" — plutôt
+// qu'un tableau générique dans une fenêtre à part.
 function printList() {
-  const ordered = state.list
-    .map(item => ({ item, u: getUnit(item.id) }))
-    .filter(x => x.u)
-    .sort((a,b) => categoryRank(entryEffectiveCategory(a.item, a.u)) - categoryRank(entryEffectiveCategory(b.item, b.u)));
-  const rows = ordered.map(({item,u},index) => {
-    const pool = effectivePool(item, u);
-    const opts=selectedOptions(item).map(id=>pool.find(o=>o.id===id)?.name).filter(Boolean);
-    opts.push(...magicItemsLabel(item));
-    if (item.honour) { const h=(state.honours||[]).find(x=>x.id===item.honour); if(h) opts.push(h.name); }
-    const optText=opts.join(", ");
-    return `<tr><td>${index+1}</td><td>${esc(entryEffectiveCategory(item, u))}</td><td>${esc(u.name)}</td><td>${item.qty}</td><td>${esc(optText)}</td><td>${entryPoints(item)}</td></tr>`;
-  }).join("");
-  const w=window.open("","_blank");
-  if(!w) return setStatus("La fenêtre d'impression a été bloquée.", "error");
-  w.document.write(`<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>${esc($("nameInput").value||"Ma liste")}</title><style>body{font-family:Georgia,serif;margin:40px;color:#222}h1{font-size:28px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #aaa;padding:7px;text-align:left}.total{font-size:20px;margin:15px 0}</style></head><body><h1>${esc($("nameInput").value||"Ma liste")}</h1><p>${esc(state.supplement?.name||"")} · ${esc(state.army?.name||"")}</p><div class="total">${getTotal()} / ${state.pointsLimit} points</div><table><thead><tr><th>#</th><th>Catégorie</th><th>Unité</th><th>Effectif</th><th>Options</th><th>Points</th></tr></thead><tbody>${rows}</tbody></table><script>window.print()<\/script></body></html>`);
-  w.document.close();
+  const sheet = $("printSheet");
+  if (!sheet) return setStatus("Zone d'impression introuvable.", "error");
+
+  const listName = $("nameInput").value.trim() || "Ma liste";
+  const armyName = state.army?.name || "";
+  const generatedUrl = location.href.split("#")[0].split("?")[0];
+
+  // Bandeau d'informations : uniquement les NOMS des règles spéciales du
+  // supplément (jamais leur texte), à la suite du supplément/armée/source —
+  // voir renderInfo() pour l'équivalent détaillé affiché dans l'application.
+  const ruleNames = (state.supplement?.specialRules || [])
+    .map(r => typeof r === "string" ? r : (r?.name || r?.id || ""))
+    .filter(Boolean);
+  const infoParts = [
+    `Supplément : ${state.supplement?.description || state.supplement?.name || ""}`,
+    `Armée : ${armyName}`,
+    state.supplement?.source || "",
+    ...ruleNames
+  ].filter(Boolean);
+
+  const ordered = state.list.map(item => ({ item, u: getUnit(item.id) })).filter(x => x.u);
+  const groups = {};
+  ordered.forEach(x => (groups[entryEffectiveCategory(x.item, x.u)] ||= []).push(x));
+  const resolvedGeneral = resolvedGeneralUid();
+
+  const bodyHTML = sortByCategory(Object.entries(groups)).map(([cat, arr]) => `
+    <div class="print-category">${esc(cat)} <span>${formatPoints(arr.reduce((s,x)=>s+entryPoints(x.item),0))}</span></div>
+    ${arr.map(({item,u}) => {
+      // Marqueur Général / Porteur de la Grande Bannière — mêmes conditions
+      // que renderGeneralMarker / isGrandBannerBearer, en texte simple.
+      let tag = "";
+      if (u.category === "Personnages") {
+        if (item.uid === resolvedGeneral) tag = "Général";
+        else if (isGrandBannerBearer(item, u)) tag = "Porteur de la Grande Bannière";
+      }
+      return `<div class="print-entry">
+        <div class="print-entry-head">
+          <strong>${esc(u.name)}${tag ? ` <span class="print-tag">(${esc(tag)})</span>` : ""}</strong>
+          <span class="print-cost">${formatPoints(entryPoints(item))}</span>
+        </div>
+        ${renderStatsTable(item, u)}
+        ${renderEquipment(item, u)}
+        ${renderNativeRules(item, u)}
+      </div>`;
+    }).join("")}
+  `).join("");
+
+  sheet.innerHTML = `
+    <div class="print-header">
+      <h1>${esc(listName)}</h1>
+      <p class="print-army">${esc(armyName)}</p>
+      <p class="print-credit">Liste d'armée générée à l'aide de ${esc(generatedUrl)}</p>
+    </div>
+    <div class="print-info">${infoParts.map(esc).join(", ")}</div>
+    ${bodyHTML || `<p class="muted">Aucune unité dans cette liste.</p>`}
+  `;
+
+  requestAnimationFrame(() => window.print());
 }
 
 function slug(s) {
@@ -2716,9 +2809,16 @@ function clearCurrentList() {
 }
 
 const actions = {
-  save: saveList, load: loadList, print: printList, txt: exportTXT, json: exportJSON, clear: clearCurrentList
+  load: () => $("loadFileInput")?.click(), print: printList, txt: exportTXT, json: exportJSON, clear: clearCurrentList
 };
-[["saveBtn","save"],["saveTopBtn","save"],["loadBtn","load"],["loadTopBtn","load"],["printBtn","print"],["printTopBtn","print"],["exportTxtBtn","txt"],["exportTxtTopBtn","txt"],["exportJsonBtn","json"],["exportJsonTopBtn","json"],["clearBtn","clear"],["clearTopBtn","clear"]].forEach(([id,action]) => { if ($(id)) $(id).onclick = actions[action]; });
+[["loadBtn","load"],["loadTopBtn","load"],["printBtn","print"],["printTopBtn","print"],["exportTxtBtn","txt"],["exportTxtTopBtn","txt"],["exportJsonBtn","json"],["exportJsonTopBtn","json"],["clearBtn","clear"],["clearTopBtn","clear"]].forEach(([id,action]) => { if ($(id)) $(id).onclick = actions[action]; });
+
+const loadFileInput = $("loadFileInput");
+if (loadFileInput) loadFileInput.onchange = () => {
+  const file = loadFileInput.files && loadFileInput.files[0];
+  importListFile(file);
+  loadFileInput.value = "";
+};
 
 const chartToggle=$('chartToggle'); if(chartToggle) chartToggle.onchange=()=>renderCompositionChart();
 
