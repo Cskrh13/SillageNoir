@@ -156,7 +156,7 @@ function selectItem(type,id){
 // --------------------------------------------------------------- Tabs ----
 function tabsFor(type){
   if(type==="army") return [["general","Général"],["composition","Composition"],["units","Unités"],["mounts","Montures"],["rules","Règles spéciales"],["preview","Aperçu JSON"]];
-  if(type==="supp") return [["general","Général"],["targets","Armées ciblées"],["restrictions","Restrictions"],["units","Unités propres"],["rules","Règles spéciales"],["preview","Aperçu JSON"]];
+  if(type==="supp") return [["general","Général"],["targets","Armées ciblées"],["restrictions","Restrictions"],["units","Unités propres"],["rules","Règles spéciales"],["presentation","Présentation (site)"],["preview","Aperçu JSON"]];
   if(type==="magic") return [["general","Général"],["items","Objets magiques"],["preview","Aperçu JSON"]];
   if(type==="honour") return [["list","Honneurs"],["preview","Aperçu JSON"]];
   return [];
@@ -186,6 +186,7 @@ function render(){
     else if(currentTab==="restrictions") c.innerHTML=restrictionsForm(d);
     else if(currentTab==="units") c.innerHTML=unitsForm(d);
     else if(currentTab==="rules") c.innerHTML=rulesForm(d);
+    else if(currentTab==="presentation"){ c.innerHTML=presentationForm(d); renderPresentationPreview(d); }
     else if(currentTab==="preview") c.innerHTML=previewForm(d);
   } else if(currentType==="magic"){
     if(currentTab==="general") c.innerHTML=magicGeneralForm(d);
@@ -513,6 +514,63 @@ function editHonour(i){
 function deleteHonour(i){ if(!confirm("Supprimer cet honneur ?"))return; honours.aptitudes.splice(i,1); render(); }
 
 // -------------------------------------------------------------- Preview --
+// --------------------------------------------------------- Présentation ---
+function presentationForm(d){
+  const p=d.presentation=d.presentation||{};
+  const statuts=[["disponible","Disponible"],["bientot","Bientôt disponible"],["archive","Archivé"]];
+  return `<div class="panel"><h3>Présentation sur le site (index.html)</h3>
+  <div class="notice">Ces champs alimentent la fiche affichée sur la page d'accueil — même source que les données de jeu, plus de copier-coller HTML séparé.</div>
+  <div class="grid2">
+    <div class="field"><label>Statut d'affichage</label>
+      <select id="p_statut">${statuts.map(([v,l])=>`<option value="${v}" ${p.statut===v?"selected":""}>${esc(l)}</option>`).join("")}</select>
+    </div>
+    <div class="field"><label>Image (chemin dans images/)</label><input id="p_image" value="${esc(p.image||"")}" placeholder="images/couverture.png"></div>
+    <div class="field"><label>Lien de téléchargement</label><input id="p_lien" value="${esc(p.lien||"")}" placeholder="https://drive.google.com/..."></div>
+    <div class="field"><label>Nombre de scénarios <small class="hint">(si campagne)</small></label><input id="p_scenarios" type="number" min="0" value="${p.nombreScenarios??""}"></div>
+  </div>
+  <div class="field" style="margin-top:12px"><label>Accroche <small class="hint">(phrase courte affichée sur la carte du site)</small></label>
+    <textarea id="p_accroche" placeholder="Ex. « Faites souffrir vos ennemis. Montrez leur votre cruauté ! »">${esc(p.accroche||"")}</textarea></div>
+  <div class="field" style="margin-top:12px"><label>Contexte <small class="hint">(note de rédaction, non affichée telle quelle sur la carte)</small></label>
+    <textarea id="p_contexte">${esc(p.contexte||"")}</textarea></div>
+  <div class="field" style="margin-top:12px"><label>Contenu <small class="hint">(note de rédaction — ce que contient concrètement le supplément)</small></label>
+    <textarea id="p_contenu">${esc(p.contenu||"")}</textarea></div>
+  <div class="field" style="margin-top:12px"><label>Promesse pour le joueur</label>
+    <textarea id="p_promesse">${esc(p.promesse||"")}</textarea></div>
+  <br><button class="btn ok" onclick="applyPresentation()">Appliquer la présentation</button>
+  <hr class="divider">
+  <h4>Aperçu — carte telle qu'elle apparaîtra sur le site</h4>
+  <div id="p_preview"></div>
+  </div>`;
+}
+function applyPresentation(){
+  const d=data();
+  d.presentation={
+    statut: $("p_statut").value,
+    image: $("p_image").value.trim(),
+    lien: $("p_lien").value.trim(),
+    nombreScenarios: $("p_scenarios").value?Number($("p_scenarios").value):undefined,
+    accroche: $("p_accroche").value.trim(),
+    contexte: $("p_contexte").value.trim(),
+    contenu: $("p_contenu").value.trim(),
+    promesse: $("p_promesse").value.trim()
+  };
+  renderPresentationPreview(d);
+  status("Présentation enregistrée dans le JSON du supplément.","ok");
+}
+function renderPresentationPreview(d){
+  const p=d.presentation||{};
+  const el=$("p_preview"); if(!el) return;
+  const desc=esc(p.accroche||p.contenu||"Description à venir.");
+  const boutonLabel=p.statut==="disponible"?"Télécharger":p.statut==="bientot"?"Bientôt disponible":"Archivé";
+  const disabled=p.statut!=="disponible";
+  el.innerHTML=`<div style="max-width:280px;border:1px solid #6c6b5c;background:#eee7d1;padding:16px;text-align:center;font-family:Georgia,serif">
+    <h3 style="margin:0 0 8px">${esc(d.name||d.id)}</h3>
+    ${p.image?`<img src="${esc(p.image)}" style="width:100%;height:150px;object-fit:cover;border:1px solid #8a836d" onerror="this.style.display='none'">`:""}
+    <p style="font-size:13px;margin:12px 0">${desc}</p>
+    <span class="btn small ${disabled?"":"ok"}" style="${disabled?"opacity:.5":""}">${esc(boutonLabel)}</span>
+  </div>`;
+}
+
 function previewForm(d){ return `<div class="panel"><h3>Aperçu du fichier JSON</h3><pre class="preview">${esc(JSON.stringify(d,null,2))}</pre></div>`; }
 
 // ----------------------------------------------------------- Création ----
