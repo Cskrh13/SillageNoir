@@ -4,451 +4,433 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Indexa Administratorium — Archives de l'Ancien Monde</title>
-<meta name="description" content="">
+<meta name="description" content="Index central des outils d'administration du Sillage Noir.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&family=Cinzel:wght@400;600&family=EB+Garamond:wght@400;600&family=Crimson+Text:wght@400;600&family=MedievalSharp&family=Merriweather:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-:root {
-    --bleu-noir: #1b2325;
-    --bleu-ardoise: #2d393d;
-    --texte-clair: #d8d1b8;
-    --ligne: rgba(125,139,140,.5);
-    --police-texte: 'Vollkorn', Georgia, serif;
-    --police-titres: 'Vollkorn', Georgia, serif;
-    --taille-texte: 12px;
-    --taille-titres: 15px;
-    --couleur-texte: #3a352a;
-    --couleur-titres: #252a29;
-    --couleur-accent: #1b2325;
-    --page-width: 900px;
-    --page-height: auto;
+:root{
+    --parchemin:#b6a07d;
+    --papier:#e7dec7;
+    --papier-clair:#eee7d5;
+    --papier-sombre:#d6c9aa;
+    --encre:#292824;
+    --brun:#554936;
+    --brun-clair:#8a7859;
+    --or:#9b8151;
+    --ligne:rgba(72,59,42,.42);
+    --ombre:rgba(45,35,24,.18);
+    --noir:#202827;
+    --max:980px;
 }
-* { box-sizing: border-box; }
-body {
-    margin: 0;
-    background: linear-gradient(rgba(170,145,105,.72), rgba(170,145,105,.72)), url("images/fond-carte.jpg");
-    background-size: cover;
-    background-attachment: fixed;
-    color: #252a29;
-    font-family: "Vollkorn", Georgia, serif;
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+    margin:0;
+    min-height:100vh;
+    color:var(--encre);
+    font-family:"Vollkorn",Georgia,serif;
+    background:
+        linear-gradient(rgba(177,155,119,.82),rgba(177,155,119,.82)),
+        url("images/fond-carte.jpg") center/cover fixed;
 }
-.page-wrap {
-    width: min(calc(100% - 40px), var(--page-width));
-    max-width: var(--page-width);
-    margin: 35px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 26px;
-    align-items: center;
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.16;
+    background:
+        radial-gradient(circle at 20% 10%,#fff 0,transparent 24%),
+        radial-gradient(circle at 80% 80%,#4d3c28 0,transparent 28%);
+    mix-blend-mode:multiply;
 }
-nav.retour { width: 100%; text-align: center; margin-bottom: -10px; }
-nav.retour a { color: #3a352a; font-size: 13px; text-decoration: none; letter-spacing: 1px; }
-a { color: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
-.button {
-    display: inline-block;
-    padding: 8px 16px;
-    border: 1px solid #9c9278;
-    color: var(--texte-clair);
-    background: rgba(25,32,34,.94);
-    text-decoration: none;
-    cursor: pointer;
-    font-family: inherit;
+
+a{
+    color:inherit;
+    text-decoration:none;
 }
-.button:hover { filter: brightness(1.15); }
-.button.disabled { opacity: .55; cursor: default; pointer-events: none; }
-.p-hero, .p-texte, .p-image, .p-grille, .p-fiche, .p-carrousel, .p-footer {
-    width: 100%;
-    max-width: 900px;
+
+.page{
+    width:min(calc(100% - 36px),var(--max));
+    margin:28px auto 34px;
 }
-.p-hero {
-    padding: 34px;
-    background: rgba(25,32,34,.94);
-    border: 1px solid var(--ligne);
-    color: var(--texte-clair);
-    text-align: center;
+
+/* ---------- En-tête ---------- */
+
+.header{
+    position:relative;
+    text-align:center;
+    padding:28px 28px 25px;
+    background:rgba(231,222,199,.93);
+    border:1px solid var(--ligne);
+    box-shadow:0 5px 18px var(--ombre);
 }
-.p-hero h1 {
-    margin: 0 0 10px;
-    font-family: var(--police-titres), Georgia, serif;
-    font-size: var(--taille-titres);
-    color: var(--couleur-titres);
+
+.header::before,
+.header::after{
+    content:"";
+    position:absolute;
+    left:12%;
+    right:12%;
+    height:1px;
+    background:linear-gradient(90deg,transparent,var(--brun-clair),transparent);
 }
-.p-hero p { margin: 0 0 18px; color: #cfc7ab; }
-.p-texte {
-    padding: 25px 30px;
-    background: rgba(245,238,215,.86);
-    border: 1px solid #8f856e;
-    color: var(--couleur-texte);
-    font-size: var(--taille-texte);
+
+.header::before{bottom:13px}
+.header::after{top:13px}
+
+.kicker{
+    margin:0 0 8px;
+    font-family:"Cinzel",Georgia,serif;
+    font-size:10px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:var(--brun-clair);
 }
-.p-texte h2, .p-fiche h2, .p-grille h2 {
-    font-family: var(--police-titres), Georgia, serif;
-    color: var(--couleur-titres);
+
+h1{
+    margin:0;
+    font-family:"IM Fell English SC",Georgia,serif;
+    font-weight:400;
+    font-size:clamp(27px,5vw,43px);
+    letter-spacing:2px;
+    color:var(--encre);
 }
-.p-image {
-    text-align: center;
+
+.subtitle{
+    margin:9px 0 0;
+    font-size:14px;
+    color:var(--brun);
+    letter-spacing:.6px;
 }
-.p-image img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: auto;
+
+/* ---------- Introduction ---------- */
+
+.section-heading{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin:29px 0 18px;
+    color:var(--brun);
 }
-.p-grille-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
+
+.section-heading::before,
+.section-heading::after{
+    content:"";
+    height:1px;
+    flex:1;
+    background:linear-gradient(90deg,transparent,var(--ligne));
 }
-.p-card {
-    background: rgba(25,32,34,.94);
-    border: 1px solid var(--ligne);
-    color: var(--texte-clair);
-    padding: 18px;
+
+.section-heading::after{
+    background:linear-gradient(90deg,var(--ligne),transparent);
 }
-.p-card img { width: 100%; height: auto; margin-bottom: 12px; }
-.p-card h3 { margin: 0 0 8px; font-family: var(--police-titres), Georgia, serif; }
-.p-card p { margin: 0 0 12px; color: #cfc7ab; }
-.p-fiche {
-    background: rgba(25,32,34,.94);
-    border: 1px solid var(--ligne);
-    color: var(--texte-clair);
-    padding: 25px;
+
+.section-heading span{
+    font-family:"Cinzel",Georgia,serif;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    white-space:nowrap;
 }
-.p-fiche h2 { margin-top: 0; }
-.fiche-section { margin-top: 18px; }
-.fiche-section h3 {
-    font-family: var(--police-titres), Georgia, serif;
-    color: var(--couleur-titres);
+
+/* ---------- Cartes ---------- */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
 }
-.p-carrousel {
-    background: rgba(25,32,34,.94);
-    border: 1px solid var(--ligne);
-    color: var(--texte-clair);
+
+.card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    padding:13px 13px 15px;
+    background:linear-gradient(145deg,var(--papier-clair),var(--papier));
+    border:1px solid var(--ligne);
+    box-shadow:0 4px 13px var(--ombre);
+    transition:transform .18s ease, box-shadow .18s ease;
 }
-.p-carrousel-vignettes {
-    display: flex;
-    gap: 10px;
-    padding: 12px;
-    overflow-x: auto;
+
+.card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 18px rgba(45,35,24,.24);
 }
-.p-vignette {
-    min-width: 120px;
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--texte-clair);
-    padding: 6px;
-    cursor: pointer;
-    font-family: inherit;
+
+.card::before{
+    content:"";
+    position:absolute;
+    inset:5px;
+    border:1px solid rgba(96,78,52,.18);
+    pointer-events:none;
 }
-.p-vignette:hover, .p-vignette.active { border-color: #b7975c; }
-.p-vignette img {
-    display: block;
-    width: 100%;
-    height: 70px;
-    object-fit: cover;
-    margin-bottom: 5px;
+
+.card-image{
+    position:relative;
+    margin:1px 1px 14px;
+    background:var(--noir);
+    overflow:hidden;
 }
-.p-carrousel-slide {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 30px;
+
+.card-image img{
+    display:block;
+    width:100%;
+    aspect-ratio:1/1;
+    object-fit:cover;
+    transition:transform .25s ease,filter .25s ease;
 }
-.p-carrousel-texte { flex: 1; text-align: left; }
-.p-carrousel-texte h3 {
-    font-family: "IM Fell English SC", Georgia, serif;
-    font-weight: normal;
-    letter-spacing: 1px;
-    margin: 0 0 10px;
+
+.card:hover .card-image img{
+    transform:scale(1.025);
+    filter:brightness(1.06);
 }
-.p-carrousel-texte p { font-size: 14px; margin: 0 0 16px; color: #cfc7ab; }
-.p-carrousel-image { width: 200px; flex-shrink: 0; }
-.p-carrousel-image img { width: 100%; border: 1px solid #b7975c; }
-.p-carrousel-fleche {
-    background: none;
-    border: none;
-    color: var(--texte-clair);
-    font-size: 30px;
-    cursor: pointer;
-    padding: 8px 12px;
+
+.card-body{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    text-align:center;
 }
-.p-carrousel-fleche:hover { color: #fff; }
-.p-carrousel-dots {
-    display: flex;
-    gap: 7px;
-    justify-content: center;
-    padding: 0 0 18px;
+
+.card h2{
+    margin:0 5px 9px;
+    font-family:"IM Fell English SC",Georgia,serif;
+    font-size:20px;
+    font-weight:400;
+    line-height:1.15;
+    color:var(--encre);
 }
-.p-dot {
-    width: 9px;
-    height: 9px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: #9c9278;
-    cursor: pointer;
+
+.card p{
+    margin:0 auto 16px;
+    max-width:28em;
+    min-height:34px;
+    font-size:12px;
+    line-height:1.45;
+    color:#655945;
 }
-.p-dot.active { background: #d0b16b; }
-.p-footer {
-    padding: 22px 24px;
-    text-align: center;
-    background: rgba(25,32,34,.94);
-    border: 1px solid var(--ligne);
-    color: var(--texte-clair);
+
+.card-link{
+    align-self:center;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    min-height:34px;
+    padding:8px 15px;
+    border:1px solid #76664d;
+    background:rgba(42,39,32,.96);
+    color:#e9dfc5;
+    font-family:"Cinzel",Georgia,serif;
+    font-size:9px;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    box-shadow:0 2px 5px rgba(0,0,0,.12);
+    transition:background .18s ease,transform .18s ease;
 }
-.p-footer p { font-size: 13px; margin: 0 0 10px; color: #cfc7ab; }
-.p-footer-liens { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-.p-footer-lien { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--texte-clair); }
-.rich-editable img, .p-texte img, .p-hero img, .p-card img, .p-fiche img, .p-carrousel-texte img, .p-footer img {
-    max-width: 100%; height: auto; display: block; margin: 8px 0;
+
+.card-link::after{
+    content:"→";
+    font-size:13px;
+    line-height:1;
 }
-@media(max-width:650px) {
-    .p-carrousel-slide { flex-direction: column; }
-    .p-carrousel-image { width: min(100%, 300px); }
-    .p-hero, .p-texte, .p-fiche { padding: 20px; }
+
+.card-link:hover{
+    background:#3a3933;
+    transform:translateY(-1px);
+}
+
+/* ---------- Pied de page ---------- */
+
+.footer{
+    margin-top:27px;
+    padding:18px 20px;
+    text-align:center;
+    border-top:1px solid var(--ligne);
+    border-bottom:1px solid var(--ligne);
+    color:#5f513e;
+}
+
+.footer-title{
+    font-family:"Cinzel",Georgia,serif;
+    font-size:10px;
+    letter-spacing:1.8px;
+    text-transform:uppercase;
+}
+
+.footer p{
+    margin:6px 0 0;
+    font-size:11px;
+    opacity:.82;
+}
+
+/* ---------- Mobile ---------- */
+
+@media(max-width:760px){
+    .page{
+        width:min(calc(100% - 24px),var(--max));
+        margin-top:16px;
+    }
+
+    .header{
+        padding:23px 16px 21px;
+    }
+
+    .header::before,
+    .header::after{
+        left:8%;
+        right:8%;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+        gap:15px;
+    }
+
+    .card{
+        display:grid;
+        grid-template-columns:minmax(125px,34%) 1fr;
+        gap:15px;
+        padding:12px;
+        align-items:center;
+    }
+
+    .card-image{
+        margin:0;
+        grid-row:1;
+    }
+
+    .card-body{
+        justify-content:center;
+    }
+
+    .card h2{
+        font-size:18px;
+    }
+
+    .card p{
+        min-height:0;
+        margin-bottom:13px;
+    }
+
+    .section-heading{
+        margin-top:23px;
+    }
+}
+
+@media(max-width:440px){
+    .card{
+        display:block;
+    }
+
+    .card-image{
+        margin-bottom:12px;
+    }
+
+    .card h2{
+        font-size:19px;
+    }
+
+    .subtitle{
+        font-size:12px;
+    }
+
+    .section-heading span{
+        font-size:10px;
+        letter-spacing:1.3px;
+    }
+}
+
+@media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .card,.card-image img,.card-link{transition:none}
 }
 </style>
 </head>
+
 <body>
-<div class="page-wrap">
-<nav class="retour"><a href="index.html">&larr; Retour aux Archives de l'Ancien Monde</a></nav>
-<div id="page-root"></div>
-</div>
+<main class="page">
 
-<script>
-/*
- * ARCHIVES DE L'ANCIEN MONDE
- * Moteur autonome de rendu des pages.
- * Les données de la page sont embarquées dans PAGE_DATA.
- * Aucun chargement de atelier-redaction.html ou de BLOC_TYPES externe.
- */
-const FORMATS_PAGE_EXPORT = {
-    site:{width:900,height:null}, large:{width:1200,height:null}, wide:{width:1400,height:null},
-    "16-9":{width:1280,height:720}, "full-hd":{width:1920,height:1080}, mobile:{width:390,height:844},
-    a4:{width:794,height:1123}, "a4-landscape":{width:1123,height:794},
-    a5:{width:559,height:794}, "a5-landscape":{width:794,height:559},
-    square:{width:1080,height:1080}, "9-16":{width:1080,height:1920}
-};
-const PAGE_DATA = {"id":"Indexa-administratorium","titre":"Indexa Administratorium","description":"","format":"site","style":{"policeTitres":"'Vollkorn', Georgia, serif","tailleTitres":15,"policeTexte":"'Vollkorn', Georgia, serif","tailleTexte":12,"couleurTexte":"#3a352a","couleurTitres":"#252a29","couleurAccent":"#1b2325"},"blocs":[{"type":"hero","titre":"Indexa Administratorium","sousTitre":"","texte":"","lien":"","boutonLabel":"Télécharger"},{"type":"grille-cartes","titre":"Cartes de références","cartes":[{"nom":"Administration des unités","description":"","image":"https://i.ibb.co/jvZj8LjW/Administration-Des-Unit-s.png","lien":"https://cskrh13.github.io/SillageNoir/admin.html","statut":"disponible"},{"nom":"Administration des pages","description":"","image":"https://i.ibb.co/5gp23D7D/Administration-des-pages-1.png","lien":"https://cskrh13.github.io/SillageNoir/atelier-redaction.html","statut":"disponible"},{"nom":"Administration du réseau","description":"","image":"https://i.ibb.co/PGWz5gtx/Carte-Du-Reseau-1.png","lien":"https://cskrh13.github.io/SillageNoir/architecture-3d.html","statut":"disponible"}]},{"type":"pied-de-page","texte":"Archives de l'Ancien Monde - fichier central","liens":[]}]};
+    <header class="header">
+        <p class="kicker">Archives de l'Ancien Monde</p>
+        <h1>Indexa Administratorium</h1>
+        <p class="subtitle">Cartes de références</p>
+    </header>
 
-function escHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, function(ch) {
-        return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
-    });
-}
+    <div class="section-heading">
+        <span>Registres administratifs</span>
+    </div>
 
-function escAttr(value) {
-    return escHTML(value);
-}
+    <section class="cards" aria-label="Cartes de références">
 
-function corpsHTML(value) {
-    const str = String(value ?? "");
-    if (!str.trim()) return "";
-    if (/<[a-z][sS]*>/i.test(str)) return str;
-    return str
-        .split(/\n\s*\n/)
-        .filter(function(p){ return p.trim(); })
-        .map(function(p){ return "<p>" + escHTML(p.trim()).replace(/\n/g, "<br>") + "</p>"; })
-        .join("");
-}
+        <article class="card">
+            <div class="card-image">
+                <img
+                    src="https://i.ibb.co/jvZj8LjW/Administration-Des-Unit-s.png"
+                    alt="Administration des unités"
+                    loading="eager">
+            </div>
+            <div class="card-body">
+                <h2>Administration des unités</h2>
+                <p>Gestion et consultation des profils d'unités.</p>
+                <a class="card-link"
+                   href="https://cskrh13.github.io/SillageNoir/admin.html">
+                    Ouvrir
+                </a>
+            </div>
+        </article>
 
-function lienHTML(label, href, disabled) {
-    if (disabled || !href) {
-        return '<span class="button disabled">' + escHTML(label) + '</span>';
-    }
-    return '<a class="button" href="' + escAttr(href) + '">' + escHTML(label) + '</a>';
-}
+        <article class="card">
+            <div class="card-image">
+                <img
+                    src="https://i.ibb.co/5gp23D7D/Administration-des-pages-1.png"
+                    alt="Administration des pages"
+                    loading="eager">
+            </div>
+            <div class="card-body">
+                <h2>Administration des pages</h2>
+                <p>Création et gestion des pages du site.</p>
+                <a class="card-link"
+                   href="https://cskrh13.github.io/SillageNoir/atelier-redaction.html">
+                    Ouvrir
+                </a>
+            </div>
+        </article>
 
-function renderHero(b) {
-    const titre = b.titre || b.title || PAGE_DATA.titre || "";
-    const texte = b.texte || b.description || b.contenu || "";
-    const label = b.boutonLabel || "En savoir plus";
-    return '<section class="p-hero">' +
-        '<h1>' + escHTML(titre) + '</h1>' +
-        corpsHTML(texte) +
-        (b.lien ? '<div>' + lienHTML(label, b.lien, false) + '</div>' : '') +
-        '</section>';
-}
+        <article class="card">
+            <div class="card-image">
+                <img
+                    src="https://i.ibb.co/PGWz5gtx/Carte-Du-Reseau-1.png"
+                    alt="Administration du réseau"
+                    loading="eager">
+            </div>
+            <div class="card-body">
+                <h2>Administration du réseau</h2>
+                <p>Cartographie et architecture du réseau.</p>
+                <a class="card-link"
+                   href="https://cskrh13.github.io/SillageNoir/architecture-3d.html">
+                    Ouvrir
+                </a>
+            </div>
+        </article>
 
-function renderTexte(b) {
-    return '<section class="p-texte">' +
-        (b.titre ? '<h2>' + escHTML(b.titre) + '</h2>' : '') +
-        corpsHTML(b.texte || b.contenu || b.description || "") +
-        '</section>';
-}
+    </section>
 
-function renderImage(b) {
-    if (!b.image && !b.src) return "";
-    const src = b.image || b.src;
-    return '<section class="p-image">' +
-        '<img src="' + escAttr(src) + '" alt="' + escAttr(b.alt || b.titre || "") + '">' +
-        (b.legende ? '<p>' + escHTML(b.legende) + '</p>' : '') +
-        '</section>';
-}
+    <footer class="footer">
+        <div class="footer-title">Indexa Administratorium</div>
+        <p>Archives de l'Ancien Monde · fichier central</p>
+    </footer>
 
-function renderGrille(b) {
-    const cartes = Array.isArray(b.cartes) ? b.cartes :
-                   Array.isArray(b.cards) ? b.cards :
-                   Array.isArray(b.elements) ? b.elements : [];
-    return '<section class="p-grille">' +
-        (b.titre ? '<h2>' + escHTML(b.titre) + '</h2>' : '') +
-        '<div class="p-grille-grid">' +
-        cartes.map(function(c) {
-            const img = c.image ? '<img src="' + escAttr(c.image) + '" alt="' + escAttr(c.nom || c.titre || "") + '">' : '';
-            const label = c.boutonLabel || "Ouvrir";
-            const href = c.lien || c.url || "";
-            return '<article class="p-card">' +
-                img +
-                '<h3>' + escHTML(c.nom || c.titre || "") + '</h3>' +
-                corpsHTML(c.description || c.texte || "") +
-                (href ? '<div>' + lienHTML(label, href, false) + '</div>' : '') +
-                '</article>';
-        }).join("") +
-        '</div></section>';
-}
-
-function renderFiche(b) {
-    const sections = Array.isArray(b.sections) ? b.sections : [];
-    return '<section class="p-fiche">' +
-        (b.titre ? '<h2>' + escHTML(b.titre) + '</h2>' : '') +
-        (b.introduction ? corpsHTML(b.introduction) : '') +
-        sections.map(function(s) {
-            return '<div class="fiche-section">' +
-                (s.titre ? '<h3>' + escHTML(s.titre) + '</h3>' : '') +
-                corpsHTML(s.texte || s.contenu || "") +
-                '</div>';
-        }).join("") +
-        '</section>';
-}
-
-function renderCarousel(b) {
-    const slides = Array.isArray(b.slides) ? b.slides : [];
-    if (!slides.length) {
-        return '<section class="p-carrousel"><div class="p-carrousel-slide">Aucun élément dans le carrousel.</div></section>';
-    }
-
-    const id = "carrousel-" + Math.random().toString(36).slice(2, 10);
-
-    return '<section class="p-carrousel" id="' + id + '" data-carousel>' +
-        '<div class="p-carrousel-vignettes">' +
-        slides.map(function(s, i) {
-            return '<button type="button" class="p-vignette' + (i === 0 ? ' active' : '') + '" data-carousel-index="' + i + '">' +
-                (s.image ? '<img src="' + escAttr(s.image) + '" alt="' + escAttr(s.nom || s.titre || "") + '">' : '') +
-                '<span>' + escHTML(s.nom || s.titre || ("Élément " + (i + 1))) + '</span>' +
-                '</button>';
-        }).join("") +
-        '</div>' +
-        '<div class="p-carrousel-slide">' +
-            '<button type="button" class="p-carrousel-fleche" data-carousel-prev aria-label="Précédent">&lsaquo;</button>' +
-            '<div class="p-carrousel-texte" data-carousel-text></div>' +
-            '<div class="p-carrousel-image" data-carousel-image></div>' +
-            '<button type="button" class="p-carrousel-fleche" data-carousel-next aria-label="Suivant">&rsaquo;</button>' +
-        '</div>' +
-        '<div class="p-carrousel-dots">' +
-            slides.map(function(s, i) {
-                return '<button type="button" class="p-dot' + (i === 0 ? ' active' : '') + '" data-carousel-index="' + i + '" aria-label="Afficher ' + (i + 1) + '"></button>';
-            }).join("") +
-        '</div>' +
-        '</section>';
-}
-
-function renderFooter(b) {
-    const liens = Array.isArray(b.liens) ? b.liens :
-                  Array.isArray(b.links) ? b.links : [];
-    return '<footer class="p-footer">' +
-        (b.texte ? corpsHTML(b.texte) : '') +
-        '<div class="p-footer-liens">' +
-        liens.map(function(l) {
-            const label = l.label || l.nom || l.titre || "Lien";
-            const href = l.lien || l.url || "#";
-            return '<a class="p-footer-lien" href="' + escAttr(href) + '">' + escHTML(label) + '</a>';
-        }).join("") +
-        '</div></footer>';
-}
-
-const RENDERERS = {
-    "hero": renderHero,
-    "texte": renderTexte,
-    "image": renderImage,
-    "grille-cartes": renderGrille,
-    "fiche-detaillee": renderFiche,
-    "carrousel": renderCarousel,
-    "pied-de-page": renderFooter
-};
-
-function renderBloc(b) {
-    if (!b || !b.type) return "";
-    const renderer = RENDERERS[b.type];
-    if (!renderer) {
-        console.warn("Type de bloc inconnu :", b.type);
-        return "";
-    }
-    return renderer(b);
-}
-
-function renderPage() {
-    const root = document.getElementById("page-root");
-    root.innerHTML = (PAGE_DATA.blocs || []).map(renderBloc).join("");
-    initCarrousels(root);
-}
-
-function initCarrousels(root) {
-    root.querySelectorAll("[data-carousel]").forEach(function(carousel) {
-        const block = PAGE_DATA.blocs.find(function(b) {
-            return b && b.type === "carrousel";
-        });
-        const slides = block && Array.isArray(block.slides) ? block.slides : [];
-        if (!slides.length) return;
-
-        let index = 0;
-        const text = carousel.querySelector("[data-carousel-text]");
-        const image = carousel.querySelector("[data-carousel-image]");
-        const thumbs = carousel.querySelectorAll("[data-carousel-index]");
-        const prev = carousel.querySelector("[data-carousel-prev]");
-        const next = carousel.querySelector("[data-carousel-next]");
-
-        function draw() {
-            const s = slides[index] || {};
-            const titre = s.nom || s.titre || "";
-            const description = s.description || s.texte || "";
-            const statut = s.statut || "disponible";
-            const label = s.boutonLabel || (statut === "bientot" ? "Bientôt disponible" : statut === "archive" ? "Archivé" : "Télécharger");
-            const disabled = statut !== "disponible" || !s.lien;
-
-            text.innerHTML =
-                '<h3>' + escHTML(titre) + '</h3>' +
-                corpsHTML(description) +
-                lienHTML(label, s.lien || "", disabled);
-
-            image.innerHTML = s.image
-                ? '<img src="' + escAttr(s.image) + '" alt="' + escAttr(titre) + '">'
-                : "";
-
-            thumbs.forEach(function(el, i) {
-                el.classList.toggle("active", Number(el.getAttribute("data-carousel-index")) === index);
-            });
-        }
-
-        function go(n) {
-            index = (n + slides.length) % slides.length;
-            draw();
-        }
-
-        prev.addEventListener("click", function(){ go(index - 1); });
-        next.addEventListener("click", function(){ go(index + 1); });
-        thumbs.forEach(function(el) {
-            el.addEventListener("click", function(){
-                go(Number(el.getAttribute("data-carousel-index")));
-            });
-        });
-
-        draw();
-    });
-}
-
-renderPage();
-</script>
+</main>
 </body>
 </html>
