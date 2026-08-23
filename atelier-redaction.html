@@ -140,6 +140,12 @@ textarea { min-height: 80px; resize: vertical; }
     padding: 3px 7px; font-size: 11px; border: 1px solid #9c9278; background: #ded4b7;
 }
 
+
+/* -------- Navigation éditoriale -------- */
+.p-nav{width:100%;max-width:980px;background:rgba(231,222,199,.95);border:1px solid var(--ligne);box-shadow:0 4px 13px rgba(45,35,24,.18);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:18px;position:relative}
+.p-nav::before,.p-nav::after{content:"";position:absolute;left:5%;right:5%;height:1px;background:linear-gradient(90deg,transparent,#8a7859,transparent)}.p-nav::before{top:6px}.p-nav::after{bottom:6px}
+.p-nav-brand{display:flex;flex-direction:column;gap:2px}.p-nav-brand strong{font-family:"IM Fell English SC",Georgia,serif;font-size:20px;font-weight:400}.p-nav-brand span{font-family:"Cinzel",Georgia,serif;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#8a7859}.p-nav-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:3px}.p-nav-links a{padding:8px 10px;font-family:"Cinzel",Georgia,serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#554936;border-bottom:1px solid transparent}.p-nav-links a.active{color:#292824;border-bottom-color:#9b8151}.p-nav-links a:hover{background:rgba(138,120,89,.1)}@media(max-width:700px){.p-nav{flex-direction:column;text-align:center}.p-nav-links{justify-content:center}}
+
 /* -------- Aperçu : styles réels du site -------- */
 .preview-label {
     margin-top: 6px; text-transform: uppercase; letter-spacing: 2px; font-size: 12px;
@@ -392,6 +398,20 @@ function slugify(t){
 }
 
 const BLOC_TYPES = {
+
+    nav: {
+        label: "Navigation du site",
+        defaultData: () => ({ type:"nav", titre:"Archives de l’Ancien Monde", sousTitre:"", liens:[{label:"Accueil",url:"index.html",actif:true},{label:"Suppléments",url:"#supplements",actif:false},{label:"Archives",url:"archives.html",actif:false}] }),
+        form: (b,i) => `
+            <div class="grid">
+                <div class="field"><label>Titre / marque</label><input value="${esc(b.titre||'')}" oninput="updateBloc(${i},'titre',this.value)"></div>
+                <div class="field"><label>Sous-titre</label><input value="${esc(b.sousTitre||'')}" oninput="updateBloc(${i},'sousTitre',this.value)"></div>
+            </div>
+            <div class="sub-list"><h4>Liens (${(b.liens||[]).length})</h4>
+            ${(b.liens||[]).map((l,li)=>`<div class="sub-item"><div class="sub-head"><span>${esc(l.label||'Lien')}</span><div class="sub-controls"><button onclick="deplacerLienNav(${i},${li},-1)">↑</button><button onclick="deplacerLienNav(${i},${li},1)">↓</button><button onclick="supprimerLienNav(${i},${li})">Suppr.</button></div></div><div class="grid"><div class="field"><label>Libellé</label><input value="${esc(l.label||'')}" oninput="updateLienNav(${i},${li},'label',this.value)"></div><div class="field"><label>URL</label><input value="${esc(l.url||'')}" oninput="updateLienNav(${i},${li},'url',this.value)"></div><div class="field"><label>État</label><select onchange="updateLienNav(${i},${li},'actif',this.value==='true')"><option value="false" ${!l.actif?'selected':''}>Normal</option><option value="true" ${l.actif?'selected':''}>Page active</option></select></div></div></div>`).join('')}
+            <button class="action small" onclick="ajouterLienNav(${i})">＋ Ajouter un lien</button></div>`,
+        preview: b => `<nav class="p-nav"><div class="p-nav-brand"><strong>${esc(b.titre||'Archives de l’Ancien Monde')}</strong>${b.sousTitre?`<span>${esc(b.sousTitre)}</span>`:''}</div><div class="p-nav-links">${(b.liens||[]).map(l=>`<a class="${l.actif?'active':''}">${esc(l.label||'Lien')}</a>`).join('')}</div></nav>`
+    },
 
     hero: {
         label: "Bandeau (actualité / mise en avant)",
@@ -845,6 +865,11 @@ function ajouterLienPied(i){
     renderEditeur(); majApercu(); majOutput();
 }
 function supprimerLienPied(i,li){ page.blocs[i].liens.splice(li,1); renderEditeur(); majApercu(); majOutput(); }
+function ajouterLienNav(i){ page.blocs[i].liens.push({label:"Nouveau lien",url:"",actif:false}); renderTout(); }
+function updateLienNav(i,li,k,v){ page.blocs[i].liens[li][k]=v; renderListeSeule(); renderPreview(); genererSortie(); }
+function supprimerLienNav(i,li){ page.blocs[i].liens.splice(li,1); renderTout(); }
+function deplacerLienNav(i,li,d){ const a=page.blocs[i].liens, n=li+d; if(n<0||n>=a.length)return; [a[li],a[n]]=[a[n],a[li]]; renderTout(); }
+
 function deplacerLienPied(i,li,dir){
     const arr=page.blocs[i].liens; const j=li+dir;
     if(j<0||j>=arr.length) return;
