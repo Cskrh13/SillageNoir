@@ -421,16 +421,39 @@ nav a:hover{
         0 10px 28px rgba(35,25,15,.3);
 
     background:
-
         linear-gradient(
             180deg,
-            rgba(0,0,0,.08),
-            rgba(0,0,0,.72)
-        ),
+            #34383a 0%,
+            #171b1c 100%
+        );
 
-        url("images/ActualiteMareeDeSang.png")
-        center / cover;
+}
 
+.news-background-image{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    pointer-events:none;
+    user-select:none;
+}
+
+.news-feature::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0,0,0,.08) 0%,
+            rgba(0,0,0,.12) 38%,
+            rgba(0,0,0,.82) 100%
+        );
 }
 
 
@@ -444,6 +467,10 @@ nav a:hover{
     position:absolute;
 
     inset:0;
+
+    z-index:1;
+
+    pointer-events:none;
 
     background:
 
@@ -649,6 +676,7 @@ nav a:hover{
 ========================================================= */
 
 .chronicle-card{
+    overflow:hidden;
     position:relative;
     min-height:520px;
     display:flex;
@@ -747,89 +775,69 @@ nav a:hover{
 }
 
 /* =========================================================
-   COMPOSITION VISUELLE ADAPTÉE AU CADRE
-   Chaque image reçoit une zone fixe dans la carte.
-   object-fit:contain conserve l'intégralité des personnages.
+   COMPOSITION VISUELLE — HAUTEUR EXACTE DU CADRE
+
+   Les images sont redimensionnées selon la hauteur du cadre :
+   - cadre 300px de haut → image 300px de haut
+   - cadre 400px de haut → image 400px de haut
+   La largeur reste proportionnelle et tout dépassement latéral
+   est coupé par le cadre.
 ========================================================= */
 
 .chronicle-scene{
-    padding:22px 18px 135px;
+    position:absolute;
+    inset:0;
+    z-index:1;
+    overflow:hidden;
 }
 
-/* Cadre commun : les deux éléments restent visibles */
+/* Toutes les images suivent exactement la hauteur disponible */
 .chronicle-scene img{
-    max-width:48%;
-    max-height:62%;
+    position:absolute;
+    top:0;
+    left:50%;
+    height:100%;
+    width:auto;
+    max-width:none;
+    max-height:none;
     object-fit:contain;
-    object-position:center bottom;
+    object-position:center center;
+    transform:translateX(-50%);
+    pointer-events:none;
+    user-select:none;
 }
 
-/* LE COURANT OCCIDENTAL */
-.courant-vague{
-    right:2%;
-    top:10%;
-    width:48%;
-    height:58%;
-    z-index:1;
-    opacity:.88;
-}
-
-.courant-personnage{
-    left:3%;
-    top:8%;
-    width:46%;
-    height:62%;
-    z-index:3;
-    filter:drop-shadow(8px 10px 16px rgba(0,0,0,.35));
-}
-
-/* LA MARÉE DE SANG */
-.maree-banniere{
-    left:2%;
-    top:10%;
-    width:47%;
-    height:56%;
-    z-index:1;
-    opacity:.84;
-}
-
-.maree-sorcieres{
-    right:2%;
-    top:7%;
-    width:47%;
-    height:63%;
-    z-index:3;
-    filter:drop-shadow(-8px 10px 16px rgba(0,0,0,.4));
-}
-
-/* LES COLONIES PERDUES */
+/* Décors / arrière-plans */
+.courant-vague,
+.maree-banniere,
 .colonies-humains{
-    right:2%;
-    top:9%;
-    width:47%;
-    height:60%;
     z-index:1;
-    opacity:.94;
+    opacity:.78;
 }
 
+/* Personnages / premier plan */
+.courant-personnage,
+.maree-sorcieres,
 .colonies-elfes{
-    left:3%;
-    top:7%;
-    width:46%;
-    height:63%;
     z-index:3;
-    filter:drop-shadow(8px 10px 16px rgba(0,0,0,.4));
+    filter:drop-shadow(8px 10px 16px rgba(0,0,0,.42));
 }
 
-/* Animation de profondeur très légère */
+.maree-banniere{opacity:.72;}
+.colonies-humains{opacity:.84;}
 
-.chronicle-card:hover .courant-vague{transform:translate(-10px,3px) scale(1.025)}
-.chronicle-card:hover .courant-personnage{transform:translate(4px,-4px) scale(1.015)}
-.chronicle-card:hover .maree-banniere{transform:translate(-8px,3px) scale(1.025)}
-.chronicle-card:hover .maree-sorcieres{transform:translate(4px,-4px) scale(1.015)}
-.chronicle-card:hover .colonies-humains{transform:translate(-8px,3px) scale(1.02)}
-.chronicle-card:hover .colonies-elfes{transform:translate(4px,-4px) scale(1.015)}
+/* Mouvement léger sans modifier l'adaptation à la hauteur */
+.chronicle-card:hover .courant-vague,
+.chronicle-card:hover .maree-banniere,
+.chronicle-card:hover .colonies-humains{
+    transform:translateX(calc(-50% - 4px)) scale(1.01);
+}
 
+.chronicle-card:hover .courant-personnage,
+.chronicle-card:hover .maree-sorcieres,
+.chronicle-card:hover .colonies-elfes{
+    transform:translateX(calc(-50% + 3px)) translateY(-3px) scale(1.01);
+}
 
 /* =========================================================
    BLOC PROJET
@@ -1201,16 +1209,7 @@ footer p{
 
 
 
-@media(max-width:760px){
-    .chronicle-scene{
-        padding-bottom:150px;
-    }
 
-    .chronicle-scene img{
-        max-width:48%;
-        max-height:58%;
-    }
-}
 
 @media(prefers-reduced-motion:reduce){
 
@@ -1306,6 +1305,15 @@ footer p{
 
 
 <section class="news-feature">
+
+    <!-- IMAGE DE FOND DE L'ACTUALITÉ
+         Remplace simplement src par ton futur visuel.
+         L'image restera automatiquement derrière le texte. -->
+    <img
+        class="news-background-image"
+        src="images/ActualiteMareeDeSang.png"
+        alt=""
+        aria-hidden="true">
 
     <div class="news-content">
 
