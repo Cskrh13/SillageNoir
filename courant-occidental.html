@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le Courant Occidental — Archives de l'Ancien Monde</title>
+<meta name="description" content="Le Courant Occidental — supplément narratif non officiel pour les Archives de l'Ancien Monde.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600;700&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --ink:#252622;
+    --paper:#e8dfca;
+    --paper-light:#f2ead8;
+    --paper-dark:#cdbf9f;
+    --sea:#243a3d;
+    --sea-deep:#111e22;
+    --gold:#a88750;
+    --line:rgba(71,58,39,.42);
+    --muted:#685c49;
+    --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    margin:0;
+    color:var(--ink);
+    font-family:"Vollkorn",Georgia,serif;
+    background:
+        linear-gradient(rgba(223,213,190,.91),rgba(223,213,190,.91)),
+        url("images/fond-carte.jpg") center/cover fixed;
+}
+body::before{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; z-index:-1;
+    opacity:.18;
+    background:radial-gradient(circle at 10% 10%,#fff 0,transparent 24%),
+               radial-gradient(circle at 90% 90%,#6b5b42 0,transparent 30%);
+    mix-blend-mode:multiply;
+}
+a{color:inherit;text-decoration:none}
+.page{width:min(calc(100% - 36px),var(--max));margin:auto}
+
+/* NAV */
+.site-nav{
+    margin:20px auto;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    padding:11px 18px;
+    background:rgba(238,230,210,.94);
+    border:1px solid var(--line);
+    box-shadow:0 5px 16px rgba(45,35,24,.13);
+}
+.nav-brand{
+    font-family:"IM Fell English SC",serif;
+    font-size:22px; letter-spacing:.05em;
+}
+.nav-links{display:flex;flex-wrap:wrap;gap:4px}
+.nav-links a{
+    padding:8px 10px;
+    font-family:"Cinzel",serif;font-size:9px;letter-spacing:.11em;text-transform:uppercase;
+    color:#5c513f;
+    border:1px solid transparent;
+}
+.nav-links a:hover{background:#d9cba9;border-color:#a98d59}
+
+/* HERO */
+.hero{
+    position:relative;
+    min-height:590px;
+    display:flex; align-items:flex-end;
+    overflow:hidden;
+    background:
+        linear-gradient(90deg,rgba(10,20,23,.84),rgba(10,20,23,.24) 62%,rgba(10,20,23,.54)),
+        linear-gradient(0deg,rgba(8,15,17,.82),transparent 58%),
+        url("https://i.ibb.co/vxWhLrX4/Personnage-1.png") 18% center/auto 92% no-repeat,
+        #26383a;
+    border:1px solid rgba(58,49,34,.65);
+    box-shadow:0 9px 28px rgba(30,25,18,.25);
+}
+.hero::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 30%),
+               radial-gradient(circle at 65% 30%,transparent 0,rgba(0,0,0,.34) 100%);
+}
+.hero-content{
+    position:relative;z-index:1;
+    width:min(680px,100%);
+    padding:55px;
+    color:#eee6d2;
+}
+.eyebrow{
+    display:block;margin-bottom:12px;
+    font-family:"Cinzel",serif;font-size:10px;letter-spacing:.25em;text-transform:uppercase;
+    color:#c9ad78;
+}
+.hero h1,.section-title{
+    margin:0;
+    font-family:"IM Fell English SC",serif;
+    font-weight:400;
+}
+.hero h1{
+    font-size:clamp(50px,8vw,104px);
+    line-height:.9;letter-spacing:.03em;
+    text-shadow:0 3px 20px #000;
+}
+.hero p{
+    max-width:560px;margin:24px 0 0;
+    font-size:18px;line-height:1.6;
+    text-shadow:0 2px 9px #000;
+}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.button{
+    display:inline-block;padding:12px 17px;
+    font-family:"Cinzel",serif;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    border:1px solid #b99b62;background:rgba(13,20,20,.5);color:#f1e7d2;
+}
+.button:hover{background:rgba(105,81,42,.68)}
+.button.alt{border-color:rgba(238,230,210,.45);background:rgba(238,230,210,.08)}
+
+/* INTRO */
+.intro{
+    position:relative;
+    margin:34px 0;
+    padding:40px 50px;
+    text-align:center;
+    background:rgba(241,234,216,.88);
+    border:1px solid var(--line);
+}
+.intro::before,.intro::after{
+    content:"";position:absolute;left:15%;right:15%;height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.intro::before{top:13px}.intro::after{bottom:13px}
+.intro p{max-width:800px;margin:0 auto;font-size:18px;line-height:1.7;color:#554a39}
+
+/* HEADINGS */
+.heading{
+    display:flex;align-items:center;gap:18px;margin:55px 0 22px;
+}
+.heading::before,.heading::after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--line))}
+.heading::after{background:linear-gradient(90deg,var(--line),transparent)}
+.heading span{font-family:"Cinzel",serif;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#655842;white-space:nowrap}
+
+/* FEATURE CARDS */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.feature{
+    position:relative;min-height:320px;padding:26px;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    overflow:hidden;color:#eee6d2;
+    border:1px solid rgba(61,53,39,.65);
+    background:#263537;
+    box-shadow:0 6px 17px rgba(44,34,23,.16);
+}
+.feature::before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,11,12,.9),rgba(5,11,12,.08) 80%)}
+.feature > *{position:relative;z-index:1}
+.feature:nth-child(1){background:linear-gradient(0deg,rgba(6,15,17,.78),rgba(6,15,17,.08)),url("https://i.ibb.co/vxWhLrX4/Personnage-1.png") center/cover}
+.feature:nth-child(2){background:linear-gradient(0deg,rgba(6,15,17,.78),rgba(6,15,17,.08)),url("https://i.ibb.co/6RLNthxL/vague.png") center/cover}
+.feature:nth-child(3){background:linear-gradient(0deg,rgba(6,15,17,.78),rgba(6,15,17,.08)),#45524f}
+.feature small{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#c9ad78}
+.feature h2{margin:8px 0;font-family:"IM Fell English SC",serif;font-size:32px;font-weight:400}
+.feature p{margin:0;font-size:14px;line-height:1.5}
+
+/* CITY */
+.city{
+    display:grid;grid-template-columns:1.05fr .95fr;
+    background:rgba(238,230,210,.92);border:1px solid var(--line);
+    box-shadow:0 5px 16px rgba(45,35,24,.13);
+}
+.city-visual{
+    min-height:430px;
+    background:
+        linear-gradient(90deg,rgba(20,31,31,.08),rgba(20,31,31,.6)),
+        url("https://i.ibb.co/6RLNthxL/vague.png") center/cover;
+}
+.city-copy{padding:45px}
+.city-copy h2{font-family:"IM Fell English SC",serif;font-size:47px;font-weight:400;margin:0 0 16px}
+.city-copy p{line-height:1.7;color:#554a39}
+.list{padding:0;margin:20px 0 0;list-style:none}
+.list li{padding:10px 0;border-top:1px solid rgba(91,77,51,.22)}
+.list li::before{content:"✦";color:var(--gold);margin-right:10px}
+
+/* CAMPAIGN */
+.campaign{
+    padding:30px;
+    background:rgba(241,234,216,.9);
+    border:1px solid var(--line);
+}
+.campaign-head{text-align:center;max-width:760px;margin:0 auto 25px}
+.campaign-head h2{font-family:"IM Fell English SC",serif;font-size:48px;font-weight:400;margin:0}
+.campaign-head p{color:var(--muted);line-height:1.6}
+.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.scenario{
+    padding:20px;min-height:150px;
+    border:1px solid rgba(90,73,46,.35);
+    background:rgba(255,255,255,.24);
+}
+.scenario-number{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.16em;color:#987d4b;text-transform:uppercase}
+.scenario h3{margin:9px 0 0;font-family:"IM Fell English SC",serif;font-size:25px;font-weight:400}
+.scenario p{margin:8px 0 0;font-size:13px;line-height:1.45;color:#655945}
+
+/* SYSTEMS */
+.systems{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.system{
+    padding:27px;
+    background:linear-gradient(145deg,var(--paper-light),var(--paper));
+    border:1px solid var(--line);
+    box-shadow:0 4px 13px rgba(45,35,24,.12);
+}
+.system h3{margin:0 0 12px;font-family:"IM Fell English SC",serif;font-size:30px;font-weight:400}
+.system p{margin:0;line-height:1.6;color:#5c503e}
+
+/* OST */
+.ost{
+    position:relative;overflow:hidden;
+    padding:55px;
+    color:#efe6d1;
+    background:linear-gradient(90deg,rgba(13,26,28,.94),rgba(13,26,28,.62)),#203538;
+    border:1px solid rgba(54,48,36,.65);
+}
+.ost::after{
+    content:"";position:absolute;inset:0;opacity:.18;
+    background:url("https://i.ibb.co/vxWhLrX4/Personnage-1.png") right center/auto 115% no-repeat;
+}
+.ost > *{position:relative;z-index:1}
+.ost h2{font-family:"IM Fell English SC",serif;font-size:54px;font-weight:400;margin:0}
+.ost p{max-width:660px;line-height:1.7}
+.ost-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:760px;margin-top:22px}
+.ost-grid div{padding:16px;border:1px solid rgba(216,192,141,.3);background:rgba(0,0,0,.16)}
+.ost-grid strong{display:block;font-family:"Cinzel",serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#c9ad78}
+
+/* DOWNLOAD */
+.download{
+    margin:40px 0 25px;padding:38px;
+    text-align:center;
+    background:rgba(34,45,44,.96);color:#eee6d2;
+    border:1px solid #746444;
+}
+.download h2{margin:0;font-family:"IM Fell English SC",serif;font-size:44px;font-weight:400}
+.download p{max-width:650px;margin:12px auto 24px;color:#d8cdb6}
+.download .button{background:#b18d52;color:#1d1d18}
+
+/* FOOTER */
+footer{padding:24px 10px 35px;text-align:center;color:#655945;font-size:12px}
+footer strong{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+
+@media(max-width:850px){
+    .hero{min-height:520px;background-position:center}
+    .hero-content{padding:35px}
+    .features,.systems,.scenarios{grid-template-columns:1fr}
+    .city{grid-template-columns:1fr}
+    .city-visual{min-height:280px}
+}
+@media(max-width:600px){
+    .page{width:min(calc(100% - 20px),var(--max))}
+    .site-nav{flex-direction:column;text-align:center}
+    .nav-links{justify-content:center}
+    .hero{min-height:560px}
+    .hero-content{padding:25px}
+    .hero h1{font-size:57px}
+    .intro,.city-copy,.campaign,.ost{padding:25px}
+    .ost-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<nav class="site-nav" aria-label="Navigation principale">
+    <a class="nav-brand" href="accueil.html">Archives de l'Ancien Monde</a>
+    <div class="nav-links">
+        <a href="accueil.html">Accueil</a>
+        <a href="#univers">L'Univers</a>
+        <a href="#campagne">La Campagne</a>
+        <a href="#regles">Les Règles</a>
+        <a href="#telechargement">Le Supplément</a>
+    </div>
+</nav>
+
+<header class="hero">
+    <div class="hero-content">
+        <span class="eyebrow">Chronique I · Supplément narratif</span>
+        <h1>Le Courant Occidental</h1>
+        <p>Au-delà des routes connues, là où les cartes deviennent incertaines, les ambitions de l'Ancien Monde rencontrent les forces d'un océan qui n'appartient à personne.</p>
+        <div class="hero-actions">
+            <a class="button" href="#campagne">Entrer dans la campagne</a>
+            <a class="button alt" href="#telechargement">Consulter le supplément</a>
+        </div>
+    </div>
+</header>
+
+<section class="intro">
+    <p>
+        Une chronique pensée comme une véritable expédition : découvrir un nouvel horizon, suivre les ambitions de ses protagonistes et faire évoluer une campagne à travers les batailles, les hauts-faits, la renommée et les conséquences laissées par chaque affrontement.
+    </p>
+</section>
+
+<div class="heading"><span>Les deux feux du récit</span></div>
+
+<section class="features" id="univers">
+    <article class="feature">
+        <small>Un nouveau rivage</small>
+        <h2>Tour d'Argent</h2>
+        <p>Une cité tournée vers l'horizon, point de départ d'une histoire où le monde connu cesse peu à peu de l'être.</p>
+    </article>
+    <article class="feature">
+        <small>Les forces de l'Ouest</small>
+        <h2>L'Ost</h2>
+        <p>Une armée, ses héros et ses particularités, façonnés par un environnement où la mer n'est jamais seulement un décor.</p>
+    </article>
+    <article class="feature">
+        <small>Une chronique complète</small>
+        <h2>La campagne</h2>
+        <p>Six scénarios liés entre eux et une progression narrative qui donne du poids aux victoires comme aux défaites.</p>
+    </article>
+</section>
+
+<div class="heading"><span>La cité au bord du monde</span></div>
+
+<section class="city">
+    <div class="city-visual" aria-hidden="true"></div>
+    <div class="city-copy">
+        <h2>Tour d'Argent</h2>
+        <p>
+            Le Courant Occidental ne se limite pas à une succession de batailles. La chronique propose un cadre narratif dans lequel les lieux, les personnages et les ambitions donnent une identité aux affrontements.
+        </p>
+        <p>
+            Tour d'Argent devient ainsi une porte ouverte vers l'inconnu : un point d'ancrage pour les armées avant que la campagne ne les entraîne plus loin, vers les limites de l'horizon.
+        </p>
+        <ul class="list">
+            <li>Un cadre narratif conçu pour accompagner les batailles.</li>
+            <li>Des protagonistes et des forces qui évoluent avec la chronique.</li>
+            <li>Un univers maritime où l'environnement participe au récit.</li>
+        </ul>
+    </div>
+</section>
+
+<div class="heading"><span>Une campagne en six actes</span></div>
+
+<section class="campaign" id="campagne">
+    <div class="campaign-head">
+        <h2>La route vers l'Ouest</h2>
+        <p>La campagne est structurée autour de six scénarios. Chaque bataille constitue une étape du récit et contribue à l'histoire générale de l'expédition.</p>
+    </div>
+
+    <div class="scenarios">
+        <article class="scenario"><span class="scenario-number">Scénario I</span><h3>Premier horizon</h3><p>La chronique commence lorsque les certitudes du monde connu commencent à s'effacer.</p></article>
+        <article class="scenario"><span class="scenario-number">Scénario II</span><h3>Les eaux de l'Ouest</h3><p>Les forces en présence découvrent que franchir l'horizon n'est jamais sans conséquence.</p></article>
+        <article class="scenario"><span class="scenario-number">Scénario III</span><h3>Terres inconnues</h3><p>Une nouvelle étape où les ambitions doivent désormais composer avec l'inattendu.</p></article>
+        <article class="scenario"><span class="scenario-number">Scénario IV</span><h3>Le prix du passage</h3><p>Les choix précédents commencent à peser sur la suite de la campagne.</p></article>
+        <article class="scenario"><span class="scenario-number">Scénario V</span><h3>Le courant se retourne</h3><p>Les rivalités et les conséquences des batailles convergent vers leur point de rupture.</p></article>
+        <article class="scenario"><span class="scenario-number">Scénario VI</span><h3>Au-delà de l'horizon</h3><p>Le dernier acte conclut l'expédition tout en laissant le monde ouvert à de nouvelles chroniques.</p></article>
+    </div>
+</section>
+
+<div class="heading"><span>Les traces laissées par la bataille</span></div>
+
+<section class="systems" id="regles">
+    <article class="system">
+        <h3>Hauts-faits</h3>
+        <p>Les actions remarquables ne sont pas de simples anecdotes : elles donnent une mémoire à la campagne et permettent aux personnages de laisser leur marque sur l'histoire.</p>
+    </article>
+    <article class="system">
+        <h3>Renommée</h3>
+        <p>Au fil des affrontements, les protagonistes acquièrent une réputation. La campagne ne suit donc pas seulement des armées : elle suit les noms qui deviennent célèbres.</p>
+    </article>
+    <article class="system">
+        <h3>Blessures</h3>
+        <p>La victoire a un prix. Les conséquences des combats accompagnent les personnages et donnent une continuité concrète entre les différentes batailles.</p>
+    </article>
+</section>
+
+<div class="heading"><span>Les forces de Tour d'Argent</span></div>
+
+<section class="ost">
+    <h2>L'Ost de Tour d'Argent</h2>
+    <p>
+        Le supplément rassemble également les éléments nécessaires pour donner une identité propre aux forces engagées dans la chronique : unités, personnages, options narratives et une place particulière accordée aux forces liées à l'eau.
+    </p>
+    <div class="ost-grid">
+        <div><strong>Armée narrative</strong><br>Une force pensée pour exister dans le contexte particulier de la chronique.</div>
+        <div><strong>Personnages</strong><br>Des protagonistes dont les exploits peuvent accompagner la progression de la campagne.</div>
+        <div><strong>Magie de l'eau</strong><br>Une dimension supplémentaire qui renforce l'identité maritime du supplément.</div>
+        <div><strong>Évolution</strong><br>Des mécaniques destinées à relier les batailles plutôt qu'à les isoler.</div>
+    </div>
+</section>
+
+<section class="download" id="telechargement">
+    <h2>Le Courant Occidental</h2>
+    <p>Retrouvez l'univers, les règles, les personnages et la campagne narrative complète dans le supplément.</p>
+    <!-- Remplace le lien ci-dessous par l'emplacement exact de ton PDF -->
+    <a class="button" href="Le-Courant-Occidental.pdf" target="_blank">Ouvrir le supplément</a>
+</section>
+
+<footer>
+    <strong>Archives de l'Ancien Monde</strong><br>
+    Le Courant Occidental · Supplément narratif non officiel
+</footer>
+
+</div>
+</body>
+</html>
