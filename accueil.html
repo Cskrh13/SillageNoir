@@ -630,219 +630,205 @@ nav a:hover{
 ========================================================= */
 
 .chronicles-intro{
-
     max-width:760px;
-
-    margin:
-        0 auto 30px;
-
+    margin:0 auto 30px;
     text-align:center;
-
     font-size:16px;
-
     line-height:1.6;
-
     color:var(--brown);
-
 }
-
 
 .chronicles-grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
+    grid-template-columns:repeat(3,1fr);
     gap:18px;
-
 }
 
-
 /* =========================================================
-   CARTE CHRONIQUE
+   CARTES CHRONIQUES — SCÈNES À DEUX PLANS
 ========================================================= */
 
 .chronicle-card{
-
     position:relative;
-
     min-height:520px;
-
     display:flex;
-
     flex-direction:column;
-
-    justify-content:end;
-
+    justify-content:flex-end;
     overflow:hidden;
-
-    border:
-        1px solid rgba(67,53,35,.65);
-
-    box-shadow:
-        0 6px 18px var(--shadow);
-
+    border:1px solid rgba(67,53,35,.65);
     background:
-        var(--dark);
-
-    transition:
-        transform .25s ease,
-        box-shadow .25s ease;
-
+        radial-gradient(circle at 50% 30%, rgba(190,165,110,.10), transparent 42%),
+        linear-gradient(180deg,#2a302f 0%,#171b1c 50%,#101212 100%);
+    box-shadow:0 6px 18px var(--shadow);
+    transition:transform .3s ease, box-shadow .3s ease;
 }
-
 
 .chronicle-card:hover{
-
-    transform:
-        translateY(-5px);
-
-    box-shadow:
-        0 12px 30px rgba(40,29,18,.3);
-
+    transform:translateY(-5px);
+    box-shadow:0 14px 32px rgba(40,29,18,.32);
 }
 
-
-.chronicle-card img{
-
+.chronicle-scene{
     position:absolute;
-
     inset:0;
-
-    width:100%;
-
-    height:100%;
-
-    object-fit:cover;
-
-    transition:
-        transform .6s ease;
-
+    overflow:hidden;
+    pointer-events:none;
 }
 
-
-.chronicle-card:hover img{
-
-    transform:
-        scale(1.05);
-
+.chronicle-scene img{
+    position:absolute;
+    display:block;
+    width:auto;
+    max-width:none;
+    height:auto;
+    object-fit:contain;
+    pointer-events:none;
+    user-select:none;
+    transition:transform .8s cubic-bezier(.2,.7,.2,1), filter .5s ease;
 }
-
 
 .chronicle-card::after{
-
     content:"";
-
     position:absolute;
-
     inset:0;
-
-    background:
-
-        linear-gradient(
-            180deg,
-            rgba(0,0,0,.05) 20%,
-            rgba(0,0,0,.25) 50%,
-            rgba(0,0,0,.9) 100%
-        );
-
+    z-index:5;
+    pointer-events:none;
+    background:linear-gradient(180deg,rgba(0,0,0,.02) 8%,rgba(0,0,0,.06) 36%,rgba(0,0,0,.40) 64%,rgba(0,0,0,.94) 100%);
 }
-
 
 .chronicle-content{
-
     position:relative;
-
-    z-index:2;
-
-    padding:
-        28px 25px;
-
+    z-index:10;
+    padding:28px 25px;
     color:#f0e6d2;
-
 }
-
 
 .chronicle-number{
-
     display:block;
-
     margin-bottom:8px;
-
     font-family:"Cinzel",serif;
-
     font-size:8px;
-
     letter-spacing:2px;
-
     text-transform:uppercase;
-
     color:#cfb174;
-
 }
-
 
 .chronicle-content h3{
-
     margin:0 0 12px;
-
-    font-family:
-        "IM Fell English SC",
-        Georgia,
-        serif;
-
+    font-family:"IM Fell English SC",Georgia,serif;
     font-size:34px;
-
     font-weight:400;
-
     line-height:1;
-
 }
-
 
 .chronicle-content p{
-
     margin:0;
-
     min-height:70px;
-
     font-size:14px;
-
     line-height:1.5;
-
-    color:
-        rgba(241,233,215,.86);
-
+    color:rgba(241,233,215,.86);
 }
-
 
 .chronicle-link{
-
     display:inline-block;
-
     margin-top:20px;
-
     font-family:"Cinzel",serif;
-
     font-size:9px;
-
     letter-spacing:1.5px;
-
     text-transform:uppercase;
-
     color:#dfc68e;
-
     text-decoration:none;
-
+    transition:color .2s ease, transform .2s ease;
 }
-
 
 .chronicle-link:hover{
-
     color:#fff1c9;
-
+    transform:translateX(4px);
 }
+
+/* =========================================================
+   COMPOSITION VISUELLE ADAPTÉE AU CADRE
+   Chaque image reçoit une zone fixe dans la carte.
+   object-fit:contain conserve l'intégralité des personnages.
+========================================================= */
+
+.chronicle-scene{
+    padding:22px 18px 135px;
+}
+
+/* Cadre commun : les deux éléments restent visibles */
+.chronicle-scene img{
+    max-width:48%;
+    max-height:62%;
+    object-fit:contain;
+    object-position:center bottom;
+}
+
+/* LE COURANT OCCIDENTAL */
+.courant-vague{
+    right:2%;
+    top:10%;
+    width:48%;
+    height:58%;
+    z-index:1;
+    opacity:.88;
+}
+
+.courant-personnage{
+    left:3%;
+    top:8%;
+    width:46%;
+    height:62%;
+    z-index:3;
+    filter:drop-shadow(8px 10px 16px rgba(0,0,0,.35));
+}
+
+/* LA MARÉE DE SANG */
+.maree-banniere{
+    left:2%;
+    top:10%;
+    width:47%;
+    height:56%;
+    z-index:1;
+    opacity:.84;
+}
+
+.maree-sorcieres{
+    right:2%;
+    top:7%;
+    width:47%;
+    height:63%;
+    z-index:3;
+    filter:drop-shadow(-8px 10px 16px rgba(0,0,0,.4));
+}
+
+/* LES COLONIES PERDUES */
+.colonies-humains{
+    right:2%;
+    top:9%;
+    width:47%;
+    height:60%;
+    z-index:1;
+    opacity:.94;
+}
+
+.colonies-elfes{
+    left:3%;
+    top:7%;
+    width:46%;
+    height:63%;
+    z-index:3;
+    filter:drop-shadow(8px 10px 16px rgba(0,0,0,.4));
+}
+
+/* Animation de profondeur très légère */
+
+.chronicle-card:hover .courant-vague{transform:translate(-10px,3px) scale(1.025)}
+.chronicle-card:hover .courant-personnage{transform:translate(4px,-4px) scale(1.015)}
+.chronicle-card:hover .maree-banniere{transform:translate(-8px,3px) scale(1.025)}
+.chronicle-card:hover .maree-sorcieres{transform:translate(4px,-4px) scale(1.015)}
+.chronicle-card:hover .colonies-humains{transform:translate(-8px,3px) scale(1.02)}
+.chronicle-card:hover .colonies-elfes{transform:translate(4px,-4px) scale(1.015)}
 
 
 /* =========================================================
@@ -1095,9 +1081,7 @@ footer p{
 
 
     .chronicle-card{
-
-        min-height:400px;
-
+        min-height:500px;
     }
 
 }
@@ -1215,6 +1199,18 @@ footer p{
 
 }
 
+
+
+@media(max-width:760px){
+    .chronicle-scene{
+        padding-bottom:150px;
+    }
+
+    .chronicle-scene img{
+        max-width:48%;
+        max-height:58%;
+    }
+}
 
 @media(prefers-reduced-motion:reduce){
 
@@ -1384,59 +1380,25 @@ footer p{
     id="supplements">
 
 
-<!-- MARÉE DE SANG -->
-
-<article class="chronicle-card">
-
-    <!-- Remplace cette image par ton image des personnages -->
-    <img
-        src="images/MareeDeSangPersonnages.png"
-        alt="Personnages de La Marée de Sang">
-
-    <div class="chronicle-content">
-
-        <span class="chronicle-number">
-            Chronique I
-        </span>
-
-        <h3>
-            La Marée de Sang
-        </h3>
-
-        <p>
-
-            Une chasse maritime au cœur d'une mer hostile,
-            où les tempêtes, la vengeance et le sang
-            menacent d'engloutir les deux flottes.
-
-        </p>
-
-        <a
-            href="maree-de-sang.html"
-            class="chronicle-link">
-
-            Entrer dans la chronique →
-
-        </a>
-
-    </div>
-
-</article>
-
-
-
 <!-- COURANT OCCIDENTAL -->
 
 <article class="chronicle-card">
 
-    <img
-        src="images/CourantOccidentalPersonnages.png"
-        alt="Personnages du Courant Occidental">
+    <div class="chronicle-scene">
+        <!-- Vague : droite / arrière-plan -->
+        <img class="courant-vague"
+             src="https://i.ibb.co/6RLNthxL/vague.png"
+             alt="">
+
+        <!-- Personnage : gauche / premier plan -->
+        <img class="courant-personnage"
+             src="https://i.ibb.co/vxWhLrX4/Personnage-1.png"
+             alt="Personnage du Courant Occidental">
+    </div>
 
     <div class="chronicle-content">
-
         <span class="chronicle-number">
-            Chronique II
+            Chronique I
         </span>
 
         <h3>
@@ -1444,38 +1406,76 @@ footer p{
         </h3>
 
         <p>
-
             Là où les cartes s'arrêtent,
             les ambitions commencent.
             Au-delà de l'horizon,
             l'Ancien Monde n'est plus le même.
-
         </p>
 
-        <a
-            href="courant-occidental.html"
-            class="chronicle-link">
-
+        <a href="courant-occidental.html" class="chronicle-link">
             Explorer les horizons →
-
         </a>
-
     </div>
 
 </article>
 
+
+<!-- MARÉE DE SANG -->
+
+<article class="chronicle-card">
+
+    <div class="chronicle-scene">
+        <!-- Bannière : gauche / arrière-plan -->
+        <img class="maree-banniere"
+             src="https://i.ibb.co/q3vshH0V/banni-re.png"
+             alt="">
+
+        <!-- Sorcières : droite / premier plan -->
+        <img class="maree-sorcieres"
+             src="https://i.ibb.co/6RV5dvFk/soric-res.png"
+             alt="Personnages de La Marée de Sang">
+    </div>
+
+    <div class="chronicle-content">
+        <span class="chronicle-number">
+            Chronique II
+        </span>
+
+        <h3>
+            La Marée de Sang
+        </h3>
+
+        <p>
+            Une chasse maritime au cœur d'une mer hostile,
+            où les tempêtes, la vengeance et le sang
+            menacent d'engloutir les deux flottes.
+        </p>
+
+        <a href="maree-de-sang.html" class="chronicle-link">
+            Entrer dans la chronique →
+        </a>
+    </div>
+
+</article>
 
 
 <!-- COLONIES PERDUES -->
 
 <article class="chronicle-card">
 
-    <img
-        src="images/ColoniesPerduesPersonnages.png"
-        alt="Personnages des Colonies Perdues">
+    <div class="chronicle-scene">
+        <!-- Humains : droite / arrière-plan -->
+        <img class="colonies-humains"
+             src="https://i.ibb.co/CpF7zXVr/humain.png"
+             alt="Humains des Colonies Perdues">
+
+        <!-- Elfes : gauche / premier plan -->
+        <img class="colonies-elfes"
+             src="https://i.ibb.co/WW7bQkzQ/elfes-1.png"
+             alt="Elfes des Colonies Perdues">
+    </div>
 
     <div class="chronicle-content">
-
         <span class="chronicle-number">
             Chronique III
         </span>
@@ -1485,26 +1485,18 @@ footer p{
         </h3>
 
         <p>
-
             Des terres oubliées.
             Des royaumes disparus.
             Et des secrets qui n'auraient jamais dû
             être retrouvés.
-
         </p>
 
-        <a
-            href="colonies-perdues.html"
-            class="chronicle-link">
-
+        <a href="colonies-perdues.html" class="chronicle-link">
             Retrouver les colonies →
-
         </a>
-
     </div>
 
 </article>
-
 
 </section>
 
