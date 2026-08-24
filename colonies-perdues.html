@@ -125,27 +125,99 @@ a{
   align-items:center;
   justify-content:center;
   background:#08100c;
+  isolation:isolate;
 }
 
-.hero-image{
+.hero-layers{
   position:absolute;
-  inset:-5%;
-  width:110%;
-  height:110%;
+  inset:0;
+  overflow:hidden;
+  z-index:1;
+  pointer-events:none;
+}
+
+.hero-layer{
+  position:absolute;
+  inset:-7%;
+  width:114%;
+  height:114%;
   object-fit:cover;
-  transform:translate3d(0,0,0) scale(1.06);
-  transition:transform .15s ease-out;
+  object-position:center;
+  pointer-events:none;
+  user-select:none;
   will-change:transform;
-  filter:saturate(.78) contrast(1.08);
+}
+
+.hero-layer.layer-bg{
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:saturate(.76) contrast(1.08) brightness(.82);
+  transform:translate3d(var(--mouse-x,0px),var(--mouse-y,0px),0) scale(1.04);
+  z-index:1;
+}
+
+.hero-layer.layer-leaves-back{
+  z-index:2;
+  opacity:.88;
+  animation:forestDriftBack 15s ease-in-out infinite alternate;
+}
+
+.hero-layer.layer-tree{
+  z-index:3;
+  animation:forestTreeSway 11s ease-in-out infinite alternate;
+}
+
+.hero-layer.layer-archers{
+  z-index:4;
+  animation:watchersDrift 13s ease-in-out infinite alternate;
+}
+
+.hero-layer.layer-leaves-front{
+  z-index:5;
+  opacity:.94;
+  animation:forestDriftFront 9s ease-in-out infinite alternate;
+}
+
+.hero-layer.layer-bushes{
+  z-index:6;
+  animation:bushesBreath 17s ease-in-out infinite alternate;
+}
+
+@keyframes forestDriftBack{
+  0%{transform:translate3d(calc(var(--mouse-x,0px) - 5px),calc(var(--mouse-y,0px) - 3px),0) scale(1.04)}
+  100%{transform:translate3d(calc(var(--mouse-x,0px) + 8px),calc(var(--mouse-y,0px) + 5px),0) scale(1.055)}
+}
+
+@keyframes forestTreeSway{
+  0%{transform:translate3d(calc(var(--mouse-x,0px) - 7px),calc(var(--mouse-y,0px) + 1px),0) scale(1.045) rotate(-.15deg)}
+  100%{transform:translate3d(calc(var(--mouse-x,0px) + 8px),calc(var(--mouse-y,0px) - 2px),0) scale(1.055) rotate(.18deg)}
+}
+
+@keyframes watchersDrift{
+  0%{transform:translate3d(calc(var(--mouse-x,0px) + 4px),calc(var(--mouse-y,0px) + 2px),0) scale(1.04)}
+  100%{transform:translate3d(calc(var(--mouse-x,0px) - 9px),calc(var(--mouse-y,0px) - 3px),0) scale(1.055)}
+}
+
+@keyframes forestDriftFront{
+  0%{transform:translate3d(calc(var(--mouse-x,0px) + 7px),calc(var(--mouse-y,0px) + 4px),0) scale(1.06)}
+  100%{transform:translate3d(calc(var(--mouse-x,0px) - 10px),calc(var(--mouse-y,0px) - 5px),0) scale(1.075)}
+}
+
+@keyframes bushesBreath{
+  0%{transform:translate3d(calc(var(--mouse-x,0px) - 3px),calc(var(--mouse-y,0px) + 3px),0) scale(1.06)}
+  100%{transform:translate3d(calc(var(--mouse-x,0px) + 6px),calc(var(--mouse-y,0px) - 2px),0) scale(1.075)}
 }
 
 .hero::after{
   content:"";
   position:absolute;
   inset:0;
+  z-index:10;
   background:
-    linear-gradient(90deg,rgba(4,10,7,.88),rgba(4,10,7,.35),rgba(4,10,7,.72)),
-    linear-gradient(180deg,rgba(3,9,6,.12) 30%,rgba(3,9,6,.9) 100%);
+    linear-gradient(90deg,rgba(4,10,7,.84),rgba(4,10,7,.25),rgba(4,10,7,.66)),
+    linear-gradient(180deg,rgba(3,9,6,.08) 25%,rgba(3,9,6,.88) 100%);
   pointer-events:none;
 }
 
@@ -153,7 +225,7 @@ a{
   position:absolute;
   inset:25px;
   border:1px solid rgba(205,180,116,.55);
-  z-index:2;
+  z-index:40;
   pointer-events:none;
 }
 
@@ -181,7 +253,7 @@ a{
 
 .hero-content{
   position:relative;
-  z-index:3;
+  z-index:30;
   width:min(calc(100% - 50px),900px);
   text-align:center;
   padding-top:55px;
@@ -317,6 +389,12 @@ footer strong{
    MOBILE
    ========================= */
 
+@media(prefers-reduced-motion:reduce){
+  .hero-layer{
+    animation:none !important;
+  }
+}
+
 @media(max-width:760px){
   .nav-links{
     display:none;
@@ -408,12 +486,37 @@ footer strong{
     Remplace ce fichier si nécessaire :
     images/ColoniesPerdues/ColoniesPerdues.png
   -->
-  <img
-    class="hero-image"
-    id="heroImage"
-    src="images/ColoniesPerdues/ColoniesPerdues.png"
-    alt="Les anciennes colonies elfiques perdues dans les forêts"
-  >
+  <div class="hero-layers" aria-hidden="true">
+    <!-- 1. Fond -->
+    <img class="hero-layer layer-bg"
+         src="images/LesColoniesPerdues/CiteElfe.jpg"
+         alt="">
+
+    <!-- 2. Feuilles arrière -->
+    <img class="hero-layer layer-leaves-back"
+         src="images/LesColoniesPerdues/feuilles2 (2).png"
+         alt="">
+
+    <!-- 3. Arbres d'encadrement -->
+    <img class="hero-layer layer-tree"
+         src="images/LesColoniesPerdues/Arbre1.png"
+         alt="">
+
+    <!-- 4. Archers Elfes Sylvains -->
+    <img class="hero-layer layer-archers"
+         src="images/LesColoniesPerdues/Archers1.png"
+         alt="">
+
+    <!-- 5. Feuilles premier plan -->
+    <img class="hero-layer layer-leaves-front"
+         src="images/LesColoniesPerdues/feuilles1 (2).png"
+         alt="">
+
+    <!-- 6. Buissons premier plan -->
+    <img class="hero-layer layer-bushes"
+         src="images/LesColoniesPerdues/Buissons.png"
+         alt="">
+  </div>
 
   <div class="hero-frame"></div>
 
@@ -467,34 +570,58 @@ if (navToggle && mobileLinks) {
 }
 
 /*
-  PARALLAXE DE LA HERO
-  Le déplacement de la souris déplace légèrement l'image.
-  Le mouvement reste volontairement très faible pour conserver
-  une impression de peinture plutôt que d'effet web.
+  HERO MULTI-COUCHES
+  Chaque couche possède un mouvement automatique très lent.
+  Le curseur ajoute une parallaxe différente à chaque profondeur.
 */
 
 const hero = document.querySelector('.hero');
-const image = document.querySelector('#heroImage');
+const heroLayers = [...document.querySelectorAll('.hero-layer')];
 
-if (hero && image) {
+if (hero && heroLayers.length) {
+  const strengths = {
+    'layer-bg': 2,
+    'layer-leaves-back': 5,
+    'layer-tree': 8,
+    'layer-archers': 12,
+    'layer-leaves-front': 18,
+    'layer-bushes': 24
+  };
+
+  let targetX = 0;
+  let targetY = 0;
+  let currentX = 0;
+  let currentY = 0;
+
   hero.addEventListener('mousemove', (event) => {
     const rect = hero.getBoundingClientRect();
-
-    const x = (event.clientX - rect.left) / rect.width - 0.5;
-    const y = (event.clientY - rect.top) / rect.height - 0.5;
-
-    const moveX = x * -22;
-    const moveY = y * -16;
-
-    image.style.transform =
-      `translate3d(${moveX}px, ${moveY}px, 0) scale(1.06)`;
+    targetX = (event.clientX - rect.left) / rect.width - .5;
+    targetY = (event.clientY - rect.top) / rect.height - .5;
   });
 
   hero.addEventListener('mouseleave', () => {
-    image.style.transform =
-      'translate3d(0,0,0) scale(1.06)';
+    targetX = 0;
+    targetY = 0;
   });
+
+  function animateParallax(){
+    currentX += (targetX - currentX) * .045;
+    currentY += (targetY - currentY) * .045;
+
+    heroLayers.forEach(layer => {
+      const key = [...layer.classList].find(name => strengths[name]);
+      const strength = strengths[key] || 8;
+
+      layer.style.setProperty('--mouse-x', `${currentX * -strength}px`);
+      layer.style.setProperty('--mouse-y', `${currentY * -strength * .7}px`);
+    });
+
+    requestAnimationFrame(animateParallax);
+  }
+
+  animateParallax();
 }
+
 </script>
 
 </body>
