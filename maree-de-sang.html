@@ -381,6 +381,90 @@ footer strong{color:#c6aa76;font-weight:500}
   .quote-card{padding:30px}
   .hero-content{width:100%;padding:90px 12px}
 }
+
+/* Corrections de lisibilité et carte de référence */
+.section-head h2,
+.paper-section .section-head h2 {
+  color: #3c1015;
+  text-shadow: 0 1px 0 rgba(255,255,255,.35);
+}
+
+#chroniques .section-head h2 {
+  color: #3c1015;
+  letter-spacing: .015em;
+}
+
+#chroniques .section-head {
+  max-width: 920px;
+}
+
+.download-card.reference-card {
+  display:grid;
+  grid-template-columns: minmax(180px, 230px) 1fr;
+  gap: 28px;
+  align-items:center;
+  min-height: 270px;
+  padding: 26px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.07), rgba(105,22,28,.18)),
+    #21110f;
+  border:1px solid rgba(201,173,116,.58);
+  box-shadow: 0 12px 32px rgba(0,0,0,.24);
+}
+
+.download-card.reference-card .download-visual {
+  min-height: 210px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:12px;
+  border:1px solid rgba(201,173,116,.34);
+  background:rgba(0,0,0,.20);
+}
+
+.download-card.reference-card .download-visual img {
+  width:100%;
+  max-height:220px;
+  object-fit:contain;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,.4));
+}
+
+.download-card.reference-card .download-copy h3 {
+  margin:0 0 12px;
+  font-family:"IM Fell English SC", Georgia, serif;
+  font-size:34px;
+  font-weight:400;
+  color:#efe2c7;
+}
+
+.download-card.reference-card .download-copy p {
+  margin:0 0 22px;
+  line-height:1.65;
+  color:#cdbfa9;
+}
+
+.download-card.reference-card .download-copy .kicker {
+  margin-bottom:8px;
+}
+
+.download-card:not(.reference-card) {
+  min-height: 220px;
+}
+
+.download-card:not(.reference-card) h3 {
+  color:#efe2c7;
+}
+
+.download-card:not(.reference-card) p {
+  color:#cdbfa9;
+}
+
+@media(max-width:700px) {
+  .download-card.reference-card {
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 
@@ -597,12 +681,22 @@ footer strong{color:#c6aa76;font-weight:500}
     </div>
 
     <div class="download-grid">
-      <article class="download-card">
-        <img src="images/LeSillageNoir/CarteRefMardSan.png" alt="Carte de référence de La Marée de Sang" loading="lazy">
-        <h3>Carte de référence</h3>
-        <p>La carte indispensable pour accompagner les parties et suivre la campagne maritime.</p>
-        <a class="btn btn-primary" href="https://drive.google.com/file/d/11djj-cYnYCW9CvfDQybJNy2OuDH1OW3c/view?usp=sharing" target="_blank" rel="noopener noreferrer">↓ Télécharger la carte</a>
-      </article>
+      <article class="download-card reference-card">
+  <div class="download-visual">
+    <img src="images/LeSillageNoir/CarteRefMardSan.png"
+         alt="Carte de référence de La Marée de Sang">
+  </div>
+  <div class="download-copy">
+    <div class="kicker">Documents de campagne</div>
+    <h3>Carte de référence</h3>
+    <p>La carte maritime du théâtre d'opérations et des routes empruntées par le Sillage Noir.</p>
+    <a class="btn btn-primary"
+       href="https://drive.google.com/file/d/11djj-cYnYCW9CvfDQybJNy2OuDH1OW3c/view?usp=sharing"
+       target="_blank" rel="noopener">
+       Télécharger la carte
+    </a>
+  </div>
+</article>
       <div style="display:grid;gap:22px">
         <article class="download-card">
           <h3>Le supplément complet</h3>
