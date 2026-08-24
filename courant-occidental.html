@@ -309,22 +309,26 @@ a{color:inherit;text-decoration:none}
 
 /* PARTIE VISUELLE */
 
+/* =========================================
+   VISUEL — PAQUET DE CARTES
+========================================= */
+
 .reference-visual{
     position:relative;
-
     width:100%;
-    height:430px;
+    height:440px;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
+
+    overflow:hidden;
 }
 
 
-/* CARTES */
-
+/* BASE COMMUNE :
+   LES TROIS CARTES ONT STRICTEMENT
+   LA MÊME TAILLE */
 .reference-card{
     position:absolute;
 
@@ -333,129 +337,117 @@ a{color:inherit;text-decoration:none}
 
     overflow:hidden;
 
-    background:#192323;
+    background:#111;
 
-    border:1px solid rgba(185,155,98,.38);
+    border:1px solid rgba(185,155,98,.45);
 
     box-shadow:
-        0 18px 35px rgba(0,0,0,.45);
+        0 18px 35px rgba(0,0,0,.5);
 
-    transition:
-        transform .5s ease,
-        box-shadow .5s ease;
+    transition:transform .5s ease;
 }
 
 
-/* CARTE ARRIÈRE */
+/* LES IMAGES REMPLISSENT EXACTEMENT
+   LE CADRE DE LEUR CARTE */
+.reference-card img{
+    display:block;
 
-.card-back{
-    transform:
-        translateX(-90px)
-        rotate(-11deg);
-
-    opacity:.55;
-}
-
-.card-back::before{
-    content:"";
-
-    position:absolute;
-
-    inset:12px;
-
-    border:1px solid rgba(185,155,98,.35);
-}
-
-.card-lines{
-    position:absolute;
-
-    inset:0;
-
-    background:
-        repeating-linear-gradient(
-            180deg,
-            transparent,
-            transparent 24px,
-            rgba(185,155,98,.09) 25px
-        );
-}
-
-
-/* CARTE MILIEU */
-
-.card-middle{
-    transform:
-        translateX(70px)
-        rotate(9deg);
-
-    background:
-        linear-gradient(
-            135deg,
-            #273534,
-            #111919
-        );
-}
-
-.card-symbol{
-    position:absolute;
-
-    inset:0;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:90px;
-
-    color:rgba(185,155,98,.3);
-}
-
-
-/* CARTE PRINCIPALE */
-
-.card-front{
-    z-index:3;
-
-    transform:
-        translateY(-8px);
-
-    width:270px;
-    height:380px;
-
-    background:#111;
-}
-
-.card-front img{
     width:100%;
     height:100%;
-
-    display:block;
 
     object-fit:cover;
     object-position:center;
 }
 
 
-/* LUMIÈRE */
+/* =========================================
+   CARTE ARRIÈRE GAUCHE
+========================================= */
+
+.card-back{
+    z-index:1;
+
+    transform:
+        translateX(-85px)
+        rotate(-10deg);
+
+    opacity:1;
+}
+
+
+/* =========================================
+   CARTE ARRIÈRE DROITE
+========================================= */
+
+.card-middle{
+    z-index:2;
+
+    transform:
+        translateX(85px)
+        rotate(10deg);
+
+    opacity:1;
+}
+
+
+/* =========================================
+   CARTE PRINCIPALE
+========================================= */
+
+.card-front{
+    z-index:3;
+
+    transform:
+        translateY(-5px);
+
+    opacity:1;
+}
+
+
+/* =========================================
+   SURVOL
+========================================= */
+
+.reference-visual:hover .card-back{
+    transform:
+        translateX(-115px)
+        rotate(-14deg);
+}
+
+.reference-visual:hover .card-middle{
+    transform:
+        translateX(115px)
+        rotate(14deg);
+}
+
+.reference-visual:hover .card-front{
+    transform:
+        translateY(-12px);
+}
+
+
+/* LUMIÈRE DISCRÈTE DERRIÈRE LES CARTES */
 
 .reference-glow{
     position:absolute;
 
-    width:350px;
-    height:350px;
+    z-index:0;
+
+    width:380px;
+    height:380px;
 
     border-radius:50%;
 
     background:
         radial-gradient(
             circle,
-            rgba(185,155,98,.16),
-            transparent 68%
+            rgba(185,155,98,.14) 0%,
+            rgba(185,155,98,.06) 35%,
+            transparent 70%
         );
 
-    filter:blur(20px);
+    filter:blur(18px);
 
     pointer-events:none;
 }
@@ -775,27 +767,22 @@ footer strong{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.14em;tex
     <div class="reference-visual">
 
         <!-- Image principale des cartes -->
-        <div class="reference-card card-back">
-             <img
-                src="images/LeCourantOccidental/CarteRefCourOccA.png"
-                alt="Cartes de référence du Courant Occidental">
-        </div>
+      <div class="reference-visual">
 
-        <div class="reference-card card-middle">
-             <img
-                src="images/LeCourantOccidental/CarteRefCourOccB.png"
-                alt="Cartes de référence du Courant Occidental">
-        </div>
+    <!-- Carte gauche -->
+    <div class="reference-card card-back">
+        <img
+            src="images/LeCourantOccidental/carte1.png"
+            alt="Carte de référence">
+    </div>
 
-        <!-- Carte principale -->
-        <div class="reference-card card-front">
 
-            <!-- Remplace cette image par un aperçu de tes cartes -->
-            <img
-                src="images/LeCourantOccidental/CarteRefCourOccC.png"
-                alt="Cartes de référence du Courant Occidental">
-
-        </div>
+    <!-- Carte droite -->
+    <div class="reference-card card-middle">
+        <img
+            src="images/LeCourantOccidental/carte2.png"
+            alt="Carte de référence">
+    </div>
 
         <div class="reference-glow"></div>
 
