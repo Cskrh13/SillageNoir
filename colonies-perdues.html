@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Les Colonies Perdues — Archives de l'Ancien Monde</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=IM+Fell+English+SC&family=Vollkorn:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --forest:#16241d;
+  --forest-deep:#09120e;
+  --forest-mid:#243b2d;
+  --paper:#e8dfc8;
+  --paper-dark:#cdbf9e;
+  --gold:#b59a61;
+  --gold-light:#d7c28e;
+  --ink:#171812;
+  --muted:#b9b39d;
+  --max:1180px;
+}
+
+*{box-sizing:border-box}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:var(--forest-deep);
+  color:var(--paper);
+  font-family:Vollkorn,Georgia,serif;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+/* =========================
+   NAVIGATION
+   ========================= */
+
+.site-nav{
+  position:fixed;
+  inset:0 0 auto 0;
+  z-index:50;
+  height:70px;
+  background:rgba(8,15,11,.82);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(181,154,97,.35);
+}
+
+.nav-inner{
+  width:min(calc(100% - 40px),var(--max));
+  height:100%;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:30px;
+}
+
+.brand{
+  font-family:"IM Fell English SC",Georgia,serif;
+  font-size:24px;
+  letter-spacing:.03em;
+  color:#eee5ce;
+}
+
+.nav-links{
+  display:flex;
+  align-items:center;
+  gap:26px;
+  font:10px Cinzel,serif;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:#c9c1aa;
+}
+
+.nav-links a{
+  padding:26px 0 22px;
+  border-bottom:1px solid transparent;
+  transition:.2s ease;
+}
+
+.nav-links a:hover{
+  color:var(--gold-light);
+  border-bottom-color:var(--gold);
+}
+
+/* =========================
+   MENU MOBILE
+   ========================= */
+
+.nav-toggle{
+  display:none;
+  border:1px solid rgba(181,154,97,.45);
+  background:rgba(8,15,11,.7);
+  color:#ddd3ba;
+  width:42px;
+  height:38px;
+  font-size:19px;
+  cursor:pointer;
+}
+
+.mobile-links{
+  display:none;
+}
+
+/* =========================
+   HERO PARALLAX
+   ========================= */
+
+.hero{
+  height:100vh;
+  min-height:720px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#08100c;
+}
+
+.hero-image{
+  position:absolute;
+  inset:-5%;
+  width:110%;
+  height:110%;
+  object-fit:cover;
+  transform:translate3d(0,0,0) scale(1.06);
+  transition:transform .15s ease-out;
+  will-change:transform;
+  filter:saturate(.78) contrast(1.08);
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(4,10,7,.88),rgba(4,10,7,.35),rgba(4,10,7,.72)),
+    linear-gradient(180deg,rgba(3,9,6,.12) 30%,rgba(3,9,6,.9) 100%);
+  pointer-events:none;
+}
+
+.hero-frame{
+  position:absolute;
+  inset:25px;
+  border:1px solid rgba(205,180,116,.55);
+  z-index:2;
+  pointer-events:none;
+}
+
+.hero-frame::before,
+.hero-frame::after{
+  content:"";
+  position:absolute;
+  width:60px;
+  height:60px;
+  border-color:var(--gold);
+  border-style:solid;
+}
+
+.hero-frame::before{
+  left:-1px;
+  top:-1px;
+  border-width:1px 0 0 1px;
+}
+
+.hero-frame::after{
+  right:-1px;
+  bottom:-1px;
+  border-width:0 1px 1px 0;
+}
+
+.hero-content{
+  position:relative;
+  z-index:3;
+  width:min(calc(100% - 50px),900px);
+  text-align:center;
+  padding-top:55px;
+}
+
+.eyebrow{
+  font:10px Cinzel,serif;
+  letter-spacing:.34em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+}
+
+.hero h1{
+  margin:24px 0 20px;
+  font:400 clamp(68px,11vw,145px)/.82 "IM Fell English SC",Georgia,serif;
+  color:#eee5ce;
+  text-shadow:0 10px 35px rgba(0,0,0,.8);
+}
+
+.hero-lore{
+  max-width:720px;
+  margin:0 auto;
+  font-size:clamp(19px,2.2vw,27px);
+  line-height:1.55;
+  font-style:italic;
+  color:#e0d8c4;
+  text-shadow:0 3px 15px rgba(0,0,0,.9);
+}
+
+.ornament{
+  width:120px;
+  height:18px;
+  margin:30px auto;
+  position:relative;
+}
+
+.ornament::before,
+.ornament::after{
+  content:"";
+  position:absolute;
+  top:8px;
+  width:48px;
+  height:1px;
+  background:var(--gold);
+}
+
+.ornament::before{left:0}
+.ornament::after{right:0}
+
+.ornament span{
+  position:absolute;
+  left:55px;
+  top:4px;
+  width:9px;
+  height:9px;
+  border:1px solid var(--gold);
+  transform:rotate(45deg);
+}
+
+/* =========================
+   COMING SOON
+   ========================= */
+
+.coming-soon{
+  position:relative;
+  min-height:430px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:80px 20px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(54,83,61,.42),transparent 48%),
+    linear-gradient(180deg,#14251c,#09120e);
+  border-top:1px solid rgba(181,154,97,.38);
+}
+
+.coming-inner{
+  width:min(760px,100%);
+}
+
+.kicker{
+  font:10px Cinzel,serif;
+  letter-spacing:.30em;
+  text-transform:uppercase;
+  color:var(--gold-light);
+}
+
+.coming-soon h2{
+  margin:20px 0 18px;
+  font:400 clamp(48px,7vw,78px)/.95 "IM Fell English SC",Georgia,serif;
+  color:#eee5ce;
+}
+
+.coming-soon p{
+  margin:0 auto;
+  max-width:650px;
+  font-size:19px;
+  line-height:1.7;
+  color:#bdb8a6;
+}
+
+.status{
+  display:inline-block;
+  margin-top:28px;
+  padding:11px 18px;
+  border:1px solid rgba(181,154,97,.5);
+  color:var(--gold-light);
+  font:10px Cinzel,serif;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+/* =========================
+   FOOTER
+   ========================= */
+
+footer{
+  padding:30px 20px;
+  text-align:center;
+  background:#060c09;
+  border-top:1px solid rgba(181,154,97,.25);
+  color:#8f8a78;
+  font-size:12px;
+}
+
+footer strong{
+  color:#c6b27f;
+  font-weight:500;
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media(max-width:760px){
+  .nav-links{
+    display:none;
+  }
+
+  .nav-toggle{
+    display:block;
+  }
+
+  .mobile-links{
+    display:none;
+    flex-direction:column;
+    gap:0;
+    padding:8px 20px 18px;
+    background:rgba(8,15,11,.97);
+    border-bottom:1px solid rgba(181,154,97,.35);
+  }
+
+  .mobile-links.open{
+    display:flex;
+  }
+
+  .mobile-links a{
+    padding:13px 0;
+    border-bottom:1px solid rgba(181,154,97,.15);
+    font:10px Cinzel,serif;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:#c9c1aa;
+  }
+
+  .brand{
+    font-size:21px;
+  }
+
+  .hero{
+    min-height:650px;
+  }
+
+  .hero-frame{
+    inset:14px;
+  }
+
+  .hero-content{
+    width:min(calc(100% - 34px),900px);
+  }
+
+  .hero h1{
+    font-size:clamp(58px,18vw,100px);
+  }
+
+  .hero-lore{
+    font-size:18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">Archives de l'Ancien Monde</a>
+
+    <div class="nav-links">
+      <a href="index.html">Accueil</a>
+      <a href="courant-occidental.html">Courant Occidental</a>
+      <a href="maree-de-sang.html">La Marée de Sang</a>
+      <a href="#avenir">À venir</a>
+    </div>
+
+    <button class="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+      ☰
+    </button>
+  </div>
+
+  <div class="mobile-links" id="mobileLinks">
+    <a href="index.html">Accueil</a>
+    <a href="courant-occidental.html">Courant Occidental</a>
+    <a href="maree-de-sang.html">La Marée de Sang</a>
+    <a href="#avenir">À venir</a>
+  </div>
+</nav>
+
+<header class="hero" id="accueil">
+
+  <!--
+    IMAGE PRINCIPALE
+    Remplace ce fichier si nécessaire :
+    images/ColoniesPerdues/ColoniesPerdues.png
+  -->
+  <img
+    class="hero-image"
+    id="heroImage"
+    src="images/ColoniesPerdues/ColoniesPerdues.png"
+    alt="Les anciennes colonies elfiques perdues dans les forêts"
+  >
+
+  <div class="hero-frame"></div>
+
+  <div class="hero-content">
+    <div class="eyebrow">Chroniques des anciennes terres elfiques</div>
+
+    <h1>Les Colonies Perdues</h1>
+
+    <div class="ornament"><span></span></div>
+
+    <p class="hero-lore">
+      « Le retour des Hauts-Elfes dans les anciennes terres elfiques,
+      désormais recouvertes par les forêts. »
+    </p>
+  </div>
+</header>
+
+<section class="coming-soon" id="avenir">
+  <div class="coming-inner">
+
+    <div class="kicker">Archives en préparation</div>
+
+    <h2>Bientôt disponible</h2>
+
+    <p>
+      Les anciennes colonies n'ont pas encore livré tous leurs secrets.
+      Leur histoire, leurs survivants et les terres désormais dominées
+      par les forêts seront développés dans une prochaine chronique.
+    </p>
+
+    <div class="status">Chronique en cours d'écriture</div>
+
+  </div>
+</section>
+
+<footer>
+  <strong>Les Colonies Perdues</strong>
+  · Archives de l'Ancien Monde
+  · Projet fan-made non officiel
+</footer>
+
+<script>
+const navToggle = document.querySelector('.nav-toggle');
+const mobileLinks = document.querySelector('#mobileLinks');
+
+if (navToggle && mobileLinks) {
+  navToggle.addEventListener('click', () => {
+    const opened = mobileLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', opened ? 'true' : 'false');
+  });
+}
+
+/*
+  PARALLAXE DE LA HERO
+  Le déplacement de la souris déplace légèrement l'image.
+  Le mouvement reste volontairement très faible pour conserver
+  une impression de peinture plutôt que d'effet web.
+*/
+
+const hero = document.querySelector('.hero');
+const image = document.querySelector('#heroImage');
+
+if (hero && image) {
+  hero.addEventListener('mousemove', (event) => {
+    const rect = hero.getBoundingClientRect();
+
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    const moveX = x * -22;
+    const moveY = y * -16;
+
+    image.style.transform =
+      `translate3d(${moveX}px, ${moveY}px, 0) scale(1.06)`;
+  });
+
+  hero.addEventListener('mouseleave', () => {
+    image.style.transform =
+      'translate3d(0,0,0) scale(1.06)';
+  });
+}
+</script>
+
+</body>
+</html>
