@@ -70,23 +70,17 @@ a{color:inherit;text-decoration:none}
 .hero{
     position:relative;
     min-height:590px;
-    display:flex; align-items:flex-end;
+    display:flex;align-items:flex-end;
     overflow:hidden;
-    background:
-        linear-gradient(90deg,rgba(10,20,23,.84),rgba(10,20,23,.24) 62%,rgba(10,20,23,.54)),
-        linear-gradient(0deg,rgba(8,15,17,.82),transparent 58%),
-        url("https://i.ibb.co/vxWhLrX4/Personnage-1.png") 18% center/auto 92% no-repeat,
-        #26383a;
+    background:#26383a;
     border:1px solid rgba(58,49,34,.65);
     box-shadow:0 9px 28px rgba(30,25,18,.25);
 }
-.hero::after{
-    content:"";position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 30%),
-               radial-gradient(circle at 65% 30%,transparent 0,rgba(0,0,0,.34) 100%);
-}
+.hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(10,20,23,.84),rgba(10,20,23,.24) 62%,rgba(10,20,23,.54)),linear-gradient(0deg,rgba(8,15,17,.82),transparent 58%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 30%),radial-gradient(circle at 65% 30%,transparent 0,rgba(0,0,0,.34) 100%)}
 .hero-content{
-    position:relative;z-index:1;
+    position:relative;z-index:3;
     width:min(680px,100%);
     padding:55px;
     color:#eee6d2;
@@ -154,11 +148,9 @@ a{color:inherit;text-decoration:none}
     background:#263537;
     box-shadow:0 6px 17px rgba(44,34,23,.16);
 }
-.feature::before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,11,12,.9),rgba(5,11,12,.08) 80%)}
-.feature > *{position:relative;z-index:1}
-.feature:nth-child(1){background:linear-gradient(0deg,rgba(6,15,17,.78),rgba(6,15,17,.08)),url("https://i.ibb.co/vxWhLrX4/Personnage-1.png") center/cover}
-.feature:nth-child(2){background:linear-gradient(0deg,rgba(6,15,17,.78),rgba(6,15,17,.08)),url("https://i.ibb.co/6RLNthxL/vague.png") center/cover}
-.feature:nth-child(3){background:linear-gradient(0deg,rgba(6,15,17,.78),rgba(6,15,17,.08)),#45524f}
+.feature-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:0}
+.feature::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(5,11,12,.94),rgba(5,11,12,.12) 80%)}
+.feature-content{position:relative;z-index:2}
 .feature small{font-family:"Cinzel",serif;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#c9ad78}
 .feature h2{margin:8px 0;font-family:"IM Fell English SC",serif;font-size:32px;font-weight:400}
 .feature p{margin:0;font-size:14px;line-height:1.5}
@@ -169,12 +161,9 @@ a{color:inherit;text-decoration:none}
     background:rgba(238,230,210,.92);border:1px solid var(--line);
     box-shadow:0 5px 16px rgba(45,35,24,.13);
 }
-.city-visual{
-    min-height:430px;
-    background:
-        linear-gradient(90deg,rgba(20,31,31,.08),rgba(20,31,31,.6)),
-        url("https://i.ibb.co/6RLNthxL/vague.png") center/cover;
-}
+.city-visual{position:relative;min-height:430px;overflow:hidden}
+.city-visual::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(20,31,31,.08),rgba(20,31,31,.45));pointer-events:none}
+.city-visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
 .city-copy{padding:45px}
 .city-copy h2{font-family:"IM Fell English SC",serif;font-size:47px;font-weight:400;margin:0 0 16px}
 .city-copy p{line-height:1.7;color:#554a39}
@@ -281,8 +270,8 @@ footer strong{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.14em;tex
 </nav>
 
 <header class="hero">
+    <img class="hero-image" src="images/LeCourantOccidental/Navires.png" alt="Navires naviguant sur le Courant Occidental">
     <div class="hero-content">
-        images/LeCourantOccidental/Navires.png
         <span class="eyebrow">Chronique I · Supplément narratif</span>
         <h1>Le Courant Occidental</h1>
         <p>Le long des côtes occidentales du Vieux Monde, un puissant courant emporte navires, ambitions et destins vers les horizons incertains de l’Ouest.</p>
@@ -303,30 +292,25 @@ footer strong{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.14em;tex
 
 <section class="features" id="univers">
     <article class="feature">
-        images/LeCourantOccidental/LaCite.png
-        <small>Un port mythique</small>
-        <h2>Tour d'Argent</h2>
-        <p>Depuis des millénaires, la cité veille sur le Courant Occidental, bâtie pour protéger cette route maritime dont dépendent les navires qui affrontent les côtes de l’Ouest.</p>
+        <img class="feature-image" src="images/LeCourantOccidental/LaCite.png" alt="La cité de Tour d'Argent">
+        <div class="feature-content"><small>Un port mythique</small><h2>Tour d'Argent</h2><p>Depuis des millénaires, la cité veille sur le Courant Occidental, bâtie pour protéger cette route maritime dont dépendent les navires qui affrontent les côtes de l’Ouest.</p></div>
     </article>
     <article class="feature">
-        images/LeCourantOccidental/Ost.png
-        <small>Les forces de l'Ouest</small>
-        <h2>L'Ost</h2>
-        <p>Une armée, ses héros et ses particularités, façonnés par un environnement où la mer n'est jamais seulement un décor.</p>
+        <img class="feature-image" src="images/LeCourantOccidental/Ost.png" alt="Les forces de l'Ouest">
+        <div class="feature-content"><small>Les forces de l'Ouest</small><h2>L'Ost</h2><p>Une armée, ses héros et ses particularités, façonnés par un environnement où la mer n'est jamais seulement un décor.</p></div>
     </article>
     <article class="feature">
-        images/LeCourantOccidental/patrouille.png
-        <small>Une chronique complète</small>
-        <h2>La campagne</h2>
-        <p>Six scénarios liés entre eux et une progression narrative qui donne du poids aux victoires comme aux défaites.</p>
+        <img class="feature-image" src="images/LeCourantOccidental/patrouille.png" alt="La campagne du Courant Occidental">
+        <div class="feature-content"><small>Une chronique complète</small><h2>La campagne</h2><p>Six scénarios liés entre eux et une progression narrative qui donne du poids aux victoires comme aux défaites.</p></div>
     </article>
 </section>
 
 <div class="heading"><span>La cité au bord du monde</span></div>
 
 <section class="city">
-    images/LeCourantOccidental/TourD'Argent.png
-    <div class="city-visual" aria-hidden="true"></div>
+    <div class="city-visual">
+        <img src="images/LeCourantOccidental/TourD'Argent.png" alt="Tour d'Argent">
+    </div>
     <div class="city-copy">
         <h2>Tour d'Argent</h2>
         <p>
@@ -355,8 +339,9 @@ footer strong{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.14em;tex
 <p>
     Au début de la campagne, chaque joueur choisit un personnage qui devient le protagoniste de son histoire. Au fil des batailles, son expérience, ses blessures, ses découvertes et ses distinctions sont consignées dans sa Chronique personnelle. La campagne se compose de plusieurs affrontements liés entre eux, dont les événements conduisent progressivement les armées de Tour d’Argent jusqu’aux rivages les plus lointains.
 </p>
+    </div>
 
-<div class="scenarios">
+    <div class="scenarios">
 
     <article class="scenario">
         <span class="scenario-number">Scénario I</span>
@@ -406,7 +391,8 @@ footer strong{font-family:"Cinzel",serif;font-size:10px;letter-spacing:.14em;tex
         </p>
     </article>
 
-</div>
+    </div>
+</section>
 
 <div class="heading"><span>Les traces laissées par la bataille</span></div>
 
