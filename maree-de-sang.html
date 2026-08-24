@@ -80,7 +80,7 @@ h1,h2,h3,.brand,.chapter-title,.number{
   background:
     linear-gradient(90deg,rgba(10,7,6,.92),rgba(10,7,6,.42),rgba(10,7,6,.82)),
     linear-gradient(180deg,rgba(20,6,7,.1),rgba(20,6,7,.86)),
-    url("images/LeSillageNoir/MareeDeSang.png") center/cover;
+    url("images/LeSillageNoir/SorcieredelAgonie.png") center/cover;
 }
 
 .hero::before{
@@ -364,13 +364,52 @@ footer strong{color:#c6aa76;font-weight:500}
 .download-card p{line-height:1.65;color:#cdbfa9;margin:0 0 20px}
 .download-card img{height:170px;object-fit:cover;margin:-28px -28px 22px;width:calc(100% + 56px);filter:saturate(.88) contrast(1.03)}
 .download-card .btn{margin-top:4px}
-.character-section{background:var(--paper-dark)}
-.character-layout{display:grid;grid-template-columns:1fr 1fr;gap:42px;align-items:center}
-.character-layout .image-panel{margin:0}
+.character-section{
+  background:
+    radial-gradient(circle at 75% 35%, rgba(103,27,32,.22), transparent 38%),
+    linear-gradient(135deg, #2a1715 0%, #1b100f 100%);
+  color:#eadfc8;
+  border-block:1px solid rgba(201,173,116,.42);
+}
+.character-layout{
+  width:min(calc(100% - 70px),1080px);
+  margin:0 auto;
+  padding:72px 0;
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  gap:54px;
+  align-items:center;
+}
+.character-layout > div:first-child{
+  padding:18px 8px 18px 6px;
+}
+.character-layout .kicker{
+  color:#c9ad74;
+  margin-bottom:14px;
+}
+.character-layout h2{
+  margin:0 0 22px;
+  color:#f0e2c7;
+  font-family:"IM Fell English SC",Georgia,serif;
+  font-size:clamp(42px,5vw,66px);
+  line-height:.95;
+  text-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.character-layout .lead{
+  color:#d0c1aa;
+  line-height:1.75;
+  max-width:560px;
+}
+.character-layout .image-panel{
+  margin:0;
+  border-color:rgba(201,173,116,.45);
+  box-shadow:0 20px 45px rgba(0,0,0,.38);
+}
 
 @media(max-width:900px){
   .nav-links{display:none}
   .two-col,.cards,.scenario-grid,.download-grid,.character-layout{grid-template-columns:1fr}
+  .character-layout{width:min(calc(100% - 36px),1080px);padding:58px 0;}
   .pillars{grid-template-columns:1fr 1fr}
   .hero{min-height:680px}
   .hero::before{inset:14px}
@@ -398,71 +437,96 @@ footer strong{color:#c6aa76;font-weight:500}
   max-width: 920px;
 }
 
-.download-card.reference-card {
-  display:grid;
-  grid-template-columns: minmax(180px, 230px) 1fr;
-  gap: 28px;
-  align-items:center;
-  min-height: 270px;
-  padding: 26px;
-  background:
-    linear-gradient(145deg, rgba(255,255,255,.07), rgba(105,22,28,.18)),
-    #21110f;
-  border:1px solid rgba(201,173,116,.58);
-  box-shadow: 0 12px 32px rgba(0,0,0,.24);
-}
-
-.download-card.reference-card .download-visual {
-  min-height: 210px;
+.download-card.reference-card{
+  position:relative;
+  min-height:360px;
+  padding:34px;
+  overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:12px;
-  border:1px solid rgba(201,173,116,.34);
-  background:rgba(0,0,0,.20);
+  text-align:center;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(103,27,32,.42), transparent 42%),
+    linear-gradient(145deg,#281415 0%,#160d0d 100%);
+  border:1px solid rgba(201,173,116,.55);
+  box-shadow:0 18px 42px rgba(0,0,0,.32);
 }
-
-.download-card.reference-card .download-visual img {
-  width:100%;
-  max-height:220px;
+.download-card.reference-card::before,
+.download-card.reference-card::after{
+  content:"";
+  position:absolute;
+  width:68%;
+  height:76%;
+  border:1px solid rgba(201,173,116,.18);
+  transform:rotate(-8deg);
+  pointer-events:none;
+}
+.download-card.reference-card::before{left:7%;top:13%}
+.download-card.reference-card::after{
+  right:7%;
+  bottom:13%;
+  transform:rotate(8deg);
+  border-color:rgba(103,27,32,.55);
+}
+.download-card.reference-card .download-visual{
+  position:absolute;
+  inset:22px 28% 22px 28%;
+  min-height:0;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  background:transparent;
+  z-index:1;
+}
+.download-card.reference-card .download-visual::before{
+  content:"";
+  position:absolute;
+  inset:4% 8%;
+  border:1px solid rgba(201,173,116,.28);
+  pointer-events:none;
+}
+.download-card.reference-card .download-visual img{
+  position:relative;
+  z-index:2;
+  width:auto;
+  max-width:100%;
+  height:auto;
+  max-height:270px;
   object-fit:contain;
-  filter: drop-shadow(0 10px 15px rgba(0,0,0,.4));
+  filter:drop-shadow(0 20px 22px rgba(0,0,0,.58)) saturate(.88) contrast(1.04);
 }
-
-.download-card.reference-card .download-copy h3 {
-  margin:0 0 12px;
-  font-family:"IM Fell English SC", Georgia, serif;
-  font-size:34px;
+.download-card.reference-card .download-copy{
+  position:absolute;
+  z-index:3;
+  left:30px;
+  right:30px;
+  bottom:24px;
+  padding:14px 18px;
+  background:linear-gradient(90deg,rgba(20,10,9,.90),rgba(49,15,18,.86),rgba(20,10,9,.90));
+  border-top:1px solid rgba(201,173,116,.34);
+  border-bottom:1px solid rgba(201,173,116,.22);
+}
+.download-card.reference-card .download-copy .kicker{
+  margin:0 0 5px;
+  color:#c9ad74;
+}
+.download-card.reference-card .download-copy h3{
+  margin:0 0 4px;
+  font-family:"IM Fell English SC",Georgia,serif;
+  font-size:31px;
   font-weight:400;
   color:#efe2c7;
 }
+.download-card.reference-card .download-copy p{display:none}
+.download-card.reference-card .download-copy .btn{margin-top:8px}
 
-.download-card.reference-card .download-copy p {
-  margin:0 0 22px;
-  line-height:1.65;
-  color:#cdbfa9;
-}
-
-.download-card.reference-card .download-copy .kicker {
-  margin-bottom:8px;
-}
-
-.download-card:not(.reference-card) {
-  min-height: 220px;
-}
-
-.download-card:not(.reference-card) h3 {
-  color:#efe2c7;
-}
-
-.download-card:not(.reference-card) p {
-  color:#cdbfa9;
-}
-
-@media(max-width:700px) {
-  .download-card.reference-card {
-    grid-template-columns:1fr;
-  }
+@media(max-width:700px){
+  .download-card.reference-card{min-height:420px}
+  .download-card.reference-card .download-visual{inset:28px 18% 110px 18%}
+  .download-card.reference-card .download-copy{left:16px;right:16px}
 }
 
 </style>
