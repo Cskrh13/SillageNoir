@@ -1,752 +1,387 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>La Marée de Sang — Le Sillage Noir</title>
-<style>
-  :root{
-    --bg:#08080c; --panel:#12121a; --ink:#c8b890; --gold:#b8975a;
-    --blood:#7a1f1f; --edge:#3a2a1a;
-    font-family:'Georgia','Times New Roman',serif;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html,body{height:100%;}
-  body{background:var(--bg); color:var(--ink); overflow:hidden; user-select:none;}
-  #app{position:fixed; inset:0;}
-  canvas{display:block; width:100%; height:100%; image-rendering:pixelated; cursor:default;}
-
-  .overlay{position:absolute; inset:0; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; background:radial-gradient(ellipse at center,#0d0d18 0%, #050508 80%);
-    z-index:10; padding:20px;}
-  .hidden{display:none!important;}
-  h1{font-size:40px; letter-spacing:4px; color:var(--gold); text-shadow:0 0 20px #b8975a55, 0 2px 0 #000; margin-bottom:6px; font-weight:normal;}
-  .subtitle{color:#7a6a4a; letter-spacing:6px; font-size:13px; margin-bottom:32px; text-transform:uppercase;}
-  .btn{background:linear-gradient(180deg,#1a1520,#0c0a12); color:var(--gold); border:1px solid var(--gold);
-    padding:14px 40px; font-family:inherit; font-size:17px; letter-spacing:3px; cursor:pointer; text-transform:uppercase; transition:.2s;}
-  .btn:hover{background:linear-gradient(180deg,#2a1f30,#14101a); box-shadow:0 0 24px #b8975a44;}
-  .btn:disabled{opacity:.4; cursor:not-allowed;}
-
-  .hero-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:900px; width:100%;}
-  .hero-card{background:linear-gradient(160deg,#16121e,#0c0a12); border:1px solid #2a2018; padding:16px;
-    cursor:pointer; transition:.2s; position:relative; min-height:200px;}
-  .hero-card:hover{border-color:var(--gold); transform:translateY(-4px); box-shadow:0 8px 30px #000a, 0 0 18px #b8975a22;}
-  .hero-card.selected{border-color:var(--gold); box-shadow:0 0 24px #b8975a44;}
-  .hero-card h3{color:var(--gold); font-size:17px; margin-bottom:3px; letter-spacing:1px;}
-  .hero-card .house{color:#8a6a4a; font-size:11px; font-style:italic; margin-bottom:9px;}
-  .hero-card .desc{font-size:12px; line-height:1.5; color:#a89878; margin-bottom:9px;}
-  .hero-card .sigil{position:absolute; top:10px; right:14px; font-size:22px; opacity:.4;}
-  .prof{display:grid; grid-template-columns:repeat(9,1fr); gap:2px; margin-bottom:8px;}
-  .prof span{font-size:10px; text-align:center; padding:2px 0; background:#0a0810; border:1px solid #2a2018;}
-  .prof span b{display:block; color:var(--gold); font-size:11px;}
-  .prof span i{display:block; color:#6a5a3a; font-size:9px; font-style:normal;}
-
-  #hud{position:absolute; top:0; left:0; right:0; pointer-events:none; z-index:5; padding:8px 12px;
-    display:flex; justify-content:space-between; align-items:flex-start;}
-  .hud-box{background:rgba(8,8,14,.85); border:1px solid #2a2018; padding:7px 11px; font-size:11px;
-    min-width:200px; pointer-events:auto;}
-  .hud-box h4{color:var(--gold); margin-bottom:4px; font-size:12px; letter-spacing:1px;}
-  .bar-wrap{height:9px; background:#000; border:1px solid #2a2018; margin:2px 0; position:relative;}
-  .bar{height:100%; transition:width .25s;}
-  .bar.hp{background:linear-gradient(90deg,#7a1f1f,#c33);}
-  .bar.tide{background:linear-gradient(90deg,#2a1840,#b8975a);}
-  .bar-label{display:flex; justify-content:space-between; font-size:9px; color:#8a7a5a; margin-bottom:1px;}
-
-  #log{position:absolute; bottom:0; left:0; right:0; height:96px; background:rgba(8,8,14,.9);
-    border-top:1px solid #2a2018; z-index:5; overflow-y:auto; padding:7px 14px; font-size:11px; line-height:1.5; pointer-events:auto;}
-  #log .line{color:#988868;}
-  #log .line.blood{color:#c44;} #log .line.gold{color:var(--gold);} #log .line.foe{color:#8a7a9a;}
-
-  .hint{position:absolute; bottom:102px; left:0; right:0; text-align:center; color:#5a4a3a;
-    font-size:11px; z-index:4; pointer-events:none;}
-</style>
-</head>
-<body>
-<div id="app">
-  <canvas id="cv"></canvas>
-
-  <div id="screen-title" class="overlay">
-    <h1>LA MARÉE DE SANG</h1>
-    <div class="subtitle">Le Sillage Noir — Chroniques d'une Arche Noire</div>
-    <div style="max-width:540px; text-align:center; font-size:13px; line-height:1.7; color:#8a7a5a; margin-bottom:36px;">
-      « Une Arche Noire ne possède pas d'histoire. Elle possède des couches. Chaque pierre conserve le sang de ceux qui l'ont habitée. »
-    </div>
-    <button class="btn" id="btn-start">Lever l'ancre</button>
-  </div>
-
-  <div id="screen-hero" class="overlay hidden">
-    <h1>Choisis ton Capitaine</h1>
-    <div class="subtitle">Profils de Warhammer: The Old World</div>
-    <div class="hero-grid" id="hero-grid"></div>
-    <div style="margin-top:26px;"><button class="btn" id="btn-hero-next" disabled>Larguer les amarres</button></div>
-  </div>
-
-  <div id="hud" class="hidden">
-    <div class="hud-box">
-      <h4 id="hud-name">—</h4>
-      <div class="bar-label"><span>PV</span><span id="hud-hp-txt">0/0</span></div>
-      <div class="bar-wrap"><div class="bar hp" id="hud-hp-bar"></div></div>
-      <div class="bar-label"><span>Marée de Sang</span><span id="hud-tide-txt">0%</span></div>
-      <div class="bar-wrap"><div class="bar tide" id="hud-tide-bar"></div></div>
-      <div id="hud-tidefx" style="margin-top:4px; font-size:10px; color:#7a5a8a;"></div>
-    </div>
-    <div class="hud-box" style="text-align:right;">
-      <div id="hud-scen" style="color:var(--gold); font-size:12px; margin-bottom:3px;">Bataille rangée — Pleine Mer</div>
-      <div id="hud-kills" style="color:#a89878;">Proies: 0</div>
-      <div id="hud-enemies" style="color:#8a7a9a;">Ennemis: 0</div>
-      <div id="hud-terrain" style="color:#6a5a4a; font-size:10px; margin-top:3px;">Clic droit: ordre de mouvement</div>
-    </div>
-  </div>
-
-  <div id="log" class="hidden"></div>
-  <div id="hint" class="hint hidden"></div>
-</div>
-
-<script>
-"use strict";
-// ============================================================
-//  LA MARÉE DE SANG — Le Sillage Noir
-//  RTS isométrique inspiré d'Age of Empires 1
-//  Profils Warhammer: The Old World (JSON fournis)
-// ============================================================
-
-const cv = document.getElementById('cv');
-const ctx = cv.getContext('2d');
-let W=0,H=0;
-function resize(){ W=cv.width=window.innerWidth; H=cv.height=window.innerHeight; }
-window.addEventListener('resize', resize); resize();
-
-// ---------- PROFILS (depuis les JSON) ----------
-// Conversion profil Warhammer -> jeu: hp=PV*10, atk=CC+CT/4, def=E+armure, spd=M*0.5
-function conv(p, extra){
-  return {
-    hp:(p.PV||1)*12 + (extra&&extra.hpBonus||0),
-    atk: Math.round(( (p.CC||3) + (p.CT||3) )/2.2),
-    def: (p.E||3) + (extra&&extra.armor||0),
-    spd: ((p.M&&p.M!=='-'&&p.M!==0)?p.M:5) * 0.42,
-    range: (extra&&extra.range)||0,
-    cc: p.CC||4, ct: p.CT||4, f: p.F||3, e: p.E||3,
-    cd: p.Cd||8, a: p.A||1, pv: p.PV||1,
-  };
-}
-
-// HÉROS jouables (Sillage Noir)
-const HEROES = [
-  { id:'maldris', name:'Maldris Dravelyth', house:'Maison Dravelyth — Seigneur des Lamentations',
-    desc:'Le fouet des lamentations claque. Nul esclave n\'ose désobéir. Méthodique et brutal.',
-    sigil:'♠', color:'#8a2020',
-    base:conv({M:5,CC:7,CT:7,F:4,E:3,PV:3,I:4,A:4,Cd:10},{armor:2,range:0}),
-    item:'Fouet des Lamentations',
-    spec:'Peur du Fouet: relance les fuites des alliés proches.',
-    tideBonus:'Esclaves tués comptent double dans la Marée.' },
-  { id:'moraveth', name:'Moraveth Dravelyth', house:'Maison Dravelyth — Vestale des Flots de Sang',
-    desc:'Le Calice de la Lune Noire recueille le sang. Sacrifie les esclaves pour nourrir sa magie.',
-    sigil:'☽', color:'#3a2050',
-    base:conv({M:5,CC:4,CT:4,F:3,E:3,PV:3,I:5,A:3,Cd:9},{armor:1,range:140}),
-    item:'Calice de la Lune Noire',
-    spec:'Sacrifice Rituel: soigne un allié en sacrifiant un esclave proche.',
-    tideBonus:'Ses attaques à distance gagnent +1 force par seuil de Marée.' },
-  { id:'kharyx', name:'Kharyx', house:'Prédateur de la Lune Noire',
-    desc:'Bête ancienne des falaises de Naggaroth. Sauvagerie incarnée, ni domptée ni fiable.',
-    sigil:'✦', color:'#5a3010',
-    base:conv({M:6,CC:5,CT:0,F:5,E:5,PV:5,I:4,A:5,Cd:5},{armor:2,range:0}),
-    item:'Peau Épaisse (sauvegarde 3+)',
-    spec:'Sauvagerie: bonus de combat à chaque seuil de Marée.',
-    tideBonus:'À 75%, ses attaques ignorent les sauvegardes.' },
-];
-
-// UNITÉS ALLIÉES (Elfes Noirs / Sillage Noir)
-const ALLY_UNITS = {
-  corsair: { name:'Corsaire', base:conv({M:5,CC:4,CT:4,F:3,E:3,PV:1,I:4,A:1,Cd:8},{armor:1,range:80}), color:'#2a4a5a', value:11, kind:'infantry' },
-  slave:   { name:'Esclave', base:conv({M:4,CC:2,CT:2,F:3,E:3,PV:1,I:2,A:1,Cd:3},{armor:0,range:0}), color:'#5a4a3a', value:5, kind:'infantry' },
-  warrior: { name:'Guerrier', base:conv({M:5,CC:4,CT:4,F:3,E:3,PV:1,I:4,A:1,Cd:8},{armor:2,range:0}), color:'#3a3a4a', value:8, kind:'infantry' },
-  crossbow:{ name:'Arbalétrier', base:conv({M:5,CC:4,CT:4,F:3,E:3,PV:1,I:4,A:1,Cd:8},{armor:1,range:120}), color:'#2a3a2a', value:11, kind:'archer' },
-  shade:   { name:'Ombre', base:conv({M:5,CC:5,CT:5,F:3,E:3,PV:1,I:5,A:1,Cd:8},{armor:1,range:110}), color:'#1a2a1a', value:15, kind:'archer' },
-  guard:   { name:'Garde Noir', base:conv({M:5,CC:5,CT:4,F:3,E:3,PV:1,I:5,A:1,Cd:9},{armor:3,range:0}), color:'#1a1a2a', value:15, kind:'infantry' },
-  exec:    { name:'Exécuteur', base:conv({M:5,CC:5,CT:4,F:4,E:3,PV:1,I:5,A:1,Cd:9},{armor:2,range:0}), color:'#4a1a1a', value:15, kind:'infantry' },
-};
-
-// UNITÉS ENNEMIES (Hauts-Elfes)
-const FOE_UNITS = {
-  spearman:{ name:'Lancier', base:conv({M:5,CC:4,CT:4,F:3,E:3,PV:1,I:4,A:1,Cd:8},{armor:2,range:0}), color:'#3a5a7a', value:8, kind:'infantry' },
-  archer:  { name:'Archer', base:conv({M:5,CC:4,CT:4,F:3,E:3,PV:1,I:4,A:1,Cd:8},{armor:1,range:140}), color:'#2a4a6a', value:9, kind:'archer' },
-  seaguard:{ name:'Garde Maritime', base:conv({M:5,CC:4,CT:4,F:3,E:3,PV:1,I:4,A:1,Cd:8},{armor:1,range:100}), color:'#3a6a8a', value:10, kind:'archer' },
-  whitelion:{name:'Lion Blanc', base:conv({M:5,CC:5,CT:4,F:4,E:3,PV:1,I:5,A:1,Cd:8},{armor:2,range:0}), color:'#7a6a3a', value:14, kind:'infantry' },
-  swordmaster:{name:'Maître des Épées', base:conv({M:5,CC:6,CT:4,F:3,E:3,PV:1,I:6,A:1,Cd:8},{armor:2,range:0}), color:'#5a5a7a', value:14, kind:'infantry' },
-  reaver:  { name:'Patrouilleur', base:conv({M:9,CC:4,CT:4,F:3,E:3,PV:1,I:4,A:1,Cd:8},{armor:1,range:90}), color:'#4a6a8a', value:16, kind:'cavalry' },
-  noble:   { name:'Noble', base:conv({M:5,CC:6,CT:6,F:4,E:3,PV:2,I:5,A:3,Cd:9},{armor:2,range:0}), color:'#6a5a8a', value:70, kind:'hero' },
-};
-
-// ---------- ÉTAT ----------
-const G = { screen:'title', hero:null, battle:null, kills:0, butin:0 };
-
-// ---------- TITLE ----------
-document.getElementById('btn-start').onclick = ()=>{
-  document.getElementById('screen-title').classList.add('hidden');
-  document.getElementById('screen-hero').classList.remove('hidden');
-  G.screen='hero'; renderHeroes();
-};
-
-// ---------- HERO SELECT ----------
-let selHero=null;
-function renderHeroes(){
-  const grid=document.getElementById('hero-grid'); grid.innerHTML='';
-  const labels=['M','CC','CT','F','E','PV','I','A','Cd'];
-  HEROES.forEach(h=>{
-    const b=h.base;
-    const prof=[b.spd/0.42|0, b.cc, b.ct, b.f, b.e, b.pv, 0, b.a, b.cd];
-    // reconstruct display values
-    const vals=[h.base.spd/0.42|0, h.base.cc, h.base.ct, h.base.f, h.base.e, h.base.pv, '', h.base.a, h.base.cd];
-    const d=document.createElement('div'); d.className='hero-card'; d.dataset.id=h.id;
-    d.innerHTML=`
-      <div class="sigil" style="color:${h.color}">${h.sigil}</div>
-      <h3>${h.name}</h3>
-      <div class="house">${h.house}</div>
-      <div class="desc">${h.desc}</div>
-      <div class="prof">${labels.map((l,i)=>`<span><i>${l}</i><b>${vals[i]||'-'}</b></span>`).join('')}</div>
-      <div style="font-size:10px; color:#8a6a4a;"><b>Artefact:</b> ${h.item}<br><i>${h.spec}</i></div>`;
-    d.onclick=()=>{
-      grid.querySelectorAll('.hero-card').forEach(c=>c.classList.remove('selected'));
-      d.classList.add('selected'); selHero=h.id;
-      document.getElementById('btn-hero-next').disabled=false;
-    };
-    grid.appendChild(d);
-  });
-}
-document.getElementById('btn-hero-next').onclick=()=>{
-  G.hero=HEROES.find(h=>h.id===selHero);
-  document.getElementById('screen-hero').classList.add('hidden');
-  document.getElementById('hud').classList.remove('hidden');
-  document.getElementById('log').classList.remove('hidden');
-  G.screen='battle'; startBattle();
-};
-
-// ============================================================
-//  CARTE ISOMÉTRIQUE
-// ============================================================
-const TW=56, TH=28; // taille tuile
-const COLS=24, ROWS=24;
-
-// Types de terrain (Age of Empires-like)
-const T={ SEA:0, GRASS:1, DIRT:2, ROCK:3, WALL:4, RUIN:5, DEBRIS:6, SAND:7, TREE:8 };
-// passabilité: 0=impassable, 1=difficile (x0.5 vitesse), 2=normal
-const PASS = { 0:0, 1:2, 2:2, 3:0, 4:0, 5:1, 6:1, 7:2, 8:0 };
-const COLORS = {
-  0:{t:'#0a1828',l:'#0a2030',r:'#08111c'},  // mer
-  1:{t:'#1a2a18',l:'#142012',r:'#10180e'},  // herbe
-  2:{t:'#2a2418',l:'#221e14',r:'#181410'},  // terre
-  3:{t:'#3a3a3a',l:'#2a2a2a',r:'#1a1a1a'},  // rocher (impassable)
-  4:{t:'#3a2a1a',l:'#2a1a10',r:'#1a1208'},  // mur (impassable)
-  5:{t:'#2a2018',l:'#1e1610',r:'#140e08'},  // ruine (difficile)
-  6:{t:'#241e14',l:'#1c1610',r:'#120c08'},  // débris (difficile)
-  7:{t:'#3a2e1a',l:'#2e2414',r:'#1e180e'},  // sable
-  8:{t:'#1a2a18',l:'#142012',r:'#10180e'},  // base arbre (impassable)
-};
-
-let tiles=[];
-let decors=[]; // arbres, rochers décoratifs au-dessus des tuiles
-
-function genMap(){
-  tiles=[]; decors=[];
-  for(let y=0;y<ROWS;y++){ tiles[y]=[];
-    for(let x=0;x<COLS;x++){
-      let t=T.GRASS;
-      // bord sud = mer (port)
-      if(y>ROWS-3) t=T.SEA;
-      // rochers aléatoires (impassable)
-      else if(Math.random()<0.08) t=T.ROCK;
-      // ruines (difficile)
-      else if(Math.random()<0.06) t=T.RUIN;
-      // débris (difficile)
-      else if(Math.random()<0.05) t=T.DEBRIS;
-      // arbres (impassable) - dispersés en forêt au nord
-      else if(y<6 && Math.random()<0.12) t=T.TREE;
-      // sable près de la côte
-      else if(y>ROWS-5 && y<=ROWS-3 && Math.random()<0.4) t=T.SAND;
-      tiles[y][x]=t;
-    }
-  }
-  // nettoyer zones de spawn (sud = alliés, nord = ennemis)
-  for(let y=ROWS-5;y<ROWS;y++) for(let x=0;x<COLS;x++)
-    if(PASS[tiles[y][x]]===0 && tiles[y][x]!==T.SEA) tiles[y][x]=T.GRASS;
-  for(let y=0;y<4;y++) for(let x=0;x<COLS;x++)
-    if(PASS[tiles[y][x]]===0) tiles[y][x]=T.GRASS;
-  // générer décors arbres/rochers
-  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
-    if(tiles[y][x]===T.TREE) decors.push({x,y,type:'tree'});
-    else if(tiles[y][x]===T.ROCK && Math.random()<0.6) decors.push({x,y,type:'rock'});
-  }
-}
-
-function isPassable(gx,gy){
-  if(gx<0||gy<0||gx>=COLS||gy>=ROWS) return 0;
-  return PASS[tiles[gy][gx]]||0;
-}
-
-// projection iso
-function isoX(gx,gy){ return (gx-gy)*TW/2; }
-function isoY(gx,gy){ return (gx+gy)*TH/2; }
-
-let cam={x:0,y:0};
-
-function drawMap(){
-  // dessiner tuiles par rangée pour profondeur
-  for(let y=0;y<ROWS;y++){
-    for(let x=0;x<COLS;x++){
-      const sx=isoX(x,y)+cam.x, sy=isoY(x,y)+cam.y;
-      if(sx<-TW||sx>W+TW||sy<-TH||sy>H+TH) continue;
-      const t=tiles[y][x], c=COLORS[t];
-      // top diamond
-      ctx.fillStyle=c.t; ctx.beginPath();
-      ctx.moveTo(sx,sy); ctx.lineTo(sx+TW/2,sy+TH/2);
-      ctx.lineTo(sx,sy+TH); ctx.lineTo(sx-TW/2,sy+TH/2);
-      ctx.closePath(); ctx.fill();
-      // faces latérales (effet 3D)
-      const h = (t===T.ROCK||t===T.WALL)?10 : (t===T.RUIN||t===T.DEBRIS)?4 : 2;
-      ctx.fillStyle=c.l; ctx.beginPath();
-      ctx.moveTo(sx-TW/2,sy+TH/2); ctx.lineTo(sx,sy+TH);
-      ctx.lineTo(sx,sy+TH+h); ctx.lineTo(sx-TW/2,sy+TH/2+h); ctx.closePath(); ctx.fill();
-      ctx.fillStyle=c.r; ctx.beginPath();
-      ctx.moveTo(sx+TW/2,sy+TH/2); ctx.lineTo(sx,sy+TH);
-      ctx.lineTo(sx,sy+TH+h); ctx.lineTo(sx+TW/2,sy+TH/2+h); ctx.closePath(); ctx.fill();
-      // contour
-      ctx.strokeStyle='rgba(0,0,0,.3)'; ctx.lineWidth=.8;
-      ctx.beginPath();
-      ctx.moveTo(sx,sy); ctx.lineTo(sx+TW/2,sy+TH/2);
-      ctx.lineTo(sx,sy+TH); ctx.lineTo(sx-TW/2,sy+TH/2);
-      ctx.closePath(); ctx.stroke();
-    }
-  }
-  // décors (arbres, rochers) par-dessus, triés par profondeur
-  const sorted=[...decors].sort((a,b)=>a.y-b.y);
-  for(const d of sorted) drawDecor(d.x,d.y,d.type);
-}
-
-function drawDecor(gx,gy,type){
-  const sx=isoX(gx,gy)+cam.x, sy=isoY(gx,gy)+cam.y;
-  if(sx<-40||sx>W+40||sy<-60||sy>H+40) return;
-  if(type==='tree'){
-    // tronc
-    ctx.fillStyle='#2a1a0a';
-    ctx.fillRect(sx-2,sy-8,4,10);
-    // feuillage (pixel art)
-    ctx.fillStyle='#1a3018';
-    ctx.beginPath(); ctx.arc(sx,sy-14,9,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#2a4020';
-    ctx.beginPath(); ctx.arc(sx-2,sy-16,6,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#3a5028';
-    ctx.beginPath(); ctx.arc(sx+1,sy-17,3,0,Math.PI*2); ctx.fill();
-  } else if(type==='rock'){
-    ctx.fillStyle='#4a4a4a';
-    ctx.beginPath();
-    ctx.moveTo(sx-8,sy); ctx.lineTo(sx-4,sy-10); ctx.lineTo(sx+4,sy-9);
-    ctx.lineTo(sx+8,sy); ctx.closePath(); ctx.fill();
-    ctx.fillStyle='#5a5a5a';
-    ctx.beginPath();
-    ctx.moveTo(sx-4,sy-10); ctx.lineTo(sx+4,sy-9); ctx.lineTo(sx,sy-6); ctx.closePath(); ctx.fill();
-  }
-}
-
-// ============================================================
-//  UNITÉS
-// ============================================================
-class Unit{
-  constructor(o){
-    this.x=o.x; this.y=o.y;
-    Object.assign(this,o.base);
-    this.maxhp=this.hp;
-    this.team=o.team; this.kind=o.kind; this.name=o.name; this.color=o.color;
-    this.value=o.value||10; this.isHero=!!o.isHero;
-    this.target=null; this.moveTarget=null; this.atkCd=0;
-    this.dead=false; this.flash=0;
-  }
-}
-
-let units=[], hero=null, particles=[], projectiles=[];
-let tidePct=0, tideKills=0, battlePool=0, battleStart=0, battleDone=false;
-let selRect=null; // rectangle de sélection (clic gauche glissé)
-
-function startBattle(){
-  genMap();
-  units=[]; particles=[]; projectiles=[];
-  tidePct=0; tideKills=0; battleDone=false; battleStart=Date.now();
-  G.kills=0; G.battlePool=0;
-
-  log('<span class="gold">═══ Bataille rangée — Pleine Mer ═══</span>');
-  log('<span class="line">« Ils ne nous ont pas vus. Les grappins partirent. »</span>');
-
-  // Héros
-  hero=new Unit({
-    x:Math.floor(COLS/2), y:ROWS-3,
-    base:G.hero.base, team:'ally', kind:'hero', name:G.hero.name,
-    color:G.hero.color, isHero:true, value:0,
-  });
-  units.push(hero);
-
-  // Armée alliée (Sillage Noir)
-  const allyComp=[
-    ['corsair',6],['slave',4],['warrior',3],['crossbow',3],['shade',2],['guard',2],['exec',2]
-  ];
-  let ai=0;
-  for(const [key,n] of allyComp){
-    const tpl=ALLY_UNITS[key];
-    for(let i=0;i<n;i++){
-      const ax=Math.floor(COLS/2)+Math.round((Math.random()-0.5)*10);
-      const ay=ROWS-3+Math.round((Math.random()-0.5)*2);
-      units.push(new Unit({
-        x:Math.max(0,Math.min(COLS-1,ax)), y:Math.max(0,Math.min(ROWS-1,ay)),
-        base:tpl.base, team:'ally', kind:tpl.kind, name:tpl.name, color:tpl.color, value:tpl.value,
-      }));
-      ai++;
-    }
-  }
-
-  // Armée ennemie (Hauts-Elfes)
-  const foeComp=[
-    ['spearman',6],['archer',4],['seaguard',3],['whitelion',3],['swordmaster',2],['reaver',2],['noble',1]
-  ];
-  for(const [key,n] of foeComp){
-    const tpl=FOE_UNITS[key];
-    for(let i=0;i<n;i++){
-      const ex=Math.floor(Math.random()*COLS);
-      const ey=Math.floor(Math.random()*4);
-      units.push(new Unit({
-        x:Math.max(0,Math.min(COLS-1,ex)), y:Math.max(0,Math.min(ROWS-1,ey)),
-        base:tpl.base, team:'foe', kind:tpl.kind, name:tpl.name, color:tpl.color, value:tpl.value,
-      }));
-    }
-  }
-
-  // pool pour Marée
-  battlePool = units.reduce((s,u)=>s+u.value,0);
-
-  // caméra sur héros
-  cam.x = W/2 - isoX(hero.x,hero.y);
-  cam.y = H/2 - isoY(hero.x,hero.y) - 80;
-
-  document.getElementById('hud-name').textContent = G.hero.name;
-  document.getElementById('hint').classList.remove('hidden');
-  document.getElementById('hint').textContent =
-    'Clic droit: ordre de mouvement — Le héros attaque automatiquement les ennemis à portée. Flèches/Drag: caméra. Espace: pause.';
-}
-
-// ---------- INPUT (style Age of Empires) ----------
-let dragging=false, dragStart=null;
-cv.addEventListener('contextmenu',e=>e.preventDefault());
-cv.addEventListener('mousedown',e=>{
-  if(G.screen!=='battle'||battleDone) return;
-  if(e.button===2){ // clic droit = ordre de mouvement
-    const g=screenToGrid(e); if(g){
-      if(!hero.dead){ hero.moveTarget={x:g.x,y:g.y}; hero.target=null; }
-    }
-  } else if(e.button===0){ // clic gauche = début drag caméra
-    dragging=true; dragStart={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y};
-  }
-});
-window.addEventListener('mousemove',e=>{
-  if(dragging){ cam.x=dragStart.cx+(e.clientX-dragStart.x); cam.y=dragStart.cy+(e.clientY-dragStart.y); }
-});
-window.addEventListener('mouseup',()=>{ dragging=false; });
-
-function screenToGrid(e){
-  const rect=cv.getBoundingClientRect();
-  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-  const wx=mx-cam.x, wy=my-cam.y;
-  const a=wx/(TW/2), b=wy/(TH/2);
-  const gx=Math.round((a+b)/2), gy=Math.round((b-a)/2);
-  return {x:Math.max(0,Math.min(COLS-1,gx)), y:Math.max(0,Math.min(ROWS-1,gy))};
-}
-
-let paused=false;
-window.addEventListener('keydown',e=>{
-  if(e.key===' '){ paused=!paused; e.preventDefault(); }
-  if(e.key==='ArrowLeft')cam.x+=50;
-  if(e.key==='ArrowRight')cam.x-=50;
-  if(e.key==='ArrowUp')cam.y+=50;
-  if(e.key==='ArrowDown')cam.y-=50;
-});
-
-// ---------- IA ----------
-function aiUnit(u,dt){
-  if(u.dead||u.isHero) return;
-  let nearest=null,nd=1e9;
-  for(const o of units){
-    if(o.dead||o.team===u.team) continue;
-    const d=(o.x-u.x)**2+(o.y-u.y)**2;
-    if(d<nd){nd=d;nearest=o;}
-  }
-  if(!nearest) return;
-  const dist=Math.sqrt(nd);
-  const range=u.range>0?u.range/24:1.2;
-  if(dist>range){
-    const ang=Math.atan2(nearest.y-u.y, nearest.x-u.x);
-    const spd=u.spd*dt*0.05 * (passAt(u.x,u.y)===1?0.5:1);
-    const nx=u.x+Math.cos(ang)*spd, ny=u.y+Math.sin(ang)*spd;
-    if(isPassable(Math.round(nx),Math.round(ny))>0 || dist<2){
-      u.x=Math.max(0,Math.min(COLS-1,nx)); u.y=Math.max(0,Math.min(ROWS-1,ny));
-    } else {
-      const sa=ang+Math.PI/2;
-      u.x+=-Math.sin(ang)*spd; u.y+=Math.cos(ang)*spd;
-      u.x=Math.max(0,Math.min(COLS-1,u.x)); u.y=Math.max(0,Math.min(ROWS-1,u.y));
-    }
-  } else {
-    u.atkCd-=dt;
-    if(u.atkCd<=0){ u.atkCd=650; doAttack(u,nearest); }
-  }
-}
-
-function passAt(x,y){ return isPassable(Math.floor(x),Math.floor(y)); }
-
-function doAttack(a,b){
-  if(b.dead) return;
-  let atk=a.atk;
-  // bonus de Marée (alliés)
-  if(a.team==='ally'){
-    if(tidePct>=50) atk+=1;
-    if(tidePct>=75) atk+=1;
-  }
-  // bonus héro
-  if(a.isHero){
-    if(G.hero.id==='kharyx'){ atk+=Math.floor(tidePct/25); }
-    if(G.hero.id==='varkhel' || G.hero.id==='maldris'){ if(tidePct>=25) atk+=1; }
-    if(G.hero.id==='kharyx' && tidePct>=75) b.def=0;
-    if(G.hero.id==='moraveth' && a.range>0) atk+=Math.floor(tidePct/25);
-  }
-  const dmg=Math.max(1, atk - b.def + Math.floor(Math.random()*4)-2);
-  b.hp-=dmg; b.flash=200;
-  if(a.range>0) projectiles.push({ax:a.x,ay:a.y,bx:b.x,by:b.y,t:0,c:a.color});
-  spawnParticles(b);
-  if(b.hp<=0){
-    b.dead=true;
-    if(b.team==='foe'){ G.kills++; log(`<span class="gold">${b.name} tombe sous ${a.name}.</span>`); }
-    else log(`<span class="blood">${b.name} (allié) est perdu. La Marée monte.</span>`);
-    addTide(b);
-  }
-}
-
-function addTide(u){
-  let v=u.value;
-  if(u.kind==='slave'&&G.hero.id==='maldris') v*=2;
-  tideKills+=v;
-  tidePct=Math.min(100,Math.round(tideKills/battlePool*100));
-}
-
-// ---------- HÉROS ----------
-function updateHero(dt){
-  if(hero.dead||battleDone) return;
-  if(hero.flash>0) hero.flash-=dt;
-  // mouvement vers moveTarget
-  if(hero.moveTarget){
-    const dx=hero.moveTarget.x-hero.x, dy=hero.moveTarget.y-hero.y;
-    const d=Math.sqrt(dx*dx+dy*dy);
-    if(d>0.15){
-      const ang=Math.atan2(dy,dx);
-      const spd=hero.spd*dt*0.08 * (passAt(hero.x,hero.y)===1?0.5:1);
-      const nx=hero.x+Math.cos(ang)*spd, ny=hero.y+Math.sin(ang)*spd;
-      if(isPassable(Math.round(nx),Math.round(ny))>0){
-        hero.x=Math.max(0,Math.min(COLS-1,nx)); hero.y=Math.max(0,Math.min(ROWS-1,ny));
-      } else {
-        if(isPassable(Math.round(nx),Math.round(hero.y))>0) hero.x=nx;
-        else if(isPassable(Math.round(hero.x),Math.round(ny))>0) hero.y=ny;
-        else hero.moveTarget=null;
+{
+  "id": "sillage-noir",
+  "name": "Le Sillage Noir",
+  "renown": "armee-infamie-sillage-noir",
+  "language": "fr",
+  "version": "1.0",
+  "source": "Le Sillage Noir.pdf",
+  "description": "Armée d'Infamie de la Flotte du Sillage Noir. Cette liste utilise l'armée générique des Elfes Noirs comme base et applique une composition specific ainsi que des profils et règles propres à la flotte.",
+  "armies": [
+    "elfes-noirs"
+  ],
+  "allowedUnits": [
+    "dark-elf-dreadlord",
+    "supreme-sorceress",
+    "high-beastmaster",
+    "dark-elf-master",
+    "sorceress",
+    "khainite-assassin",
+    "esclaves",
+    "dark-elf-warriors",
+    "repeater-crossbowmen",
+    "black-ark-corsairs",
+    "dark-riders",
+    "executioners",
+    "harpies",
+    "shades",
+    "reaper-bolt-thrower",
+    "cold-one-knights",
+    "cold-one-chariots",
+    "black-guard",
+    "maldris-dravelyth",
+    "moraveth-dravelyth",
+    "kharyx"
+  ],
+  "excludedUnits": [],
+  "restrictions": {
+    "categories": {
+      "Personnages": {
+        "maxPercent": 33,
+        "notes": "0-1 Despote, Sorcière suprême ou Haut Belluaire par tranche de 1000 points. Maître, Sorcière et Assassin Elfes Noirs disponibles."
+      },
+      "Unités de Base": {
+        "minPercent": 33,
+        "notes": "La liste doit comprendre au moins 33 % de sa valeur en points en unités de Base."
+      },
+      "Unités Spéciales": {
+        "maxPercent": 33
+      },
+      "Unités Rares": {
+        "maxPercent": 33
+      },
+      "Mercenaires": {
+        "maxPercent": 0
+      },
+      "Alliés": {
+        "maxPercent": 20,
+        "maxContingents": 1,
+        "notes": "Un seul contingent allié."
       }
-    } else hero.moveTarget=null;
-  }
-  // auto-attaque
-  hero.atkCd-=dt;
-  let nearest=null,nd=1e9;
-  for(const o of units){
-    if(o.dead||o.team===hero.team) continue;
-    const d=(o.x-hero.x)**2+(o.y-hero.y)**2;
-    if(d<nd){nd=d;nearest=o;}
-  }
-  if(nearest){
-    const range=hero.range>0?hero.range/24:1.5;
-    if(Math.sqrt(nd)<=range && hero.atkCd<=0){ hero.atkCd=420; doAttack(hero,nearest); }
-  }
-}
-
-// ---------- PARTICULES ----------
-function spawnParticles(u){
-  const sx=isoX(u.x,u.y)+cam.x, sy=isoY(u.x,u.y)+cam.y;
-  for(let i=0;i<6;i++)
-    particles.push({x:sx,y:sy-10,vx:(Math.random()-0.5)*2.5,vy:(Math.random()-0.5)*2-1,life:1,
-      c:Math.random()<0.5?'#c33':'#7a1f1f'});
-}
-
-// ---------- RENDU UNITÉS ----------
-function drawUnit(u){
-  const sx=isoX(u.x,u.y)+cam.x, sy=isoY(u.x,u.y)+cam.y;
-  if(sx<-30||sx>W+30||sy<-40||sy>H+30) return;
-  // ombre
-  ctx.fillStyle='rgba(0,0,0,.45)';
-  ctx.beginPath(); ctx.ellipse(sx,sy+1,9,4,0,0,Math.PI*2); ctx.fill();
-  // corps (pixel art sprite)
-  const r=u.isHero?7:5;
-  // flash de dégâts
-  const body = u.flash>0 ? '#fff' : u.color;
-  ctx.fillStyle=body;
-  ctx.fillRect(sx-r,sy-10,r*2,10); // torse
-  ctx.fillStyle=shade(u.color,-30);
-  ctx.fillRect(sx-r,sy-10,r*2,3); // epaules
-  // tête
-  ctx.fillStyle='#d8a878';
-  ctx.fillRect(sx-3,sy-14,6,5);
-  // arme si hero
-  if(u.isHero){
-    ctx.fillStyle='#b8975a';
-    ctx.fillRect(sx+r-1,sy-14,2,8);
-    ctx.fillStyle=G.hero.color;
-    ctx.fillRect(sx-1,sy-16,2,3);
-  }
-  // outline selon équipe
-  ctx.strokeStyle = u.team==='ally'? '#b8975a':'#a85a5a';
-  ctx.lineWidth = u.isHero?2:1;
-  ctx.strokeRect(sx-r,sy-14,r*2,14);
-  // sigil héro
-  if(u.isHero){
-    ctx.fillStyle='#b8975a'; ctx.font='bold 13px Georgia'; ctx.textAlign='center';
-    ctx.fillText(G.hero.sigil,sx,sy-18);
-  }
-  // barre de vie
-  if(u.hp<u.maxhp){
-    const bw=u.isHero?26:16, bh=3, by=sy-19;
-    ctx.fillStyle='#000'; ctx.fillRect(sx-bw/2,by,bw,bh);
-    ctx.fillStyle = u.team==='ally'?'#3a6a3a':'#6a3a3a';
-    ctx.fillRect(sx-bw/2,by,bw*Math.max(0,u.hp/u.maxhp),bh);
-  }
-  // marqueur ordre de mouvement (héros)
-  if(u.isHero&&u.moveTarget){
-    const tx=isoX(u.moveTarget.x,u.moveTarget.y)+cam.x, ty=isoY(u.moveTarget.x,u.moveTarget.y)+cam.y;
-    ctx.strokeStyle='#b8975a'; ctx.lineWidth=2; ctx.globalAlpha=0.7;
-    ctx.beginPath();
-    ctx.moveTo(tx,ty); ctx.lineTo(tx+TW/2,ty+TH/2);
-    ctx.lineTo(tx,ty+TH); ctx.lineTo(tx-TW/2,ty+TH/2); ctx.closePath(); ctx.stroke();
-    ctx.globalAlpha=1;
-  }
-}
-
-function shade(hex,amt){
-  const n=parseInt(hex.slice(1),16);
-  let r=(n>>16)+amt, g=((n>>8)&255)+amt, b=(n&255)+amt;
-  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
-  return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
-}
-
-function drawProjectile(p){
-  const ax=isoX(p.ax,p.ay)+cam.x, ay=isoY(p.ax,p.ay)+cam.y-8;
-  const bx=isoX(p.bx,p.by)+cam.x, by=isoY(p.bx,p.by)+cam.y-8;
-  const t=p.t/180; if(t>=1) return;
-  const x=ax+(bx-ax)*t, y=ay+(by-ay)*t-8*Math.sin(t*Math.PI);
-  ctx.fillStyle=p.c; ctx.beginPath(); ctx.arc(x,y,2.5,0,Math.PI*2); ctx.fill();
-}
-
-// ---------- HUD ----------
-function updateHUD(){
-  document.getElementById('hud-hp-txt').textContent=`${Math.max(0,Math.ceil(hero.hp))}/${hero.maxhp}`;
-  document.getElementById('hud-hp-bar').style.width=Math.max(0,hero.hp/hero.maxhp*100)+'%';
-  document.getElementById('hud-tide-txt').textContent=tidePct+'%';
-  document.getElementById('hud-tide-bar').style.width=tidePct+'%';
-  document.getElementById('hud-kills').textContent='Proies: '+G.kills;
-  document.getElementById('hud-enemies').textContent='Ennemis: '+units.filter(u=>!u.dead&&u.team==='foe').length;
-  let fx='';
-  if(tidePct>=25)fx+='Peur du Fouet ';
-  if(tidePct>=50)fx+='+ Mort aux Faibles ';
-  if(tidePct>=75)fx+='+ Tuez-les Tous';
-  document.getElementById('hud-tidefx').textContent=fx;
-}
-
-// ---------- FIN ----------
-function checkEnd(){
-  if(battleDone) return;
-  const foes=units.filter(u=>!u.dead&&u.team==='foe').length;
-  if(hero.hp<=0){ battleDone=true; endBattle(false,'Ton héros est tombé.'); return; }
-  if(foes===0){ battleDone=true; endBattle(true,'Victoire. Les cales se remplissent.'); return; }
-  if(Date.now()-battleStart>150000){
-    battleDone=true;
-    const win=G.kills>=15;
-    endBattle(win, win?'Le butin est suffisant.':'La poursuite s\'éternise.');
-  }
-}
-
-function endBattle(win,msg){
-  log(`<span class="${win?'gold':'blood'}">═══ ${msg} ═══</span>`);
-  G.butin+=G.kills*15;
-  setTimeout(()=>{
-    G.screen='end';
-    document.getElementById('hud').classList.add('hidden');
-    document.getElementById('log').classList.add('hidden');
-    document.getElementById('hint').classList.add('hidden');
-    showEnd(win);
-  },2200);
-}
-
-function showEnd(win){
-  const t=document.createElement('div'); t.className='overlay';
-  let title,tale;
-  if(!win){ title='Le sillage se referme';
-    tale=`${G.hero.name} est tombé. Les scribes ajoutent une ligne aux registres : « Un capitaine perdu. Un butin médiocre. »`;
-  } else if(G.kills>=20){ title='La Marée Triomphante';
-    tale=`${G.hero.name} a mené le raid avec férocité. Les cales regorgent de captifs et le nom du héros est inscrit à l'encre de sang.`;
-  } else { title='Un butin suffisant';
-    tale=`${G.hero.name} revient vers l'Arche. Les Corsaires réclament déjà une nouvelle campagne.`;
-  }
-  t.innerHTML=`<div style="max-width:560px;text-align:center">
-    <h1>${title}</h1>
-    <div style="font-size:14px;line-height:1.7;color:#a89878;margin-bottom:26px">${tale}</div>
-    <div style="display:flex;justify-content:center;gap:30px;margin-bottom:28px">
-      <div><div style="font-size:30px;color:var(--gold)">${G.kills}</div><div style="font-size:11px;color:#7a6a4a">PROIES</div></div>
-      <div><div style="font-size:30px;color:var(--gold)">${G.butin}</div><div style="font-size:11px;color:#7a6a4a">BUTIN</div></div>
-      <div><div style="font-size:30px;color:var(--gold)">${tidePct}%</div><div style="font-size:11px;color:#7a6a4a">MARÉE</div></div>
-    </div>
-    <button class="btn" onclick="location.reload()">Nouvelle marée</button></div>`;
-  document.getElementById('app').appendChild(t);
-}
-
-// ---------- LOG ----------
-function log(html){
-  const box=document.getElementById('log');
-  const d=document.createElement('div'); d.className='line'; d.innerHTML=html;
-  box.appendChild(d); box.scrollTop=box.scrollHeight;
-  while(box.children.length>30) box.removeChild(box.firstChild);
-}
-
-// ============================================================
-//  BOUCLE
-// ============================================================
-let lastT=0;
-function loop(t){
-  const dt=Math.min(50,t-lastT); lastT=t;
-  ctx.fillStyle='#050508'; ctx.fillRect(0,0,W,H);
-
-  if(G.screen==='battle' && !battleDone && !paused){
-    for(const u of units) if(u.flash>0) u.flash-=dt;
-    for(const u of units) aiUnit(u,dt);
-    updateHero(dt);
-    for(const p of projectiles) p.t+=dt;
-    projectiles=projectiles.filter(p=>p.t<180);
-    for(const p of particles){ p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.life-=dt*0.003; }
-    particles=particles.filter(p=>p.life>0);
-    checkEnd(); updateHUD();
-  }
-
-  if(G.screen==='battle'){
-    drawMap();
-    const sorted=[...units].filter(u=>!u.dead).sort((a,b)=>a.y-b.y);
-    for(const u of sorted) drawUnit(u);
-    for(const p of projectiles) drawProjectile(p);
-    for(const p of particles){ ctx.globalAlpha=p.life; ctx.fillStyle=p.c; ctx.fillRect(p.x,p.y,2.5,2.5); }
-    ctx.globalAlpha=1;
-    if(paused){
-      ctx.fillStyle='rgba(0,0,0,.6)'; ctx.fillRect(0,0,W,H);
-      ctx.fillStyle='#b8975a'; ctx.font='30px Georgia'; ctx.textAlign='center';
-      ctx.fillText('— PAUSE —',W/2,H/2);
+    },
+    "units": {
+      "dark-elf-dreadlord": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "supreme-sorceress": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "high-beastmaster": {
+        "group": "lord-archmage-or-prince",
+        "maxPer1000": 1
+      },
+      "maldris-dravelyth": {
+        "max": 1
+      },
+      "moraveth-dravelyth": {
+        "max": 1
+      },
+      "esclaves": {
+        "maxPerCharacter": 2,
+        "maxUnitSize": 20
+      },
+      "dark-riders": {
+        "maxPer1000": 1
+      },
+      "reaper-bolt-thrower": {
+        "maxPer1000": 3
+      },
+      "cold-one-knights": {
+        "maxPer1000": 2
+      },
+      "cold-one-chariots": {
+        "maxPer1000": 1
+      },
+      "black-guard": {
+        "maxPer1000": 1
+      },
+      "kharyx": {
+        "max": 1
+      }
+    },
+    "honours": {
+      "allowed": []
+    },
+    "global": {
+      "battleStandardBearer": {
+        "enabled": true,
+        "max": 1,
+        "eligibleCategory": "dark-elf-master",
+        "points": 25,
+        "magicBannerUnlimited": true
+      },
+      "magicItems": {
+        "enabled": true,
+        "source": [
+          "objets-magiques-courants",
+          "elfes-noirs",
+          "sillage-noir"
+        ]
+      }
     }
-  }
-  requestAnimationFrame(loop);
+  },
+  "units": [
+    {
+      "id": "khainite-assassin",
+      "name": "Assassin Khainite",
+      "category": "Personnages",
+      "points": 80,
+      "min": 0,
+      "max": 999,
+      "profile": {
+        "M": 5,
+        "CC": 8,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 2,
+        "I": 7,
+        "A": 3,
+        "Cd": 8
+      },
+      "type": "Infanterie régulière (personnage)",
+      "base": "25 x 25 mm",
+      "unitSize": "1",
+      "equipment": [
+        "Arme de base",
+        "Armes de jet"
+      ],
+      "options": [
+        "Arme de base additionnelle +3 pts",
+        "Arme de poing à répétition +5 pts",
+        "Lotus noir +5 pts",
+        "Venin noir +15 pts",
+        "Manbane +15 pts",
+        "Poison des Cales Noires +10 pts",
+        "Venin de la Mer Rouge +15 pts",
+        "Objets magiques jusqu'à 50 pts"
+      ],
+      "specialRules": [
+        "Haine éternelle",
+        "Haine (tous les ennemis)",
+        "Dissimulé",
+        "Immunité à la psychologie",
+        "Meurtrier",
+        "Frappe en premier"
+      ]
+    },
+    {
+      "id": "maldris-dravelyth",
+      "name": "Maldris Dravelyth",
+      "category": "Personnages",
+      "type": "Infanterie régulière",
+      "unitSize": "1",
+      "baseSize": "25x25 mm",
+      "points": 120,
+      "profile": {
+        "M": 5,
+        "CC": 7,
+        "CT": 7,
+        "F": 4,
+        "E": 3,
+        "PV": 3,
+        "I": 4,
+        "A": 4,
+        "Cd": 8
+      },
+      "equipment": [
+        "Arme de base",
+        "Armure lourde",
+        "Fouet des Lamentations"
+      ],
+      "options": [
+        {
+          "name": "Coursier Noir",
+          "points": 14,
+           "mountRef": "dark-steed"
+        },
+        {
+          "name": "Sang-Froid",
+          "points": 18,
+           "mountRef": "cold-one-mount"
+        },
+        {
+          "name": "Manticore",
+          "points": 130,
+          "mountRef": "manticore-mount"
+        },
+        {
+          "name": "Cape en peau de Dragon des Mers",
+          "points": 4,
+          "kind": "other"
+        },
+        {
+          "name": "Bouclier",
+          "points": 2,
+          "kind": "other"
+        }
+      ],
+      "rules": [
+        "Haine éternelle",
+        "Haine (Hauts-Elfes)",
+        "Meurtrier",
+        "Frappe en premier",
+        "La cargaison va arriver",
+        "Inspirer la crainte",
+        "Mépris des faibles",
+        "La mort du maître"
+      ]
+    },
+    {
+      "id": "moraveth-dravelyth",
+      "name": "Moraveth Dravelyth",
+      "category": "Personnages",
+      "type": "Infanterie régulière",
+      "unitSize": "1",
+      "baseSize": "25x25 mm",
+      "points": 160,
+      "profile": {
+        "M": 5,
+        "CC": 4,
+        "CT": 4,
+        "F": 3,
+        "E": 3,
+        "PV": 3,
+        "I": 5,
+        "A": 3,
+        "Cd": 9
+      },
+      "equipment": [
+        "Arme de base",
+        "Arme de base supplémentaire",
+        "Armure légère"
+      ],
+      "options": [
+        {
+          "name": "Coursier Noir",
+          "points": 14,
+           "mountRef": "dark-steed"
+        },
+        {
+          "name": "Sang-Froid",
+          "points": 18,
+          "mountRef": "cold-one-mount"
+        },
+        {
+          "name": "Pégase Noir",
+          "points": 35,
+           "mountRef": "dark-pegasus"
+        }
+      ],
+      "rules": [
+        "Réflexes Elfiques",
+        "Haine éternelle",
+        "Haine (Hauts-Elfes)",
+        "Bénédiction d'Hekarti",
+        "Domaine de Naggaroth",
+        "Domaine de l'Agonie",
+        "Meurtriers",
+        "Couvent du Sillage Noir",
+        "Sacrifice rituel"
+      ],
+      "wizard": {
+        "lores": ["Démonologie","Magie Noire"]
+      }
+    },
+    {
+      "id": "esclaves",
+      "name": "Esclaves",
+      "category": "Unités de Base",
+      "type": "Infanterie régulière",
+      "unitSize": "5-20",
+      "baseSize": "25x25 mm",
+      "points": 5,
+      "profile": {
+        "M": 4,
+        "CC": 2,
+        "CT": 2,
+        "F": 3,
+        "E": 3,
+        "PV": 1,
+        "I": 2,
+        "A": 1,
+        "Cd": 3
+      },
+      "championProfile": {
+        "name": "Contremaître",
+        "points": 3,
+        "profile": {
+          "M": 4,
+          "CC": 3,
+          "CT": 3,
+          "F": 3,
+          "E": 3,
+          "PV": 1,
+          "I": 2,
+          "A": 1,
+          "Cd": 4
+        }
+      },
+      "equipment": [
+        "Arme de base"
+      ],
+      "options": [
+        {
+          "name": "Boucliers",
+          "pointsPerModel": 1
+        },
+        {
+          "name": "Promouvoir une figurine en Contremaître",
+          "points": 3
+        },
+        {
+          "name": "Fouet barbelé pour le Contremaître",
+          "points": 2
+        },
+        "Contremaître : objets magiques jusqu'à 25 pts"
+      ],
+      "rules": [
+        "Tirailleurs",
+        "Peu coûteux",
+        "Dispersion",
+        "Cibles sacrifiables",
+        "Volonté asservie",
+        "Foule désorganisée"
+      ]
+    },
+    {
+      "id": "kharyx",
+      "name": "Kharyx, Prédateur de la Lune Noire",
+      "category": "Unités Rares",
+      "type": "Béhémoth",
+      "unitSize": "1",
+      "baseSize": "60x100 mm",
+      "points": 250,
+      "profile": {
+        "M": 6,
+        "CC": 5,
+        "CT": "-",
+        "F": 5,
+        "E": 5,
+        "PV": 5,
+        "I": 4,
+        "A": 5,
+        "Cd": 5
+      },
+      "equipment": [
+        "Griffes et crocs"
+      ],
+      "rules": [
+        "Grande cible",
+        "Terreur",
+        "Peau épaisse",
+        "Sauvagerie",
+        "Aura sanguinaire"
+      ]
+    }
+  ],
+  "specialRules": [
+    {
+      "id": "maree-de-sang",
+      "name": "La Marée de Sang",
+      "text": "Lorsque la Marée de Sang atteint 25 %, les unités gagnent Peur du fouet. À 50 %, elles gagnent Mort aux faibles. À 75 %, elles gagnent Tuez-les tous. Les effets sont cumulatifs."
+    }
+  ],
+  "magicItemsSource": "../objets-magiques/sillage-noir.json"
 }
-requestAnimationFrame(loop);
-log('<span class="gold">Les voiles noires se déploient. La poursuite commence.</span>');
-</script>
-</body>
-</html>
